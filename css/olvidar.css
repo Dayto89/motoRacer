@@ -1,0 +1,209 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-color: aqua;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 0;
+}
+
+.fondo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.logo_inicio {
+    position: absolute;
+    z-index: 1;
+    width: 40%;
+    height: 45%;
+    margin-right: 800px;
+    margin-bottom: 50px;
+}
+
+.barra {
+    position: absolute;
+    z-index: 2;
+    width: 6px;
+    height: 500px;
+    background-color: white;
+    margin-left: 10%;
+}
+
+h1 {
+    font-family: "Metal Mania", system-ui;
+    position: absolute;
+    z-index: 2;
+    color: white;
+    text-shadow: 
+    -1px -1px 0 #000000,  
+    1px -1px 0 #000,  
+    -1px 1px 0 #000,  
+    3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
+    font-size: 60px;
+    margin-left: 48%;
+    margin-bottom: 25%;
+}
+
+form {
+    position: absolute;
+    margin-top: 100px;
+    margin-left: 900px;
+    z-index: 2;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 400px;
+    margin-bottom: 30px;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 40px;
+    color: white;
+    margin-bottom: 30px;
+    margin-left: 30px;
+}
+
+form input[type="text"],
+form input[type="password"] {
+    background-color: #343434;
+    border-radius: 50px;
+    height: 70px;
+    width: 100%;
+    color: white;
+    padding: 0 0 0 70px; 
+    border: none;
+    font-size: 20px;
+    margin-left: 30px;
+}
+
+input::placeholder {
+    color: gray;
+    font-size: 20px;
+}
+
+.iniciar {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 25px 65px;
+    font-size: 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.container_boton{
+    margin-top: 60px;
+}
+
+.iniciar:hover {
+    background-color: #0056b3;
+}
+
+
+
+@media (min-width: 600px) and (max-width: 1024px) {
+    h1 {
+        font-size: 0px;
+    }
+
+    form {
+        margin-left: 50px;
+        margin-top: 300px;
+    }
+
+    .logo_inicio {
+        width: 60%;
+        height: 25%;
+        margin-right: 0;
+        margin-bottom: 500px;
+    }
+    form {
+        margin-left: 10px;
+        margin-top: 200px;
+    }
+
+    form input[type="text"] {
+        width: 280px;
+        height: 60px;
+    }
+
+    form input[type="email"],form input[type="tel"],form input[type="password"]{
+        width: 280px;
+        height: 60px;
+    }
+
+    form input[type="password"]{
+        margin-bottom: 20px;
+    }
+
+    .barra {
+        width: 0px;
+        height: 0px;
+    }
+}
+
+@media (max-width: 599px) {
+    h1 {
+        font-size: 0px;
+    }
+
+    form {
+        margin-left: 10px;
+        margin-top: 200px;
+    }
+
+    form input[type="text"], form input[type="password"] {
+        width: 400px;
+        height: 70px;
+    }
+
+    form input[type="password"]{
+        margin-bottom: 20px;
+    }
+
+    .input-wrapper i{
+       top: 50px;
+    }
+
+    .logo_inicio {
+        width: 80%;
+        height: 30%;
+        margin-right: 0;
+        margin-bottom: 30px;
+    }
+
+    .logo_inicio {
+        height: 200px;
+        width: 300px;
+        margin-bottom: 500px;
+        margin-left: 20px;
+    }
+
+    .barra {
+        width: 0px;
+        height: 0px;
+    }
+
+    .inicio{
+
+        padding: 20px 40px;
+    }
+}
+

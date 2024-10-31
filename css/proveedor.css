@@ -1,0 +1,451 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Metal Mania", system-ui;
+    background-image: url('fondoMotoRacer.png'); 
+    background-size: cover;
+    background-position: center;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(180deg, #1167CC, #083972, #000000);
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover {
+    width: 270px;
+}
+
+.sidebar:hover .logo {
+    transform: scale(1.4);
+    transition: 1s;
+    margin-left: 30px;
+}
+
+.sidebar:hover .sidebar-header i{
+    transform: scale(3);
+    transition: 1s;
+    margin-left: 50px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    color: white;
+        list-style-type: none;
+        padding: 20px;
+        color: #ffffff; /* Color del texto */
+        text-shadow: 
+            -1px -1px 0 #000,  
+            1px -1px 0 #000,  
+            -1px 1px 0 #000,  
+            0px 1px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */    
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+    margin-right: 10px;
+}
+.menu {
+    list-style-type: none;
+    padding: 20px;
+    color: #ffffff; /* Color del texto */
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,  
+        -1px 1px 0 #000,  
+        3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
+}
+
+.menu li {
+    margin: 35px 0;
+}
+
+.menu li a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+    transition: background 0.3s ease;
+}
+
+.menu li a i {
+    margin-right: 10px;
+    font-size: 45px;
+}
+
+.menu li a span {
+    display: none;
+}
+
+.sidebar:hover .menu li a span {
+    display: inline-block;
+    font-size: 25px;
+}
+
+.menu li a:hover {
+    background-color: #3f6fb6;
+}
+
+.fondo {
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    z-index: -1;
+    background-color: black;
+    opacity: 0.7;
+}
+
+.main-content {
+    margin-left: 100px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    height: 100vh;
+}
+
+.sidebar:hover ~ .main-content {
+    margin-left: 270px;
+}
+
+.main-content h1 {
+    color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+.form-section {
+    padding: 0 10%;
+}
+
+label {
+    color: white;
+}
+
+.campo {
+    display: inline-block;
+    width: 320px;
+    max-width: 100%;
+    padding: 10px 50px;
+    margin-bottom: 10px;
+    
+    
+}
+
+#product-form{
+    margin-top: 100px;
+    
+}
+
+#product-form .campo label{
+    margin-bottom: 10p;
+    font-size: 30px;
+}
+
+#product-form input{
+    margin-top: 20px;
+    height: 40px;
+    margin-right: 45px;
+}
+
+#product-form button{
+    border: 20px #ffffff;
+    cursor: pointer;
+}
+
+.campo2 {
+  
+    width: 360px;
+    max-width: 200%;
+    padding: 10px 50px;
+    margin-bottom: 10px;
+    
+}
+
+input[type='text'], input[type='number'] {
+    padding: 4px 2px
+}
+
+
+.button-container {
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    width: 360px;
+    margin-left: 250px;
+    margin-top: 100px;
+}
+
+.button-container  button{
+    border:3.5px white inset;
+}
+
+button {
+    background-color: #1167CC;
+    padding: 2px 7px;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 25px;
+    border: 5px #ffffff;
+    margin-right: 200px;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+th, td {
+    border: 1px solid #666;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #444;
+    font-weight: bold;
+    text-align: center;
+}
+
+td {
+    background-color: #222;
+    text-align: center;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+.submenu {
+    display: flex;
+    gap: 200px;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
+
+.submenu button {
+    background-color: #1167CC;
+    color: white;
+    padding: 5px 20px;
+    border:3.5px white inset;;
+    cursor: pointer;
+    font-size: 30px;
+    border-radius: 5px;
+}
+
+.submenu button:hover {
+    background-color: #3f6fb6;
+}
+
+.boton{
+    margin-right: 900px;
+}
+
+
+.container {
+    display: flex;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px(0, 0,  white, 0.3);
+    justify-content: space-between; 
+}
+
+.left-side, .right-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.left-side {
+    width: 150px;
+    align-items: center; 
+    
+}
+.left-side i {
+    color: #fff; 
+}
+.right-side {
+    width: 300px;
+    margin-left: 20px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-bottom: 1px solid white;
+    background-color: #333;
+    color: #fff;
+}
+
+
+#inventario{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#inventario h1{
+    font-family: "Metal Mania", system-ui;
+    font-size: 50px;
+    
+}
+
+#crearProducto i{
+    color: white;
+    width: 40px;
+    height: 40px;
+    z-index: 5 ;
+}
+
+#crearProducto h1{
+    font-size: 50px;
+    margin-top: 100px;
+}
+
+.campo #descripcion{
+    width: 500px;
+    height: 100px;
+}
+
+#producto h1{
+font-size:50px ;
+margin-top: 200px;
+margin-bottom: 150px;
+}
+#actualizarProducto h1{
+    font-size: 50px;
+    margin-top: 100px;
+}
+
+#update-product-form{
+    margin-top: 100px;
+    
+}
+
+#update-product-form .campo label{
+    margin-bottom: 10p;
+    font-size: 30px;
+}
+
+#update-product-form input{
+    margin-top: 20px;
+    height: 40px;
+    margin-right: 45px;
+}
+
+#update-product-form button{
+    border: 20px #ffffff;
+    cursor: pointer;
+}
+
+.campo #descripcionActualizar{
+    width: 300px;
+    height: 100px;
+}
+
+#proveedor h1{
+    font-size: 80px;
+    margin-top: 200px;
+    margin-bottom: 150px;
+    font-family: "Metal Mania", system-ui;
+    
+    color: #ffffff;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    
+}
+
+#crearProveedor h1{
+    font-size: 50px;
+    margin-top: 200px;
+    margin-bottom: 150px;
+}
+
+#crearProveedor .campo label{
+    margin-bottom: 10px;
+    font-size: 30px;
+}
+
+#crearProveedor input{
+    margin-top: 20px;
+    height: 40px;
+    margin-right: 45px;
+}
+
+.campo #nombreProveedor{
+    margin-top: 20px;
+    height: 40px;
+    width: 250px;
+    margin-right: 45px;
+}
+
+#proveedor-form{
+    margin-left: 400px;
+}
+
+#actualizarProveedor h1{
+    font-size: 50px;
+    margin-top: 200px;
+    margin-bottom: 150px;
+}
+
+#actualizarProveedor .campo label{
+    margin-bottom: 10px;
+    font-size: 30px;
+}
+
+#actualizarProveedor input{
+    margin-top: 20px;
+    height: 40px;
+    margin-right: 45px;
+}
+
+.campo #nombreProveedorActualizar{
+    margin-top: 20px;
+    height: 40px;
+    width: 250px;
+    margin-right: 45px;
+}
+
+#actualizar-proveedor-form{
+    margin-left: 400px;
+}
+
+#configuracion h1{
+    font-size: 50px;
+    margin-top: 200px;
+}
+
+.container-config {
+    display: flex;
+    gap: 70px;
+    justify-content: space-evenly;
+    margin-top: 80px;
+}
+
+.container-config button{
+    height: 80px;
+}

@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+.main-content {
+    margin-left: 100px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    height: 100vh;
+}
+
+.sidebar:hover ~ .main-content {
+    margin-left: 270px;
+}
+
+.main-content h1 {
+    color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+.form-section {
+    padding: 0 10%;
+}
+
+
+
+
+
+
+
+
+
+.container {
+    display: flex;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px(0, 0,  white, 0.3);
+    justify-content: space-between; 
+}
+
+.left-side, .right-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.left-side {
+    width: 150px;
+    align-items: center; 
+    
+}
+.left-side i {
+    color: #fff; 
+}
+.right-side {
+    width: 300px;
+    margin-left: 20px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-bottom: 1px solid white;
+    background-color: #333;
+    color: #fff;
+}
+
+.button {
+    margin-left: 650px;
+    margin-top: 150px;
+    background-color: #1167CC;
+    padding: 2px 7px;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 30px;
+    
+}
+
+
+ h1{
+    font-family: "Metal Mania", system-ui;
+    font-size: 70px;
+    color: #ffffff; /* Color del texto */
+    text-shadow: 
+    7px -1px 0 #1c51a0,  
+    1px -1px 0 #1c51a0,  
+    -1px 1px 0 #1c51a0,  
+    3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
+        
+ }
