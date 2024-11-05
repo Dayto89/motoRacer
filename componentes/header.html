@@ -1,51 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="../js/index.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/componentes/header.css">
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/componentes/header.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="../html/inicio.html"><img src="../imagenes/LOGO.png" alt="Logo" class="logo"></a>
-        </div>
-        <ul class="menu">
-            <li><a href="../html/producto.html" onclick="showForm('producto')"><i
-                        class="fas fa-box"></i><span>Producto</span></a></li>
-            <li><a href="../html/proveedor.html" onclick="showForm('proveedor')"><i
-                        class="fas fa-truck"></i><span>Proveedor</span></a></li>
-            <li><a href="../html/inventario.html" onclick="showForm('inventario')"><i
-                        class="fas fa-warehouse"></i><span>Inventario</span></a>
+      <div class="sidebar-header">
+        <a href="../html/inicio.html"
+          ><img src="../imagenes/LOGO.png" alt="Logo" class="logo"
+        /></a>
+      </div>
+      <ul class="menu">
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown1')"
+            ><i class="bx bx-package bx-tada icon"></i><span>Producto</span
+            ><i class="bx bx-chevron-down icon2"></i
+          ></a>
+          <ul id="dropdown1" class="dropdown">
+            <li><a href="#">crear producto</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown2')"
+            ><i class="bx bxs-truck bx-tada icon"></i><span>Proveedor</span
+            ><i class="bx bx-chevron-down icon2"></i
+          ></a>
+          <ul id="dropdown2" class="dropdown">
+            <li><a href="../html/proveedor1.html">crear proveedor</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown3')"
+            ><i class="bx bx-task bx-tada icon"></i><span>Inventario</span
+            ><i class="bx bx-chevron-down icon2"></i
+          ></a>
+          <ul id="dropdown3" class="dropdown">
+            <li><a href="../html/inventario1.html">lista de productos</a></li>
+            <li><a href="../html/inventario2.html">descargar lista</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown4')"
+            ><i class="bx bx-file bx-tada icon"></i><span>Factura</span
+            ><i class="bx bx-chevron-down icon2"></i
+          ></a>
+          <ul id="dropdown4" class="dropdown">
+            <li><a href="../html/inventario1.html">Opción 1</a></li>
+            <li><a href="../html/inventario2.html">Opción 2</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown5')"
+            ><i class="bx bx-user-circle bx-tada icon"></i><span>Usuario</span
+            ><i class="bx bx-chevron-down icon2"></i
+          ></a>
+          <ul id="dropdown5" class="dropdown"></ul>
+        </li>
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown6')"
+            ><i class="bx bxs-cog bx-tada icon"></i><span>Configuración</span
+            ><i class="bx bx-chevron-down icon2"></i
+          ></a>
+          <ul id="dropdown6" class="dropdown">
+            <li><a href="../html/inventario1.html">Niveles de stock</a></li>
+            <li><a href="../html/inventario2.html">Gestion de usuarios</a></li>
+            <li><a href="../html/inventario2.html">Permiso</a></li>
+            <li>
+              <a href="../html/inventario2.html">Personalizacion de reportes</a>
             </li>
-            <li><a href="../html/factura.html" onclick="showForm('facturas')"><i
-                        class="fas fa-file-invoice"></i><span>Facturas</span></a>
+            <li>
+              <a href="../html/inventario2.html">Notificaciones de stock</a>
             </li>
-            <li><a href="../html/usuario.html" onclick="showForm('usuarios')"><i
-                        class="fas fa-user"></i><span>Usuarios</span></a></li>
-            <li><a href="../html/configuracion.html" onclick="showForm('configuracion')"><i
-                        class="fas fa-cog"></i><span>Configuración</span></a>
+            <li>
+              <a href="../html/inventario2.html"
+                >Frecuencia de reportes automaticos</a
+              >
             </li>
-            <li><a href="../index.html"><i class="fas fa-sign-out-alt"></i><span>Salir</span></a></li>
-        </ul>
-    </div>
-    <div class="fondo"></div>
-    <div class="inicio-img-container">
-        <img src="/imagenes/LOGO.png" alt="Imagen centrada" class="inicio-img">
-
-    </div>
-    <div class="texto-debajo">
-        <h2> SOFTWARE DE INVENTARIO MOTO RACER </h2>
-    </div>
-
-</body>
-
+          </ul>
+        </li>
+        <li>
+          <a href="../index.php"
+            ><i class="bx bx-log-out-circle bx-tada icon"></i
+            ><span>Salir</span></a
+          >
+        </li>
+        <!-- Agrega más elementos del menú aquí según sea necesario -->
+      </ul>
+      <div class="menu-scroll">
+        <p>Niveles de stock</p>
+        <p>Gestión de usuarios</p>
+        <p>Permiso</p>
+    <script>
+      function toggleMenu(element) {
+        // Alterna la clase 'active' en el elemento padre del enlace
+        element.parentElement.classList.toggle("active");
+      }
+    </script>
+  </body>
 </html>

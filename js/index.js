@@ -1,22 +1,16 @@
- // Cargar el archivo header.html en el div con id="menu"
- fetch('../componentes/header.html')
- .then(response => response.text())
- .then(data => document.getElementById('menu').innerHTML = data);
+fetch('../componentes/header.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('menu').innerHTML = data);
 
- function showForm(formId) {
-   
-    var sections = document.querySelectorAll('.form-section');
 
-   
-    sections.forEach(function (section) {
-        section.style.display = 'none';
-    });
 
-  
-    document.getElementById(formId).style.display = 'block';
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const isVisible = dropdown.style.display === 'block';
+
+    // Ocultar todos los dropdowns
+    document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+
+    // Mostrar u ocultar el dropdown actual
+    dropdown.style.display = isVisible ? 'none' : 'block';
 }
-
-document.getElementById('facturas-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    alert('Factura guardada correctamente.');
-});

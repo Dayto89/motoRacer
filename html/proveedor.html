@@ -17,9 +17,22 @@
     </style>
   </head>
   <body>
-    
     <!-- Aquí se cargará el header -->
     <div id="menu"></div>
+    <!--Barra de búsqueda fija con efecto deslizante -->
+    <div class="search-bar">
+      <form class="d-flex" role="search">
+        <button
+          class="search-icon"
+          type="submit"
+          aria-label="Buscar"
+          title="Buscar" >
+          <i class="bx bx-search-alt-2 icon"></i
+          >
+        </button>
+        <input class="form-control" type="search" placeholder="Buscar" />
+      </form>
+    </div>
 
     <div class="main-content">
       <!-- Sección de Proveedores -->
@@ -57,10 +70,9 @@
           </div>
           <div class="button-container">
             <div class="boton">
-                <button type="submit">Guardar</button>
+              <button type="submit">Guardar</button>
             </div>
-        </div>
-         
+          </div>
         </form>
       </div>
 
@@ -88,9 +100,9 @@
           </div>
           <div class="button-container">
             <div class="boton">
-                <button type="submit">Guardar</button>
+              <button type="submit">Guardar</button>
             </div>
-        </div>
+          </div>
         </form>
       </div>
     </div>

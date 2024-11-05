@@ -464,3 +464,54 @@ input[type="checkbox"] {
 .container-config button{
     height: 80px;
 }
+.search-bar {
+    position: fixed;
+    top: 9px;
+    right: 141px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    transition: width 1s ease; /* Animación de deslizamiento */
+    width: 55px; /* Tamaño reducido por defecto */
+    overflow: hidden;
+}
+
+.search-bar:hover {
+    width: 400px; /* Tamaño al hacer hover */
+}
+
+.search-bar form {
+    margin-right: 90px;
+    margin-top: 90px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 8px;
+    font-size: 3em;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.7em;
+     
+   
+}
+
+.search-bar:hover input {
+    width: 400px; /* Anchura al hacer hover */
+    padding: 5px 10px; /* Añadir espaciado */
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+    font-size: 18px;
+}
