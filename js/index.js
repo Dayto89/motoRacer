@@ -1,16 +1,31 @@
-fetch('../componentes/header.html')
-    .then(response => response.text())
-    .then(data => document.getElementById('menu').innerHTML = data);
+document.addEventListener('DOMContentLoaded', () => {
+    // Función para alternar la visibilidad del dropdown
+    window.toggleDropdown = function(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const isVisible = dropdown.classList.contains('open');
 
+        // Ocultar todos los dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
 
+        // Mostrar u ocultar el dropdown actual
+        if (!isVisible) {
+            dropdown.classList.add('open');
+        }
+    };
 
-function toggleDropdown(dropdownId) {
-    const dropdown = document.getElementById(dropdownId);
-    const isVisible = dropdown.style.display === 'block';
+    // Cargar el contenido de 'header.html' en el elemento con id 'menu'
+    fetch('../componentes/header.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('menu').innerHTML = data;
+        });
 
-    // Ocultar todos los dropdowns
-    document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
-
-    // Mostrar u ocultar el dropdown actual
-    dropdown.style.display = isVisible ? 'none' : 'block';
-}
+    // Cerrar los menús cuando se pierde el hover en la barra lateral
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        sidebar.addEventListener('mouseleave', () => {
+            console.log("Mouse left the sidebar");
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+        });
+    }
+});

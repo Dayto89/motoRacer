@@ -32,6 +32,7 @@ body::before {
     background: linear-gradient(180deg, #1167CC, #083972, #000000);
     transition: width 0.3s ease;
     overflow: hidden;
+    overflow-y: auto;
 }
 
 .sidebar:hover {
@@ -56,8 +57,43 @@ body::before {
     align-items: center;
     justify-content: flex-start;
     padding: 20px;
-    color: white;
+    color: rgb(255, 255, 255);
 }
+
+.sidebar::-webkit-scrollbar {
+    width: 3px; 
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #0c0134; 
+    border-radius: 4px;
+}
+
+/* Ocultar dropdowns por defecto */
+.dropdown {
+    display: none;
+}
+
+/* Mostrar dropdown cuando tiene la clase "open" */
+.dropdown.open {
+    display: block;
+}
+
+.menu li a:hover {
+    background-color: #3f6fb6;
+}
+
+.menu li a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+    transition: background 0.3s ease;
+    cursor: pointer; /* Asegúrate de que los enlaces son clickeables */
+}
+
 
 .logo {
     margin: 0; 
@@ -82,7 +118,7 @@ body::before {
     margin: 35px 0;
     position: relative; /* Necesario para posicionar el submenú */
 }
-
+/*
 .menu li a {
     display: flex;
     align-items: center;
@@ -92,6 +128,7 @@ body::before {
     padding: 10px;
     transition: background 0.3s ease;
 }
+    */
 
 .menu li a i {
     margin-right: 10px;
@@ -111,11 +148,9 @@ body::before {
 }
 
 .menu-scroll::-webkit-scrollbar-thumb {
-    background-color: #555; /* Color del scroll */
-    border-radius: 10px; /* Bordes redondeados */
+    background-color: #555; 
+    border-radius: 10px; 
 }
-
-
 
 .sidebar:hover .menu li a span {
     display: inline-block;
@@ -125,7 +160,6 @@ body::before {
 .menu li a:hover {
     background-color: #3f6fb6;
 }
-
 
 .inicio-img-container {
     display: flex;

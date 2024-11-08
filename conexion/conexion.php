@@ -1,12 +1,12 @@
 
 <?php	
-	$conexion = mysqli_connect("localhost", "root", "", "inventario");
+	$conexion = mysqli_connect('localhost','root','', 'inventariomotoracer');
 	if (!$conexion) {
 		die("No se pudo conectar a la base de datos");
 	}
 	
 	function conectar() {
-		$conexion = mysqli_connect("localhost", "root", "", "inventario");
+		$conexion = mysqli_connect('localhost','root','', 'inventariomotoracer'); 
 		if (!$conexion) {
 			die("No se pudo conectar a la base de datos");
 		}
@@ -24,5 +24,7 @@
 	function cerrarConexion($conexion) {
 		mysqli_close($conexion);
 	}
+
+	
 ?>
 

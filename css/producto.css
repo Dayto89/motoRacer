@@ -9,6 +9,15 @@ body {
     background-image: url('fondoMotoRacer.png'); 
     background-size: cover;
     background-position: center;
+    
+}
+body::before {
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: black;
+    opacity: 0.6;
 }
 
 .sidebar {
@@ -131,10 +140,13 @@ body {
 
 .form-section {
     padding: 0 10%;
+    
 }
 
 label {
     color: white;
+    margin-bottom: 10p;
+    font-size: 30px;
 }
 
 .campo {
@@ -148,7 +160,10 @@ label {
 }
 
 #product-form{
-    margin-top: 100px;
+    margin-top: 80px;
+    margin-left: 350px;
+    margin-right: 95px;
+   
     
 }
 
@@ -166,6 +181,7 @@ label {
 #product-form button{
     border: 20px #ffffff;
     cursor: pointer;
+    
 }
 
 .campo2 {
@@ -187,8 +203,9 @@ input[type='text'], input[type='number'] {
     position: relative;
     display: inline-block;
     width: 360px;
-    margin-left: 700px;
-    margin-top: 100px;
+    margin-left: 365px;
+    margin-top: 43px;
+
 }
 
 .button-container  button{
@@ -267,6 +284,8 @@ input[type="checkbox"] {
     font-size: 30px;
     border-radius: 5px;
     width: 180px;
+    
+    
 }
 
 
@@ -338,12 +357,20 @@ input[type="checkbox"] {
 
 #crearProducto h1{
     font-size: 50px;
-    margin-top: 100px;
+    margin-top: 92px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    margin-left: 600px;
+    letter-spacing: 5px;
 }
 
 .campo #descripcion{
     width: 500px;
     height: 100px;
+}
+
+.descrip{
+    width: 645px;
 }
 
 #producto h1{
@@ -353,22 +380,26 @@ input[type="checkbox"] {
     font-family: "Metal Mania", system-ui;  
     color: #ffffff;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-   
+    
 }
+
 #actualizarProducto h1{
     font-size: 50px;
-    margin-top: 100px;
+    margin-top: 92px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    margin-left: 600px;
+    letter-spacing: 5px;
+   
+
 }
 
 #update-product-form{
     margin-top: 100px;
-    
+    margin-left: 230px;
+    margin-right: 115px;
 }
 
-#update-product-form .campo label{
-    margin-bottom: 10p;
-    font-size: 30px;
-}
 
 #update-product-form input{
     margin-top: 20px;
@@ -382,14 +413,16 @@ input[type="checkbox"] {
 }
 
 .campo #descripcionActualizar{
-    width: 300px;
-    height: 100px;
+    width: 504px;
+    height: 113px;
 }
 
 #proveedor h1{
     font-size: 50px;
     margin-top: 200px;
     margin-bottom: 150px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
     
 }
 
@@ -397,6 +430,8 @@ input[type="checkbox"] {
     font-size: 50px;
     margin-top: 200px;
     margin-bottom: 150px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
 }
 
 #crearProveedor .campo label{
@@ -452,6 +487,9 @@ input[type="checkbox"] {
 #configuracion h1{
     font-size: 50px;
     margin-top: 200px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+   
 }
 
 .container-config {
@@ -494,6 +532,8 @@ input[type="checkbox"] {
     padding: 0;
     margin-right: 8px;
     font-size: 3em;
+    text-shadow: 3px 1px 0 #1c51a0,  2px 3px 0 #1c51a0;
+   
 }
 
 .search-bar input {
@@ -514,4 +554,5 @@ input[type="checkbox"] {
 .search-bar input::placeholder {
     color: #aaa;
     font-size: 18px;
+    
 }

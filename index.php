@@ -19,7 +19,7 @@
         <div class="barra"></div>
         <h1>INICIAR SESIÓN</h1>
         <form name="formulario" method="post" action="/send/">
-            <div class="input-wrapper">
+            <div class="input-wrapper">     
                 <i class='bx bx-user-circle'></i>
                 <input type="text" placeholder="Usuario" />
             </div>

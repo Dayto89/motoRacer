@@ -1,6 +1,6 @@
 <?php
 
-$conexion = mysqli_connect("localhost", "root", "", "simr");
+$conexion = mysqli_connect('localhost','root','', 'inventariomotoracer');
 
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
@@ -15,17 +15,21 @@ if (!$resultado) {
 
 
 while ($fila = mysqli_fetch_assoc($resultado)) {
+
     echo "<tr>";
     echo "<td>" . $fila["codigo"] . "</td>";
     echo "<td>" . $fila["nombre"] . "</td>";
     echo "<td>" . $fila["iva"] . "</td>";
-    echo "<td>" . $fila["precio"] . "</td>";
+    echo "<td>" . $fila["precio 1"] . "</td>";
+    echo "<td>" . $fila["precio 2"] . "</td>";
+    echo "<td>" . $fila["precio 3"] . "</td>";
     echo "<td>" . $fila["cantidad"] . "</td>";
     echo "<td>" . $fila["descripcion"] . "</td>";
     echo "<td>" . $fila["Categoria_codigo"] . "</td>";
     echo "<td>" . $fila["Marca_codigo"] . "</td>";
     echo "<td>" . $fila["UnidadMedida_codigo"] . "</td>";
     echo "<td>" . $fila["Ubicacion_codigo"] . "</td>";
+    echo "<td>" . $fila["proveedor_nit"] . "</td>";
     echo "<td class='text-center'>";
     echo "<i class='fa-regular fa-pen-to-square'></i>";
     echo "<i class='fa-solid fa-trash'></i>";

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="../js/index.js"></script>
+    
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -19,14 +19,14 @@
       }
     </style>
   </head>
-
   <body>
-    <div class="sidebar">
+    <div id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <a href="../html/inicio.html"
           ><img src="../imagenes/LOGO.png" alt="Logo" class="logo"
         /></a>
       </div>
+      
       <ul class="menu">
         <li>
           <a href="#" onclick="toggleDropdown('dropdown1')"
@@ -34,7 +34,10 @@
             ><i class="bx bx-chevron-down icon2"></i
           ></a>
           <ul id="dropdown1" class="dropdown">
-            <li><a href="#">crear producto</a></li>
+            <li><a href="../html/crearproducto.html">Crear producto</a></li>
+            <li><a href="../html/actualizarproducto.html">Actualizar producto</a></li>
+            <li><a href="../html/actualizarproducto.html">Categorias</a></li>
+            
           </ul>
         </li>
         <li>
@@ -43,7 +46,8 @@
             ><i class="bx bx-chevron-down icon2"></i
           ></a>
           <ul id="dropdown2" class="dropdown">
-            <li><a href="../html/proveedor1.html">crear proveedor</a></li>
+            <li><a href="../html/crearproveedor.html">crear proveedor</a></li>
+            <li><a href="../html/actualizarproveedor.html">Actualizar proveedor</a></li>
           </ul>
         </li>
         <li>
@@ -52,8 +56,8 @@
             ><i class="bx bx-chevron-down icon2"></i
           ></a>
           <ul id="dropdown3" class="dropdown">
-            <li><a href="../html/inventario1.html">lista de productos</a></li>
-            <li><a href="../html/inventario2.html">descargar lista</a></li>
+            <li><a href="../html/inventario.php">lista de productos</a></li>
+            <li><a href="../html/inventario.php">descargar lista</a></li>
           </ul>
         </li>
         <li>
@@ -62,8 +66,8 @@
             ><i class="bx bx-chevron-down icon2"></i
           ></a>
           <ul id="dropdown4" class="dropdown">
-            <li><a href="../html/inventario1.html">Opción 1</a></li>
-            <li><a href="../html/inventario2.html">Opción 2</a></li>
+            <li><a href="../html/inventario.php">Opción 1</a></li>
+            <li><a href="../html/inventario.php">Opción 2</a></li>
           </ul>
         </li>
         <li>
@@ -79,17 +83,17 @@
             ><i class="bx bx-chevron-down icon2"></i
           ></a>
           <ul id="dropdown6" class="dropdown">
-            <li><a href="../html/inventario1.html">Niveles de stock</a></li>
-            <li><a href="../html/inventario2.html">Gestion de usuarios</a></li>
-            <li><a href="../html/inventario2.html">Permiso</a></li>
+            <li><a href="../html/inventario.php">Niveles de stock</a></li>
+            <li><a href="../html/inventario.php">Gestion de usuarios</a></li>
+            <li><a href="../html/inventario.php">Permiso</a></li>
             <li>
-              <a href="../html/inventario2.html">Personalizacion de reportes</a>
+              <a href="../html/inventario.php">Personalizacion de reportes</a>
             </li>
             <li>
-              <a href="../html/inventario2.html">Notificaciones de stock</a>
+              <a href="../html/inventario.php">Notificaciones de stock</a>
             </li>
             <li>
-              <a href="../html/inventario2.html"
+              <a href="../html/inventario.php"
                 >Frecuencia de reportes automaticos</a
               >
             </li>
@@ -101,17 +105,8 @@
             ><span>Salir</span></a
           >
         </li>
-        <!-- Agrega más elementos del menú aquí según sea necesario -->
       </ul>
-      <div class="menu-scroll">
-        <p>Niveles de stock</p>
-        <p>Gestión de usuarios</p>
-        <p>Permiso</p>
-    <script>
-      function toggleMenu(element) {
-        // Alterna la clase 'active' en el elemento padre del enlace
-        element.parentElement.classList.toggle("active");
-      }
-    </script>
+    </div>
+    <script src="../js/index.js"></script>
   </body>
 </html>

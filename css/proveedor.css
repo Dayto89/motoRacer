@@ -10,6 +10,14 @@ body {
     background-size: cover;
     background-position: center;
 }
+body::before {
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: black;
+    opacity: 0.6;
+}
 
 .sidebar {
     position: fixed;
@@ -403,7 +411,7 @@ margin-bottom: 150px;
 }
 
 #proveedor-form{
-    margin-left: 400px;
+    margin-left: 350px;
 }
 
 #actualizarProveedor h1{
