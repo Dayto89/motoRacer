@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Usuario</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/stock.css" />
+    <link rel="stylesheet" href="/componentes/header.html" />
+    <link rel="stylesheet" href="/componentes/header.css" />
+    <script src="/js/index.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
+    </style>
+  </head>
+  <body>
+    <!-- Aquí se cargará el header -->
+    <div id="menu"></div>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <header>
+            <h1>Control de Stock</h1>
+        </header>
+        <main>
+            <section class="stock disponible">
+                <h2>Productos Disponibles</h2>
+                <ul>
+                    <li>
+                        <span>Producto A</span>
+                        <span>Cantidad: 50</span>
+                    </li>
+                    <li>
+                        <span>Producto B</span>
+                        <span>Cantidad: 30</span>
+                    </li>
+                </ul>
+            </section>
+    
+            <section class="stock poco-stock">
+                <h2>Poco Stock</h2>
+                <ul>
+                    <li>
+                        <span>Producto C</span>
+                        <span>Cantidad: 3</span>
+                    </li>
+                    <li>
+                        <span>Producto D</span>
+                        <span>Cantidad: 5</span>
+                    </li>
+                </ul>
+            </section>
+    
+            <section class="stock agotado">
+                <h2>Productos Agotados</h2>
+                <ul>
+                    <li>
+                        <span>Producto E</span>
+                    </li>
+                    <li>
+                        <span>Producto F</span>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </body>
+    </html>

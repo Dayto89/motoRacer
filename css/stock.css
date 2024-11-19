@@ -1,0 +1,82 @@
+/* Reset básico */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Estilos del header */
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+/* Diseño general */
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Secciones de stock */
+.stock {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.stock h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+/* Colores por estado */
+.disponible {
+    border-color: #4CAF50;
+    background-color: #e8f5e9;
+}
+
+.poco-stock {
+    border-color: #FFC107;
+    background-color: #fff8e1;
+}
+
+.agotado {
+    border-color: #F44336;
+    background-color: #ffebee;
+}
+
+/* Lista de productos */
+.stock ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.stock li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.stock li:last-child {
+    border-bottom: none;
+}
+
+.stock li span {
+    font-size: 1rem;
+}

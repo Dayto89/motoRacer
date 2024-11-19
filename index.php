@@ -18,25 +18,40 @@
         <img src="/imagenes/LOGO.png" alt="Logo" class="logo_inicio">
         <div class="barra"></div>
         <h1>INICIAR SESIÓN</h1>
-        <form name="formulario" method="post" action="/send/">
+        <form name="formulario" method="post" action="">
             <div class="input-wrapper">     
                 <i class='bx bx-user-circle'></i>
-                <input type="text" placeholder="Usuario" />
+                <input type="text" placeholder="Usuario" name="username" />
             </div>
             <div class="input-wrapper">
                 <i class='bx bx-lock-alt'></i>
-                <input type="password" placeholder="Contraseña" />
+                <input type="password" placeholder="Contraseña" name="password" />
             </div>
             <div class="guardar">
                 <input type="checkbox" name="username"> Guardar Contraseña
             </div>
-            <a href="/html/inicio.html" class="boton">Ingresar</a>
+            <a href="/html/inicio.html" class="boton">Iniciar Sesion</a>
             <a href="/html/registro.html" class="boton">Registrarse</a>
             <div class="container_boton">
                <a href="/html/olvidar.html" class="boton">¿ Olvidaste tu Contraseña ?</a>
                
             </div>
         </form>
+    
+        <?php
+        include 'componentes/validacion.php';
+            if (isset($_POST['username'])) {
+                $usuario = $_POST['username'];
+                $contrasena = $_POST['password'];
+                if (validarUsuario($usuario, $contrasena)) {
+                    "location: html/inicio.html";
+                } else {
+                    "location: index.php";
+                }
+            }
+        ?>
+
+
     </div>
 </body>
 </html>

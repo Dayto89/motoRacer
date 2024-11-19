@@ -156,7 +156,6 @@ label {
     padding: 10px 50px;
     margin-bottom: 10px;
     
-    
 }
 
 #product-form{
@@ -176,6 +175,7 @@ label {
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
+    border-radius: 10px;
 }
 
 #product-form button{
@@ -208,9 +208,6 @@ input[type='text'], input[type='number'] {
 
 }
 
-.button-container  button{
-    border:3.5px white inset;
-}
 
 button {
     background-color: #1167CC;
@@ -279,7 +276,7 @@ input[type="checkbox"] {
     background-color: #1167CC;
     color: white;
     padding: 0px;
-    border:3.5px white inset;;
+    border:3.5px white inset;
     cursor: pointer;
     font-size: 30px;
     border-radius: 5px;
@@ -395,8 +392,8 @@ input[type="checkbox"] {
 }
 
 #update-product-form{
-    margin-top: 100px;
-    margin-left: 230px;
+    margin-top: 66px;
+    margin-left: 391px;
     margin-right: 115px;
 }
 
@@ -405,6 +402,7 @@ input[type="checkbox"] {
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
+    border-radius: 18px;
 }
 
 #update-product-form button{

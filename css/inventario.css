@@ -26,9 +26,7 @@ body::before {
     height: 100vh;
 }
 
-.sidebar:hover ~ .main-content {
-    margin-left: 270px;
-}
+
 
 .main-content h1 {
     color: white;
@@ -40,12 +38,6 @@ body::before {
 .form-section {
     padding: 0 10%;
 }
-
-
-
-
-
-
 
 table {
     width: 100%;
@@ -99,3 +91,89 @@ td {
     3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
         
  }
+ .search-bar {
+    position: fixed;
+    top: 9px;
+    right: 141px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    transition: width 1s ease; /* Animación de deslizamiento */
+    width: 55px; /* Tamaño reducido por defecto */
+    overflow: hidden;
+}
+
+.search-bar:hover {
+    width: 400px; /* Tamaño al hacer hover */
+}
+
+.search-bar form {
+    margin-right: 90px;
+    margin-top: 90px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 8px;
+    font-size: 3em;
+    text-shadow: 3px 1px 0 #1c51a0,  2px 3px 0 #1c51a0;
+   
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.7em;
+     
+   
+}
+
+.search-bar:hover input {
+    width: 400px; /* Anchura al hacer hover */
+    padding: 5px 10px; /* Añadir espaciado */
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+    font-size: 18px;
+    
+}
+
+/*filtrar por*/
+.filter-bar{
+    position: fixed;
+    top: 150px;
+    right: 200px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background-color: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.filter-bar label{
+    color: aliceblue;
+    margin-right: 10px;
+}
+
+.filter-bar .form-control {
+    font-size: 1.2em;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+
+
+
+  

@@ -7,7 +7,7 @@
 body {
     font-family: "Metal Mania", system-ui;
     background-image: url('/imagenes/fondo.png');
-    background-size: cover; 
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -25,9 +25,10 @@ body::before {
 
 .sidebar {
     position: fixed;
+    z-index: 1;
     top: 0;
     left: 0;
-    width: 100px;
+    width: 108px;
     height: 100%;
     background: linear-gradient(180deg, #1167CC, #083972, #000000);
     transition: width 0.3s ease;
@@ -36,8 +37,9 @@ body::before {
 }
 
 .sidebar:hover {
-    width: 270px;
+    width: 290px;
 }
+
 
 .sidebar:hover .logo {
     transform: scale(2);
@@ -61,42 +63,66 @@ body::before {
 }
 
 .sidebar::-webkit-scrollbar {
-    width: 3px; 
+    width: 3px;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background-color: #0c0134; 
+    background-color: #0c0134;
     border-radius: 4px;
 }
 
 /* Ocultar dropdowns por defecto */
 .dropdown {
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+
+}
+
+.dropdown:hover {
+    color: rgb(255, 255, 255);
 }
 
 /* Mostrar dropdown cuando tiene la clase "open" */
 .dropdown.open {
-    display: block;
+    max-height: 500px;
+    transition: max-height 1s ease;
+
 }
 
 .menu li a:hover {
+    color: white;
     background-color: #3f6fb6;
+    max-width: 400px;
+    transform: translateX(10px);
 }
 
 .menu li a {
     display: flex;
     align-items: center;
-    color: white;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 22px;
     padding: 10px;
+    color: rgb(174, 174, 174);
     transition: background 0.3s ease;
-    cursor: pointer; /* Asegúrate de que los enlaces son clickeables */
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
+.menu li a span {
+    color: white;
+}
 
 .logo {
-    margin: 0; 
+    width: 80px;
+    height: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    filter: drop-shadow(0 0 0.75rem rgb(0, 0, 0));
+}
+
+.meni li .logo {
+    margin: 0;
     padding: 0;
     width: 80px;
     height: auto;
@@ -106,55 +132,49 @@ body::before {
 .menu {
     list-style-type: none;
     padding: 20px;
-    color: #ffffff;
-    text-shadow: 
-        -1px -1px 0 #000000,  
-        1px -1px 0 #000,  
-        -1px 1px 0 #000,  
+
+    text-shadow:
+        -1px -1px 0 #000000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
         3px 3px 0 #000;
 }
 
 .menu li {
     margin: 35px 0;
-    position: relative; /* Necesario para posicionar el submenú */
+    position: relative;
+    /* Necesario para posicionar el submenú */
 }
-/*
-.menu li a {
-    display: flex;
-    align-items: center;
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    padding: 10px;
-    transition: background 0.3s ease;
-}
-    */
 
 .menu li a i {
     margin-right: 10px;
     font-size: 45px;
+    color: white;
 }
 
 .menu li a span {
     display: none;
+    color: white;
 }
 
 .menu-scroll::-webkit-scrollbar {
-    width: 8px; /* Ancho del scrollbar */
+    width: 8px;
+    /* Ancho del scrollbar */
 }
 
 .menu-scroll::-webkit-scrollbar-track {
-    background: #222; /* Color del fondo del scrollbar */
+    background: #222;
+    /* Color del fondo del scrollbar */
 }
 
 .menu-scroll::-webkit-scrollbar-thumb {
-    background-color: #555; 
-    border-radius: 10px; 
+    background-color: #555;
+    border-radius: 10px;
 }
 
 .sidebar:hover .menu li a span {
     display: inline-block;
-    font-size: 25px;
+    font-size: 26px;
 }
 
 .menu li a:hover {
@@ -181,10 +201,10 @@ h2 {
     margin-top: -78px;
     margin-left: 112px;
     font-weight: bold;
-    text-shadow: 
-        -1px -1px 0 #000000,  
-        1px -1px 0 #000,  
-        -1px 1px 0 #000,  
+    text-shadow:
+        -1px -1px 0 #000000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
         3px 3px 0 #000;
 }
 
@@ -194,21 +214,17 @@ h2 {
     position: absolute;
     z-index: -2;
     background-color: #0b111a89;
-} 
+}
 
 .icon {
-    color: #fdfcfc; 
+    color: #fdfcfc;
     transition: color 0.3s;
 }
 
-.icon2{
-    margin-left: 10px;
+.icon2 {
+    margin-left: 13px;
 }
 
 .bx-tada {
     animation-duration: 5s;
-}
-
-.dropdown {
-    display: none; /* Oculto por defecto */
 }

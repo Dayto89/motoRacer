@@ -1,0 +1,185 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Metal Mania", system-ui;
+    background-image: url('fondoMotoRacer.png'); 
+    background-size: cover;
+    background-position: center;
+}
+body::before {
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: black;
+    opacity: 0.6;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(180deg, #1167CC, #083972, #000000);
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover {
+    width: 270px;
+}
+
+.sidebar:hover .logo {
+    transform: scale(1.4);
+    transition: 1s;
+    margin-left: 30px;
+}
+
+.sidebar:hover .sidebar-header i{
+    transform: scale(3);
+    transition: 1s;
+    margin-left: 50px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    color: white;
+        list-style-type: none;
+        padding: 20px;
+        color: #ffffff; /* Color del texto */
+        text-shadow: 
+            -1px -1px 0 #000,  
+            1px -1px 0 #000,  
+            -1px 1px 0 #000,  
+            0px 1px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */    
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+    margin-right: 10px;
+}
+.menu {
+    list-style-type: none;
+    padding: 20px;
+    color: #ffffff; /* Color del texto */
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,  
+        -1px 1px 0 #000,  
+        3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
+}
+
+.menu li {
+    margin: 35px 0;
+}
+
+.menu li a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+    transition: background 0.3s ease;
+}
+
+.menu li a i {
+    margin-right: 10px;
+    font-size: 45px;
+}
+
+.menu li a span {
+    display: none;
+}
+
+.sidebar:hover .menu li a span {
+    display: inline-block;
+    font-size: 25px;
+}
+
+.menu li a:hover {
+    background-color: #3f6fb6;
+}
+
+.fondo {
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    z-index: -1;
+    background-color: black;
+    opacity: 0.7;
+}
+
+
+.icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    z-index: 1;
+    color: white;
+    font-size: 300px;
+}
+
+h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Metal Mania", system-ui;
+    font-size: 70px;
+    color: #ffffff; /* Color del texto */
+    margin-top: 50px;
+    text-shadow: 
+    7px -1px 0 #1c51a0,  
+    1px -1px 0 #1c51a0,  
+    -1px 1px 0 #1c51a0,  
+    3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
+        
+ }
+
+ .container_forms {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+ }
+
+ .form1 {
+    margin-left: 500px;
+ }
+
+ .form2 {
+    margin-left: 300px;
+    margin-bottom: 200px;
+ }
+
+ .form-group {
+    width: 50px;
+    height: 100px;
+    margin-top: 20px;
+ }
+
+.form-group label{
+    margin-bottom: 10px;
+    font-size: 30px;
+    color: white;
+}
+
+.form-group input{
+    margin-top: 20px;
+    height: 40px;
+    width: 200px;
+    margin-right: 45px;
+    border-radius: 14px;
+}
+
+.form-group input:focus{
+    border: 3px solid #007BFF;
+}

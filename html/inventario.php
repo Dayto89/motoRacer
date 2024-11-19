@@ -20,8 +20,36 @@
     <!-- Aquí se cargará el header -->
     <div id="menu"></div>
 
+    <!-- filtrar por catgoria o marca -->
+    <div class="filter-bar">
+      <form class="d-flex" role="search" action=""  method="get">
+        <label style="color: white;" for="Filtrar por">Filtrar por:</label>
+        <select class="form-control" id="categoria">
+        
+          <option value="1">Categoría</option>
+          <option value="2">Marca</option>
+        </select>
+      </form>
+    </div>
+
+     <!--Barra de búsqueda fija con efecto deslizante -->
+     <div class="search-bar">
+      <form class="d-flex" role="search">
+        <button
+          class="search-icon"
+          type="submit"
+          aria-label="Buscar"
+          title="Buscar" >
+          <i class="bx bx-search-alt-2 icon"></i
+          >
+        </button>
+        <input class="form-control" type="search" placeholder="Buscar" />
+      </form>
+    </div>
+
     <!-- Contenido principal -->
     <div class="main-content">
+      
       <!-- Sección del Inventario -->
 
       <div id="inventario" class="form-section">
@@ -48,7 +76,7 @@
             </tr>
           </thead>
           <tbody>
-            <?php include("prueba.php"); ?>
+            <?php include("prueba.php") ?>
           </tbody>
         </table>
       </div>
