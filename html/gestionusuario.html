@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configuracion stock</title>
+    <title>Gestión de Usuarios</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -12,109 +12,86 @@
     <link rel="stylesheet" href="/componentes/header.html" />
     <link rel="stylesheet" href="/componentes/header.css" />
     <script src="/js/index.js"></script>
+    
+
+
+    
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
     </style>
   </head>
   <body>
-    <body>
-        <div id="menu"></div>
-        <div class="container">
-            <h1>Gestión de Usuarios</h1>
-            <table>
+    
+    
+    <!-- Aquí se cargará el header -->
+    <div id="menu"></div>
+
+    <div class="container">
+        <h1>Lista de Usuarios</h1>
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Juan Pérez</td>
+                    <td>
+                        <button class="btn-permissions" onclick="showPermissions()">Permisos</button>
+                        <button class="btn-delete">Eliminar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Maria Gómez</td>
+                    <td>
+                        <button class="btn-permissions" onclick="showPermissions()">Permisos</button>
+                        <button class="btn-delete">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para permisos -->
+    <div id="permissions-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePermissions()">&times;</span>
+            <h2>Otorgar Permisos</h2>
+            <table class="permissions-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Acciones</th>
+                        <th>Módulo</th>
+                        <th>Permitir</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Ejemplo de usuario -->
                     <tr>
-                        <td>1</td>
-                        <td>Juan Pérez</td>
-                        <td>juan.perez@email.com</td>
-                        <td>
-                            <button class="edit-btn">Editar</button>
-                            <button class="delete-btn">Eliminar</button>
-                            <button class="permissions-btn" onclick="openPermissionsModal()">Permisos</button>
-                        </td>
+                        <td>Productos</td>
+                        <td><input type="checkbox"></td>
                     </tr>
                     <tr>
-                        <td>2</td>
-                        <td>María López</td>
-                        <td>maria.lopez@email.com</td>
-                        <td>
-                            <button class="edit-btn">Editar</button>
-                            <button class="delete-btn">Eliminar</button>
-                            <button class="permissions-btn" onclick="openPermissionsModal()">Permisos</button>
-                        </td>
+                        <td>Inventario</td>
+                        <td><input type="checkbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Usuarios</td>
+                        <td><input type="checkbox"></td>
+                    </tr>
+                    <tr>
+                        <td>Facturación</td>
+                        <td><input type="checkbox"></td>
                     </tr>
                 </tbody>
             </table>
+            <button class="btn-save">Guardar</button>
         </div>
-    
-        <!-- Modal de permisos -->
-        <div id="permissions-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn" onclick="closePermissionsModal()">&times;</span>
-                <div class="permission-container">
-                    <h2>Permisos de <span class="role">Superadministrador</span></h2>
-                    
-                    <div class="permission-category">
-                        <h3>Gestión de Productos</h3>
-                        <div class="permission-item">
-                            <label>Categorías</label>
-                            <input type="checkbox" class="switch" checked>
-                        </div>
-                        <div class="permission-item">
-                            <label>Productos</label>
-                            <input type="checkbox" class="switch" checked>
-                        </div>
-                        <div class="permission-item">
-                            <label>Proveedores</label>
-                            <input type="checkbox" class="switch">
-                        </div>
-                    </div>
-    
-                    <div class="permission-category">
-                        <h3>Gestión de Existencias</h3>
-                        <div class="permission-item">
-                            <label>Entradas</label>
-                            <input type="checkbox" class="switch">
-                        </div>
-                        <div class="permission-item">
-                            <label>Salidas / Facturación</label>
-                            <input type="checkbox" class="switch" checked>
-                        </div>
-                    </div>
-    
-                    <div class="permission-category">
-                        <h3>Gestión de Usuarios</h3>
-                        <div class="permission-item">
-                            <label>Gestión de Roles</label>
-                            <input type="checkbox" class="switch">
-                        </div>
-                        <div class="permission-item">
-                            <label>Usuarios</label>
-                            <input type="checkbox" class="switch" checked>
-                        </div>
-                    </div>
-    
-                    <div class="permission-category">
-                        <h3>Reportes</h3>
-                        <div class="permission-item">
-                            <label>Generar Reportes</label>
-                            <input type="checkbox" class="switch">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-        <script src="script.js"></script>
-    </body>
-    </html>
-    
+    </div>
+
+    <script src="/js/gestionusuraio.js"></script>
+</body>
+</html>

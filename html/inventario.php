@@ -20,17 +20,6 @@
     <!-- Aquí se cargará el header -->
     <div id="menu"></div>
 
-    <!-- filtrar por catgoria o marca -->
-    <div class="filter-bar">
-      <form class="d-flex" role="search" action=""  method="get">
-        <label style="color: white;" for="Filtrar por">Filtrar por:</label>
-        <select class="form-control" id="categoria">
-        
-          <option value="1">Categoría</option>
-          <option value="2">Marca</option>
-        </select>
-      </form>
-    </div>
 
      <!--Barra de búsqueda fija con efecto deslizante -->
      <div class="search-bar">

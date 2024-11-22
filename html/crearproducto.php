@@ -21,7 +21,7 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Producto</title>
+    <title> Crear Producto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/producto.css">
     <link rel="stylesheet" href="/componentes/header.html">
@@ -43,7 +43,7 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
         <!-- Contenedor principal -->
         <div class="container">
-            
+
             <form id="product-form" method="POST" action="">
 
 
@@ -80,7 +80,7 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                     <label for="cantidad">Cantidad:</label>
                     <input type="number" id="cantidad" name="cantidad" required><br>
                 </div>
-               
+
 
                 <div class="campo">
                     <label for="categoria">Categoria:</label>
@@ -144,9 +144,38 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                 </div>
                 <div class="button-container">
                     <div class="boton">
-                        <button type="submit">Guardar</button>
+                        <button type="button" onclick="openModal()">Guardar</button>
                     </div>
                 </div>
+
+                <!-- Modal de confirmación -->
+                <div id="modalConfirm" class="modal hidden">
+                    <div class="modal-content">
+                        <h2 id="modalTitle">Confirmación</h2>
+                        <p id="modalMessage">¿Estás seguro de que quieres guardar los cambios?</p>
+                        <div id="modalButtons" class="modal-buttons">
+                            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                            <button class="btn-confirm" onclick="">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de error -->
+                <div id="modalError" class="modal hidden">
+                    <div class="modal-content">
+                        <h2 id="modalErrorTitle">¡Error!</h2>
+                        <p id="modalErrorMessage">Por favor, completa todos los campos.</p>
+                    </div>
+                </div>
+
+                <!-- Modal de éxito -->
+                <div id="modalSuccess" class="modal hidden">
+                    <div class="modal-content">
+                        <h2 id="modalSuccessTitle">¡Éxito!</h2>
+                        <p id="modalSuccessMessage">¡Producto agregado correctamente!</p>
+                        <button class="btn-ok" onclick="okButtonClicked()">Ok</button>
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>
@@ -178,12 +207,9 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
         $resultado = mysqli_query($conexion, $query);
 
-        if ($resultado) {
-            echo "<script>alert('Producto agregado correctamente');</script>";
-        } else {
-            echo "<script>alert('Error al agregar el producto: " . mysqli_error($conexion) . "');</script>";
+        if (!$resultado) {
+            echo "<script>console.log('Error al agregar el producto: " . mysqli_error($conexion) . "');</script>";
         }
-        
     }
 
     ?>

@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = $_POST['password'];
 
     if (validarUsuario($usuario, $contrasena)) {
-        header("Location: html/inicio.html");
+        header("Location: html/inicio.php");
         exit;
     } else {
         header("Location: index.php");
@@ -47,10 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="checkbox" name="username"> Guardar Contraseña
             </div>
             <button type="submit">Iniciar Sesión</button>
-            <a href="/html/inicio.html" class="boton">Iniciar Sesion</a>
-            <a href="/html/registro.html" class="boton">Registrarse</a>
+            <a href="/html/inicio.php" class="boton">Iniciar Sesion</a>
+            <a href="/html/registro.php" class="boton">Registrarse</a>
             <div class="container_boton">
-               <a href="/html/olvidar.html" class="boton">¿ Olvidaste tu Contraseña ?</a>
+               <a href="/html/olvidar.php" class="boton">¿ Olvidaste tu Contraseña ?</a>
                
             </div>
         </form>

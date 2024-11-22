@@ -153,7 +153,7 @@ label {
     display: inline-block;
     width: 320px;
     max-width: 100%;
-    padding: 10px 50px;
+    padding: 10px 88px;
     margin-bottom: 10px;
     
 }
@@ -161,6 +161,7 @@ label {
 #product-form{
     margin-top: 27px;
     margin-left: -2px;
+    margin-bottom: 11px;
    
     
 }
@@ -169,7 +170,8 @@ label {
     margin-bottom: 10p;
     font-size: 20px;
     font-family: Arial, Helvetica, sans-serif;
-    text-shadow: -2px 2px 0 #1c51a0
+    text-shadow: -2px 2px 0 #1c51a0;
+    white-space: nowrap;
 }
 
 #product-form input{
@@ -274,14 +276,14 @@ input[type="checkbox"] {
 }
 
 .boton {
-    background-color: #1167CC;
+    background-color: #007bff;
     color: white;
-    padding: 0px;
-    border:3.5px white inset;
+    padding: 10px 15px;
     cursor: pointer;
-    font-size: 30px;
-    border-radius: 5px;
-    width: 180px;
+    border: none;
+    border-radius: 10px;
+    width: 50%;
+    margin-left: 15%;
     
     
 }
@@ -328,12 +330,12 @@ input[type="checkbox"] {
 }
 
 .button {
-    background-color: #1167CC;
+    background-color: transparent;
     padding: 2px 7px;
     color: white;
     border: none;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 25px;
     
 }
 
@@ -359,12 +361,12 @@ input[type="checkbox"] {
     margin-top: 92px;
     color: white;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 600px;
+    margin-left:  617px;
     letter-spacing: 5px;
 }
 
 .campo #descripcion{
-    width: 500px;
+    width: 833px;
     height: 100px;
 }
 
@@ -419,7 +421,7 @@ input[type="checkbox"] {
 
 
 .campo select {
-    width: 82%;
+    width: 125%;
     padding: 10px;
     font-size: 14px;
     border-radius: 8px;
@@ -571,3 +573,95 @@ input[type="checkbox"] {
     font-size: 18px;
     
 }
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(0 0 0 / 65%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal.hidden {
+    display: none;
+  }
+
+  .modal-content {
+    background-color: rgba(228, 227, 227, 0.842);
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgb(47 46 46);
+    animation: slideIn 0.3s ease-out;
+  }
+.modal-content #modalMessage {
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+    size: 50px;
+    font-weight: bold;
+}
+
+  .modal-content h2 {
+
+    font-size: 32px;
+    margin-top: -7px;
+    color: white;
+    text-shadow:4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0; 
+    margin-left: 13px;
+    letter-spacing: 5px;
+    padding: 28px;
+    
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 34px;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: bold;
+    margin-top: 7%;
+  }
+
+  .modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .btn-confirm {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+ 
+  .btn-confirm:hover {
+    background-color: #0056b3;
+}
+  .btn-cancel {
+    background-color: #df2f2f;
+    color: white;
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+ 
+  .btn-cancel:hover {
+    background-color: #a71d2a;
+}
+ 

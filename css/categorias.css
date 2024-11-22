@@ -36,7 +36,7 @@ body::before {
   /* Contenedor principal */
   .container {
     background-color: rgb(174 174 174 / 59%);
-    padding: 11px;
+    padding: 44px;
     border-radius: 15px;
     max-width: 1079px;
     margin-left: 482px;
@@ -53,7 +53,6 @@ body::before {
     border-radius: 11px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-left: 20px;
   }
   
   .btn-nueva-categoria:hover {
@@ -66,15 +65,14 @@ body::before {
     padding: 9px;
     width: 193px;
     border-radius: 8px;
-    margin-top: 11px;
-    margin-left: 20px;
+    margin-top: 8px;
+    font-size: 16px;
   }
   /* Tabla de categorías */
   .category-table {
     width: 100%;
     border-collapse: collapse; 
-    margin-top: 20px;
-    padding: 15px;
+    
   }
   
   .category-table td {
@@ -100,23 +98,21 @@ body::before {
   }
   
   .options {
-    display: flex;
-    gap: 35px;
-    margin-left: 530px;
-    justify-content: center;
-    width: 225px;
+        display: flex;
+        gap: 10px;
+        margin-left: 260px;
   }
-  
-  .btn-list, .btn-delete {
-    padding: 5px 10px;
+ 
+  .btn-list, .btn-delete { 
+    padding: 8px 15px; /* Reducir el padding para angostar */
     border: none;
-    border-radius: 5px;
-    color: white;
+    border-radius: 15px;
+    color: rgb(255, 255, 255);
     cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-   
-  }
+    font-size: 14px; /* Reducir ligeramente el tamaño del texto */
+    white-space: nowrap; /* Mantener el texto en una sola línea */
+    text-align: center; /* Centrar el texto dentro del botón */
+}
   
   .btn-list {
     background-color: #0965c7;
@@ -124,7 +120,7 @@ body::before {
   }
   
   .btn-list:hover {
-    background-color: #e2e2e2; /* Color de fondo al pasar el mouse sobre una fila */
+    background-color: #0056b3; /* Color de fondo al pasar el mouse sobre una fila */
   }
   
   .btn-delete {

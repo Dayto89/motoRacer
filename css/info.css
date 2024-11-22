@@ -6,134 +6,119 @@
 
 body {
     font-family: "Metal Mania", system-ui;
-    background-image: url('fondoMotoRacer.png'); 
+    background: url('fondoMotoRacer.png') no-repeat center center fixed; 
     background-size: cover;
-    background-position: center;
-}
-body::before {
-    position: fixed;
-    width: 200%;
-    height: 200%;
-    z-index: -1;
-    background: black;
-    opacity: 0.6;
-}
-
-
-.logo {
-    width: 80px;
-    height: auto;
-    margin-right: 10px;
-}
-
-.fondo {
-    height: 100vh;
-    width: 100%;
-    position: absolute;
-    z-index: -1;
-    background-color: black;
-    opacity: 0.7;
-}
-
-
-.icono {
+    color: #fff;
+    margin: 0;
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin-top: 10px;
-    z-index: 1;
-    color: white;
-    font-size: 300px;
+    align-items: center;
+    height: 100vh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.7;
+    z-index: -1;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(174 174 174 / 59%);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 600px;
+    padding: 20px;
+}
+
+.form-container {
+    width: 100%;
+    text-align: center;
 }
 
 h1 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: "Metal Mania", system-ui;
-    font-size: 70px;
-    color: #ffffff; /* Color del texto */
-    margin-top: 50px;
-    text-shadow: 
-    7px -1px 0 #1c51a0,  
-    1px -1px 0 #1c51a0,  
-    -1px 1px 0 #1c51a0,  
-    3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
-        
- }
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #1e88e5;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
 
- .container_forms {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
- }
-
- .form1 {
-    margin-left: 500px;
- }
-
- .form2 {
-    margin-left: 300px;
-    margin-bottom: 200px;
- }
-
- .form-group {
-    width: 50px;
+.profile-pic img {
+    width: 100px;
     height: 100px;
-    margin-top: 20px;
- }
-
-.form-group label{
-    margin-bottom: 10px;
-    font-size: 30px;
-    color: white;
+    border-radius: 50%;
+    border: 3px solid #1e88e5;
+    margin-bottom: 15px;
 }
 
-.form-group input{
-    margin-top: 20px;
-    height: 40px;
-    width: 200px;
-    margin-right: 45px;
-    border-radius: 14px;
-}
-
-.form-group input:focus{
-    border: 3px solid #007BFF;
-}
-/* General */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+.form-container form {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Para centrar vertical y horizontalmente */
-    background-color: #f4f4f4; /* Fondo claro */
-  }
-  
-  /* Tarjeta del usuario */
-  .user-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 30px;
-    width: 400px;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    background-color: #fff;
-    font-size: 1.2em; /* Tamaño de fuente general */
-  }
-  
-  /* Estilo del título */
-  .user-card h3 {
-    margin: 0;
-    color: #333;
-    font-size: 1.5em; /* Título más grande */
-  }
-  
-  /* Estilo de los párrafos */
-  .user-card p {
-    margin: 15px 0;
-    color: #666;
-  }
-  
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 5px;
+    color: #ddd;
+}
+
+.input-group input, 
+.input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 1em;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    background: (174 174 174 / 59%);;
+    box-shadow: 0 0 5px #1e88e5;
+    outline: none;
+}
+
+.input-group textarea {
+    resize: none;
+    height: 80px;
+}
+
+.btn {
+    background: #1e88e5;
+    border: none;
+    color: #fff;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+    background: #1565c0;
+    transform: scale(1.05);
+}
+
+.btn:active {
+    background: #0d47a1;
+    transform: scale(0.98);
+}
+
   

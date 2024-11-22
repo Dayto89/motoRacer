@@ -6,8 +6,6 @@ if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-echo "conexion";
-
 $busqueda = isset($_GET['busqueda']) ? mysqli_real_escape_string($conexion, $_GET['busqueda']) : '';
 
 $consulta = "
@@ -56,9 +54,9 @@ while ($fila = mysqli_fetch_assoc($resultado)) {
     echo "<td>" . (isset($fila["codigo"]) ? $fila["codigo"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["nombre"]) ? $fila["nombre"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["iva"]) ? $fila["iva"] : 'N/A') . "</td>";
-    echo "<td>" . (isset($fila["precio 1"]) ? $fila["precio 1"] : 'N/A') . "</td>";
-    echo "<td>" . (isset($fila["precio 2"]) ? $fila["precio 2"] : 'N/A') . "</td>";
-    echo "<td>" . (isset($fila["precio 3"]) ? $fila["precio 3"] : 'N/A') . "</td>";
+    echo "<td>" . (isset($fila["precio1"]) ? $fila["precio1"] : 'N/A') . "</td>";
+    echo "<td>" . (isset($fila["precio2"]) ? $fila["precio2"] : 'N/A') . "</td>";
+    echo "<td>" . (isset($fila["precio3"]) ? $fila["precio3"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["cantidad"]) ? $fila["cantidad"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["descripcion"]) ? $fila["descripcion"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["categoria"]) ? $fila["categoria"] : 'N/A') . "</td>";
