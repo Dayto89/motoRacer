@@ -1,3 +1,19 @@
+<?php
+include 'componentes/validacion.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usuario = $_POST['username'];
+    $contrasena = $_POST['password'];
+
+    if (validarUsuario($usuario, $contrasena)) {
+        header("Location: html/inicio.html");
+        exit;
+    } else {
+        header("Location: index.php");
+        exit;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -15,7 +31,7 @@
 <body>
     <div class="container">
         <img src="/imagenes/motoracer.png" alt="Fondo" class="fondo">
-        <img src="/imagenes/LOGO.png" alt="Logo" class="logo_inicio">
+        <img src="/imagenes/LOGO.png" alt="Logo" class="logo_inicio" style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
         <div class="barra"></div>
         <h1>INICIAR SESIÓN</h1>
         <form name="formulario" method="post" action="">
@@ -30,6 +46,7 @@
             <div class="guardar">
                 <input type="checkbox" name="username"> Guardar Contraseña
             </div>
+            <button type="submit">Iniciar Sesión</button>
             <a href="/html/inicio.html" class="boton">Iniciar Sesion</a>
             <a href="/html/registro.html" class="boton">Registrarse</a>
             <div class="container_boton">
@@ -38,18 +55,8 @@
             </div>
         </form>
     
-        <?php
-        include 'componentes/validacion.php';
-            if (isset($_POST['username'])) {
-                $usuario = $_POST['username'];
-                $contrasena = $_POST['password'];
-                if (validarUsuario($usuario, $contrasena)) {
-                    "location: html/inicio.html";
-                } else {
-                    "location: index.php";
-                }
-            }
-        ?>
+
+
 
 
     </div>

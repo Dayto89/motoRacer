@@ -7,9 +7,7 @@
 body {
     font-family: "Metal Mania", system-ui;
     background-image: url('fondoMotoRacer.png'); 
-    background-size: cover;
-    background-position: center;
-    
+   
 }
 body::before {
     position: fixed;
@@ -147,6 +145,8 @@ label {
     color: white;
     margin-bottom: 10p;
     font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow:  2px 0 #1c51a0;
 }
 
 .campo {
@@ -159,16 +159,17 @@ label {
 }
 
 #product-form{
-    margin-top: 80px;
-    margin-left: 350px;
-    margin-right: 95px;
+    margin-top: 27px;
+    margin-left: -2px;
    
     
 }
 
 #product-form .campo label{
     margin-bottom: 10p;
-    font-size: 30px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: -2px 2px 0 #1c51a0
 }
 
 #product-form input{
@@ -288,11 +289,12 @@ input[type="checkbox"] {
 
 .container {
     display: flex;
-    background-color: #333;
-    padding: 20px;
+    background-color: rgb(174 174 174 / 59%);
+    padding: -3px;
     border-radius: 10px;
-    box-shadow: 0px 2px 5px(0, 0,  white, 0.3);
-    justify-content: space-between; 
+    justify-content: space-between;
+    width: 62em;
+    margin-left: 323px;
 }
 
 .left-side, .right-side {
@@ -372,7 +374,7 @@ input[type="checkbox"] {
 
 #producto h1{
     font-size: 80px;
-    margin-top: 200px;
+    margin-top: 180px;
     margin-bottom: 150px;
     font-family: "Metal Mania", system-ui;  
     color: #ffffff;
@@ -415,6 +417,17 @@ input[type="checkbox"] {
     height: 113px;
 }
 
+
+.campo select {
+    width: 82%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    margin-top: 14px;
+}
+
+
+
 #proveedor h1{
     font-size: 50px;
     margin-top: 200px;
@@ -435,6 +448,8 @@ input[type="checkbox"] {
 #crearProveedor .campo label{
     margin-bottom: 10px;
     font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: -2px 2px 0 #1c51a0;
 }
 
 #crearProveedor input{
@@ -462,7 +477,9 @@ input[type="checkbox"] {
 
 #actualizarProveedor .campo label{
     margin-bottom: 10px;
-    font-size: 30px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow:  2px 0 #1c51a0;
 }
 
 #actualizarProveedor input{

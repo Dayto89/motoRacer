@@ -19,95 +19,11 @@ body::before {
     opacity: 0.6;
 }
 
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 100%;
-    background: linear-gradient(180deg, #1167CC, #083972, #000000);
-    transition: width 0.3s ease;
-    overflow: hidden;
-}
-
-.sidebar:hover {
-    width: 270px;
-}
-
-.sidebar:hover .logo {
-    transform: scale(1.4);
-    transition: 1s;
-    margin-left: 30px;
-}
-
-.sidebar:hover .sidebar-header i{
-    transform: scale(3);
-    transition: 1s;
-    margin-left: 50px;
-}
-
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    color: white;
-        list-style-type: none;
-        padding: 20px;
-        color: #ffffff; /* Color del texto */
-        text-shadow: 
-            -1px -1px 0 #000,  
-            1px -1px 0 #000,  
-            -1px 1px 0 #000,  
-            0px 1px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */    
-}
 
 .logo {
     width: 80px;
     height: auto;
     margin-right: 10px;
-}
-.menu {
-    list-style-type: none;
-    padding: 20px;
-    color: #ffffff; /* Color del texto */
-    text-shadow: 
-        -1px -1px 0 #000,  
-        1px -1px 0 #000,  
-        -1px 1px 0 #000,  
-        3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
-}
-
-.menu li {
-    margin: 35px 0;
-}
-
-.menu li a {
-    display: flex;
-    align-items: center;
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    padding: 10px;
-    transition: background 0.3s ease;
-}
-
-.menu li a i {
-    margin-right: 10px;
-    font-size: 45px;
-}
-
-.menu li a span {
-    display: none;
-}
-
-.sidebar:hover .menu li a span {
-    display: inline-block;
-    font-size: 25px;
-}
-
-.menu li a:hover {
-    background-color: #3f6fb6;
 }
 
 .fondo {
@@ -183,3 +99,41 @@ h1 {
 .form-group input:focus{
     border: 3px solid #007BFF;
 }
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Para centrar vertical y horizontalmente */
+    background-color: #f4f4f4; /* Fondo claro */
+  }
+  
+  /* Tarjeta del usuario */
+  .user-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 30px;
+    width: 400px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    background-color: #fff;
+    font-size: 1.2em; /* Tamaño de fuente general */
+  }
+  
+  /* Estilo del título */
+  .user-card h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.5em; /* Título más grande */
+  }
+  
+  /* Estilo de los párrafos */
+  .user-card p {
+    margin: 15px 0;
+    color: #666;
+  }
+  
+  

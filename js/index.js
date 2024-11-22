@@ -53,3 +53,24 @@ tabs.forEach(tab => {
     });
 });
 
+// Obtener elementos
+const btnAbrirModal = document.getElementById('btnAbrirModal');
+const modal = document.getElementById('modal');
+const btnCancelar = document.getElementById('btnCancelar');
+
+// Abrir el modal
+btnAbrirModal.addEventListener('click', () => {
+    modal.style.display = 'flex'; // Mostrar el modal con flexbox
+});
+
+// Cerrar el modal
+btnCancelar.addEventListener('click', () => {
+    modal.style.display = 'none'; // Ocultar el modal
+});
+
+// Cerrar modal al hacer clic fuera del contenido
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none'; // Ocultar el modal
+    }
+});

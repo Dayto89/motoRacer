@@ -103,7 +103,7 @@ body::before {
     text-decoration: none;
     font-size: 22px;
     padding: 10px;
-    color: rgb(174, 174, 174);
+    color: rgb(200, 200, 200);
     transition: background 0.3s ease;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -118,7 +118,7 @@ body::before {
     height: auto;
     margin-right: 10px;
     cursor: pointer;
-    filter: drop-shadow(0 0 0.75rem rgb(0, 0, 0));
+    filter: drop-shadow(0 0 1rem rgb(255, 255, 255));
 }
 
 .meni li .logo {

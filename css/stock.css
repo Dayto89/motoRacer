@@ -2,16 +2,16 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    background-color: #f4f4f9;
     color: #333;
 }
 
-/* Estilos del header */
+/* Header */
 header {
-    background-color: #4CAF50;
+    background-color: #007BFF;
     color: white;
     text-align: center;
-    padding: 1rem 0;
+    padding: 1rem;
 }
 
 header h1 {
@@ -19,64 +19,95 @@ header h1 {
     font-size: 2rem;
 }
 
-/* Diseño general */
+/* Formulario */
 main {
-    max-width: 800px;
-    margin: 2rem auto;
+    max-width: 600px;
+    margin: 7rem auto;
     padding: 1rem;
-    background: white;
+    background:rgb(174 174 174 / 59%);
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Secciones de stock */
-.stock {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.stock h2 {
-    margin-top: 0;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
-/* Colores por estado */
-.disponible {
-    border-color: #4CAF50;
-    background-color: #e8f5e9;
-}
-
-.poco-stock {
-    border-color: #FFC107;
-    background-color: #fff8e1;
-}
-
-.agotado {
-    border-color: #F44336;
-    background-color: #ffebee;
-}
-
-/* Lista de productos */
-.stock ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.stock li {
+.config-form {
     display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #ddd;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.stock li:last-child {
-    border-bottom: none;
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
-.stock li span {
+label {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:20px;
+    color: aliceblue;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+input, select, button {
+    padding: 0.8rem;
     font-size: 1rem;
+    color: aliceblue;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: rgb(33 32 32 / 59%);
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Alerta emergente */
+.alert {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #FFC107;
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    display: none;
+}
+
+.alert.hidden {
+    display: none;
+}
+
+
+#stock h1{
+    font-size: 50px;
+    margin-top: 92px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    margin-left: 660px;
+    letter-spacing: 5px;
+    padding: 18px;  
+}
+
+body {
+    font-family: "Metal Mania", system-ui;
+    background-image: url('fondoMotoRacer.png'); 
+    background-size: cover;
+    background-position: center;
+    
+}
+body::before {
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: black;
+    opacity: 0.6;
 }
