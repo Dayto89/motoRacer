@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>proveedor</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/proveedor.css">
     <link rel="stylesheet" href="/componentes/header.html">
@@ -20,6 +21,9 @@
       <!-- Sección para Crear Proveedor -->
       <div id="crearProveedor" class="form-section"  >
         <h1>Crear Proveedor</h1>
+
+        <div class="container">
+
         <form id="proveedor-form" method="POST" action="">
           <div class="campo">
             <label for="codigoProveedor">Código:</label>
@@ -80,13 +84,12 @@
           </div>
         </form>
       </div>
+      </div>
     </div>
     <script src="/js/index.js"></script>
-</body>
-</html>
-<?php
+    <?php
 
-if ('$_POST') {
+if ($_POST) {
     $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
     if (!$conexion) {
         die("<script>alert('No se pudo conectar a la base de datos');</script>");
@@ -103,6 +106,6 @@ if ('$_POST') {
     $resultado = mysqli_query($conexion, $query);
 }
 ?>
+</body>
+</html>
 
-
-Fatal error: Uncaught mysqli_sql_exception: Unknown column 'codigo' in 'field list' in C:\xampp\htdocs\Proyecto SIMR\html\crearproveedor.php:65 Stack trace: #0 C:\xampp\htdocs\Proyecto SIMR\html\crearproveedor.php(65): mysqli_query(Object(mysqli), 'INSERT INTO pro...') #1 {main} thrown in C:\xampp\htdocs\Proyecto SIMR\html\crearproveedor.php on line 65

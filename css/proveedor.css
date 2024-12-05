@@ -149,9 +149,8 @@ label {
     display: inline-block;
     width: 320px;
     max-width: 100%;
-    padding: 10px 50px;
+    padding: 10px 88px;
     margin-bottom: 10px;
-    margin-right: 200px;
     
     
 }
@@ -181,20 +180,16 @@ input[type='text'], input[type='number'] {
 }
 
 .button-container  button{
-    border:3.5px white inset;
-}
-
-button {
-    background-color: #1167CC;
-    padding: 2px 7px;
+    background-color: #007BFF;
+    font-weight: bold;
     color: white;
     border: none;
-    font-weight: bold;
-    font-size: 25px;
-    border: 5px #ffffff;
-    margin-right: 200px;
+    padding: 8px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 11px;
+    transition: background-color 0.3s ease;
 }
-
 
 table {
     width: 100%;
@@ -255,11 +250,15 @@ input[type="checkbox"] {
 
 .container {
     display: flex;
-    background-color: #333;
-    padding: 20px;
+    background-color: rgb(174 174 174 / 59%);
     border-radius: 10px;
-    box-shadow: 0px 2px 5px(0, 0,  white, 0.3);
-    justify-content: space-between; 
+    justify-content: space-between;
+    width: 62em;
+    margin-left: 323px;
+    margin: 0;
+    padding: 0;
+    margin: auto;
+    margin-top: 27px;
 }
 
 .left-side, .right-side {
@@ -303,7 +302,7 @@ input[type="checkbox"] {
 
 #proveedor h1{
     font-size: 80px;
-    margin-top: 200px;
+    margin-top: 115px;
     margin-bottom: 150px;
     font-family: "Metal Mania", system-ui;
     
@@ -314,7 +313,7 @@ input[type="checkbox"] {
 
 #crearProveedor h1{
     font-size: 50px;
-    margin-top: 200px;
+    margin-top: 115px;
     margin-bottom: 80px;
     color: #ffffff;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
@@ -323,15 +322,17 @@ input[type="checkbox"] {
 }
 
 #crearProveedor .campo label{
-    margin-bottom: 10px;
-    font-size: 30px;
+    font-size: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: -2px 2px 0 #1c51a0;
+    white-space: nowrap;
 }
 
 #crearProveedor input{
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
-    border-radius: 18px;
+    border-radius: 20px;
 }
 
 .campo #nombreProveedor{
@@ -341,9 +342,7 @@ input[type="checkbox"] {
     margin-right: 45px;
 }
 
-#proveedor-form{
-    margin-left: 550px;
-}
+
 
 #actualizarProveedor h1{
     font-size: 50px;
@@ -392,4 +391,17 @@ input[type="checkbox"] {
 
 .container-config button{
     height: 80px;
+}
+
+
+.campo select {
+    width: 125%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    margin-top: 14px;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
 }

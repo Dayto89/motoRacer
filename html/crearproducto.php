@@ -22,6 +22,7 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Crear Producto</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/producto.css">
     <link rel="stylesheet" href="/componentes/header.html">
@@ -48,8 +49,12 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
 
                 <div class="campo">
-                    <label for="codigo">Código:</label>
-                    <input type="text" id="codigo" name="codigo" required><br>
+                    <label for="codigo1">Código 1:</label>
+                    <input type="text" id="codigo1" name="codigo1" required><br>
+                </div>
+                <div class="campo">
+                    <label for="codigo2">Código 2:</label>
+                    <input type="text" id="codigo2" name="codigo2" required><br>
                 </div>
                 <div class="campo">
                     <label for="nombre">Nombre:</label>
@@ -152,31 +157,16 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                 <div id="modalConfirm" class="modal hidden">
                     <div class="modal-content">
                         <h2 id="modalTitle">Confirmación</h2>
-                        <p id="modalMessage">¿Estás seguro de que quieres guardar los cambios?</p>
+                        <p id="modalMessage">¿Estás seguro de que quieres guardar este producto?</p>
                         <div id="modalButtons" class="modal-buttons">
                             <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                            <button class="btn-confirm" onclick="">Guardar</button>
+                            <button type="submit" name="guardar">Guardar</button>
                         </div>
-                    </div>
-                </div>
-                <!-- Modal de error -->
-                <div id="modalError" class="modal hidden">
-                    <div class="modal-content">
-                        <h2 id="modalErrorTitle">¡Error!</h2>
-                        <p id="modalErrorMessage">Por favor, completa todos los campos.</p>
-                    </div>
-                </div>
-
-                <!-- Modal de éxito -->
-                <div id="modalSuccess" class="modal hidden">
-                    <div class="modal-content">
-                        <h2 id="modalSuccessTitle">¡Éxito!</h2>
-                        <p id="modalSuccessMessage">¡Producto agregado correctamente!</p>
-                        <button class="btn-ok" onclick="okButtonClicked()">Ok</button>
                     </div>
                 </div>
 
             </form>
+
         </div>
     </div>
     <script src="/js/index.js"></script>
@@ -187,7 +177,8 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
         if (!$conexion) {
             die("<script>alert('No se pudo conectar a la base de datos');</script>");
         };
-        $codigo = $_POST['codigo'];
+        $codigo1 = $_POST['codigo1'];
+        $codigo2 = $_POST['codigo2'];
         $nombre = $_POST['nombre'];
         $iva = $_POST['iva'];
         $precio1 = $_POST['precio1'];
@@ -201,14 +192,16 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
         $ubicacion = $_POST['ubicacion'];
         $proveedor = $_POST['proveedor'];
 
-        $query = "INSERT INTO producto (codigo, nombre, iva, precio1, precio2, precio3, cantidad, descripcion, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit) VALUES ('$codigo', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$descripcion', '$categoria', '$marca', '$unidadMedida', '$ubicacion', '$proveedor')";
+        $query = "INSERT INTO producto (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, descripcion, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit) VALUES ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$descripcion', '$categoria', '$marca', '$unidadMedida', '$ubicacion', '$proveedor')";
 
         echo $query;
 
         $resultado = mysqli_query($conexion, $query);
 
-        if (!$resultado) {
-            echo "<script>console.log('Error al agregar el producto: " . mysqli_error($conexion) . "');</script>";
+        if ($resultado) {
+            echo "<script>alert('Producto agregado con éxito!')</script>";
+        } else {
+            echo "<script>alert('Error al agregar el producto!')</script>";
         }
     }
 

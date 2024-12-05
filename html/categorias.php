@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Categorias</title>
+  <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/css/categorias.css">
   <link rel="stylesheet" href="/componentes/header.html">
@@ -29,9 +30,9 @@
       <!-- Botón para agregar nueva categoría -->
       <div class="actions">
 
-        <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i> Nueva categoría</button>
+        <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva categoría</button>
       </div>
-      <h3> Lista de categorías</h3>
+      <h3>Lista de categorías</h3>
 
       <!-- Tabla de categorías -->
       <table class="category-table">
@@ -61,6 +62,23 @@
       </table>
     </div>
   </div>
+
+  <?php
+    //Eliminar categoría de la base de datos con el boton eliminar submit sin formulario
+    if ($_POST) {
+      if (!$conexion) {
+        die("<script>alert('No se pudo conectar a la base de datos');</script>");
+      };
+      $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
+      $query = "DELETE FROM categoria WHERE codigo = '$codigo'";
+      $resultado = mysqli_query($conexion, $query);
+      if ($resultado) {
+        echo "<script>console.log('Categoría eliminada correctamente');</script>";
+      } else {
+        echo "<script>console.log('Error al eliminar la categoría: " . mysqli_error($conexion) . "');</script>";
+      }
+    }
+  ?>
 
   <!-- Modal -->
   <div id="modal" class="modal">

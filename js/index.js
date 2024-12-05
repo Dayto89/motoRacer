@@ -1,3 +1,5 @@
+// HEADER
+
 document.addEventListener('DOMContentLoaded', () => {
     // Función para alternar la visibilidad del dropdown
     window.toggleDropdown = function(dropdownId) {
@@ -43,7 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
-// Este script es para manejar el cambio de pestañas (si decides implementarlo)
+
+
+// TABS
 const tabs = document.querySelectorAll('.tab');
 
 tabs.forEach(tab => {
@@ -53,7 +57,9 @@ tabs.forEach(tab => {
     });
 });
 
-// Obtener elementos para categorias
+
+
+// MODAL
 const btnAbrirModal = document.getElementById('btnAbrirModal');
 const modal = document.getElementById('modal');
 const btnCancelar = document.getElementById('btnCancelar');
@@ -75,25 +81,7 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// Función para mostrar mensajes personalizados en el modal de éxito
-function mostrarMensajeModal(titulo, mensaje) {
-  const modal = document.getElementById("modalSuccess");
-  const title = document.getElementById("modalSuccessTitle");
-  const message = document.getElementById("modalSuccessMessage");
 
-  // Configurar contenido del modal
-  title.textContent = titulo;
-  message.textContent = mensaje;
-
-  // Mostrar el modal de éxito
-  modal.classList.remove("hidden");
-}
-
-// Función para manejar el clic en el botón "OK" del modal de éxito
-function okButtonClicked() {
-  // Aquí recargamos la página o redirigimos a otro lugar
-  window.location.reload(); // Recarga la página
-}
 
 // Función para validar que todos los campos requeridos estén llenos
 function validarFormulario() {
@@ -114,12 +102,6 @@ function validarFormulario() {
       }
   });
 
-  if (!formularioValido) {
-      mostrarMensajeModal("¡Error!", "Por favor, completa todos los campos.");
-      return false; // Evitar que continúe
-  }
-
-  return true; // Formulario válido
 }
 
 // Función para abrir el modal de confirmación si el formulario es válido
@@ -143,13 +125,4 @@ function openModal() {
 // Función para cerrar el modal de confirmación
 function closeModal() {
   document.getElementById("modalConfirm").classList.add("hidden");
-}
-
-// Función para mostrar el mensaje de éxito al confirmar el guardado
-function confirmSave() {
-  mostrarMensajeModal("¡Éxito!", "¡Producto agregado correctamente!");
-
-  // Enviar el formulario solo después de que se haga clic en "OK" del modal de éxito
-  const formulario = document.getElementById("product-form");
-  formulario.submit(); // Enviar formulario
 }

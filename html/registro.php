@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrarse/Moto Racer</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="/css/registro.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
@@ -19,19 +20,22 @@
         <div class="barra"></div>
         <h1>CREAR USUARIO</h1>
         <form name="formulario" method="post" action="">
-            <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion"></div>
-            <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre"></div>
-            <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido"></div>
-            <div class="campo"><label for="telefono">Telefono: </label><input type="text" name="telefono" id="telefono"></div>
-            <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion"></div>
-            <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo"></div>
-            <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena"></div>
-            <div class="campo"><label for="confirmar">Confirmar Contraseña: </label><input type="password" name="confirmar" id="confirmar"></div>
-            <div class="button_container">
-                <button type="submit" class="boton">Registrar</button>
-                <a href="/index.php" class="boton">Volver</a>
-                <a href="/html/olvidar.php" class="boton">Olvidaste tu Contraseña ?</a>
-
+            <div class="form-grid">
+                <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion"></div>
+                <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre"></div>
+                <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido"></div>
+                <div class="campo"><label for="telefono">Telefono: </label><input type="text" name="telefono" id="telefono"></div>
+                <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion"></div>
+                <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo"></div>
+                <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena"></div>
+                <div class="campo"><label for="confirmar">Confirmar Contraseña: </label><input type="password" name="confirmar" id="confirmar"></div>
+            </div>
+        
+        <div class="button_container">
+            <button type="submit" class="boton">Registrar</button>
+            <a href="/index.php" class="botonn">Volver</a>
+        </div>
+        </form>
 </html>
 
 <?php
@@ -44,8 +48,8 @@ if ($_POST) {
     $telefono = $_POST['telefono'];
     $direccion = $_POST['direccion'];
     $correo = $_POST['correo'];
-    
-    
+
+
     // Validar los campos
     if (empty($identificacion) || empty($contrasena) || empty($confirmar)) {
         echo "<script>alert('Todos los campos son obligatorios')</script>";
@@ -87,9 +91,7 @@ if ($_POST) {
     // Cerrar la sentencia y la conexión
     $stmt->close();
     mysqli_close($conexion);
-
-
-        } 
+}
 
 
 ?>

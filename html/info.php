@@ -4,68 +4,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Usuario</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../css/info.css">
-    <link rel="stylesheet" href="/componentes/header.html">
-    <link rel="stylesheet" href="/componentes/header.css">
+    <title>Información de Usuario</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+    <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
     <script src="/js/index.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-    </style>
 </head>
 
 <body>
-    <!-- Aquí se cargará el header -->
-    <div id="menu"></div>
-
-    <!-- Formulario -->
+<div id="menu"></div>
+    <!-- Información del usuario -->
     <div class="container">
         <div class="form-container">
             <h1>Usuario</h1>
             <div class="profile-pic">
                 <img src="https://via.placeholder.com/100" alt="Usuario">
             </div>
-            <form action="#" method="POST">
-                <div class="input-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre">
+            <div class="info-group">
+                <label for="nombre">Nombre</label>
+                <span id="nombre">Juan</span>
+            </div>
+            <div class="info-group">
+                <label for="apellido">Apellido</label>
+                <span id="apellido">Pérez</span>
+            </div>
+            <div class="info-group">
+                <label for="estado">Estado</label>
+                <span id="estado">Activo</span>
+            </div>
+            <div class="info-group">
+                <label for="celular">Celular</label>
+                <span id="celular">+123456789</span>
+            </div>
+            <div class="info-group">
+                <label for="descripcion">Descripción</label>
+                <span id="descripcion">Administrador del sistema.</span>
+            </div>
+            <div class="info-group">
+                <label for="correo">Correo Electrónico</label>
+                <span id="correo">juan.perez@correo.com</span>
+            </div>
+            <div class="info-group">
+                <label for="cargo">Cargo</label>
+                <span id="cargo">Gerente</span>
+            </div>
+            <div class="info-group">
+                <label for="password">Contraseña</label>
+                <span id="password">********</span>
+            </div>
+
+            <!-- Botón para abrir el popup -->
+            <button class="btn-abrir" onclick="abrirPopup()">+ Editar</button>
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <h2>Editar Usuario</h2>
+            <form>
+                <input type="text" placeholder="Nombre" value="Juan">
+                <input type="text" placeholder="Apellido" value="Pérez">
+                <input type="text" placeholder="Estado" value="Activo">
+                <input type="text" placeholder="Celular" value="+123456789">
+                <input type="text" placeholder="Descripción" value="Administrador del sistema.">
+                <input type="email" placeholder="Correo Electrónico" value="juan.perez@correo.com">
+                <input type="text" placeholder="Cargo" value="Gerente">
+                <input type="password" placeholder="Nueva Contraseña">
+                <div>
+                    <button type="button" class="btn-cancelar" onclick="cerrarPopup()">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar</button>
                 </div>
-                <div class="input-group">
-                    <label for="apellido">Apellido</label>
-                    <input type="text" id="apellido" name="apellido" placeholder="Ingresa tu apellido">
-                </div>
-                <div class="input-group">
-                    <label for="estado">Estado</label>
-                    <input type="text" id="estado" name="estado" placeholder="Estado actual">
-                </div>
-                <div class="input-group">
-                    <label for="celular">Celular</label>
-                    <input type="tel" id="celular" name="celular" placeholder="Número de celular">
-                </div>
-                <div class="input-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" placeholder="Agrega una descripción"></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="correo">Correo Electrónico</label>
-                    <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com">
-                </div>
-                <div class="input-group">
-                    <label for="cargo">Cargo</label>
-                    <input type="text" id="cargo" name="cargo" placeholder="Cargo">
-                </div>
-                <div class="input-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" placeholder="********">
-                </div>
-                <button type="submit" class="btn">Guardar</button>
             </form>
         </div>
     </div>
+
+    <script>
+        // Mostrar el popup
+        function abrirPopup() {
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Cerrar el popup
+        function cerrarPopup() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
 </body>
 
 </html>
+
+
+
+
 
  
 

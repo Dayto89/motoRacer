@@ -143,10 +143,12 @@ body::before {
 
 label {
     color: white;
-    margin-bottom: 10p;
-    font-size: 30px;
+    margin-bottom: 10px;
+    font-size: 25px;
     font-family: Arial, Helvetica, sans-serif;
     text-shadow:  2px 0 #1c51a0;
+    white-space: nowrap;
+    
 }
 
 .campo {
@@ -158,12 +160,10 @@ label {
     
 }
 
-#product-form{
+#product-form {
     margin-top: 27px;
     margin-left: -2px;
-    margin-bottom: 11px;
-   
-    
+    margin-bottom: 11px;  
 }
 
 #product-form .campo label{
@@ -174,11 +174,12 @@ label {
     white-space: nowrap;
 }
 
-#product-form input{
+#product-form  input{
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
-    border-radius: 10px;
+    border-radius: 20px;
+    
 }
 
 #product-form button{
@@ -197,29 +198,16 @@ label {
 }
 
 input[type='text'], input[type='number'] {
-    padding: 4px 2px
+    padding: 4px 2px;
+    border-radius: 10px;
+    height: 41px;
 }
 
 
 .button-container {
     text-align: center;
-    position: relative;
-    display: inline-block;
-    width: 360px;
-    margin-left: 365px;
-    margin-top: 43px;
+    margin-top: 20px;
 
-}
-
-
-button {
-    background-color: #1167CC;
-    padding: 2px 7px;
-    color: white;
-    border: none;
-    font-weight: bold;
-    font-size: 25px;
-    border: 5px #ffffff;
 }
 
 
@@ -275,28 +263,30 @@ input[type="checkbox"] {
     background-color: #3f6fb6;
 }
 
-.boton {
-    background-color: #007bff;
+
+.button-container .boton button {
+    background-color: #007BFF;
+    font-weight: bold;
     color: white;
-    padding: 10px 15px;
-    cursor: pointer;
     border: none;
-    border-radius: 10px;
-    width: 50%;
-    margin-left: 15%;
-    
+    padding: 8px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 11px;
+    transition: background-color 0.3s ease;
     
 }
-
-
 .container {
     display: flex;
     background-color: rgb(174 174 174 / 59%);
-    padding: -3px;
     border-radius: 10px;
     justify-content: space-between;
     width: 62em;
     margin-left: 323px;
+    margin: 0; /* Quita márgenes */
+    padding: 0; /* Quita rellenos */
+    margin: auto;
+    margin-top: 27px;
 }
 
 .left-side, .right-side {
@@ -328,16 +318,20 @@ input[type="checkbox"] {
     background-color: #333;
     color: #fff;
 }
-
-.button {
-    background-color: transparent;
-    padding: 2px 7px;
-    color: white;
-    border: none;
-    font-weight: bold;
-    font-size: 25px;
-    
+.button-container .boton button:hover {
+    background-color: #0056b3;
 }
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
+
 
 #inventario{
     font-family: Arial, Helvetica, sans-serif;
@@ -366,7 +360,7 @@ input[type="checkbox"] {
 }
 
 .campo #descripcion{
-    width: 833px;
+    width:  508px;
     height: 100px;
 }
 
@@ -382,41 +376,6 @@ input[type="checkbox"] {
     color: #ffffff;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
     
-}
-
-#actualizarProducto h1{
-    font-size: 50px;
-    margin-top: 92px;
-    color: white;
-    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 600px;
-    letter-spacing: 5px;
-   
-
-}
-
-#update-product-form{
-    margin-top: 66px;
-    margin-left: 391px;
-    margin-right: 115px;
-}
-
-
-#update-product-form input{
-    margin-top: 20px;
-    height: 40px;
-    margin-right: 45px;
-    border-radius: 18px;
-}
-
-#update-product-form button{
-    border: 20px #ffffff;
-    cursor: pointer;
-}
-
-.campo #descripcionActualizar{
-    width: 504px;
-    height: 113px;
 }
 
 

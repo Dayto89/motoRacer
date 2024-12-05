@@ -10,7 +10,8 @@ $busqueda = isset($_GET['busqueda']) ? mysqli_real_escape_string($conexion, $_GE
 
 $consulta = "
     SELECT 
-        p.codigo,
+        p.`codigo1`,
+        p.`codigo2`,
         p.nombre,
         p.iva,
         p.`precio1`,
@@ -51,7 +52,8 @@ if (!$resultado) {
 
 while ($fila = mysqli_fetch_assoc($resultado)) {
     echo "<tr>";
-    echo "<td>" . (isset($fila["codigo"]) ? $fila["codigo"] : 'N/A') . "</td>";
+    echo "<td>" . (isset($fila["codigo1"]) ? $fila["codigo1"] : 'N/A') . "</td>";
+    echo "<td>" . (isset($fila["codigo2"]) ? $fila["codigo2"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["nombre"]) ? $fila["nombre"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["iva"]) ? $fila["iva"] : 'N/A') . "</td>";
     echo "<td>" . (isset($fila["precio1"]) ? $fila["precio1"] : 'N/A') . "</td>";

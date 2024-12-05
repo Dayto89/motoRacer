@@ -65,29 +65,29 @@ form {
 
 
 form input[type="text"] {
-    background-color: #343434;
-    border-radius: 50px;
-    height: 70px;
-    width: 300px;
-    color: white;
-    padding: 0px 0px 0px 20px;
+    background-color: #ffffff;
+    border-radius: 24px;
+    height: 40px;
+    width: 277px;
+    color: #000;
+    padding: 0px 0px 0px 10px;
     border: none;
-    font-size: 20px;
-    margin-bottom: 30px;
+    font-size: 13px;
+    margin-bottom: 12px;
 }
 
 form input[type="email"],
 form input[type="tel"],
 form input[type="password"]{
-    background-color: #343434;
-    border-radius: 50px;
-    height: 70px;
-    width: 500px;
-    color: white;
-    padding: 0 0 0 20px; 
+    background-color: #ffffff;
+    border-radius: 24px;
+    height: 40px;
+    width: 277px;
+    color: #000;
+    padding: 0px 0px 0px 10px;
     border: none;
-    font-size: 20px;
-    margin-bottom: 30px;
+    font-size: 13px;
+    margin-bottom: 12px;
 }
 
 .password {
@@ -95,11 +95,11 @@ form input[type="password"]{
 }
 
 input::placeholder {
-    color: gray;
+    color: black;
     font-size: 20px;
 }
 
-input[type="submit"] {
+/*input[type="submit"] {
     background-color: #007bff;
     color: white;
     border: none;
@@ -110,7 +110,7 @@ input[type="submit"] {
     cursor: pointer;
     margin-bottom: 30px;
 }
-
+*/
 .inicio {
     background-color: #007bff;
     color: white;
@@ -126,95 +126,76 @@ input[type="submit"] {
 .inicio:hover {
     background-color: #0056b3;
 }
-
-@media (min-width: 600px) and (max-width: 1024px) {
-    h1 {
-        font-size: 0px;
-    }
-
-    form {
-        margin-left: 50px;
-        margin-top: 300px;
-    }
-
-    .logo_inicio {
-        width: 60%;
-        height: 25%;
-        margin-right: 0;
-        margin-bottom: 500px;
-    }
-    form {
-        margin-left: 10px;
-        margin-top: 200px;
-    }
-
-    form input[type="text"] {
-        width: 280px;
-        height: 60px;
-    }
-
-    form input[type="email"],form input[type="tel"],form input[type="password"]{
-        width: 280px;
-        height: 60px;
-    }
-
-    form input[type="password"]{
-        margin-bottom: 20px;
-    }
-
-    .barra {
-        width: 0px;
-        height: 0px;
-    }
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 10px; /* Espacio entre los campos */
+    margin-right: 391px;
+}
+.campo {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    max-width: 100%;
+    padding: 10px 88px;
+    margin-bottom: 10px;
 }
 
-@media (max-width: 599px) {
-    h1 {
-        font-size: 0px;
-    }
+.campo label {
+    margin-bottom: 5px;
+    color: white;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 2px 0 #1c51a0;
+    white-space: nowrap;
+}
+.button_container {
+    text-align: center;
+    margin-top: 20px;
+    margin-right: 250px;
+    
+}
 
-    form {
-        margin-left: 10px;
-        margin-top: 200px;
-    }
-
-    form input[type="text"] {
-        width: 220px;
-        height: 60px;
-    }
-
-    form input[type="email"],form input[type="tel"],form input[type="password"]{
-        height: 60px;
-        width: 220px;
-    }
-
-    form input[type="password"]{
-        margin-bottom: 20px;
-    }
-
-    .logo_inicio {
-        width: 80%;
-        height: 30%;
-        margin-right: 0;
-        margin-bottom: 30px;
-    }
-
-    .logo_inicio {
-        height: 200px;
-        width: 300px;
-        margin-bottom: 500px;
-        margin-left: 20px;
-    }
-
-    .barra {
-        width: 0px;
-        height: 0px;
-    }
-
-    .inicio{
-
-        padding: 20px 40px;
-    }
+.button_container .boton  {
+    background-color: #007BFF;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 3px 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 24px;
+    transition: background-color 0.3s ease;
+    margin-right: 3%;
+    width: 182px;
+    height: 56px;
 }
 
 
+.button_container .boton:hover {
+    background-color: #0056b3;
+}
+
+.botonn {
+    display: inline-block; /* Se comporta como un botón */
+    font-weight: bold;
+    padding: 3px 4px; /* Espaciado interno */
+    background-color: #007BFF; /* Color de fondo (azul) */
+    color: white; /* Color del texto */
+    text-decoration: none; /* Quitar el subrayado */
+    border-radius: 24px; /* Bordes redondeados */
+    font-size: 1.2rem; /* Tamaño del texto */
+    text-align: center; /* Centrar el texto */
+    transition: background-color 0.3s ease; /* Efecto al pasar el cursor */
+    width: 182px;
+    height: 56px;
+    line-height: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+    
+  }
+  
+  .botonn:hover {
+    background-color: #0056b3; /* Color más oscuro al pasar el cursor */
+  }
+  

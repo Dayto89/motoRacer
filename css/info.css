@@ -1,8 +1,146 @@
+/* Reseteo y estilos básicos */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
+body {
+    font-family: 'Merriweather', serif;
+    background-color: #1c1c1c;
+    color: white;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #87CEFA;
+}
+
+.profile-pic {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-pic img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #87CEFA;
+}
+
+.info-group {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.info-group label {
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+    size: 50px;
+    font-weight: bold;
+    
+}
+
+.info-group span {
+    flex: 0.5;
+    padding: 10px;
+    background: #f4f4f4;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    size: 10px;
+    font-weight: normal;
+    
+}
+
+.btn-abrir {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Estilo del fondo oscuro */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+}
+
+/* Estilo de la ventana emergente */
+.popup {
+    background-color: rgb(200 200 200 / 76%);
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease-out;
+}
+
+.popup h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #003366;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.popup form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.popup input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.popup button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-cancelar {
+    background: red;
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-guardar {
+    background: blue;
+    color: white;
+}
+
 
 body {
     font-family: "Metal Mania", system-ui;
@@ -28,6 +166,7 @@ body::before {
     z-index: -1;
 }
 
+/* Contenedor principal */
 .container {
     display: flex;
     justify-content: center;
@@ -45,6 +184,7 @@ body::before {
     text-align: center;
 }
 
+/* Títulos */
 h1 {
     margin-bottom: 20px;
     font-size: 2em;
@@ -60,6 +200,7 @@ h1 {
     margin-bottom: 15px;
 }
 
+/* Formularios */
 .form-container form {
     display: flex;
     flex-direction: column;
@@ -90,7 +231,7 @@ h1 {
 
 .input-group input:focus, 
 .input-group textarea:focus {
-    background: (174 174 174 / 59%);;
+    background: rgb(174, 174, 174 / 59%);
     box-shadow: 0 0 5px #1e88e5;
     outline: none;
 }
@@ -100,6 +241,7 @@ h1 {
     height: 80px;
 }
 
+/* Botones */
 .btn {
     background: #1e88e5;
     border: none;
@@ -120,5 +262,83 @@ h1 {
     background: #0d47a1;
     transform: scale(0.98);
 }
+
+/* Estilos para la ventana emergente */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.popup {
+   background-color: rgb(200 200 200 / 76%) ;
+   padding: 20px;
+   border-radius: 10px;
+   width: 400px;
+   text-align: center;
+   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+   animation: slideIn 0.3s ease-out;
+   margin-left: 40%;
+   margin-top: 4.5%;
+}
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+  }
+  
+
+.popup h2 {
+    font-size: 32px;
+    margin-top: -7px;
+    color: white;
+    text-shadow:4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0; 
+    margin-left: 13px;
+    letter-spacing: 5px;
+    padding: 28px;
+}
+.popup input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.popup button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.btn-cancelar {
+    background: red;
+    color: white;
+}
+
+.btn-guardar {
+    background: blue;
+    color: white;
+}
+
+/* Mostrar ventana emergente */
+.overlay.active {
+    display: block;
+}
+
 
   
