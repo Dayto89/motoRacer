@@ -53,7 +53,7 @@
                echo "<td>" . $fila['nombre'] . "</td>";
                echo "<td class='options'>";
                echo "<button class='btn-list'>Lista de productos</button>";
-               echo "<button class='btn-delete'>Eliminar</button>";
+               echo "<button class='btn-delete' onclick='deleteCategoria(" . $fila['codigo'] . ")'>Eliminar</button>";
                echo "</td>";
                echo "</tr>";
            }
@@ -126,6 +126,17 @@
       }
     }
   ?>
+  <script>
+    function deleteCategoria(codigo) {
+      var respuesta = confirm("¿Está seguro de que desea eliminar la categoría?");
+      if (respuesta) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", "deleteCategoria.php?codigo=" + codigo, true);
+        xmlHttp.send();
+      }
+    }
+
+  </script>
 </body>
 
 </html>

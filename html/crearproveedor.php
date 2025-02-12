@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/proveedor.css">
     <link rel="stylesheet" href="/componentes/header.html">
-    <link rel="stylesheet" href="/componentes/header.css">
+    <link rel="stylesheet" href="/componentes/header.css"> 
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
@@ -24,7 +24,8 @@
 
         <div class="container">
 
-        <form id="proveedor-form" method="POST" action="">
+        <form id="proveedor-form" method="POST" action=""
+        <div class="form-grid" >
           <div class="campo">
             <label for="codigoProveedor">Código:</label>
             <input
@@ -82,6 +83,7 @@
               <button type="submit">Guardar</button>
             </div>
           </div>
+          </div>
         </form>
       </div>
       </div>
@@ -108,4 +110,3 @@ if ($_POST) {
 ?>
 </body>
 </html>
-

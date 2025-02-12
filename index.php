@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     mysqli_close($conexion);
 }
-?>
+?>                       
 <!DOCTYPE html>
 <html lang="es">
 
@@ -66,18 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>INICIAR SESIÓN</h1>
         <form name="formulario" method="post" action="">
             <div class="input-wrapper">
-                <i class='bx bx-user-circle'></i>
+            <i class='bx bx-user-circle'></i>
                 <input type="text" placeholder="Identificación" name="identificacion" />
             </div>
             <div class="input-wrapper">
-                <i class='bx bx-lock-alt'></i>
+            <i class='bx bx-lock-alt' ></i>
                 <input type="password" placeholder="Contraseña" name="contrasena" />
             </div>
             <button type="submit">Iniciar Sesión</button>
-            <a href="/html/inicio.php">Iniciar</a>
             <a href="/html/registro.php" class="boton">Registrarse</a>
             <div class="container_boton">
-                <a href="/html/olvidar.php" class="boton">¿ Olvidaste tu Contraseña ?</a>
+                <a href="/html/olvidar.php" class="boton">¿Olvidaste tu Contraseña?</a>
             </div>
         </form>
     </div>

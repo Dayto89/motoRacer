@@ -21,7 +21,14 @@
         <h1>CREAR USUARIO</h1>
         <form name="formulario" method="post" action="">
             <div class="form-grid">
+                
+                </select></div>
                 <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion"></div>
+                <div class="rol"><label for="rol">Rol: </label><select name="rol" id="rol">
+                    <option value="gerente">Gerente</option>
+                    <option value="administrador">Administrador</option>
+                    
+                </select></div>
                 <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre"></div>
                 <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido"></div>
                 <div class="campo"><label for="telefono">Telefono: </label><input type="text" name="telefono" id="telefono"></div>
@@ -41,6 +48,7 @@
 <?php
 if ($_POST) {
     $identificacion = $_POST['identificacion'];
+    $rol = $_POST['rol'];
     $contrasena = $_POST['contrasena'];
     $confirmar = $_POST['confirmar'];
     $nombre = $_POST['nombre'];
@@ -52,7 +60,7 @@ if ($_POST) {
 
     // Validar los campos
     if (empty($identificacion) || empty($contrasena) || empty($confirmar)) {
-        echo "<script>alert('Todos los campos son obligatorios')</script>";
+        echo "<script>alert('Los campos identificacion, contrasena y confirmar deben ser llenados');</script>";
         exit;
     }
 
@@ -65,7 +73,6 @@ if ($_POST) {
     $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
 
     // Asignar valores predeterminados
-    $rol = 'gerente';
     $estado = 'activo';
     $tipoDocumento = 'cedula de ciudadania';
     $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");

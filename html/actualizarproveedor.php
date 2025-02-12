@@ -104,14 +104,14 @@
   if (isset($_POST['guardar'])) {
     $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
     if (isset($_POST['selectProveedor']) != "") {
-      $nit = $_POST['selectProveedor'];
+      $nit = $_POST['nit'];
       $nombre = $_POST['nombre'];
       $telefono = $_POST['telefono'];
       $direccion = $_POST['direccion'];
       $correo = $_POST['correo'];
       $estado = $_POST['estado'];
 
-      $consulta = "UPDATE proveedor SET nombre = '$nombre', telefono = '$telefono', direccion = '$direccion', correo = '$correo', estado = '$estado' WHERE nit = '$nit'";
+      $consulta = "UPDATE proveedor SET nit = '$nit', nombre = '$nombre', telefono = '$telefono', direccion = '$direccion', correo = '$correo', estado = '$estado' WHERE nit = '$nit'";
       $resultado = mysqli_query($conexion, $consulta);
       if ($resultado) {
         echo "<script>alert('Proveedor actualizado con éxito!')</script>";

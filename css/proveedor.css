@@ -141,6 +141,22 @@ body::before {
     padding: 0 10%;
 }
 
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px; /* Espacio horizontal entre columnas */
+    row-gap: 20px; /* Espacio vertical entre filas */
+}
+
+input, select {
+    border: 1px solid #ccc; /* Agrega un borde para mayor visibilidad */
+    background-color: #ffffff; /* Fondo oscuro para coherencia con tu diseño */
+    color: rgb(0, 0, 0); /* Texto blanco */
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 16px;
+}
+
 label {
     color: white;
 }
@@ -189,6 +205,9 @@ input[type='text'], input[type='number'] {
     cursor: pointer;
     border-radius: 11px;
     transition: background-color 0.3s ease;
+    margin-left: 247px;
+    margin-top: -12px;
+    margin-bottom: 10px;
 }
 
 table {
@@ -259,6 +278,7 @@ input[type="checkbox"] {
     padding: 0;
     margin: auto;
     margin-top: 27px;
+    
 }
 
 .left-side, .right-side {

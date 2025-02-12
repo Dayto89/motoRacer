@@ -9,15 +9,20 @@
     <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
     <script src="/js/index.js"></script>
 </head>
-
+<?php
+session_start();
+if (isset($_SESSION['usuario'])) {
+    $usuario = $_SESSION['usuario'];
+}
+?>
 <body>
-<div id="menu"></div>
+    <div id="menu"></div>
     <!-- Información del usuario -->
     <div class="container">
         <div class="form-container">
             <h1>Usuario</h1>
             <div class="profile-pic">
-                <img src="https://via.placeholder.com/100" alt="Usuario">
+                <img id="profilePic" src="https://via.placeholder.com/100" alt="Usuario">
             </div>
             <div class="info-group">
                 <label for="nombre">Nombre</label>
@@ -62,6 +67,10 @@
         <div class="popup">
             <h2>Editar Usuario</h2>
             <form>
+                <div class="profile-pic">
+                    <img id="popupProfilePic" src="https://via.placeholder.com/100" alt="Usuario">
+                    <input type="file" id="imageInput" accept="image/*" onchange="uploadImage()">
+                </div>
                 <input type="text" placeholder="Nombre" value="Juan">
                 <input type="text" placeholder="Apellido" value="Pérez">
                 <input type="text" placeholder="Estado" value="Activo">
@@ -82,11 +91,29 @@
         // Mostrar el popup
         function abrirPopup() {
             document.getElementById('overlay').style.display = 'block';
+            // Copiar la imagen de perfil al popup
+            document.getElementById('popupProfilePic').src = document.getElementById('profilePic').src;
         }
 
         // Cerrar el popup
         function cerrarPopup() {
             document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Función para subir imagen
+        function uploadImage() {
+            const imageInput = document.getElementById('imageInput');
+            const popupProfilePic = document.getElementById('popupProfilePic');
+            const profilePic = document.getElementById('profilePic');
+
+            if (imageInput.files && imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    popupProfilePic.src = e.target.result;
+                    profilePic.src = e.target.result;
+                }
+                reader.readAsDataURL(imageInput.files[0]);
+            }
         }
     </script>
 </body>

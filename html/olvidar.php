@@ -3,42 +3,61 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../vendor/autoload.php';
+require 'vendor/autoload.php';  // Asegura que PHP reconoce PHPMailer
+
+
+session_start(); // Iniciar sesión
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $codigoRandom = rand(100000, 999999);
-    $mensaje = "Hola, tu código de acceso es $codigoRandom";
+    $_SESSION['codigo_recuperacion'] = $codigoRandom;  // Guardar en la sesión
+    $_SESSION['email_recuperacion'] = $email;  // Guardar el email para verificar después
+
+    $mensaje = "Hola, tu código de acceso es: <strong>$codigoRandom</strong>";
 
     $mail = new PHPMailer(true);
     try {
-        // Configuración del servidor SMTP
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'zeepster7r@gmail.com';
-        $mail->Password = 'Tonyyamigo89'; // Es mejor usar una contraseña de aplicación si usas Gmail
+        $mail->Username = 'tu-correo@gmail.com';
+        $mail->Password = 'tu-contraseña-de-aplicación';  // No uses tu clave normal
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        // Destinatarios
-        $mail->setFrom('zeepster7r@gmail.com', 'Moto Racer');
+        $mail->setFrom('tu-correo@gmail.com', 'Moto Racer');
         $mail->addAddress($email);
-
-        // Contenido del correo
         $mail->isHTML(true);
         $mail->Subject = 'Código de acceso - Moto Racer';
         $mail->Body    = $mensaje;
-        $mail->AltBody = 'Este es el cuerpo del mensaje en formato texto plano';
+        $mail->AltBody = "Tu código de acceso es: $codigoRandom";
 
         $mail->send();
-        echo "<script>alert('Se ha enviado un correo con tu código de acceso');</script>";
+        echo "<script>alert('Código enviado al correo');</script>";
     } catch (Exception $e) {
-        echo "<script>alert('Error: " . $mail->ErrorInfo . "');</script>";
+        echo "<script>alert('Error al enviar correo: " . $mail->ErrorInfo . "');</script>";
     }
 }
-?>
 
+session_start();  // Asegurar que tenemos la sesión activa
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigo'], $_POST['password'])) {
+    $codigoIngresado = trim($_POST['codigo']);
+    $nuevaPassword = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);  // Encriptar contraseña
+    $emailRecuperacion = $_SESSION['email_recuperacion'] ?? '';
+
+    // Verificar si el código ingresado es correcto
+    if ($codigoIngresado == $_SESSION['codigo_recuperacion']) {
+        // Aquí deberías actualizar la contraseña en la base de datos
+        echo "<script>alert('Contraseña cambiada con éxito');</script>";
+        unset($_SESSION['codigo_recuperacion']);  // Borrar código usado
+    } else {
+        echo "<script>alert('Código incorrecto');</script>";
+    }
+}
+
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -63,37 +82,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>CAMBIO CONTRASEÑA</h1>
 
         <!-- Formulario de Enviar Código -->
-        <form id="formEnviarCodigo" method="post" onsubmit="mostrarFormularioCambio(event)">
-            <input type="hidden" name="action" value="enviar_codigo">
-            <label for="email">Correo electrónico del suario</label>
-            <input type="email" name="email" required>
-            <button type="submit">Enviar Código</button>
-        </form>
+        <form id="formEnviarCodigo" method="post">
+    <label for="email">Correo electrónico del usuario</label>
+    <input type="email" name="email" required>
+    <button type="submit">Enviar Código</button>
+</form>
 
-        <!-- Formulario de Cambio de Contraseña -->
-        <form id="formCambioContraseña" method="post" style="display:none;">
-            <input type="hidden" name="action" value="verificar_codigo">
-            <label for="codigo" id="codigo">Código de Verificación</label>
-            <input type="text" name="codigo" required>
+<!-- Formulario de Cambio de Contraseña -->
+<form id="formCambioContraseña" method="post" style="display:none;">
+    <label for="codigo">Código de Verificación</label>
+    <input type="text" name="codigo" required>
 
-            <label for="password" id="password">Nueva Contraseña</label>
-            <input type="password" name="password" required>
+    <label for="password">Nueva Contraseña</label>
+    <input type="password" name="password" required>
 
-            <button type="submit" id="cambiar-contrasena">Cambiar Contraseña</button>
-        </form>
-    </div>
-    <script>
-        // Función que oculta el formulario de enviar código y muestra el de cambio de contraseña
-        function mostrarFormularioCambio(event) {
-            event.preventDefault();  // Evitar que el formulario se envíe de inmediato
+    <button type="submit">Cambiar Contraseña</button>
+</form>
 
-            // Ocultar el formulario de enviar código
-            document.getElementById("formEnviarCodigo").style.display = "none";
+<script>
+    document.getElementById("formEnviarCodigo").onsubmit = function(event) {
+        event.preventDefault();
+        document.getElementById("formEnviarCodigo").style.display = "none";
+        document.getElementById("formCambioContraseña").style.display = "block";
+    };
+</script>
 
-            // Mostrar el formulario de cambio de contraseña
-            document.getElementById("formCambioContraseña").style.display = "block";
-        }
-    </script>
 </body>
 
 </html>
