@@ -210,6 +210,15 @@ h1 {
     width: 46%;
 }
 
+.button-container .boton button#eliminar {
+    background-color: #f44336;
+    color: white;
+}
+
+.button-container .boton button#eliminar:hover {
+    background-color: #d32f2f;
+}
+
 .button-container .boton button:hover {
     background-color: #0056b3;
 }

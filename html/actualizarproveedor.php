@@ -11,23 +11,16 @@ if (!isset($_SESSION['usuario_id'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>proveedor</title>
+  <title>Proveedor</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="../css/proveedor.css">
-  <link rel="stylesheet" href="/componentes/header.html">
-  <link rel="stylesheet" href="/componentes/header.css">
+  <link rel="stylesheet" href="../css/actualizarproveedor.css">
   <script src="/js/index.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-  </style>
 </head>
 
 <body>
-  <!-- Aquí se cargará el header -->
   <div id="menu"></div>
 
-  <!-- Sección para Actualizar Proveedor -->
   <div id="actualizarProveedor" class="form-section">
     <h1>Actualizar Proveedor</h1>
     <form id="actualizar-proveedor-form" method="POST" action="">
@@ -39,15 +32,12 @@ if (!isset($_SESSION['usuario_id'])) {
           $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
           $consulta = "SELECT nit, nombre FROM proveedor";
           $resultado = mysqli_query($conexion, $consulta);
-
-          // Retener el valor seleccionado
           $codigoSeleccionado = isset($_POST['selectProveedor']) ? $_POST['selectProveedor'] : '';
 
           while ($fila = mysqli_fetch_assoc($resultado)) {
             $selected = ($fila['nit'] == $codigoSeleccionado) ? 'selected' : '';
             echo "<option value='" . $fila['nit'] . "' $selected>" . $fila['nombre'] . "</option>";
           }
-
           mysqli_close($conexion);
           ?>
         </select>
@@ -99,18 +89,41 @@ if (!isset($_SESSION['usuario_id'])) {
       <div class="button-container">
         <div class="boton">
           <button type="submit" name="guardar">Guardar</button>
+          <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
         </div>
       </div>
     </form>
   </div>
-  <!-- Actualizar Proveedor al pulsar el botón Guardar -->
+
   <?php
-
-  /* Si el boton Guardar es presionado */
-
-  if (isset($_POST['guardar'])) {
+  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-    if (isset($_POST['selectProveedor']) != "") {
+
+    if (!$conexion) {
+      die("Error de conexión: " . mysqli_connect_error());
+    }
+
+    if (isset($_POST['eliminar']) && !empty($codigoSeleccionado)) {
+      // Verificar si el proveedor tiene productos asociados
+      $verificar = "SELECT COUNT(*) AS total FROM producto WHERE proveedor_nit = '$codigoSeleccionado'";
+      $resultado = mysqli_query($conexion, $verificar);
+      $fila = mysqli_fetch_assoc($resultado);
+
+      if ($fila['total'] == 0) {
+        // No tiene productos asociados, eliminar
+        $eliminar = "DELETE FROM proveedor WHERE nit = '$codigoSeleccionado'";
+        if (mysqli_query($conexion, $eliminar)) {
+          echo "<script>alert('Proveedor eliminado correctamente'); window.location.href='actualizarproveedor.php';</script>";
+        } else {
+          echo "<script>alert('Error al eliminar el proveedor');</script>";
+        }
+      } else {
+        echo "<script>alert('No se puede eliminar el proveedor, tiene productos asociados');</script>";
+        echo "<script>window.location.href='actualizarproveedor.php';</script>";
+      }
+    }
+
+    if (isset($_POST['guardar']) && !empty($codigoSeleccionado)) {
       $nit = $_POST['nit'];
       $nombre = $_POST['nombre'];
       $telefono = $_POST['telefono'];
@@ -118,19 +131,20 @@ if (!isset($_SESSION['usuario_id'])) {
       $correo = $_POST['correo'];
       $estado = $_POST['estado'];
 
-      $consulta = "UPDATE proveedor SET nit = '$nit', nombre = '$nombre', telefono = '$telefono', direccion = '$direccion', correo = '$correo', estado = '$estado' WHERE nit = '$nit'";
-      $resultado = mysqli_query($conexion, $consulta);
-      if ($resultado) {
-        echo "<script>alert('Proveedor actualizado con éxito!')</script>";
+      // Asegurar que la actualización se hace sobre el proveedor seleccionado originalmente
+      $consulta = "UPDATE proveedor SET nit = '$nit', nombre = '$nombre', telefono = '$telefono', direccion = '$direccion', correo = '$correo', estado = '$estado' WHERE nit = '$codigoSeleccionado'";
+
+      if (mysqli_query($conexion, $consulta)) {
+        echo "<script>alert('Proveedor actualizado con éxito!');</script>";
       } else {
-        echo "<script>alert('Error al actualizar el proveedor!')</script>";
+        echo "<script>alert('Error al actualizar el proveedor!');</script>";
       }
     }
+
     mysqli_close($conexion);
   }
-
-
   ?>
+
 </body>
 
 </html>

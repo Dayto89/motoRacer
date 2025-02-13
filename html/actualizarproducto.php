@@ -21,7 +21,6 @@ if (!isset($_SESSION['usuario_id'])) {
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
-
 <body>
 
     <!-- Aquí se cargará el header -->
@@ -197,51 +196,57 @@ if (!isset($_SESSION['usuario_id'])) {
                     <div class="button-container">
                         <div class="boton">
                             <button type="submit" name="guardar">Guardar</button>
+                            <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">Eliminar</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+<?php
 
-
-    <!-- Actualizar Producto al pulsar el botón Guardar -->
-    <?php
-
-    /* Si el boton Guardar es presionado */
-
-    mysqli_close($conexion);
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
 
     if (isset($_POST['guardar'])) {
-        $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-        if (isset($_POST['selectProducto']) != "") {
-            $codigo = $_POST['selectProducto'];
-            $nombre = $_POST['nombre'];
-            $iva = $_POST['iva'];
-            $precio1 = $_POST['precio1'];
-            $precio2 = $_POST['precio2'];
-            $precio3 = $_POST['precio3'];
-            $cantidad = $_POST['cantidad'];
-            $descripcion = $_POST['descripcion'];
-            $categoria = $_POST['categoria'];
-            $marca = $_POST['marca'];
-            $unidadMedida = $_POST['unidadMedida'];
-            $ubicacion = $_POST['ubicacion'];
-            $proveedor = $_POST['proveedor'];
+        $codigo = $_POST['selectProducto'];
+        $nombre = $_POST['nombre'];
+        $iva = $_POST['iva'];
+        $precio1 = $_POST['precio1'];
+        $precio2 = $_POST['precio2'];
+        $precio3 = $_POST['precio3'];
+        $cantidad = $_POST['cantidad'];
+        $descripcion = $_POST['descripcion'];
+        $categoria = $_POST['categoria'];
+        $marca = $_POST['marca'];
+        $unidadMedida = $_POST['unidadMedida'];
+        $ubicacion = $_POST['ubicacion'];
+        $proveedor = $_POST['proveedor'];
 
-            $consulta = "UPDATE producto SET nombre = '$nombre', iva = '$iva', precio1 = '$precio1', precio2 = '$precio2', precio3 = '$precio3', cantidad = '$cantidad', descripcion = '$descripcion', Categoria_codigo = '$categoria', Marca_codigo = '$marca', UnidadMedida_codigo = '$unidadMedida', Ubicacion_codigo = '$ubicacion', proveedor_nit = '$proveedor' WHERE codigo = '$codigo'";
-            $resultado = mysqli_query($conexion, $consulta);
-            if ($resultado) {
-                echo "<script>alert('Producto actualizado con éxito!')</script>";
-            } else {
-                echo "<script>alert('Error al actualizar el producto!')</script>";
-            }
+        $actualizar = "UPDATE producto SET 
+                        nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
+                        cantidad='$cantidad', descripcion='$descripcion', 
+                        Categoria_codigo='$categoria', Marca_codigo='$marca', 
+                        UnidadMedida_codigo='$unidadMedida', Ubicacion_codigo='$ubicacion', 
+                        proveedor_nit='$proveedor' 
+                      WHERE codigo1='$codigo'";
+
+        mysqli_query($conexion, $actualizar);
+        echo "<script>alert('Producto actualizado correctamente');</script>";
+    }
+
+    if (isset($_POST['eliminar'])) {
+        $codigo = $_POST['selectProducto'];
+        
+        if (!empty($codigo)) {
+            $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
+            mysqli_query($conexion, $eliminar);
+            echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
         }
     }
+
     mysqli_close($conexion);
-
-    ?>
-
+}
+?>
 </body>
-
 </html>
