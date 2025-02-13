@@ -137,13 +137,12 @@ input[type="submit"] {
     cursor: pointer;
     text-decoration: none;
     margin-right: 20px; /* Espacio entre botones */
+    font-family: 'Times New Roman', Times, serif;
 }
 .boton:last-child {
     margin-right: 0; /* Evitar margen en el último botón */
 }
-.boton:hover {
-    background-color: #0056b3;
-}
+
 
 input[type="submit"]:hover {
     background-color: #0056b3;

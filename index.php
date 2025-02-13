@@ -1,6 +1,8 @@
 <?php
+session_start();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identificacion = trim($_POST['identificacion']);
+    $identificacion = htmlspecialchars(trim($_POST['identificacion']));
     $contrasena = trim($_POST['contrasena']);
 
     if (empty($identificacion) || empty($contrasena)) {
@@ -10,11 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
 
-    if ($conexion === false) {
+    if (!$conexion) {
         die("Error en la conexión: " . mysqli_connect_error());
     }
 
-    // Consulta preparada para buscar al usuario
     $stmt = $conexion->prepare("SELECT * FROM usuario WHERE identificacion = ?");
     $stmt->bind_param("s", $identificacion);
     $stmt->execute();
@@ -23,13 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($resultado->num_rows === 1) {
         $usuario = $resultado->fetch_assoc();
 
-        // Verificar la contraseña
         if (password_verify($contrasena, $usuario['contraseña'])) {
-            // Establecer variables de sesión
-            $_SESSION['usuario_id'] = $usuario['identificacion'];
+            $_SESSION['usuario_id'] = $usuario['identificacion']; // Establecer variables de sesión
             $_SESSION['usuario_nombre'] = $usuario['nombre'];
 
-            // Redirigir al inicio
             header("Location: ../html/inicio.php");
             exit;
         } else {
@@ -42,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     mysqli_close($conexion);
 }
-?>                       
+?>              
 <!DOCTYPE html>
 <html lang="es">
 
@@ -73,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <i class='bx bx-lock-alt' ></i>
                 <input type="password" placeholder="Contraseña" name="contrasena" />
             </div>
-            <button type="submit">Iniciar Sesión</button>
+            <button type="submit" class="boton">Iniciar Sesión</button>
             <a href="/html/registro.php" class="boton">Registrarse</a>
             <div class="container_boton">
                 <a href="/html/olvidar.php" class="boton">¿Olvidaste tu Contraseña?</a>

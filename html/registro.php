@@ -22,16 +22,16 @@
         <form name="formulario" method="post" action="">
             <div class="form-grid">
                 
-                </select></div>
+                
                 <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion"></div>
-                <div class="rol"><label for="rol">Rol: </label><select name="rol" id="rol">
+                <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol">
                     <option value="gerente">Gerente</option>
                     <option value="administrador">Administrador</option>
-                    
                 </select></div>
                 <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre"></div>
                 <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido"></div>
-                <div class="campo"><label for="telefono">Telefono: </label><input type="text" name="telefono" id="telefono"></div>
+                <div class="campo"><label for="telefono">Teléfono: </label>
+                 <input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
                 <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion"></div>
                 <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo"></div>
                 <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena"></div>

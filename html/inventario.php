@@ -1,5 +1,12 @@
 <?php
 
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 
 if (!$conexion) {
