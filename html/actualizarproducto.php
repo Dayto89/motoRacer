@@ -21,6 +21,7 @@ if (!isset($_SESSION['usuario_id'])) {
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
+
 <body>
 
     <!-- Aquí se cargará el header -->
@@ -203,27 +204,27 @@ if (!isset($_SESSION['usuario_id'])) {
             </form>
         </div>
     </div>
-<?php
+    <?php
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+        $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
 
-    if (isset($_POST['guardar'])) {
-        $codigo = $_POST['selectProducto'];
-        $nombre = $_POST['nombre'];
-        $iva = $_POST['iva'];
-        $precio1 = $_POST['precio1'];
-        $precio2 = $_POST['precio2'];
-        $precio3 = $_POST['precio3'];
-        $cantidad = $_POST['cantidad'];
-        $descripcion = $_POST['descripcion'];
-        $categoria = $_POST['categoria'];
-        $marca = $_POST['marca'];
-        $unidadMedida = $_POST['unidadMedida'];
-        $ubicacion = $_POST['ubicacion'];
-        $proveedor = $_POST['proveedor'];
+        if (isset($_POST['guardar'])) {
+            $codigo = $_POST['selectProducto'];
+            $nombre = $_POST['nombre'];
+            $iva = $_POST['iva'];
+            $precio1 = $_POST['precio1'];
+            $precio2 = $_POST['precio2'];
+            $precio3 = $_POST['precio3'];
+            $cantidad = $_POST['cantidad'];
+            $descripcion = $_POST['descripcion'];
+            $categoria = $_POST['categoria'];
+            $marca = $_POST['marca'];
+            $unidadMedida = $_POST['unidadMedida'];
+            $ubicacion = $_POST['ubicacion'];
+            $proveedor = $_POST['proveedor'];
 
-        $actualizar = "UPDATE producto SET 
+            $actualizar = "UPDATE producto SET 
                         nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
                         cantidad='$cantidad', descripcion='$descripcion', 
                         Categoria_codigo='$categoria', Marca_codigo='$marca', 
@@ -231,22 +232,23 @@ if (!isset($_SESSION['usuario_id'])) {
                         proveedor_nit='$proveedor' 
                       WHERE codigo1='$codigo'";
 
-        mysqli_query($conexion, $actualizar);
-        echo "<script>alert('Producto actualizado correctamente');</script>";
-    }
-
-    if (isset($_POST['eliminar'])) {
-        $codigo = $_POST['selectProducto'];
-        
-        if (!empty($codigo)) {
-            $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
-            mysqli_query($conexion, $eliminar);
-            echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
+            mysqli_query($conexion, $actualizar);
+            echo "<script>alert('Producto actualizado correctamente');</script>";
         }
-    }
 
-    mysqli_close($conexion);
-}
-?>
+        if (isset($_POST['eliminar'])) {
+            $codigo = $_POST['selectProducto'];
+
+            if (!empty($codigo)) {
+                $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
+                mysqli_query($conexion, $eliminar);
+                echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
+            }
+        }
+
+        mysqli_close($conexion);
+    }
+    ?>
 </body>
+
 </html>

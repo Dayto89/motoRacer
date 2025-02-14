@@ -9,6 +9,7 @@ body {
     background-image: url('fondoMotoRacer.png'); 
     background-size: cover;
     background-position: center;
+   
 }
 body::before {
     position: fixed;
@@ -126,76 +127,77 @@ body::before {
     height: 100vh;
 }
 
-.sidebar:hover ~ .main-content {
-    margin-left: 270px;
-}
-
-.main-content h1 {
+h1 {
+    font-size: 50px;
+    margin-top: 92px;
     color: white;
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 50px;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    margin-left: 37%;
+    letter-spacing: 5px;
 }
 
-.form-section {
-    padding: 0 10%;
+.container {
+    display: grid;
+    background-color: rgb(174 174 174 / 59%);
+    border-radius: 10px;
+    justify-content: space-between;
+    width: 62em;
+    margin-left: 323px;
+    margin: 0; /* Quita márgenes */
+    padding: 0; /* Quita rellenos */
+    margin: auto;
+    margin-top: 27px;
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 20px; /* Espacio horizontal entre columnas */
-    row-gap: 20px; /* Espacio vertical entre filas */
-}
-
-input, select {
-    border: 1px solid #ccc; /* Agrega un borde para mayor visibilidad */
-    background-color: #ffffff; /* Fondo oscuro para coherencia con tu diseño */
-    color: rgb(0, 0, 0); /* Texto blanco */
-    border-radius: 5px;
-    padding: 8px;
-    font-size: 16px;
-}
-
-label {
-    color: white;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+    gap: 15px; /* Espacio entre los campos */
 }
 
 .campo {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     width: 320px;
     max-width: 100%;
     padding: 10px 88px;
     margin-bottom: 10px;
-    
-    
 }
 
-
-.campo2 {
-  
-    width: 360px;
-    max-width: 200%;
-    padding: 10px 50px;
+.campo label {
+    margin-bottom: 5px;
+    color: white;
     margin-bottom: 10px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 2px 0 #1c51a0;
+    white-space: nowrap;
+}
+
+.campo input,
+.campo select {
+    width: 125%;
+    padding: 8px;
+    font-size: 0.9rem; /* Hacer el texto un poco más pequeño */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s ease;
     
 }
 
-input[type='text'], input[type='number'] {
-    padding: 4px 2px
+.campo input:focus,
+.campo select:focus {
+    outline: none;
+    border-color: #007BFF;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
 }
-
 
 .button-container {
     text-align: center;
-    position: relative;
-    display: inline-block;
-    width: 360px;
-    margin-left: 200px;
-    margin-top: 90px;
+    margin-top: 20px;
 }
 
-.button-container  button{
+.button-container .boton button {
     background-color: #007BFF;
     font-weight: bold;
     color: white;
@@ -205,232 +207,30 @@ input[type='text'], input[type='number'] {
     cursor: pointer;
     border-radius: 11px;
     transition: background-color 0.3s ease;
-    margin-left: 247px;
-    margin-top: -12px;
-    margin-bottom: 10px;
+    margin-left: 133%;
+    margin-bottom: 4%;
+    width: 46%;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: white;
-}
-
-th, td {
-    border: 1px solid #666;
-    padding: 10px;
-    text-align: left;
-}
-
-th {
-    background-color: #444;
-    font-weight: bold;
-    text-align: center;
-}
-
-td {
-    background-color: #222;
-    text-align: center;
-}
-
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-}
-
-.text-center {
-    text-align: center;
-}
-.submenu {
-    display: flex;
-    gap: 200px;
-    justify-content: space-evenly;
-    margin-top: 20px;
-}
-
-.submenu button {
-    background-color: #1167CC;
-    color: white;
-    padding: 5px 20px;
-    border:3.5px white inset;;
-    cursor: pointer;
-    font-size: 30px;
-    border-radius: 5px;
-}
-
-.submenu button:hover {
-    background-color: #3f6fb6;
-}
-
-.boton{
-    margin-right: 900px;
-}
-
-
-.container {
-    display: flex;
-    background-color: rgb(174 174 174 / 59%);
-    border-radius: 10px;
-    justify-content: space-between;
-    width: 62em;
-    margin-left: 323px;
-    margin: 0;
-    padding: 0;
-    margin: auto;
-    margin-top: 27px;
-    
-}
-
-.left-side, .right-side {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.left-side {
-    width: 150px;
-    align-items: center; 
-    
-}
-.left-side i {
-    color: #fff; 
-}
-.right-side {
-    width: 300px;
-    margin-left: 20px;
-}
-
-.input-field {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-bottom: 1px solid white;
-    background-color: #333;
-    color: #fff;
-    
-}
-
-
-
-
-.campo #descripcionActualizar{
-    width: 300px;
-    height: 100px;
-}
-
-#proveedor h1{
-    font-size: 80px;
-    margin-top: 115px;
-    margin-bottom: 150px;
-    font-family: "Metal Mania", system-ui;
-    
-    color: #ffffff;
-    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    
-}
-
-#crearProveedor h1{
-    font-size: 50px;
-    margin-top: 115px;
-    margin-bottom: 80px;
-    color: #ffffff;
-    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 600px;
-    letter-spacing: 5px;
-}
-
-#crearProveedor .campo label{
-    font-size: 25px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: -2px 2px 0 #1c51a0;
-    white-space: nowrap;
-}
-
-#crearProveedor input{
-    margin-top: 20px;
-    height: 40px;
-    margin-right: 45px;
-    border-radius: 20px;
-}
-
-.campo #nombreProveedor{
-    margin-top: 20px;
-    height: 40px;
-    width: 250px;
-    margin-right: 45px;
-}
-
-
-
-#actualizarProveedor h1{
-    font-size: 50px;
-    margin-top: 200px;
-    margin-bottom: 80px;
-    color: #ffffff;
-    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 572px;
-    letter-spacing: 5px;
-}
-
-#actualizarProveedor .campo label{
-    margin-bottom: 10px;
-    font-size: 30px;
-}
-
-#actualizarProveedor input{
-    margin-top: 20px;
-    height: 40px;
-    margin-right: 45px;
-    border-radius: 18px
-}
-
-.campo #nombreProveedorActualizar{
-    margin-top: 20px;
-    height: 40px;
-    width: 250px;
-    margin-right: 45px;
-}
-
-#actualizar-proveedor-form{
-    margin-left: 550px;
-}
-
-#configuracion h1{
-    font-size: 50px;
-    margin-top: 200px;
-}
-
-.container-config {
-    display: flex;
-    gap: 70px;
-    justify-content: space-evenly;
-    margin-top: 80px;
-}
-
-.container-config button{
-    height: 80px;
-}
-
-
-.campo select {
-    width: 125%;
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 8px;
-    margin-top: 14px;
-}
-
-.button-container button:hover {
-    background-color: #0056b3;
-}
-
-#eliminar {
+.button-container .boton button#eliminar {
     background-color: #f44336;
     color: white;
 }
 
-#eliminar:hover {
+.button-container .boton button#eliminar:hover {
     background-color: #d32f2f;
+}
+
+.button-container .boton button:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
 }

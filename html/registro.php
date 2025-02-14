@@ -21,27 +21,34 @@
         <h1>CREAR USUARIO</h1>
         <form name="formulario" method="post" action="">
             <div class="form-grid">
-                
-                
                 <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion"></div>
-                <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol">
-                    <option value="gerente">Gerente</option>
-                    <option value="administrador">Administrador</option>
-                </select></div>
+                <div class="campo"><label for="rol">Rol: </label>
+                    <select name="rol" id="rol">
+                        <option value="gerente">Gerente</option>
+                        <option value="administrador">Administrador</option>
+                    </select>
+                </div>
                 <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre"></div>
                 <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido"></div>
                 <div class="campo"><label for="telefono">Teléfono: </label>
-                 <input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
+                    <input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required>
+                </div>
                 <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion"></div>
                 <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo"></div>
                 <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena"></div>
                 <div class="campo"><label for="confirmar">Confirmar Contraseña: </label><input type="password" name="confirmar" id="confirmar"></div>
+                <!-- Campos para la pregunta y respuesta de seguridad -->
+                <div class="campo"><label for="preguntaSeguridad">Pregunta de Seguridad: </label>
+                    <input type="text" name="preguntaSeguridad" id="preguntaSeguridad" required>
+                </div>
+                <div class="campo"><label for="respuestaSeguridad">Respuesta de Seguridad: </label>
+                    <input type="text" name="respuestaSeguridad" id="respuestaSeguridad" required>
+                </div>
             </div>
-        
-        <div class="button_container">
-            <button type="submit" class="boton">Registrar</button>
-            <a href="/index.php" class="botonn">Volver</a>
-        </div>
+            <div class="button_container">
+                <button type="submit" class="boton">Registrar</button>
+                <a href="/index.php" class="botonn">Volver</a>
+            </div>
         </form>
 </html>
 
@@ -56,11 +63,12 @@ if ($_POST) {
     $telefono = $_POST['telefono'];
     $direccion = $_POST['direccion'];
     $correo = $_POST['correo'];
-
+    $preguntaSeguridad = $_POST['preguntaSeguridad'];
+    $respuestaSeguridad = $_POST['respuestaSeguridad'];
 
     // Validar los campos
-    if (empty($identificacion) || empty($contrasena) || empty($confirmar)) {
-        echo "<script>alert('Los campos identificacion, contrasena y confirmar deben ser llenados');</script>";
+    if (empty($identificacion) || empty($contrasena) || empty($confirmar) || empty($preguntaSeguridad) || empty($respuestaSeguridad)) {
+        echo "<script>alert('Todos los campos deben ser llenados');</script>";
         exit;
     }
 
@@ -81,13 +89,13 @@ if ($_POST) {
         die("Error de conexión: " . mysqli_connect_error());
     }
 
-    $stmt = $conexion->prepare("INSERT INTO usuario (identificacion, tipoDocumento, rol, nombre, apellido, telefono, direccion, correo, contraseña, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conexion->prepare("INSERT INTO usuario (identificacion, tipoDocumento, rol, nombre, apellido, telefono, direccion, correo, contraseña, estado, preguntaSeguridad, respuestaSeguridad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     if ($stmt === false) {
         die("Error en la preparación de la consulta: " . mysqli_error($conexion));
     }
 
-    $stmt->bind_param("ssssssssss", $identificacion, $tipoDocumento, $rol, $nombre, $apellido, $telefono, $direccion, $correo, $contrasenaHashed, $estado);
+    $stmt->bind_param("ssssssssssss", $identificacion, $tipoDocumento, $rol, $nombre, $apellido, $telefono, $direccion, $correo, $contrasenaHashed, $estado, $preguntaSeguridad, $respuestaSeguridad);
 
     if ($stmt->execute()) {
         echo "<script>alert('Registro exitoso')</script>";
@@ -99,6 +107,4 @@ if ($_POST) {
     $stmt->close();
     mysqli_close($conexion);
 }
-
-
 ?>

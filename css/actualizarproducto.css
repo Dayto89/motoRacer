@@ -7,6 +7,8 @@
 body {
     font-family: "Metal Mania", system-ui;
     background-image: url('fondoMotoRacer.png'); 
+    background-size: cover;
+    background-position: center;
    
 }
 body::before {
