@@ -1,102 +1,90 @@
-<?php
-session_start();
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Factura</title>
-    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <link rel="stylesheet" href="../css/factura.css" />
-    <link rel="stylesheet" href="/componentes/header.html" />
-    <link rel="stylesheet" href="/componentes/header.css" />
-    <script src="/js/index.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
-    </style>
-  </head>
-  <body>
-    <!-- Aquí se cargará el header -->
-    <div id="menu"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="../css/factura.css">
+    <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.html">
+    
+</head>
+<body>
 
-    <!-- Contenido principal -->
-    <div class="main-content">
-      <!-- Sección de Facturas -->
-      <div id="facturas" class="form-section" style="display: block">
-        <h1>Facturas</h1>
-        <div class="submenu">
-          <button onclick="showForm('listaProductos')">
-            Lista de productos
-          </button>
-          <button onclick="showForm('descargarLista')">Descargar lista</button>
+<div id="menu"></div>
+
+
+    <!-- Contenedor principal -->
+    <div class="main">
+        <!-- Barra superior -->
+        <div class="topbar">
+            
+            <input type="text" id="search" placeholder="Buscar por Producto, Referencia o Código">
         </div>
-      </div>
 
-      <!-- Sección para Lista de productos -->
-      <div id="listaProductos" class="form-section" style="display: none">
-        <h1>Lista de productos</h1>
+        <!-- Lista de marcas -->
+        <div class="brands">
+            <div class="brand-list">
+                <?php
+                    $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
 
-        <table>
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Fecha</th>
-              <th class="text-center">
-                <input type="checkbox" />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>001</td>
-              <td>Producto 1</td>
-              <td>12/09/2024</td>
-              <td class="text-center">
-                <i class="fa-solid fa-trash"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>002</td>
-              <td>Producto 2</td>
-              <td>13/09/2024</td>
-              <td class="text-center">
-                <i class="fa-solid fa-trash"></i>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="text-center">
-                <i class="fa-solid fa-trash"></i>
-              </td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="text-center">
-                <i class="fa-solid fa-trash"></i>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!-- Sección para Descargar lista -->
-      <div id="descargarLista" class="form-section" style="display: none;">
-        <h1>Descargar lista</h1>
-        <p></p>
+                    if (!$conexion) {
+                        die("Error en la conexión: " . mysqli_connect_error());
+                    }
+                    $stmt = $conexion->prepare("SELECT * FROM categoria");
+                    $stmt->execute();
+                    $resultado = $stmt->get_result();
+
+                    if ($resultado->num_rows > 0) {
+                        while ($fila = $resultado->fetch_assoc()) {
+                            echo "<button class='brand'>" . $fila['nombre'] . "</button>";
+                        }
+                    } else {
+                        echo "<script>alert('No hay marcas en la base de datos');</script>";
+                        mysqli_close($conexion);
+                    }
+                ?>
+            </div>
+        </div>
+
+        <!-- Lista de productos -->
+        <div class="products">
+            <?php
+                $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+                $consulta = "SELECT * FROM producto";
+                $resultado = mysqli_query($conexion, $consulta);
+
+                if ($resultado->num_rows > 0) {
+                    while ($fila = mysqli_fetch_assoc($resultado)) {
+                        echo "<div class='card'>
+                                <div class='card-header'>
+                                    <span class='product-id'>{$fila['codigo1']}</span>
+                                    <button class='more-btn'>⋮</button>
+                                </div>
+                                <p class='product-name'>{$fila['nombre']}</p>
+                                <p class='product-code'>{$fila['precio2']}</p>
+                                <p class='product-price'>$" . number_format($fila['precio3'], 2) . "</p>
+                                <button class='favorite-btn'>⭐</button>
+                            </div>";
+                    }
+                } else {
+                    echo "<script>alert('No hay productos en la base de datos');</script>";
+                    mysqli_close($conexion);
+                }
+            ?>
+        </div>
     </div>
+
+    <!-- Barra lateral derecha -->
+    <div class="sidebar-right">
+        <h3>Resumen</h3>
+        <div class="total">
+            <span>Total:</span>
+            <span id="total-price">$0.00</span>
+        </div>
+        <button class="btn pay-btn">Cobrar</button>
     </div>
-  </body>
+    <script src="../js/index.js"></script>
+    <script src="../js/factura.js"></script>
+</body>
 </html>
