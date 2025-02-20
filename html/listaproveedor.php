@@ -42,7 +42,7 @@ if (!$resultado) {
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="../css/inventario.css" />
+  <link rel="stylesheet" href="../css/listaproveedor.css" />
   <link rel="stylesheet" href=" ../componentes/header.html">
   <link rel="stylesheet" href="../componentes/header.css">
   <script src="/js/index.js"></script>
@@ -83,9 +83,7 @@ if (!$resultado) {
             <th>Dirección</th>
             <th>Correo</th>
             <th>Estado</th>
-            <th class="text-center">
-              <input type="checkbox" />
-            </th>
+
           </tr>
         </thead>
         <tbody>
@@ -97,10 +95,6 @@ if (!$resultado) {
               <td><?= $fila["direccion"] ?? 'N/A'; ?></td>
               <td><?= $fila["correo"] ?? 'N/A'; ?></td>
               <td><?= $fila["estado"] ?? 'N/A'; ?></td> 
-              <td class='text-center'>
-                <i class='fa-regular fa-pen-to-square' title='Editar'></i>
-                <i class='fa-solid fa-trash' title='Eliminar'></i>
-              </td>
             </tr>
           <?php } ?>
         </tbody>

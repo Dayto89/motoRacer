@@ -1,11 +1,9 @@
 <?php
-
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 
@@ -13,7 +11,9 @@ if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-$busqueda = isset($_GET['busqueda']) ? mysqli_real_escape_string($conexion, $_GET['busqueda']) : '';
+// Obtener el criterio de búsqueda y el valor
+$criterio = isset($_GET['criterio']) ? mysqli_real_escape_string($conexion, $_GET['criterio']) : '';
+$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
 
 $consulta = "
     SELECT 
@@ -43,31 +43,41 @@ $consulta = "
         ubicacion ub ON p.Ubicacion_codigo = ub.codigo
     LEFT JOIN 
         proveedor pr ON p.proveedor_nit = pr.nit
+    WHERE 1=1
 ";
 
-if ($busqueda != '') {
-  $consulta .= " WHERE 
-      p.codigo1 LIKE '%$busqueda%' OR 
-      p.codigo2 LIKE '%$busqueda%' OR
-      p.nombre LIKE '%$busqueda%' OR 
-      p.cantidad LIKE '%$busqueda%' OR
-      p.descripcion LIKE '%$busqueda%' OR
-      c.nombre LIKE '%$busqueda%' OR 
-      m.nombre LIKE '%$busqueda%' OR 
-      ub.nombre LIKE '%$busqueda%'";
+// Aplicar el filtro según el criterio seleccionado
+if ($criterio && $valor) {
+    switch ($criterio) {
+        case 'codigo':
+            $consulta .= " AND p.codigo1 = '$valor'";
+            break;
+        case 'nombre':
+            $consulta .= " AND p.nombre LIKE '%$valor%'";
+            break;
+        case 'categoria':
+            $consulta .= " AND c.nombre LIKE '%$valor%'";
+            break;
+        case 'marca':
+            $consulta .= " AND m.nombre LIKE '%$valor%'";
+            break;
+        case 'ubicacion':
+            $consulta .= " AND ub.nombre LIKE '%$valor%'";
+            break;
+        case 'proveedor':
+            $consulta .= " AND pr.nombre LIKE '%$valor%'";
+            break;
+        default:
+            // No se aplica ningún filtro adicional
+            break;
+    }
 }
-
-
 
 $resultado = mysqli_query($conexion, $consulta);
 
 if (!$resultado) {
   die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
 }
-
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -77,9 +87,7 @@ if (!$resultado) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventario</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../css/inventario.css" />
   <link rel="stylesheet" href=" ../componentes/header.html">
   <link rel="stylesheet" href="../componentes/header.css">
@@ -93,23 +101,29 @@ if (!$resultado) {
   <!-- Aquí se cargará el header -->
   <div id="menu"></div>
 
-
-  <!--Barra de búsqueda fija con efecto deslizante -->
+  <!-- Barra de búsqueda con selección de criterio -->
   <div class="search-bar">
     <form method="GET" action="inventario.php">
+      <select name="criterio" required>
+        <option value="">Seleccione un criterio</option>
+        <option value="codigo">Código</option>
+        <option value="nombre">Nombre</option>
+        <option value="categoria">Categoría</option>
+        <option value="marca">Marca</option>
+        <option value="ubicacion">Ubicación</option>
+        <option value="proveedor">Proveedor</option>
+      </select>
+      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar" required>
       <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
         <i class="bx bx-search-alt-2 icon"></i>
       </button>
-      <input class="form-control" type="text" name="busqueda" placeholder="Buscar">
     </form>
-
   </div>
 
   <!-- Contenido principal -->
   <div class="main-content">
 
     <!-- Sección del Inventario -->
-
     <div id="inventario" class="form-section">
       <h1>Inventario</h1>
       <table>
@@ -153,12 +167,11 @@ if (!$resultado) {
               <td><?= $fila["proveedor"] ?? 'N/A'; ?></td>
               <td class='text-center'>
                 <i class='fa-regular fa-pen-to-square' title='Editar'></i>
-                <i class='fa-solid fa-trash' title='Eliminar'></i>
+                <i class='fa-solid fa-trash' id="eliminar" title='Eliminar'></i>
               </td>
             </tr>
           <?php } ?>
         </tbody>
-
       </table>
     </div>
   </div>

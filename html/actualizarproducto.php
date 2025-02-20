@@ -15,7 +15,8 @@ if (!isset($_SESSION['usuario_id'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/actualizarproducto.css">
     <link rel="stylesheet" href="/componentes/header.html">
-    <link rel="stylesheet" href="/componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.css">
+
     <script src="/js/index.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
@@ -200,6 +201,21 @@ if (!isset($_SESSION['usuario_id'])) {
                             <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">Eliminar</button>
                         </div>
                     </div>
+                    <!-- Se agregó la clase 'main' dentro de un contenedor que se desplaza con la barra lateral -->
+                    <div class="container">
+                        <div class="main">
+                            ...
+                        </div>
+                    </div>
+
+                    <!-- Se cambió el orden para asegurar que la barra lateral afecta al contenido -->
+                    <div class="sidebar">
+                        ...
+                    </div>
+                    <div class="main">
+                        ...
+                    </div>
+
                 </div>
             </form>
         </div>

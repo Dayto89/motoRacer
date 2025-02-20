@@ -6,25 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restablecer Contraseña</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="/css/registro.css">
+    <link rel="stylesheet" href="../css/registro.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
 
 <body>
     <div class="container">
+        <img src="../imagenes/motoracer.png" alt="Fondo" class="fondo">
+        <img src="../imagenes/logo1.png" alt="Logo" class="logo_inicio" style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
+        <div class="barra"></div>
+
         <h1>RESTABLECER CONTRASEÑA</h1>
-        <form method="post" action="">
-            <div class="form-grid">
-                <label for="nueva_contrasena">Nueva Contraseña:</label>
+        <form name="formulario" method="post" action="">
+
+            <div class="campo"><label for="nueva_contrasena">Nueva Contraseña:</label>
                 <input type="password" name="nueva_contrasena" id="nueva_contrasena" required>
-                <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
-                <input type="password" name="confirmar_contrasena" id="confirmar_contrasena" required>
-                <input type="hidden" name="usuario" value="<?php echo $_GET['usuario']; ?>">
-                <button type="submit" name="restablecer" class="boton">Restablecer Contraseña</button>
             </div>
+            <div class="campo"> <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
+                <input type="password" name="confirmar_contrasena" id="confirmar_contrasena" required>
+            </div>
+            <input type="hidden" name="usuario" value='<?php echo $_GET["usuario"]; ?>'>
+
+            <div class="button_container">
+                <button type="submit" name="restablecer" class="boton">Restablecer Contraseña</button>
+                <a href="../index.php" class="botonn">Inicio</a>
+
+
         </form>
     </div>
 </body>

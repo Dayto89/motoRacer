@@ -225,6 +225,39 @@ h1 {
     background-color: #0056b3;
 }
 
+/* Se agregó transición en el desplazamiento del body */
+body {
+    transition: margin-left 0.3s ease;
+}
+
+/* Se ajusta el margen del contenido cuando la barra lateral se expande */
+.sidebar:hover ~ .main {
+    margin-left: 270px;
+}
+
+/* Se optimizó la sidebar-header */
+.sidebar-header {
+    padding: 20px;
+    color: white;
+}
+
+/* Se optimizó la lista del menú */
+.menu {
+    padding: 20px;
+    color: white;
+}
+
+/* Se muestra el texto del menú cuando se expande la barra */
+.sidebar:hover .menu li a span {
+    display: inline-block;
+    font-size: 25px;
+}
+
+/* Se agregó transición al efecto hover del menú */
+.menu li a {
+    transition: background 0.3s ease;
+}
+
 @media (max-width: 768px) {
     .form-grid {
         grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */

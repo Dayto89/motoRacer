@@ -23,7 +23,7 @@ body::before {
     padding: 20px;
     transition: margin-left 0.3s ease;
     height: 100vh;
-    margin-right: 100px;
+    margin-right: 50px;
 }
 
 
@@ -73,11 +73,6 @@ td {
 
 .text-center i{
     padding: 5px;
-}
-
-#eliminar{
-    color: rgb(255, 72, 72);
-
 }
 
 input[type="checkbox"] {

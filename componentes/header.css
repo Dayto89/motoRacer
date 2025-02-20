@@ -228,3 +228,16 @@ h2 {
 .bx-tada {
     animation-duration: 5s;
 }
+
+/* Cuando el sidebar está expandido */
+.sidebar-expanded .main {
+    margin-left: 290px;
+    transition: margin-left 0.3s ease;
+}
+
+/* Estado normal (sidebar colapsado) */
+.main {
+    margin-left: 108px;
+    transition: margin-left 0.3s ease;
+}
+

@@ -23,7 +23,7 @@ if ($_POST) {
         $resultado = $conexion->query($sql);
 
         if ($resultado->num_rows > 0) {
-            echo "<script>'./html/resetear.php?usuario=$usuario';</script>";
+            header("Location: ../html/resetear.php?usuario=$usuario");
             exit();
         } else {
             echo "<script>alert('Respuesta incorrecta. Inténtelo de nuevo.');</script>";
@@ -45,7 +45,7 @@ if ($_POST) {
     <link rel="stylesheet" href="/css/registro.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
 
@@ -58,10 +58,10 @@ if ($_POST) {
 
         <h1>RECUPERAR CONTRASEÑA</h1>
         <form name="formulario_recuperar" method="post" action="">
-            <div class="form-grid">
-                <div class="campo"><label for="usuario">Usuario: </label><input type="text" name="usuario" id="usuario">
-                </div>
-                <?php
+
+            <div class="campo1"><label for="usuario">Usuario: </label><input type="text" name="usuario" id="usuario">
+            </div>
+            <?php
             // Conectar a la base de datos
             $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
             if ($conexion->connect_error) {
@@ -79,7 +79,7 @@ if ($_POST) {
             }
             ?>
 
-            <div class="campo">
+            <div class="campo1">
                 <label for="preguntaSeguridad">Pregunta de Seguridad:</label>
                 <select name="preguntaSeguridad" id="preguntaSeguridad" required>
                     <option value="">Seleccione una pregunta de seguridad</option>
@@ -92,13 +92,17 @@ if ($_POST) {
                     <?php } ?>
                 </select><br>
             </div>
+            <div class="campo1">
                 <label for="respuestaSeguridad">Respuesta:</label>
                 <input type="text" name="respuestaSeguridad" id="respuestaSeguridad" required>
             </div>
 
+
             <div class="button_container">
                 <button type="submit" name="verificar" class="boton">Verificar Respuesta</button>
+                <a href="../index.php" class="botonn">Inicio</a>
             </div>
+
         </form>
     </div>
 </body>

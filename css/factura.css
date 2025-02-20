@@ -8,21 +8,79 @@
     --card-border: #bdc3c7;
     --btn-bg: #2980b9;
     --btn-hover: #1f6692;
+
+    /* Estilos para breadcrumb */
+    --breadcrumb-bg: #eee;
+    --breadcrumb-text: black;
+    --breadcrumb-active: #4CAF50;
+    --breadcrumb-active-hover: #397f3b;
 }
 
+/* Estilos para Breadcrumb */
+ul.breadcrumb {
+    padding: 8px 16px;
+    list-style: none;
+    background-color: var(--breadcrumb-bg);
+    border-radius: 5px;
+    margin: 15px 0;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+ul.breadcrumb li {
+    display: inline;
+}
+
+ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: var(--breadcrumb-text);
+    content: "/\00a0";
+}
+
+ul.breadcrumb a {
+    text-decoration: none;
+    color: var(--breadcrumb-text);
+}
+
+ul.breadcrumb a.active {
+    color: var(--breadcrumb-active);
+    font-weight: bold;
+}
+
+ul.breadcrumb a.active:hover {
+    color: var(--breadcrumb-active-hover);
+}
+
+/* Contenedor principal */
+body {
+    display: flex;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    transition: margin-left 0.3s ease; /* Suaviza el desplazamiento */
+}
+
+/* Barra lateral (Menú) */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100px;
-    height: 100%;
+    height: 100vh;
     background: linear-gradient(180deg, #1167CC, #083972, #000000);
     transition: width 0.3s ease;
     overflow: hidden;
+    position: fixed;
+    left: 0;
+    top: 0;
 }
 
 .sidebar:hover {
     width: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main {
+    margin-left: 270px;
 }
 
 .sidebar:hover .logo {
@@ -31,7 +89,7 @@
     margin-left: 30px;
 }
 
-.sidebar:hover .sidebar-header i{
+.sidebar:hover .sidebar-header i {
     transform: scale(3);
     transition: 1s;
     margin-left: 50px;
@@ -43,14 +101,11 @@
     justify-content: flex-start;
     padding: 20px;
     color: white;
-        list-style-type: none;
-        padding: 20px;
-        color: #ffffff; /* Color del texto */
-        text-shadow: 
-            -1px -1px 0 #000,  
-            1px -1px 0 #000,  
-            -1px 1px 0 #000,  
-            0px 1px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */    
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,  
+        -1px 1px 0 #000,  
+        0px 1px 0 #000;
 }
 
 .logo {
@@ -58,15 +113,16 @@
     height: auto;
     margin-right: 10px;
 }
+
 .menu {
     list-style-type: none;
     padding: 20px;
-    color: #ffffff; /* Color del texto */
+    color: #ffffff;
     text-shadow: 
         -1px -1px 0 #000,  
         1px -1px 0 #000,  
         -1px 1px 0 #000,  
-        3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
+        3px 3px 0 #000;
 }
 
 .menu li {
@@ -101,23 +157,14 @@
     background-color: #3f6fb6;
 }
 
-/* Estilos generales */
-body {
-    display: flex;
-    background: var(--background);
-    color: var(--foreground);
-    font-family: Arial, sans-serif;
-    margin: 0;
-    height: 100vh;
-}
-
 /* Contenido principal */
 .main {
     flex: 1;
     display: flex;
     flex-direction: column;
     padding: 10px;
-    margin-left: 300px;
+    margin-left: 100px;
+    transition: margin-left 0.3s ease;
 }
 
 /* Barra superior */
@@ -126,6 +173,7 @@ body {
     align-items: center;
     gap: 10px;
     padding: 10px;
+    padding: 40px;
 }
 
 #search {
@@ -133,39 +181,14 @@ body {
     padding: 5px;
     border: 1px solid var(--card-border);
     border-radius: 5px;
-    
 }
-
-/* Marcas */
-.brands {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-
-}
-
-.brand-list {
-    display: flex;
-    gap: 5px;
-    overflow-x: auto;
-}
-
-.brand {
-    padding: 5px 10px;
-    background: var(--primary);
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-
 
 /* Lista de productos */
 .products {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
-    padding: 10px;
+    padding: 40px;
     overflow-y: auto;
 }
 
@@ -205,7 +228,6 @@ body {
     margin-bottom: 10px;
 }
 
-
 .total {
     display: flex;
     justify-content: space-between;
@@ -225,4 +247,66 @@ body {
 
 .pay-btn:hover {
     background: var(--btn-hover);
+}
+
+.menu-abierto .contenedor-cuadros {
+    padding-left: 300px;
+}
+
+.brands {
+    margin-left: 40px;
+}
+.search-bar {
+    position: fixed;
+    top: 9px;
+    right: 141px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    transition: width 1s ease; /* Animación de deslizamiento */
+    width: 55px; /* Tamaño reducido por defecto */
+    overflow: hidden;
+}
+
+.search-bar:hover {
+    width: 400px; /* Tamaño al hacer hover */
+}
+
+.search-bar form {
+    margin-right: 90px;
+    margin-top: 90px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 8px;
+    font-size: 3em;
+    text-shadow: 3px 1px 0 #1c51a0,  2px 3px 0 #1c51a0;
+   
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.7em;
+     
+   
+}
+
+.search-bar:hover input {
+    width: 400px; /* Anchura al hacer hover */
+    padding: 5px 10px; /* Añadir espaciado */
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+    font-size: 18px;
+    
 }

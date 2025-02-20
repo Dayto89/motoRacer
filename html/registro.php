@@ -1,79 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrarse/Moto Racer</title>
+    <title>Recuperar Contraseña</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="/css/registro.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
+
 <body>
     <div class="container">
         <img src="../imagenes/motoracer.png" alt="Fondo" class="fondo">
-        <img src="../imagenes/LOGO.png" alt="Logo" class="logo_inicio" style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
-        <div class="barra"></div>
+        <img src="../imagenes/LOGO.png" alt="Logo" class="logo_inicio"
+            style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
+<div class="barra"></div>
+        
+
         <h1>CREAR USUARIO</h1>
         <form name="formulario" method="post" action="">
-            <div class="form-grid">
-                <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion"></div>
-                <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol">
-                    <option value="gerente">Gerente</option>
-                    <option value="administrador">Administrador</option>
-                </select></div>
-                <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre"></div>
-                <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido"></div>
-                <div class="campo"><label for="telefono">Teléfono: </label><input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
-                <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion"></div>
-                <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo"></div>
-                <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena"></div>
-                <div class="campo"><label for="confirmar">Confirmar Contraseña: </label><input type="password" name="confirmar" id="confirmar"></div>
-            </div>
+    <div class="form-grid">
+        <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion" required></div>
+        <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol" required>
+                <option value="gerente">Gerente</option>
+                <option value="administrador">Administrador</option>
+            </select></div>
+        <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre" required></div>
+        <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido" required></div>
+        <div class="campo"><label for="telefono">Teléfono: </label><input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
+        <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion" required></div>
+        <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo" required></div>
+        <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena" required></div>
+        <div class="campo"><label for="confirmar">Confirmar Contraseña: </label><input type="password" name="confirmar" id="confirmar" required></div>
 
-            <?php
-            // Conectar a la base de datos
-            $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            if ($conexion->connect_error) {
-                die("Error de conexión: " . $conexion->connect_error);
-            }
+        <?php
+        // Conectar a la base de datos
+        $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+        if ($conexion->connect_error) {
+            die("Error de conexión: " . $conexion->connect_error);
+        }
 
-            // Obtener las opciones de preguntaSeguridad (ENUM)
-            $sql = "SHOW COLUMNS FROM usuario LIKE 'preguntaSeguridad'";
-            $resultado = $conexion->query($sql);
+        // Obtener las opciones de preguntaSeguridad (ENUM)
+        $sql = "SHOW COLUMNS FROM usuario LIKE 'preguntaSeguridad'";
+        $resultado = $conexion->query($sql);
 
-            if ($resultado->num_rows > 0) {
-                $fila = $resultado->fetch_assoc();
-                // Extraer las opciones del ENUM
-                $opciones = explode("','", preg_replace("/(enum\('|'\))/", "", $fila['Type']));
-            }
-            ?>
+        if ($resultado->num_rows > 0) {
+            $fila = $resultado->fetch_assoc();
+            // Extraer las opciones del ENUM
+            $opciones = explode("','", preg_replace("/(enum\('|'\))/", "", $fila['Type']));
+        }
+        ?>
 
-            <div class="campo">
-                <label for="preguntaSeguridad">Pregunta de Seguridad:</label>
-                <select name="preguntaSeguridad" id="preguntaSeguridad" required>
-                    <option value="">Seleccione una pregunta de seguridad</option>
-                    <?php if (!empty($opciones)) { ?>
-                        <?php foreach ($opciones as $opcion) { ?>
-                            <option value="<?php echo $opcion; ?>">
-                                <?php echo $opcion; ?>
-                            </option>
-                        <?php } ?>
+        <div class="campo"><label for="preguntaSeguridad">Pregunta de Seguridad:</label>
+            <select name="preguntaSeguridad" id="preguntaSeguridad" required>
+                <option value="">Seleccione una pregunta de seguridad</option>
+                <?php if (!empty($opciones)) { ?>
+                    <?php foreach ($opciones as $opcion) { ?>
+                        <option value="<?php echo $opcion; ?>">
+                            <?php echo $opcion; ?>
+                        </option>
                     <?php } ?>
-                </select><br>
-            </div>
-
-            <label for="respuestaSeguridad">Respuesta:</label>
+                <?php } ?>
+            </select>
+        </div>
+        <div class="campo"><label for="respuestaSeguridad">Respuesta:</label>
             <input type="text" name="respuestaSeguridad" id="respuestaSeguridad" required>
-
-            <div class="button_container">
-                <button type="submit" name="registrar" class="boton">Registrar</button>
-                <a href="../index.php" class="botonn">Volver</a>
-            </div>
-        </form>
+        </div>
     </div>
+
+    <div class="button_container">
+        <button type="submit" name="registrar" class="boton">Registrar</button>
+        <a href="../index.php" class="botonn">Volver</a>
+    </div>
+</form>
 
     <?php
     if ($_POST && isset($_POST['registrar'])) {
@@ -132,4 +135,5 @@
     $conexion->close();
     ?>
 </body>
+
 </html>
