@@ -40,9 +40,9 @@ if ($_POST) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña</title>
+    <title>Verificación</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="/css/registro.css">
+    <link rel="stylesheet" href="/css/olvidar.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
@@ -56,7 +56,7 @@ if ($_POST) {
             style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
         <div class="barra"></div>
 
-        <h1>RECUPERAR CONTRASEÑA</h1>
+        <h1>VERIFICACIÓN</h1>
         <form name="formulario_recuperar" method="post" action="">
 
             <div class="campo1"><label for="usuario">Usuario: </label><input type="text" name="usuario" id="usuario">

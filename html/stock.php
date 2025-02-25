@@ -4,6 +4,20 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
+// Alerta para cada producto por debajo de la cantidad mínima
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+if (!$conexion) {
+    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+}
+
+$sql = "SELECT * FROM producto";
+$resultado = mysqli_query($conexion, $sql);
+$inventario = [];
+
+while ($fila = mysqli_fetch_assoc($resultado)) {
+    $inventario[] = $fila;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -47,7 +61,7 @@ if (!isset($_SESSION['usuario_id'])) {
             <label for="notification-method">Método de Notificación:</label>
             <select id="notification-method">
                 <option value="popup">Emergente</option>
-                <option value="email">Correo Electrónico</option>
+                <option value="email"></option>
                 <option value="both">Ambos</option>
             </select>
         </div>

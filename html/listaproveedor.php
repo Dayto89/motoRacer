@@ -53,7 +53,9 @@ if (!$resultado) {
 
 <body>
   <!-- Aquí se cargará el header -->
-  <div id="menu"></div>
+  <div class="sidebar">
+        <div id="menu"></div>
+    </div>
 
 
   <!--Barra de búsqueda fija con efecto deslizante -->
@@ -69,6 +71,7 @@ if (!$resultado) {
 
   <!-- Contenido principal -->
   <div class="main-content">
+    
 
     <!-- Sección del Inventario -->
 

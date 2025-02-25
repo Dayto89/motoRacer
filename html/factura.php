@@ -1,3 +1,17 @@
+<?php
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+
+if (!$conexion) {
+    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,63 +21,30 @@
     <title>Inventario</title>
     <link rel="stylesheet" href="../css/factura.css">
     <link rel="stylesheet" href="../componentes/header.css">
-    <link rel="stylesheet" href="../componentes/header.html">
-
+    <script src="../js/index.js"></script>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <style>
-        /* Estilos para la breadcrumb */
-        .breadcrumb {
-            list-style: none;
-            display: flex;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            font-size: 16px;
-            margin: 15px 0;
-        }
 
-        .breadcrumb li {
-            display: inline;
-            margin-right: 10px;
-        }
-
-        .breadcrumb li a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .breadcrumb li a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumb .active {
-            color: #6c757d;
-            font-weight: bold;
-        }
     </style>
 </head>
 
 <body>
-
-    <!-- Barra lateral izquierda (Menú) -->
     <div class="sidebar">
         <div id="menu"></div>
     </div>
 
-    <!-- Contenedor principal -->
     <div class="main">
-        <!-- Barra superior -->
-        <div class="topbar">
-            <input type="text" id="search" placeholder="Buscar por Producto, Referencia o Código">
+        <div class="search-bar">
+            <form method="GET" action="factura.php">
+                <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
+                    <i class="bx bx-search-alt-2 icon"></i>
+                </button>
+                <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
+            </form>
         </div>
 
-        <!-- Breadcrumb (Migas de pan) -->
         <ul class="breadcrumb">
             <?php
-            $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-
-            if (!$conexion) {
-                die("Error en la conexión: " . mysqli_connect_error());
-            }
             $stmt = $conexion->prepare("SELECT * FROM categoria");
             $stmt->execute();
             $resultado = $stmt->get_result();
@@ -73,36 +54,77 @@
                     echo "<li><a class='brand'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
                 }
             } else {
-                echo "<script>alert('No hay marcas en la base de datos');</script>";
+                echo "<li>No hay categorías disponibles</li>";
             }
 
             $stmt->close();
-            mysqli_close($conexion);
             ?>
         </ul>
 
-        <!-- Lista de productos -->
         <div class="products">
             <?php
-            $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-            $consulta = "SELECT * FROM producto";
-            $resultado = mysqli_query($conexion, $consulta);
+            if (isset($_GET['busqueda'])) {
+                $buscar = "%" . $_GET['busqueda'] . "%";
+                $stmt = $conexion->prepare("SELECT * FROM producto WHERE nombre LIKE ? OR codigo1 LIKE ?");
+                $stmt->bind_param("ss", $buscar, $buscar);
+                $stmt->execute();
+                $resultado = $stmt->get_result();
+            } else {
+                $consulta = "SELECT * FROM producto";
+                $resultado = mysqli_query($conexion, $consulta);
+            }
 
             if ($resultado->num_rows > 0) {
                 while ($fila = mysqli_fetch_assoc($resultado)) {
-                    echo "<div class='card'>
-                                <div class='card-header'>
-                                    <span class='product-id'>" . htmlspecialchars($fila['codigo1']) . "</span>
-                                    <button class='more-btn'>⋮</button>
-                                </div>
-                                <p class='product-name'>" . htmlspecialchars($fila['nombre']) . "</p>
-                                <p class='product-code'>" . htmlspecialchars($fila['precio2']) . "</p>
-                                <p class='product-price'>$" . number_format($fila['precio3'], 2) . "</p>
-                                <button class='favorite-btn'>⭐</button>
-                            </div>";
+                    echo "<div class='card' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-precio='{$fila['precio3']}'>
+                    <span class='contador-producto'>0</span>
+                    <div class='card-header'>
+                        <span class='product-id'>" . htmlspecialchars($fila['codigo1']) . "</span>
+                        <button class='more-btn'>⋮</button>
+                    </div>
+                    <p class='product-name'>" . htmlspecialchars($fila['nombre']) . "</p>
+                    <p class='product-code'>" . htmlspecialchars($fila['precio2']) . "</p>
+                    <p class='product-price'>$" . number_format($fila['precio3'], 2) . "</p>
+                    <div class='iconos-container'>
+                        <!-- ✅ Icono Agregar (+) -->
+                        <div class='icono-accion agregar' onclick='agregarAlResumen(this.parentNode.parentNode)'>
+                            <animated-icons
+                                src='https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43'
+                                trigger='click'
+                                height='50'
+                                width='50'
+                                attributes='{
+                                    \"defaultColours\": {
+                                        \"group-1\": \"#000000\", /* Borde negro */
+                                        \"group-2\": \"#6EFE53\", /* SÍMBOLO + VERDE */
+                                        \"background\": \"#F0F0F0\" /* Fondo gris claro */
+                                    }
+                                }'
+                            ></animated-icons>
+                        </div>
+            
+                        <!-- ❌ Icono Quitar (-) -->
+                        <div class='icono-accion quitar' onclick='quitarDelResumen(this.parentNode.parentNode)'>
+                            <animated-icons
+                                src='https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23'
+                                trigger='click'
+                                height='50'
+                                width='50'
+                                attributes='{
+                                    \"defaultColours\": {
+                                        \"group-1\": \"#000000\", /* Borde negro */
+                                        \"group-2\": \"#FF4B4B\", /* SÍMBOLO - ROJO */
+                                        \"background\": \"#F0F0F0\" /* Fondo gris claro */
+                                    }
+                                }'
+                            ></animated-icons>
+                        </div>
+                    </div>
+                </div>";
+            
                 }
             } else {
-                echo "<script>alert('No hay productos en la base de datos');</script>";
+                echo "<h2>No hay productos en la base de datos.</h2>";
             }
 
             mysqli_close($conexion);
@@ -110,9 +132,9 @@
         </div>
     </div>
 
-    <!-- Barra lateral derecha -->
     <div class="sidebar-right">
         <h3>Resumen</h3>
+        <ul id="listaResumen"></ul>
         <div class="total">
             <span>Total:</span>
             <span id="total-price">$0.00</span>
@@ -120,8 +142,59 @@
         <button class="btn pay-btn">Cobrar</button>
     </div>
 
-    <script src="../js/index.js"></script>
-    <script src="../js/factura.js"></script>
+    <script>
+        let total = 0;
+
+        function agregarAlResumen(elemento) {
+            let nombre = elemento.getAttribute("data-nombre");
+            let precio = parseFloat(elemento.getAttribute("data-precio"));
+            let contadorElemento = elemento.querySelector(".contador-producto");
+
+            let contador = parseInt(contadorElemento.textContent) || 0;
+            contador++;
+            contadorElemento.textContent = contador;
+            contadorElemento.style.display = "block";
+
+            let listaResumen = document.getElementById("listaResumen");
+            let items = listaResumen.getElementsByTagName("li");
+            let encontrado = false;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].getAttribute("data-nombre") === nombre) {
+                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
+                    items[i].setAttribute("data-cantidad", cantidad);
+                    items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            if (!encontrado) {
+                let item = document.createElement("li");
+                item.setAttribute("data-nombre", nombre);
+                item.setAttribute("data-precio", precio);
+                item.setAttribute("data-cantidad", 1);
+                item.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
+                listaResumen.appendChild(item);
+            }
+
+            total += precio;
+            document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+        }
+
+        function quitarDelResumen(elemento) {
+            let contadorElemento = elemento.querySelector(".contador-producto");
+            let contador = parseInt(contadorElemento.textContent) || 0;
+
+            if (contador > 0) {
+                contador--;
+                contadorElemento.textContent = contador;
+                if (contador === 0) contadorElemento.style.display = "none";
+            }
+
+        }
+    </script>
+
 </body>
 
 </html>

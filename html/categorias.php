@@ -28,16 +28,18 @@ if ($_POST && isset($_POST['guardar'])) {
     echo "<script>alert('Error al agregar la categoría: " . mysqli_error($conexion) . "');</script>";
   }
 }
-// Eliminar categoría
+// Eliminar categoría mediante boton
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
-    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-    
-    $query = "DELETE FROM categoria WHERE codigo = '$codigo'";
-    $resultado = mysqli_query($conexion, $query);
-    
-    echo json_encode(["success" => $resultado]);
-    exit();
+  $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
+  
+  $query = "DELETE FROM categoria WHERE codigo = '$codigo'";
+  $resultado = mysqli_query($conexion, $query);
+  
+  // Responder solo con JSON
+  echo json_encode(["success" => $resultado]);
+  exit();
 }
+
 
 // Obtener lista de productos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
@@ -86,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
               echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
               echo "<td class='options'>";
               echo "<button class='btn-list' data-id='" . htmlspecialchars($fila['codigo']) . "'>Lista de productos</button>";
-              echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'>Eliminar</button>";
+              echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'>Eliminar</button></td>";
               echo "</td>";
               echo "</tr>";
           }

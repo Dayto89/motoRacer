@@ -5,21 +5,28 @@
 }
 
 .container {
-    position: relative;
-    width: 100%;
-    height: 98.2vh;
-    background-color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 0;
+    width: 61%;
+    /* margin: 38px auto; */
+    text-align: center;
+    background-color: rgb(174 174 174 / 46%);
+    padding: 23px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 65px;
+    margin-left: 462px;
 }
-
+body::before {
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: black;
+    opacity: 0.6;
+  }
 .fondo {
     position: absolute;
     width: 100%;
     height: 100%;
-    z-index: 1;
 }
 
 .logo_inicio {
@@ -41,22 +48,23 @@
 }
 
 h1 {
-    font-family: "Metal Mania", system-ui;
-    position: absolute;
-    z-index: 2;
+    font-size: 50px;
+    margin-top: 92px;
     color: white;
-    font-size: 60px;
-    margin-left: 48%;
-    margin-bottom: 32%;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    margin-left: 44%;
+    letter-spacing: 5px;
+    padding: 18px;
+    letter-spacing: 5px;
 }
 
 
 form {
     position: absolute;
-    margin-top: 103px;
-    margin-left: 921px;
+    margin-top: -56px;
+    margin-left: 2px;
     z-index: 2;
+    width: 97%;
 }
 
 select#rol{
@@ -70,17 +78,7 @@ select#rol{
     font-size: 14px;
     margin-bottom: 12px;
 }
-select#preguntaSeguridad{
-    background-color: #ffffff;
-    border-radius: 24px;
-    height: 42px;
-    width: 278px;
-    color: #000;
-    padding: 0px 0px 0px 10px;
-    border: none;
-    font-size: 14px;
-    margin-bottom: 12px;
-}
+
 input[type="number"] { 
     margin: 0;
     background-color: #ffffff;
@@ -114,7 +112,7 @@ form input[type="text"]  {
     padding: 0px 0px 0px 10px;
     border: none;
     font-size: 13px;
-    margin-bottom: 12px;
+    
 }
 
 form input[type="email"],
@@ -130,7 +128,9 @@ form input[type="password"]{
     font-size: 13px;
     margin-bottom: 12px;
 }
-
+form[name="formulario_recuperar"] {
+    margin-top: 0%;
+}
 .password {
     margin-bottom: 30px;
 }
@@ -169,12 +169,13 @@ input[type="submit"] {
 }
 .form-grid  {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 25px;
+   
 }
 
 .campo {
-    display: flex
-;
+    display: flex;
     flex-direction: column;
     width: 316px;
     max-width: 101%;
@@ -182,19 +183,19 @@ input[type="submit"] {
     margin-bottom: 1.5px;
 }
 .campo1{
-    display: flex
-    ;
-        flex-direction: column;
-        width: 316px;
-        max-width: 101%;
-        padding: 10px;
-        margin-bottom: 1.5px;
-}
+    display: flex;
+    flex-direction: column;
+    width: 316px;
+    max-width: 101%;
+    padding: 10px;
+    margin-bottom: 4.5px;
+    margin-left: 86px;
+ }
 .campo label {
     margin-bottom: 5px;
     color: white;
-    /*margin-bottom: 10px;*/
-    font-size: 15px;
+   
+    font-size: 19px;
     font-family: Arial, Helvetica, sans-serif;
     text-shadow: 2px 0 #1c51a0;
     white-space: nowrap;
@@ -202,7 +203,7 @@ input[type="submit"] {
 .campo1 label{
     margin-bottom: 5px;
     color: white;
-    /*margin-bottom: 10px;*/
+    
     font-size: 20px;
     font-family: Arial, Helvetica, sans-serif;
     text-shadow: 2px 0 #1c51a0;
@@ -210,14 +211,19 @@ input[type="submit"] {
 }
 .button_container {
     text-align: center;
-    margin-top: 20px;
-    
-    margin-right: 10px;
-    gap: 10px;
+    margin-top: 64px;
+    display: flex;
+    margin-left: 45%;
+    gap: 19px;
     
 }
 
-.button_container .boton  {
+
+.button_container  .boton  {
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: #007BFF;
     font-weight: bold;
     color: white;
@@ -230,13 +236,19 @@ input[type="submit"] {
     margin-right: 3%;
     width: 182px;
     height: 56px;
-    display: flex;
+    display: flex; 
+    text-decoration: none;
+    line-height: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    
 }
 
 
-.button_container .boton:hover {
+.button_container  .boton:hover {
     background-color: #0056b3;
 }
+
 
 .botonn {
     display: inline-block; /* Se comporta como un botón */
@@ -259,4 +271,14 @@ input[type="submit"] {
   .botonn:hover {
     background-color: #0056b3; /* Color más oscuro al pasar el cursor */
   }
-  
+  select#preguntaSeguridad{
+    background-color: #ffffff;
+    border-radius: 24px;
+    height: 40px;
+    width: 278px;
+    color: #000;
+    padding: 0px 0px 0px 10px;
+    border: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+}

@@ -27,7 +27,7 @@ body::before {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 65px;
+  margin-top: 11px;
   margin-left: 583px;
 }
 
@@ -86,6 +86,19 @@ body::before {
   cursor: pointer;
   color: white;
 }
+.btn-registro {
+  background-color: #1167CC;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 10px 21px;
+  border: none;
+  border-radius: 11px;
+  cursor: pointer;
+  margin-right: 69%;
+  width: 33%;
+
+}
 
 .btn-permissions {
   background-color: #007bff;
@@ -97,6 +110,7 @@ body::before {
   border-radius: 15px;
 }
 
+
 .btn-permissions:hover {
   background-color: #0056b3;
 }
@@ -104,7 +118,9 @@ body::before {
 .btn-delete:hover {
   background-color: #c82333;
 }
-
+.btn-registro:hover {
+  background-color: #0056b3;
+}
 .modal {
   display: none;
   position: fixed;

@@ -1,8 +1,41 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
+  header("Location: ../index.php");
+  exit();
+}
+
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+
+if (!$conexion) {
+  die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+}
+
+// Eliminar usuario
+if ($_POST && isset($_POST['eliminar'])) {
+  $id = mysqli_real_escape_string($conexion, $_POST['id']);
+
+  $query = "DELETE FROM usuario WHERE identificacion = '$id'";
+  $resultado = mysqli_query($conexion, $query);
+
+  echo json_encode(["success" => $resultado]);
+  exit();
+}
+
+// Obtener lista de permisos
+if ($_POST && isset($_POST['lista'])) {
+  $id = mysqli_real_escape_string($conexion, $_POST['id']);
+
+  $query = "SELECT * FROM permiso WHERE usuario_id = '$id'";
+  $resultado = mysqli_query($conexion, $query);
+
+  $permisos = [];
+  while ($fila = mysqli_fetch_assoc($resultado)) {
+    $permisos[] = $fila;
+  }
+
+  echo json_encode($permisos);
+  exit();
 }
 ?>
 <!DOCTYPE html>
@@ -15,7 +48,6 @@ if (!isset($_SESSION['usuario_id'])) {
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/css/gestionusuario.css">
-  <link rel="stylesheet" href="/componentes/header.html">
   <link rel="stylesheet" href="/componentes/header.css">
   <link
     href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
@@ -23,6 +55,7 @@ if (!isset($_SESSION['usuario_id'])) {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
   </style>
+  <script src="/js/index.js"></script>
 </head>
 
 <body>
@@ -38,84 +71,37 @@ if (!isset($_SESSION['usuario_id'])) {
           <tr>
             <th>ID</th>
             <th>Nombre</th>
+            <th>Apellido</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="row-gray">
-            <td>1</td>
-            <td>Juan Pérez</td>
-            <td>
-              <button class="btn-permissions" onclick="showPermissions()">Permisos</button>
-              <button class="btn-delete">Eliminar</button>
-            </td>
-          </tr>
-          <tr class="row-ocre">
-            <td>2</td>
-            <td>Maria Gómez</td>
-            <td>
-              <button class="btn-permissions" onclick="showPermissions()">Permisos</button>
-              <button class="btn-delete">Eliminar</button>
-            </td>
-          </tr>
-          <tr class="row-gray">
-            <td>3</td>
-            <td>Carlos López</td>
-            <td>
-              <button class="btn-permissions" onclick="showPermissions()">Permisos</button>
-              <button class="btn-delete">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          
+          <?php
+          $conn = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+          $sql = "SELECT * FROM usuario";
+          $result = $conn->query($sql);
+          $contador = 0; // Contador para alternar colores
 
-    <!-- Modal de Permisos -->
-    <div id="permissions-modal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closePermissions()">&times;</span>
-        <h2>Otorgar Permisos</h2>
-        <table class="permissions-table">
-          <thead>
-            <tr>
-              <th>Módulo</th>
-              <th>Permitir</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Productos</td>
-              <td><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Proveedor</td>
-              <td><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Facturación</td>
-              <td><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Inventario</td>
-              <td><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Usuarios</td>
-              <td><input type="checkbox"></td>
-            </tr>
-            <tr>
-              <td>Configuración</td>
-              <td><input type="checkbox"></td>
-            </tr>
-          </tbody>
-        </table>
-        <button type= "submit"class="btn-save">Guardar</button>
-      </div>
-    </div>
-  </div>
+          while ($row = $result->fetch_assoc()) {
+            // Alterna clases según el contador
+            $claseFila = ($contador % 2 == 0) ? 'row-ocre' : 'row-gray';
 
-  <script src="../js/index.js"></script>
-  <script src="/js/gestionusuraio.js"></script>
+            echo "<tr class='$claseFila'>
+            <td>" . $row['identificacion'] . "</td>
+            <td>" . $row['nombre'] . "</td>
+            <td>" . $row['apellido'] . "</td>
+            <td>
+              <button class='btn-permissions'  id='lista' data-id='" . $row['identificacion'] . "'>Permisos</button>
+                <button class='btn-delete' id='eliminar' data-id='" . $row['identificacion'] . "'>Eliminar</button>
+            </td>
+          </tr>";
+            $contador++;
+          }
+          ?>
+</div>
+</div>
+<button class='btn-registro' onclick="location.href='../html/registro.php'"> <i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
 </body>
 
 </html>

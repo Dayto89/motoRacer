@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         alert("Error al eliminar la categoría");
                     }
                 })
-                .catch(error => console.error("Error al eliminar la categoría:", error));
+                .catch(error => alert("Error al eliminar la categoría tiene productos asociados"));
             }
         }
     });

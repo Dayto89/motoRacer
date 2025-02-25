@@ -158,6 +158,8 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                     </div>
                 </div>
 
+
+
                 <!-- Modal de confirmación -->
                 <div id="modalConfirm" class="modal hidden">
                     <div class="modal-content">
@@ -171,6 +173,12 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                 </div>
 
             </form>
+                            <!-- Formulario para subir el archivo -->
+                            <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
+                    <label>Selecciona el archivo Excel:</label>
+                    <input type="file" name="archivoExcel" accept=".xlsx, .xls" required>
+                    <button type="submit" name="importar">Importar</button>
+                </form>
 
         </div>
     </div>

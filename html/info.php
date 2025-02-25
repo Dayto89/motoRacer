@@ -113,10 +113,6 @@ mysqli_close($conexion);
                 <label for="cargo">Cargo</label>
                 <span id="cargo"><?php echo $cargo; ?></span>
             </div>
-            <div class="info-group">
-                <label for="password">Contraseña</label>
-                <span id="password">********</span>
-            </div>
 
             <!-- Botón para abrir el popup -->
             <button class="btn-abrir" onclick="abrirPopup()">+ Editar</button>

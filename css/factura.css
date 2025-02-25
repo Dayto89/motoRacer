@@ -22,9 +22,7 @@ ul.breadcrumb {
     list-style: none;
     background-color: var(--breadcrumb-bg);
     border-radius: 5px;
-    margin: 15px 0;
-    margin-left: 40px;
-    margin-right: 40px;
+    margin: 15px 0 30px 40px;
 }
 
 ul.breadcrumb li {
@@ -56,10 +54,9 @@ body {
     display: flex;
     background: var(--background);
     color: var(--foreground);
-    font-family: Arial, sans-serif;
     margin: 0;
     height: 100vh;
-    transition: margin-left 0.3s ease; /* Suaviza el desplazamiento */
+    transition: margin-left 0.3s ease;
 }
 
 /* Barra lateral (Menú) */
@@ -78,7 +75,6 @@ body {
     width: 270px;
 }
 
-/* Ajuste de contenido cuando el menú se expande */
 .sidebar:hover ~ .main {
     margin-left: 270px;
 }
@@ -101,11 +97,7 @@ body {
     justify-content: flex-start;
     padding: 20px;
     color: white;
-    text-shadow: 
-        -1px -1px 0 #000,  
-        1px -1px 0 #000,  
-        -1px 1px 0 #000,  
-        0px 1px 0 #000;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000;
 }
 
 .logo {
@@ -118,11 +110,7 @@ body {
     list-style-type: none;
     padding: 20px;
     color: #ffffff;
-    text-shadow: 
-        -1px -1px 0 #000,  
-        1px -1px 0 #000,  
-        -1px 1px 0 #000,  
-        3px 3px 0 #000;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
 }
 
 .menu li {
@@ -165,6 +153,7 @@ body {
     padding: 10px;
     margin-left: 100px;
     transition: margin-left 0.3s ease;
+    font-family: Arial, sans-serif;
 }
 
 /* Barra superior */
@@ -172,16 +161,59 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px;
     padding: 40px;
 }
 
-#search {
-    flex: 1;
-    padding: 5px;
-    border: 1px solid var(--card-border);
-    border-radius: 5px;
+.search-bar {
+    
+    top: 9px;
+    right: 141px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    transition: width 1s ease;
+    width: 90px;
+    overflow: hidden;
 }
+
+.search-bar:hover {
+    width: 400px;
+}
+
+.search-bar form {
+    margin-right: 90px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 40px;
+    margin-right: 8px;
+    font-size: 3em;
+    text-shadow: 3px 1px 0 #1c51a0,  2px 3px 0 #1c51a0;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.7em;
+}
+
+.search-bar:hover input {
+    width: 400px;
+    padding: 5px 10px;
+}
+
+.search-bar input::placeholder {
+    color: #aaa;
+    font-size: 18px;
+}
+
 
 /* Lista de productos */
 .products {
@@ -198,6 +230,8 @@ body {
     border-radius: 5px;
     border: 1px solid var(--card-border);
     text-align: center;
+    cursor: pointer;
+  cursor: pointer;
 }
 
 .product-id {
@@ -213,100 +247,111 @@ body {
 
 /* Barra lateral derecha */
 .sidebar-right {
+    font-family: Arial, sans-serif;
     width: 350px;
     background: var(--secondary);
     padding: 10px;
-    font-size: 30px;
-    display: flex;
+    font-size: 20px;
     flex-direction: column;
     height: 100vh;
     justify-content: space-between;
 }
 
 .sidebar-right h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
+    margin-top: 40px;
+    font-size: 28px;
+}
+
+#listaResumen {
+    list-style-type: none;
+    padding: 0;
+}
+
+#listaResumen li {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid var(--card-border);
+    text-align: center;
+    cursor: pointer;
+  cursor: pointer;
+
 }
 
 .total {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     font-weight: bold;
+    margin-top: 60px;
+    font-size: 28px;
 }
 
 .pay-btn {
-    width: 100%;
+    width: 50%;
     background: var(--btn-bg);
     color: white;
-    padding: 10px;
-    border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: auto;
+    font-size: 28px;
+    margin-left: 90px;
+    margin-top: 40px;
+
 }
 
 .pay-btn:hover {
     background: var(--btn-hover);
 }
-
-.menu-abierto .contenedor-cuadros {
-    padding-left: 300px;
+.contador-producto {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: green;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 50%;
+    display: none; /* Ocultamos el contador hasta que se agregue un producto */
 }
 
-.brands {
-    margin-left: 40px;
-}
-.search-bar {
-    position: fixed;
-    top: 9px;
-    right: 141px;
-    z-index: 1000;
+.producto {
+    position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    transition: width 1s ease; /* Animación de deslizamiento */
-    width: 55px; /* Tamaño reducido por defecto */
-    overflow: hidden;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
+    width: 150px;
+    text-align: center;
 }
 
-.search-bar:hover {
-    width: 400px; /* Tamaño al hacer hover */
+.contador-producto {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: green;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 50%;
+    display: none;
 }
 
-.search-bar form {
-    margin-right: 90px;
-    margin-top: 90px;
+.card {
+    position: relative;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
+    width: 150px;
+    text-align: center;
+}
+
+
+.iconos-container {
     display: flex;
+    justify-content: space-around;
     align-items: center;
-}
-
-.search-icon {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-right: 8px;
-    font-size: 3em;
-    text-shadow: 3px 1px 0 #1c51a0,  2px 3px 0 #1c51a0;
-   
-}
-
-.search-bar input {
-    border: none;
-    outline: none;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 1.7em;
-     
-   
-}
-
-.search-bar:hover input {
-    width: 400px; /* Anchura al hacer hover */
-    padding: 5px 10px; /* Añadir espaciado */
-}
-
-.search-bar input::placeholder {
-    color: #aaa;
-    font-size: 18px;
-    
+    margin-top: 10px;
 }

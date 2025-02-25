@@ -19,6 +19,7 @@ body::before {
 }
 
 
+
 .main-content {
     padding: 20px;
     transition: margin-left 0.3s ease;
@@ -184,8 +185,41 @@ input[type="checkbox"] {
     outline: none;
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
+/* Barra lateral (Menú) */
+.sidebar {
+    width: 100px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1167CC, #083972, #000000);
+    transition: width 0.3s ease;
+    overflow: hidden;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
 
+.sidebar:hover {
+    width: 270px;
+}
 
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main {
+    margin-left: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main-content {
+    margin-left: 270px;
+    transition: margin-left 0.3s ease;
+}
+
+/* Contenido principal */
+.main-content {
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    height: 100vh;
+    margin-left: 100px; /* Ajustado al tamaño inicial de la barra */
+    margin-right: 50px;
+}
 
 
   
