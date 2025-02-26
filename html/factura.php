@@ -10,6 +10,24 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+
+$icono1 = '
+<animated-icons
+  src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
+  trigger="click"
+  attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#00FF0AFF","background":"#FFFFFF"}}\'
+  height="50"
+  width="50"
+></animated-icons>';
+
+$icono2 = '
+<animated-icons
+  src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
+  trigger="click"
+  attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
+  height="50"
+  width="50"
+  ></animated-icons>';
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +69,8 @@ if (!$conexion) {
 
             if ($resultado->num_rows > 0) {
                 while ($fila = $resultado->fetch_assoc()) {
-                    echo "<li><a class='brand'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
+                    // Al ser presionado alguna categoria se muestra los productos de esa categoria
+                    echo "<li><a class='brand' name='categoria' href='factura.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
                 }
             } else {
                 echo "<li>No hay categorías disponibles</li>";
@@ -69,6 +88,12 @@ if (!$conexion) {
                 $stmt->bind_param("ss", $buscar, $buscar);
                 $stmt->execute();
                 $resultado = $stmt->get_result();
+            } else if (isset($_GET['categoria'])) {
+                $categoria = $_GET['categoria'];
+                $stmt = $conexion->prepare("SELECT * FROM producto WHERE Categoria_codigo = ?");
+                $stmt->bind_param("s", $categoria);
+                $stmt->execute();
+                $resultado = $stmt->get_result();
             } else {
                 $consulta = "SELECT * FROM producto";
                 $resultado = mysqli_query($conexion, $consulta);
@@ -80,48 +105,20 @@ if (!$conexion) {
                     <span class='contador-producto'>0</span>
                     <div class='card-header'>
                         <span class='product-id'>" . htmlspecialchars($fila['codigo1']) . "</span>
-                        <button class='more-btn'>⋮</button>
+                       
                     </div>
                     <p class='product-name'>" . htmlspecialchars($fila['nombre']) . "</p>
                     <p class='product-code'>" . htmlspecialchars($fila['precio2']) . "</p>
                     <p class='product-price'>$" . number_format($fila['precio3'], 2) . "</p>
                     <div class='iconos-container'>
-                        <!-- ✅ Icono Agregar (+) -->
-                        <div class='icono-accion agregar' onclick='agregarAlResumen(this.parentNode.parentNode)'>
-                            <animated-icons
-                                src='https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43'
-                                trigger='click'
-                                height='50'
-                                width='50'
-                                attributes='{
-                                    \"defaultColours\": {
-                                        \"group-1\": \"#000000\", /* Borde negro */
-                                        \"group-2\": \"#6EFE53\", /* SÍMBOLO + VERDE */
-                                        \"background\": \"#F0F0F0\" /* Fondo gris claro */
-                                    }
-                                }'
-                            ></animated-icons>
+                        <div class='icono-accion' onclick='agregarAlResumen(this.parentNode.parentNode)'>
+                            $icono1
                         </div>
-            
-                        <!-- ❌ Icono Quitar (-) -->
-                        <div class='icono-accion quitar' onclick='quitarDelResumen(this.parentNode.parentNode)'>
-                            <animated-icons
-                                src='https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23'
-                                trigger='click'
-                                height='50'
-                                width='50'
-                                attributes='{
-                                    \"defaultColours\": {
-                                        \"group-1\": \"#000000\", /* Borde negro */
-                                        \"group-2\": \"#FF4B4B\", /* SÍMBOLO - ROJO */
-                                        \"background\": \"#F0F0F0\" /* Fondo gris claro */
-                                    }
-                                }'
-                            ></animated-icons>
+                        <div class='icono-accion' onclick='quitarDelResumen(this.parentNode.parentNode)'>
+                            $icono2
                         </div>
                     </div>
                 </div>";
-            
                 }
             } else {
                 echo "<h2>No hay productos en la base de datos.</h2>";
@@ -183,15 +180,36 @@ if (!$conexion) {
         }
 
         function quitarDelResumen(elemento) {
+            let nombre = elemento.getAttribute("data-nombre");
+            let precio = parseFloat(elemento.getAttribute("data-precio"));
             let contadorElemento = elemento.querySelector(".contador-producto");
-            let contador = parseInt(contadorElemento.textContent) || 0;
 
+            let contador = parseInt(contadorElemento.textContent) || 0;
             if (contador > 0) {
                 contador--;
                 contadorElemento.textContent = contador;
                 if (contador === 0) contadorElemento.style.display = "none";
             }
 
+            let listaResumen = document.getElementById("listaResumen");
+            let items = listaResumen.getElementsByTagName("li");
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].getAttribute("data-nombre") === nombre) {
+                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) - 1;
+
+                    if (cantidad > 0) {
+                        items[i].setAttribute("data-cantidad", cantidad);
+                        items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
+                    } else {
+                        listaResumen.removeChild(items[i]);
+                    }
+
+                    total -= precio;
+                    document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+                    break;
+                }
+            }
         }
     </script>
 

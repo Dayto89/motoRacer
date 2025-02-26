@@ -60,10 +60,9 @@ h1 {
 
 
 form {
-    position: absolute;
+    position: relative;
     margin-top: -56px;
     margin-left: 2px;
-    z-index: 2;
     width: 97%;
 }
 

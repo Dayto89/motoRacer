@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/css/registro.css">
+    <link rel="stylesheet" href="/componentes/header.html">
     <link rel="stylesheet" href="/componentes/header.css">
     <link
         href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"

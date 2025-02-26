@@ -3,12 +3,14 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: "Metal Mania", system-ui;
-    background-image: url('fondoMotoRacer.png'); 
+    background-image: url('fondoMotoRacer.png');
     background-size: cover;
     background-position: center;
 }
+
 body::before {
     position: fixed;
     width: 200%;
@@ -26,13 +28,18 @@ body::before {
     margin-right: 100px;
 }
 
-
-
 .main-content h1 {
     color: white;
     text-align: center;
     margin-top: 40px;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
+    font-family: "Metal Mania", system-ui;
+    font-size: 70px;
+    text-shadow: 
+        7px -1px 0 #1c51a0,  
+        1px -1px 0 #1c51a0,  
+        -1px 1px 0 #1c51a0,  
+        3px 5px 0 #1c51a0;
 }
 
 .form-section {
@@ -43,6 +50,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     color: white;
+    margin-left: 6%;
 }
 
 th, td {
@@ -71,230 +79,162 @@ td {
     height: 100%;
 }
 
-.text-center i{
+.text-center i {
     padding: 5px;
 }
 
-#eliminar{
+#eliminar {
     color: rgb(255, 72, 72);
-
 }
 
 input[type="checkbox"] {
-    transform: scale(1.5); /* Ajusta el número para cambiar el tamaño */
+    transform: scale(1.5);
     margin: 5px;
-  }
-
-
-#inventario{
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ffffff; /* Color del texto */
-    text-shadow: 
-    -1px -1px 0 #000,  
-    1px -1px 0 #000,  
-    -1px 1px 0 #000,  
-    3px 3px 0 #000; /* Cambia el color y tamaño del contorno según necesites */
-
+    accent-color: rgb(31, 138, 226);
 }
 
- h1{
+#inventario {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ffffff;
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,  
+        -1px 1px 0 #000,  
+        3px 3px 0 #000;
+}
+
+/* Contenedor principal para centrar el contenido */
+.main-container {
+    max-width: 1200px; /* Ancho máximo del contenido */
+    margin: 0 auto; /* Centrar el contenido */
+    padding: 20px; /* Espaciado interno */
+}
+
+/* Ajustes para el título */
+.main-content h1 {
+    color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
     font-family: "Metal Mania", system-ui;
     font-size: 70px;
-    color: #ffffff; /* Color del texto */
     text-shadow: 
-    7px -1px 0 #1c51a0,  
-    1px -1px 0 #1c51a0,  
-    -1px 1px 0 #1c51a0,  
-    3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
-        
- }
- .search-bar {
-    position: fixed;
-    top: 9px;
-    right: 141px;
-    z-index: 1000;
-    display: flex;
+        7px -1px 0 #1c51a0,  
+        1px -1px 0 #1c51a0,  
+        -1px 1px 0 #1c51a0,  
+        3px 5px 0 #1c51a0;
+        margin-left: 10%;
+}
+
+/* Ajustes para el filter-bar */
+.filter-bar {
+    display: flex
+;
     align-items: center;
-    transition: width 1s ease; /* Animación de deslizamiento */
-    width: 55px; /* Tamaño reducido por defecto */
-    overflow: hidden;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    max-width: 74%;
+    margin-left: 27%;
+    padding: 10px;
+    border-radius: 8px;
 }
 
-.search-bar:hover {
-    width: 400px; /* Tamaño al hacer hover */
+/* Ajustes para los elementos dentro del filter-bar */
+.filter-dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-.search-bar form {
-    margin-right: 90px;
-    margin-top: 90px;
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    background: transparent;
+.filter-button {
+    padding: 8px 16px;
+    background-color: #1aa906;
+    color: white;
     border: none;
     cursor: pointer;
-    padding: 0;
-    margin-right: 8px;
-    font-size: 3em;
-    text-shadow: 3px 1px 0 #1c51a0,  2px 3px 0 #1c51a0;
-   
+    border-radius: 4px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
 }
 
-.search-bar input {
-    border: none;
-    outline: none;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 1.7em;
-     
-   
+.filter-button:hover {
+    background-color: #155e33;
 }
 
-.search-bar:hover input {
-    width: 400px; /* Anchura al hacer hover */
-    padding: 5px 10px; /* Añadir espaciado */
+.filter-options {
+    position: absolute;
+    background-color: #ffffffd4;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
 }
-
-.search-bar input::placeholder {
-    color: #aaa;
-    font-size: 18px;
-    
-}
-
-/*filtrar por*/
-.filter-bar {
-    position: absolute; /*Fija la posición en la pantalla */
-    top: 80px; /* Ajusta la posición vertical */
-    right: 20px; /* Ajusta la posición horizontal */
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+.search-form {
     display: flex;
-    flex-direction: column; /* Apila los elementos verticalmente */
-    align-items: flex-end; /* Alinea los elementos a la derecha */
-    padding: 10px; /* Espaciado interno */
-    border-radius: 14px; /* Bordes redondeados */
+    align-items: center;
+    flex-grow: 1;
 }
-
-.filter-bar label {
-    color: aliceblue; /* Color del texto */
-    margin-bottom: 5px; /* Espaciado inferior para separar el label del select */
-}
-
-.filter-bar .form-control {
-    font-size: 1.2em;
-    padding: 5px;
-    border-radius: 14px;
+input.form-control {
+    color: #0b111a;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    height: 34px;
+    border-radius: 12px;
+    width: 50%;
+    text-align: center;
     border: none;
-    outline: none;
-    font-family:'Times New Roman';
-    margin-bottom: 5px;
-    width: 74%; /* Asegura que los elementos ocupen el ancho completo */
 }
+
+.search-button {
+  
+    background-color: #007BFF;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 8px 23px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 9px;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+
 .export-button {
-    position: absolute; /* Posición absoluta para colocarlo donde desees */
-    top: 120px; /* Ajusta la posición vertical */
-    left: 210px; /* Ajusta la posición horizontal */
-    
+    margin-left: auto;
 }
 
 .icon-button {
-    background: none; /* Sin fondo */
-    border: none; /* Sin borde */
-    cursor: pointer; /* Cambia el cursor a pointer */
-    padding: 5px; /* Espaciado interno */
-    font-size: 40px; /* Tamaño del ícono */
-    color: #3a7453; /* Color verde alusivo a Excel */
-    transition: color 0.3s ease; /* Transición suave del color */
-    
+    display: flex;
+    align-items: center;
+    padding: 7px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 18px;
+}
+
+.icon-button i {
+    margin-right: 10px; /* Ajusta según necesites */
 }
 
 .icon-button:hover {
-    color: #165a32; /* Cambia el color al pasar el mouse */
+    background-color: #218838;
 }
-.bx-search-alt-2:before {
-    content: "\ebf9";
-    
+.criteria-group {
+    display: flex;
+    flex-direction: column; /* Alinea los elementos en columna */
+    gap: 5px; /* Espacio entre los elementos */
 }
-#lupa{
-    font-size: 35px;
-    color: #ffffff;
-    right: 200px;
-    cursor: pointer;
 
-
-
-
-}
-/* Contenedor principal de la barra de filtrado */
-.filter-bar {
+.criteria-group label {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre la barra de búsqueda y el botón de filtrar */
-    margin-bottom: 20px;
-  }
-  
-  /* Estilos para la barra de búsqueda */
-  .search-form {
-    display: flex;
-    flex-grow: 1; /* Ocupa el espacio disponible */
-    gap: 10px;
-  }
-  
-  .form-control {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-  }
-  
-  .search-button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .search-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Estilos para el menú desplegable de filtrado */
-  .filter-dropdown {
-    position: relative;
-  }
-  
-  .filter-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .filter-button:hover {
-    background-color: #45a049;
-  }
-  
-  .filter-options {
-    position: absolute;
-    top: 100%; /* Posiciona el menú debajo del botón */
-    right: 0;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-top: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 10; /* Asegura que esté por encima de otros elementos */
-  }
-  
-  .criteria-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+    gap: 5px; /* Espacio entre el checkbox y el texto */
+}

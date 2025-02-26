@@ -32,7 +32,7 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
     <link rel="stylesheet" href="../css/producto.css">
     <link rel="stylesheet" href="/componentes/header.html">
     <link rel="stylesheet" href="/componentes/header.css">
-
+    <script src="/js/index.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -46,6 +46,23 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
     <!-- Sección para Crear Producto -->
     <div id="crearProducto" class="form-section">
         <h1>Crear Producto</h1>
+        <!-- Abrir modal para subir el archivo -->
+        <button type="button" onclick="openModal()">Importar archivo</button>
+
+        <!-- Modal para subir el archivo -->
+        <div id="modalConfirm" class="modal hidden">
+            <div class="modal-content">
+                <!-- Formulario para subir el archivo -->
+                <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
+                    <label>Selecciona el archivo Excel:</label>
+                    <input type="file" name="archivoExcel" accept=".xlsx, .xls" required>
+                    <button type="submit" name="importar" onclick="closeModal()">Importar</button>
+                    <button type="button" onclick="closeModal()">Cancelar</button>
+                </form>
+
+            </div>
+        </div>
+
 
         <!-- Contenedor principal -->
         <div class="container">
@@ -173,16 +190,12 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                 </div>
 
             </form>
-                            <!-- Formulario para subir el archivo -->
-                            <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
-                    <label>Selecciona el archivo Excel:</label>
-                    <input type="file" name="archivoExcel" accept=".xlsx, .xls" required>
-                    <button type="submit" name="importar">Importar</button>
-                </form>
+
 
         </div>
+
     </div>
-    <script src="/js/index.js"></script>
+
 
     <?php
 
@@ -219,6 +232,24 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
     }
 
     ?>
+
+    <script>
+        // Función para abrir el modal de subir archivo
+        function openModal() {
+            const modal = document.getElementById("modalConfirm");
+            const btnAbrirModal = document.getElementById("btnAbrirModal");
+            modal.style.display = "flex"; // Mostrar el modal con flexbox
+            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+        }
+
+        // Función para cerrar el modal de subir archivo
+        function closeModal() {
+            const modal = document.getElementById("modalConfirm");
+            const btnAbrirModal = document.getElementById("btnAbrirModal");
+            modal.style.display = "none"; // Ocultar el modal
+            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+        }
+    </script>
 
 </body>
 

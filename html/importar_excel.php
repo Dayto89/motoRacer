@@ -1,6 +1,5 @@
 <?php
 require '../vendor/autoload.php';
-
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -25,25 +24,49 @@ if (isset($_POST['importar'])) {
     }
 
     try {
-        // Carga el archivo Excel
+        // Cargar el archivo Excel
         $spreadsheet = IOFactory::load($archivo);
         $hoja = $spreadsheet->getActiveSheet();
-        $datos = $hoja->toArray();
+        $datos = $hoja->toArray(null, true, true, true);
 
         // Encabezados esperados
         $encabezadosEsperados = ['codigo1', 'codigo2', 'nombre', 'iva', 'precio1', 'precio2', 'precio3', 'cantidad', 'descripcion', 'categoria', 'marca', 'unidadmedida', 'ubicacion', 'proveedor'];
 
-        $encabezadosExcel = array_map('strtolower', $datos[0]);
+        $encabezadosExcel = array_map('strtolower', array_values($datos[1])); // Ajuste de índice
         if ($encabezadosExcel !== $encabezadosEsperados) {
             echo "❌ Los encabezados del archivo no coinciden con los esperados.";
             exit;
         }
 
+        // Función para obtener códigos correctos de claves foráneas
+        function obtenerCodigo($conexion, $tabla, $columnaNombre, $valor, $columnaCodigo) {
+            $valor = mysqli_real_escape_string($conexion, $valor);
+            $query = "SELECT $columnaCodigo FROM $tabla WHERE $columnaNombre = '$valor' LIMIT 1";
+            $resultado = mysqli_query($conexion, $query);
+            if ($fila = mysqli_fetch_assoc($resultado)) {
+                return $fila[$columnaCodigo];
+            }
+            return null;
+        }
+
         // Procesar filas
-        for ($i = 1; $i < count($datos); $i++) {
-            $fila = array_map('trim', $datos[$i]);
+        for ($i = 2; $i <= count($datos); $i++) {
+            $fila = array_map('trim', array_values($datos[$i]));
 
             list($codigo1, $codigo2, $nombre, $iva, $precio1, $precio2, $precio3, $cantidad, $descripcion, $categoria, $marca, $unidadmedida, $ubicacion, $proveedor) = $fila;
+
+            // Obtener códigos correctos
+            $categoriaCodigo = obtenerCodigo($conexion, 'categoria', 'nombre', $categoria, 'codigo');
+            $marcaCodigo = obtenerCodigo($conexion, 'marca', 'nombre', $marca, 'codigo');
+            $unidadMedidaCodigo = obtenerCodigo($conexion, 'unidadmedida', 'nombre', $unidadmedida, 'codigo');
+            $ubicacionCodigo = obtenerCodigo($conexion, 'ubicacion', 'nombre', $ubicacion, 'codigo');
+            $proveedorNit = obtenerCodigo($conexion, 'proveedor', 'nombre', $proveedor, 'nit'); // Parece correcto
+
+            // Verificar si todas las claves foráneas existen antes de continuar
+            if (!$categoriaCodigo || !$marcaCodigo || !$unidadMedidaCodigo || !$ubicacionCodigo || !$proveedorNit) {
+                echo "⚠️ Advertencia: Alguna clave foránea no existe en la base de datos en la fila $i. Registro omitido.<br>";
+                continue;
+            }
 
             // Verifica si el producto ya existe
             $query = "SELECT * FROM producto WHERE codigo1 = '$codigo1' AND codigo2 = '$codigo2'";
@@ -60,11 +83,11 @@ if (isset($_POST['importar'])) {
                         precio3 = '$precio3',
                         cantidad = '$cantidad',
                         descripcion = '$descripcion',
-                        Categoria_codigo = (SELECT codigo FROM categoria WHERE nombre = '$categoria' LIMIT 1),
-                        Marca_codigo = (SELECT codigo FROM marca WHERE nombre = '$marca' LIMIT 1),
-                        UnidadMedida_codigo = (SELECT codigo FROM unidadmedida WHERE nombre = '$unidadmedida' LIMIT 1),
-                        Ubicacion_codigo = (SELECT codigo FROM ubicacion WHERE nombre = '$ubicacion' LIMIT 1),
-                        proveedor_nit = (SELECT nit FROM proveedor WHERE nombre = '$proveedor' LIMIT 1)
+                        Categoria_codigo = '$categoriaCodigo',
+                        Marca_codigo = '$marcaCodigo',
+                        UnidadMedida_codigo = '$unidadMedidaCodigo',
+                        Ubicacion_codigo = '$ubicacionCodigo',
+                        proveedor_nit = '$proveedorNit'
                     WHERE codigo1 = '$codigo1' AND codigo2 = '$codigo2'
                 ";
                 mysqli_query($conexion, $update);
@@ -74,13 +97,8 @@ if (isset($_POST['importar'])) {
                     INSERT INTO producto 
                         (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, descripcion, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit)
                     VALUES 
-                        ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$descripcion',
-                         (SELECT codigo FROM categoria WHERE nombre = '$categoria' LIMIT 1),
-                         (SELECT codigo FROM marca WHERE nombre = '$marca' LIMIT 1),
-                         (SELECT codigo FROM unidadmedida WHERE nombre = '$unidadmedida' LIMIT 1),
-                         (SELECT codigo FROM ubicacion WHERE nombre = '$ubicacion' LIMIT 1),
-                         (SELECT nit FROM proveedor WHERE nombre = '$proveedor' LIMIT 1)
-                        )
+                        ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$descripcion', 
+                         '$categoriaCodigo', '$marcaCodigo', '$unidadMedidaCodigo', '$ubicacionCodigo', '$proveedorNit')
                 ";
                 mysqli_query($conexion, $insert);
             }
