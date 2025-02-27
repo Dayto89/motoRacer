@@ -12,22 +12,38 @@ if (!$conexion) {
 }
 
 $icono1 = '
-<animated-icons
+<animated-icons class= "icono-accion"
   src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
   trigger="click"
-  attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#00FF0AFF","background":"#FFFFFF"}}\'
+  attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"#FFFFFF"}}\'
   height="50"
   width="50"
+
 ></animated-icons>';
 
 $icono2 = '
-<animated-icons
+<animated-icons class="icono-accion"
   src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
   trigger="click"
   attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
   height="50"
   width="50"
+
   ></animated-icons>';
+
+
+// Agregar información de cliente a la factura si se presiona el boton cobrar
+
+  if (isset($_POST['guardar'])) {
+    $nombre = $_POST['nombre'];
+    $apellido = $_POST['apellido'];
+    $email = $_POST['email'];
+    $telefono = $_POST['telefono'];
+    $direccion = $_POST['direccion'];
+    $cliente = $_POST['cliente'];
+  }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -130,16 +146,100 @@ $icono2 = '
     </div>
 
     <div class="sidebar-right">
+
+    <!-- Abrir Modal para información de cliente -->
+        <button onclick="openModal()" class="icon-button" aria-label="Información de cliente" title="Información de cliente">
+            <i class="fas fa-info-circle"></i>
+            <label style="color: white; font-size: 14px;">  Información de cliente</label>
+        </button>
+
         <h3>Resumen</h3>
-        <ul id="listaResumen"></ul>
+
+        <!-- Contenedor con Scroll -->
+
+        <div class="resumen-scroll">
+            <ul id="listaResumen" class="listaResumen"></ul>
+        </div>
+
         <div class="total">
             <span>Total:</span>
             <span id="total-price">$0.00</span>
         </div>
-        <button class="btn pay-btn">Cobrar</button>
+
+        <div class="resumen-botones">
+            <button class="btn-cobrar" onclick="cobrar()">Cobrar</button>
+        </div>
     </div>
 
+    <!-- Modal para metodo de pago -->
+    <div id="modalPaymentMethod" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="modalTitle">Selecciona un metodo de pago</h2>
+        <p id="modalMessage">Selecciona un metodo de pago</p>
+        <div id="modalButtons" class="modal-buttons">
+          <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" name="guardar">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para información de cliente -->
+    <div id="modalConfirm" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="modalTitle">Información de cliente</h2>
+        <p id="modalMessage">Ingrese la información de cliente</p>
+        <label for="nombre">Nombre</label> <input type="text"><br>
+        <label for="apellido">Apellido</label> <input type="text"><br>
+        <label for="email">Email</label> <input type="text"><br>
+        <label for="telefono">Telefono</label> <input type="text"><br>
+        <label for="direccion">Dirección</label> <input type="text">
+        <div id="modalButtons" class="modal-buttons">
+          <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+          <button type="submit" name="guardar">Guardar</button>
+        </div>
+      </div>
+
     <script>
+        // Funcion cobrar abre modal de metodo de pago
+        function cobrar() {
+            if (document.querySelectorAll(".resumen-scroll ul li").length === 0) {
+                alert("No hay productos en el resumen");
+            } else {
+                const modal = document.getElementById("modalPaymentMethod");
+                modal.style.display = "flex"; // Mostrar el modal con flexbox
+            }
+        }
+
+        function abrirModal() {
+            const modal = document.getElementById("modalPaymentMethod");
+            const btnAbrirModal = document.getElementById("btnAbrirModal");
+            modal.style.display = "flex"; // Mostrar el modal con flexbox
+            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+        }
+
+        function cerrarModal() {
+            const modal = document.getElementById("modalPaymentMethod");
+            const btnAbrirModal = document.getElementById("btnAbrirModal");
+            modal.style.display = "none"; // Ocultar el modal
+            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+        }
+
+        // Función para abrir el modal de información de cliente
+        function openModal() {
+            const modal = document.getElementById("modalConfirm");
+            const btnAbrirModal = document.getElementById("btnAbrirModal");
+            modal.style.display = "flex"; // Mostrar el modal con flexbox
+            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+        }
+
+        // Función para cerrar el modal de información de cliente
+        function closeModal() {
+            const modal = document.getElementById("modalConfirm");
+            const btnAbrirModal = document.getElementById("btnAbrirModal");
+            modal.style.display = "none"; // Ocultar el modal
+            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+        }
+
         let total = 0;
 
         function agregarAlResumen(elemento) {

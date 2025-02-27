@@ -47,7 +47,10 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
     <div id="crearProducto" class="form-section">
         <h1>Crear Producto</h1>
         <!-- Abrir modal para subir el archivo -->
-        <button type="button" onclick="openModal()">Importar archivo</button>
+        <button type="submit" class="icon-button" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
+            <i class="fas fa-file-excel"></i>
+            <label>Importar archivo</label>
+        </button>
 
         <!-- Modal para subir el archivo -->
         <div id="modalConfirm" class="modal hidden">

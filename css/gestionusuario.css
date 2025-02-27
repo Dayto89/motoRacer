@@ -87,7 +87,7 @@ body::before {
   color: white;
 }
 .btn-registro {
-  background-color: #1167CC;
+  background-color: #219b40;
   color: white;
   font-size: 17px;
   font-weight: bold;
@@ -119,7 +119,7 @@ body::before {
   background-color: #c82333;
 }
 .btn-registro:hover {
-  background-color: #0056b3;
+  background-color: rgb(5, 105, 30);
 }
 .modal {
   display: none;

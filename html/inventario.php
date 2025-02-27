@@ -146,6 +146,7 @@ if (!$resultado) {
                     <label><input type="checkbox" name="criterios[]" value="ubicacion"> Ubicación</label>
                     <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
                 </div>
+                
         </div>
     </details>
 
@@ -219,7 +220,7 @@ if (!$resultado) {
         <?php endif; ?>
       </div>
   </div>
-
+z
 </body>
 
 </html>
