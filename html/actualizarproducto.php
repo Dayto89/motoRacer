@@ -201,27 +201,11 @@ if (!isset($_SESSION['usuario_id'])) {
                             <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">Eliminar</button>
                         </div>
                     </div>
-                    <!-- Se agregó la clase 'main' dentro de un contenedor que se desplaza con la barra lateral -->
-                    <div class="container">
-                        <div class="main">
-                            ...
-                        </div>
-                    </div>
-
-                    <!-- Se cambió el orden para asegurar que la barra lateral afecta al contenido -->
-                    <div class="sidebar">
-                        ...
-                    </div>
-                    <div class="main">
-                        ...
-                    </div>
-
                 </div>
             </form>
         </div>
     </div>
     <?php
-
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
 

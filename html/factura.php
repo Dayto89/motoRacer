@@ -32,20 +32,17 @@ $icono2 = '
   ></animated-icons>';
 
 
-// Agregar información de cliente a la factura si se presiona el boton cobrar
+// Mantener información de cliente para usar en factura.php
 
-  if (isset($_POST['guardar'])) {
+if (isset($_POST['guardar'])) {
     $nombre = $_POST['nombre'];
     $apellido = $_POST['apellido'];
     $email = $_POST['email'];
     $telefono = $_POST['telefono'];
     $direccion = $_POST['direccion'];
     $cliente = $_POST['cliente'];
-  }
-
-
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -147,10 +144,10 @@ $icono2 = '
 
     <div class="sidebar-right">
 
-    <!-- Abrir Modal para información de cliente -->
+        <!-- Abrir Modal para información de cliente -->
         <button onclick="openModal()" class="icon-button" aria-label="Información de cliente" title="Información de cliente">
             <i class="fas fa-info-circle"></i>
-            <label style="color: white; font-size: 14px;">  Información de cliente</label>
+            <label style="color: white; font-size: 14px;"> Información de cliente</label>
         </button>
 
         <h3>Resumen</h3>
@@ -173,145 +170,147 @@ $icono2 = '
 
     <!-- Modal para metodo de pago -->
     <div id="modalPaymentMethod" class="modal hidden">
-      <div class="modal-content">
-        <h2 id="modalTitle">Selecciona un metodo de pago</h2>
-        <p id="modalMessage">Selecciona un metodo de pago</p>
-        <div id="modalButtons" class="modal-buttons">
-          <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-          <button type="submit" name="guardar">Guardar</button>
+        <div class="modal-content">
+            <form action="" method="POST">
+                <h2 id="modalTitle">Selecciona un metodo de pago</h2>
+                <p id="modalMessage">Selecciona un metodo de pago</p>
+                <div id="modalButtons" class="modal-buttons">
+                    <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" name="pago">Guardar</button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
-
     <!-- Modal para información de cliente -->
     <div id="modalConfirm" class="modal hidden">
-      <div class="modal-content">
-        <h2 id="modalTitle">Información de cliente</h2>
-        <p id="modalMessage">Ingrese la información de cliente</p>
-        <label for="nombre">Nombre</label> <input type="text"><br>
-        <label for="apellido">Apellido</label> <input type="text"><br>
-        <label for="email">Email</label> <input type="text"><br>
-        <label for="telefono">Telefono</label> <input type="text"><br>
-        <label for="direccion">Dirección</label> <input type="text">
-        <div id="modalButtons" class="modal-buttons">
-          <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-          <button type="submit" name="guardar">Guardar</button>
+        <div class="modal-content">
+            <form action="" method="POST">
+                <h2 id="modalTitle">Información de cliente</h2>
+                <p id="modalMessage">Ingrese la información de cliente</p>
+                <label for="nombre">Nombre</label> <input type="text" name="nombre"><br>
+                <label for="apellido">Apellido</label> <input type="text" name="apellido"><br>
+                <label for="email">Email</label> <input type="text" name="email"><br>
+                <label for="telefono">Telefono</label> <input type="text" name="telefono"><br>
+                <label for="direccion">Dirección</label> <input type="text" name="direccion">
+                <div id="modalButtons" class="modal-buttons">
+                    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" name="guardar">Guardar</button>
+                </div>
+            </form>
         </div>
-      </div>
-
-    <script>
-        // Funcion cobrar abre modal de metodo de pago
-        function cobrar() {
-            if (document.querySelectorAll(".resumen-scroll ul li").length === 0) {
-                alert("No hay productos en el resumen");
-            } else {
-                const modal = document.getElementById("modalPaymentMethod");
-                modal.style.display = "flex"; // Mostrar el modal con flexbox
-            }
-        }
-
-        function abrirModal() {
-            const modal = document.getElementById("modalPaymentMethod");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
-        }
-
-        function cerrarModal() {
-            const modal = document.getElementById("modalPaymentMethod");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
-        }
-
-        // Función para abrir el modal de información de cliente
-        function openModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
-        }
-
-        // Función para cerrar el modal de información de cliente
-        function closeModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
-        }
-
-        let total = 0;
-
-        function agregarAlResumen(elemento) {
-            let nombre = elemento.getAttribute("data-nombre");
-            let precio = parseFloat(elemento.getAttribute("data-precio"));
-            let contadorElemento = elemento.querySelector(".contador-producto");
-
-            let contador = parseInt(contadorElemento.textContent) || 0;
-            contador++;
-            contadorElemento.textContent = contador;
-            contadorElemento.style.display = "block";
-
-            let listaResumen = document.getElementById("listaResumen");
-            let items = listaResumen.getElementsByTagName("li");
-            let encontrado = false;
-
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].getAttribute("data-nombre") === nombre) {
-                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
-                    items[i].setAttribute("data-cantidad", cantidad);
-                    items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
-                    encontrado = true;
-                    break;
+        <script>
+            // Funcion cobrar abre modal de metodo de pago
+            function cobrar() {
+                if (document.querySelectorAll(".resumen-scroll ul li").length === 0) {
+                    alert("No hay productos en el resumen");
+                } else {
+                    const modal = document.getElementById("modalPaymentMethod");
+                    modal.style.display = "flex"; // Mostrar el modal con flexbox
                 }
             }
 
-            if (!encontrado) {
-                let item = document.createElement("li");
-                item.setAttribute("data-nombre", nombre);
-                item.setAttribute("data-precio", precio);
-                item.setAttribute("data-cantidad", 1);
-                item.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
-                listaResumen.appendChild(item);
+            function abrirModal() {
+                const modal = document.getElementById("modalPaymentMethod");
+                const btnAbrirModal = document.getElementById("btnAbrirModal");
+                modal.style.display = "flex"; // Mostrar el modal con flexbox
+                btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
             }
 
-            total += precio;
-            document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
-        }
+            function cerrarModal() {
+                const modal = document.getElementById("modalPaymentMethod");
+                const btnAbrirModal = document.getElementById("btnAbrirModal");
+                modal.style.display = "none"; // Ocultar el modal
+                btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+            }
 
-        function quitarDelResumen(elemento) {
-            let nombre = elemento.getAttribute("data-nombre");
-            let precio = parseFloat(elemento.getAttribute("data-precio"));
-            let contadorElemento = elemento.querySelector(".contador-producto");
+            // Función para abrir el modal de información de cliente
+            function openModal() {
+                const modal = document.getElementById("modalConfirm");
+                const btnAbrirModal = document.getElementById("btnAbrirModal");
+                modal.style.display = "flex"; // Mostrar el modal con flexbox
+                btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+            }
 
-            let contador = parseInt(contadorElemento.textContent) || 0;
-            if (contador > 0) {
-                contador--;
+            // Función para cerrar el modal de información de cliente
+            function closeModal() {
+                const modal = document.getElementById("modalConfirm");
+                const btnAbrirModal = document.getElementById("btnAbrirModal");
+                modal.style.display = "none"; // Ocultar el modal
+                btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+            }
+
+            let total = 0;
+
+            function agregarAlResumen(elemento) {
+                let nombre = elemento.getAttribute("data-nombre");
+                let precio = parseFloat(elemento.getAttribute("data-precio"));
+                let contadorElemento = elemento.querySelector(".contador-producto");
+
+                let contador = parseInt(contadorElemento.textContent) || 0;
+                contador++;
                 contadorElemento.textContent = contador;
-                if (contador === 0) contadorElemento.style.display = "none";
-            }
+                contadorElemento.style.display = "block";
 
-            let listaResumen = document.getElementById("listaResumen");
-            let items = listaResumen.getElementsByTagName("li");
+                let listaResumen = document.getElementById("listaResumen");
+                let items = listaResumen.getElementsByTagName("li");
+                let encontrado = false;
 
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].getAttribute("data-nombre") === nombre) {
-                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) - 1;
-
-                    if (cantidad > 0) {
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].getAttribute("data-nombre") === nombre) {
+                        let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
                         items[i].setAttribute("data-cantidad", cantidad);
                         items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
-                    } else {
-                        listaResumen.removeChild(items[i]);
+                        encontrado = true;
+                        break;
                     }
+                }
 
-                    total -= precio;
-                    document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
-                    break;
+                if (!encontrado) {
+                    let item = document.createElement("li");
+                    item.setAttribute("data-nombre", nombre);
+                    item.setAttribute("data-precio", precio);
+                    item.setAttribute("data-cantidad", 1);
+                    item.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
+                    listaResumen.appendChild(item);
+                }
+
+                total += precio;
+                document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+            }
+
+            function quitarDelResumen(elemento) {
+                let nombre = elemento.getAttribute("data-nombre");
+                let precio = parseFloat(elemento.getAttribute("data-precio"));
+                let contadorElemento = elemento.querySelector(".contador-producto");
+
+                let contador = parseInt(contadorElemento.textContent) || 0;
+                if (contador > 0) {
+                    contador--;
+                    contadorElemento.textContent = contador;
+                    if (contador === 0) contadorElemento.style.display = "none";
+                }
+
+                let listaResumen = document.getElementById("listaResumen");
+                let items = listaResumen.getElementsByTagName("li");
+
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].getAttribute("data-nombre") === nombre) {
+                        let cantidad = parseInt(items[i].getAttribute("data-cantidad")) - 1;
+
+                        if (cantidad > 0) {
+                            items[i].setAttribute("data-cantidad", cantidad);
+                            items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
+                        } else {
+                            listaResumen.removeChild(items[i]);
+                        }
+
+                        total -= precio;
+                        document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+                        break;
+                    }
                 }
             }
-        }
-    </script>
+        </script>
 
 </body>
 
