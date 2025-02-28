@@ -537,6 +537,68 @@ a.brand:after {
     width: 300px; text-align: center;
 }
 
+.modal-content h2 {
+   
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    margin: auto;
+    font-size: 35px;
+}
+.modal h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+.modal p {
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    color: #555;
+    margin-top: 25px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.modal button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.modal button:first-child {
+    background: #ccc;
+    color: #000;
+}
+
+.modal button:first-child:hover {
+    background: #bbb;
+}
+
+.modal button:last-child {
+    background: #28a745;
+    color: white;
+}
+
+.modal button:last-child:hover {
+    background: #218838;
+}
 .close {
     float: right; cursor: pointer; font-size: 20px;
 }

@@ -1,0 +1,28 @@
+body {
+    font-family: "Metal Mania", system-ui;
+    background-image: url('fondoMotoRacer.png'); 
+   
+}
+body::before {
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: black;
+    opacity: 0.6;
+}
+
+.container {
+    display: flex;
+    background-color: rgb(174 174 174 / 59%);
+    border-radius: 10px;
+    justify-content: space-between;
+    width: 1200px;
+    height: 850px;
+    margin-left: 323px;
+    margin: 0; /* Quita márgenes */
+    padding: 0; /* Quita rellenos */
+    margin: auto;
+    margin-top: 30px;
+    margin-right: 50px;
+}

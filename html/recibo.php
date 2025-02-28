@@ -5,20 +5,35 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+$id = $_SESSION['usuario_id'];
+
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+//Info de usuario ( vendedor )
+$consulta = "SELECT * FROM usuario WHERE identificacion = $id";
+$resultado = mysqli_query($conexion, $consulta);
 
-// Traer información de cliente del archivo factura.php
+if ($resultado) {
+    $usuario = $resultado->fetch_assoc();
+    $nombre = $usuario['nombre'];
+    $apellido = $usuario['apellido'];
+}
 
-    $cliente = $_SESSION['cliente'];
-    $vendedor = $_SESSION['vendedor'];
-    $productos = $_SESSION['productos'];
+// Traer codigo del cliente seleccionado en factura.php
+// $codigo = $_POST['codigo'];
+$codigo = 123;
+$consulta = "SELECT * FROM cliente WHERE codigo = '$codigo'";
+$resultado = mysqli_query($conexion, $consulta);
 
-
-
+if ($resultado) {
+    $cliente = $resultado->fetch_assoc();
+    $nombreCliente = $cliente['nombre'];
+    $apellidoCliente = $cliente['apellido'];
+    $telefono = $cliente['telefono'];
+}
 
 ?>
 <!DOCTYPE html>
@@ -26,64 +41,15 @@ if (!$conexion) {
 <head>
     <meta charset="UTF-8">
     <title>Factura</title>
+    <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../css/recibo.css">
+    <script src="../js/index.js"></script>
     <style>
-        /* Ejemplo de estilo para un recibo/tirilla de 80mm de ancho */
-        body {
-            font-family: Arial, sans-serif;
-            width: 80mm; /* Ancho típico de rollo de impresora térmica */
-            margin: 0 auto;
-        }
 
-        h1, h2, h3, p {
-            margin: 0;
-            padding: 0;
-        }
-
-        .factura {
-            border: 1px dashed #000;
-            padding: 10px;
-        }
-
-        .factura-header, .factura-footer {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .factura-datos-cliente {
-            margin-bottom: 10px;
-        }
-
-        .factura-productos table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .factura-productos th,
-        .factura-productos td {
-            text-align: left;
-            padding: 4px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .factura-total {
-            text-align: right;
-            margin-top: 10px;
-            font-size: 1.2em;
-        }
-
-        /* Estilos de impresión (opcional) */
-        @media print {
-            /* Quita bordes, margenes, etc. para optimizar la impresión */
-            body {
-                margin: 0;
-            }
-            .factura {
-                border: none;
-            }
-        }
     </style>
 </head>
 <body>
+    <div id="menu"></div>
     <div class="factura">
         <div class="factura-header">
             <h2>Motoracer</h2>
@@ -92,14 +58,13 @@ if (!$conexion) {
 
         <div class="factura-datos-cliente">
             <strong>Cliente:</strong> 
-            <?php echo $cliente['nombre'] . ' ' . $cliente['apellido']; ?><br>
-            <strong>Teléfono:</strong> <?php echo $cliente['telefono']; ?><br>
-            <strong>Dirección:</strong> <?php echo $cliente['direccion']; ?><br>
+            <?php echo $nombreCliente . ' ' . $apellidoCliente; ?><br>
+            <strong>Teléfono:</strong> <?php echo $telefono; ?><br>
         </div>
 
         <div class="factura-datos-vendedor">
             <strong>Vendedor:</strong> 
-            <?php echo $vendedor['nombre'] . ' ' . $vendedor['apellido']; ?>
+            <?php echo $nombre. ' ' . $apellido; ?><br>
         </div>
 
         <hr>

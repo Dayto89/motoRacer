@@ -11,6 +11,7 @@ if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
+
 $icono1 = '
 <animated-icons class= "icono-accion"
   src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
@@ -32,16 +33,34 @@ $icono2 = '
   ></animated-icons>';
 
 
-// Mantener información de cliente para usar en factura.php
+// Guardar informacion de cliente en la base de datos
 
-if (isset($_POST['guardar'])) {
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $email = $_POST['email'];
-    $telefono = $_POST['telefono'];
-    $direccion = $_POST['direccion'];
-    $cliente = $_POST['cliente'];
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+
+if (!$conexion) {
+    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+
+if(isset($_POST['guardar'])) {  
+    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
+    $identificacion = mysqli_real_escape_string($conexion, $_POST['identificacion']);
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $apellido = mysqli_real_escape_string($conexion, $_POST['apellido']);
+    $email = mysqli_real_escape_string($conexion, $_POST['email']);
+    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+    $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
+    $cliente = mysqli_real_escape_string($conexion, $_POST['cliente']);
+
+    $consulta = "INSERT INTO cliente ( codigo, identificacion, nombre, apellido, email, telefono, direccion, cliente) VALUES ('$codigo', '$identificacion', '$nombre', '$apellido', '$email', '$telefono', '$direccion', '$cliente')";
+
+    if (mysqli_query($conexion, $consulta)) {
+        echo "Datos guardados correctamente.";
+    } else {
+        echo "Error al guardar los datos: " . mysqli_error($conexion);
+    }
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -168,19 +187,7 @@ if (isset($_POST['guardar'])) {
         </div>
     </div>
 
-    <!-- Modal para metodo de pago -->
-    <div id="modalPaymentMethod" class="modal hidden">
-        <div class="modal-content">
-            <form action="" method="POST">
-                <h2 id="modalTitle">Selecciona un metodo de pago</h2>
-                <p id="modalMessage">Selecciona un metodo de pago</p>
-                <div id="modalButtons" class="modal-buttons">
-                    <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-                    <button type="submit" name="pago">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    
     <!-- Modal para información de cliente -->
     <div id="modalConfirm" class="modal hidden">
         <div class="modal-content">
@@ -205,7 +212,8 @@ if (isset($_POST['guardar'])) {
                     alert("No hay productos en el resumen");
                 } else {
                     const modal = document.getElementById("modalPaymentMethod");
-                    modal.style.display = "flex"; // Mostrar el modal con flexbox
+                    // ir a pago.php
+                    window.location.href = "../html/pago.php";
                 }
             }
 

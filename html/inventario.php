@@ -208,9 +208,115 @@ if (!$resultado) {
                   <td><?= $fila["ubicacion"] ?? 'N/A'; ?></td>
                   <td><?= $fila["proveedor"] ?? 'N/A'; ?></td>
                   <td class='text-center'>
-                    <i class='fa-regular fa-pen-to-square' title='Editar'></i>
-                    <i class='fa-solid fa-trash' id="eliminar" title='Eliminar'></i>
-                  </td>
+  <button class='edit-button' data-id='<?= $fila["codigo1"] ?>'>Editar</button>
+  <button class='delete-button' data-id='<?= $fila["codigo1"] ?>'>Eliminar</button>
+</td>
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Editar Producto</h2>
+    <form id="editForm" method="post">
+  <!-- Campo oculto para enviar el código 1 -->
+  <input type="hidden" id="editCodigo1" name="codigo1">
+  
+  <!-- Campo visible pero solo lectura -->
+  <label for="editCodigo1">Código:</label>
+  <input type="text" id="editCodigo1Visible" readonly>
+      <label for="editCodigo2">Código 2:</label>
+      <input type="text" id="editCodigo2" name="codigo2">
+      <label for="editNombre">Nombre:</label>
+      <input type="text" id="editNombre" name="nombre">
+    
+      <label for="editPrecio1">Precio 1:</label>
+      <input type="text" id="editPrecio1" name="precio1">
+      <label for="editPrecio2">Precio 2:</label>
+      <input type="text" id="editPrecio2" name="precio2">
+      <label for="editPrecio3">Precio 3:</label>
+      <input type="text" id="editPrecio3" name="precio3">
+      <label for="editCantidad">Cantidad:</label>
+      <input type="text" id="editCantidad" name="cantidad">
+      <label for="editDescripcion">Descripción:</label>
+      <input type="text" id="editDescripcion" name="descripcion">
+      <label for="editCategoria">Categoría:</label>
+      <input type="text" id="editCategoria" name="categoria">
+      <label for="editMarca">Marca:</label>
+      <input type="text" id="editMarca" name="marca">
+      <label for="editUnidadMedida">Unidad Medida:</label>
+      <input type="text" id="editUnidadMedida" name="unidadmedida">
+      <label for="editUbicacion">Ubicación:</label>
+      <input type="text" id="editUbicacion" name="ubicacion">
+      <label for="editProveedor">Proveedor:</label>
+      <input type="text" id="editProveedor" name="proveedor">
+      <button type="submit">Guardar Cambios</button>
+    </form>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const editButtons = document.querySelectorAll('.edit-button');
+  const modal = document.getElementById('editModal');
+  const closeModal = document.querySelector('.close');
+  const editForm = document.getElementById('editForm');
+
+  // Abrir modal y cargar datos
+  editButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const row = this.closest('tr');
+
+      const codigo1 = row.cells[0].innerText; // Código 1
+      document.getElementById('editCodigo1').value = codigo1; // Campo oculto
+      document.getElementById('editCodigo1Visible').value = codigo1; // Campo visible
+      
+     
+      document.getElementById('editCodigo2').value = row.cells[1].innerText;
+      document.getElementById('editNombre').value = row.cells[2].innerText;
+      document.getElementById('editPrecio1').value = row.cells[4].innerText;
+      document.getElementById('editPrecio2').value = row.cells[5].innerText;
+      document.getElementById('editPrecio3').value = row.cells[6].innerText;
+      document.getElementById('editCantidad').value = row.cells[7].innerText;
+      document.getElementById('editDescripcion').value = row.cells[8].innerText;
+      document.getElementById('editCategoria').value = row.cells[9].innerText;
+      document.getElementById('editMarca').value = row.cells[10].innerText;
+      document.getElementById('editUnidadMedida').value = row.cells[11].innerText;
+      document.getElementById('editUbicacion').value = row.cells[12].innerText;
+      document.getElementById('editProveedor').value = row.cells[13].innerText;
+
+      modal.style.display = 'block';
+    });
+  });
+
+  // Cerrar modal
+  closeModal.addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
+
+  // Enviar formulario de edición
+  document.querySelector("#formulario-editar").addEventListener("submit", function (e) {
+    e.preventDefault(); // Evita el envío por defecto
+
+    let formData = new FormData(this);
+
+    fetch("../html/editar.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) {
+            location.reload(); // Recargar la página para reflejar los cambios
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+  
+    });
+
+
+</script>
                 </tr>
               <?php endwhile; ?>
             </tbody>
