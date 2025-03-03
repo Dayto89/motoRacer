@@ -23,7 +23,7 @@ body::before {
 
 .main-content {
     padding: 20px;
-    transition: margin-left 0.3s ease;
+
     height: 100vh;
     margin-right: 100px;
 }
@@ -50,7 +50,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     color: white;
-    margin-left: 6%;
+    margin-left: 60px;
     font-family: Arial;
 }
 
@@ -102,13 +102,6 @@ input[type="checkbox"] {
         1px -1px 0 #000,  
         -1px 1px 0 #000,  
         3px 3px 0 #000;
-}
-
-/* Contenedor principal para centrar el contenido */
-.main-container {
-    max-width: 1200px; /* Ancho máximo del contenido */
-    margin: 0 auto; /* Centrar el contenido */
-    padding: 20px; /* Espaciado interno */
 }
 
 /* Ajustes para el título */
@@ -324,3 +317,139 @@ form input[type="text"], #editForm select {
     letter-spacing: 5px;
     padding: 16px;
 }
+
+/* Barra lateral (Menú) */
+.sidebar {
+    width: 100px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1167CC, #083972, #000000);
+    transition: width 0.3s ease;
+    overflow: hidden;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar:hover {
+    width: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main {
+    margin-left: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main-content {
+    margin-left: 215px;
+    transition: margin-left 0.3s ease;
+    margin-right: 0px;
+}
+
+/* Contenido principal */
+.main-content {
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    height: 100vh;
+    margin-left: 85px; /* Ajustado al tamaño inicial de la barra */
+    margin-right: 0px;
+}
+
+.main-content table {
+    width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
+    max-width: 100%; /* Evita que se desborde */
+    table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
+}
+
+.main-content table th,
+.main-content table td {
+    overflow-wrap: break-word; /* Hace que el texto largo se divida en varias líneas */
+    word-break: break-word;
+}
+.main-content table {
+    width: auto;
+    max-width: 100%;
+    table-layout: fixed; /* Fija el ancho de las columnas según lo especificado */
+}
+
+.main-content table th:nth-child(1), 
+.main-content table td:nth-child(1) { 
+    width: 77px; 
+}
+
+.main-content table th:nth-child(2), 
+.main-content table td:nth-child(2) { 
+    width: 77px; 
+}
+
+.main-content table th:nth-child(3), 
+.main-content table td:nth-child(3) { 
+    width: 100px; 
+}
+
+.main-content table th:nth-child(4), 
+.main-content table td:nth-child(4) { 
+    width: 44px; 
+}
+
+.main-content table th:nth-child(5), 
+.main-content table td:nth-child(5) { 
+    width: 100px; 
+}
+
+.main-content table th:nth-child(6), 
+.main-content table td:nth-child(6) { 
+    width: 100px;
+}
+
+.main-content table th:nth-child(7), 
+.main-content table td:nth-child(7) { 
+    width: 100px;
+}
+
+.main-content table th:nth-child(8), 
+.main-content table td:nth-child(8) { 
+    width: 90px;
+}
+
+.main-content table th:nth-child(9), 
+.main-content table td:nth-child(9) { 
+    width: 300px;
+}
+
+.main-content table th:nth-child(10), 
+.main-content table td:nth-child(10) { 
+    width: 95px;
+}
+
+.main-content table th:nth-child(11), 
+.main-content table td:nth-child(11) { 
+    width: 80px;
+}
+
+.main-content table th:nth-child(12), 
+.main-content table td:nth-child(12) { 
+    width: 85px;
+}
+
+.main-content table th:nth-child(13), 
+.main-content table td:nth-child(13) { 
+    width: 100px;
+}
+
+.main-content table th:nth-child(14), 
+.main-content table td:nth-child(14) { 
+    width: 110px;
+}
+
+.main-content table th:nth-child(15), 
+.main-content table td:nth-child(15) { 
+    width: 150px;
+}
+
+
+
+
+
+
+

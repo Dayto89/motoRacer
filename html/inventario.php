@@ -141,18 +141,18 @@ if (isset($_POST['codigo1'])) {
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
-    header('Content-Type: application/json'); // Para que el JS lo entienda como JSON
-    $codigo = $_POST['codigo'];
-    
-    $consulta = "DELETE FROM producto WHERE codigo1 = '$codigo'";
-    $eliminado = mysqli_query($conexion, $consulta);
-    if (!$eliminado) {
-        echo json_encode(['success' => false, 'error' => mysqli_error($conexion)]);
-        exit;
-    }
+  header('Content-Type: application/json'); // Para que el JS lo entienda como JSON
+  $codigo = $_POST['codigo'];
 
-    echo json_encode(['success' => $eliminado]);
-    exit; // Para evitar mezclar con HTML
+  $consulta = "DELETE FROM producto WHERE codigo1 = '$codigo'";
+  $eliminado = mysqli_query($conexion, $consulta);
+  if (!$eliminado) {
+    echo json_encode(['success' => false, 'error' => mysqli_error($conexion)]);
+    exit;
+  }
+
+  echo json_encode(['success' => $eliminado]);
+  exit; // Para evitar mezclar con HTML
 }
 ?>
 
@@ -416,31 +416,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
       });
     });
 
+    // Función para eliminar un producto
     function eliminarProducto(codigo) {
-    if (!confirm(`¿Está seguro de eliminar el producto con código ${codigo}?`)) {
+      if (!confirm(`¿Está seguro de eliminar el producto con código ${codigo}?`)) {
         return;
-    }
+      }
 
-    fetch('inventario.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-    })
-    .then(response => response.json()) // Convertir la respuesta a JSON
-    .then(data => {
-        if (data.success) {
+      fetch('inventario.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+        })
+        .then(response => response.json()) // Convertir la respuesta a JSON
+        .then(data => {
+          if (data.success) {
             alert('Producto eliminado correctamente');
             location.reload();
-        } else {
+          } else {
             alert('Error al eliminar el producto');
-        }
-    })
-    .catch(error => {
-        alert('Error en la solicitud');
-        console.error('Error en fetch:', error);
-    });
-}
-
+          }
+        })
+        .catch(error => {
+          alert('Error en la solicitud');
+          console.error('Error en fetch:', error);
+        });
+    }
   </script>
 </body>
 
