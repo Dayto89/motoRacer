@@ -81,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
       <table class="category-table">
         <tbody id="tabla-categorias">
           <?php
-          $categorias = $conexion->query("SELECT * FROM ubicacion ORDER BY codigo ASC");
-          while ($fila = $categorias->fetch_assoc()) {
+          $ubicaciones = $conexion->query("SELECT * FROM ubicacion ORDER BY codigo ASC");
+          while ($fila = $ubicaciones->fetch_assoc()) {
               echo "<tr>";
               echo "<td>" . htmlspecialchars($fila['codigo']) . "</td>";
               echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
