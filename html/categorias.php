@@ -68,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.html">
   <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
+  <script src="/js/categorias.js"></script>
 </head>
 <body>
   <div id="menu"></div>

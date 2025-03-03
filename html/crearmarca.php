@@ -64,10 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Marca</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/css/categorias.css">
+  <link rel="stylesheet" href="/css/marca.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.html">
   <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
+  <script src="../js/marcas.js"></script>
 </head>
 <body>
   <div id="menu"></div>
@@ -79,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
       </div>
       <h3>Lista de Marcas</h3>
       <table class="category-table">
-        <tbody id="tabla-categorias">
+        <tbody id="tabla-marcas">
           <?php
           $marcas = $conexion->query("SELECT * FROM Marca ORDER BY codigo ASC");
           while ($fila = $marcas->fetch_assoc()) {

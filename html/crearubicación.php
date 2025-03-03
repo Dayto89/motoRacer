@@ -23,7 +23,7 @@ if ($_POST && isset($_POST['guardar'])) {
   $resultado = mysqli_query($conexion, $query);
 
   if ($resultado) {
-    echo "<script>alert('Categoría agregada correctamente');</script>";
+    echo "<script>alert('Ubicación agregada correctamente');</script>";
   } else {
     echo "<script>alert('Error al agregar la categoría: " . mysqli_error($conexion) . "');</script>";
   }
@@ -64,10 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ubicación</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/css/categorias.css">
+  <link rel="stylesheet" href="/css/ubicacion.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.html">
   <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
+  <script src="/js/ubicaciones.js"></script>
 </head>
 <body>
   <div id="menu"></div>
@@ -79,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
       </div>
       <h3>Lista de ubicaciones</h3>
       <table class="category-table">
-        <tbody id="tabla-categorias">
+        <tbody id="tabla-ubicaciones">
           <?php
           $ubicaciones = $conexion->query("SELECT * FROM ubicacion ORDER BY codigo ASC");
           while ($fila = $ubicaciones->fetch_assoc()) {
