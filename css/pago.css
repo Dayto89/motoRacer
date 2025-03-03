@@ -1,7 +1,13 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 body {
     font-family: "Metal Mania", system-ui;
     background-image: url('fondoMotoRacer.png'); 
-   
+    background-size: cover;
+    background-position: center;
 }
 body::before {
     position: fixed;
@@ -14,15 +20,53 @@ body::before {
 
 .container {
     display: flex;
-    background-color: rgb(174 174 174 / 59%);
+    background-color: rgba(174, 174, 174, 0.59); /* Mantiene el fondo semitransparente */
     border-radius: 10px;
     justify-content: space-between;
-    width: 1200px;
+    width: 1400px;
     height: 850px;
-    margin-left: 323px;
-    margin: 0; /* Quita márgenes */
-    padding: 0; /* Quita rellenos */
+    margin: auto;
+    margin-top: 30px;
+    
+    transition: margin-left 0.3s ease, background-color 0.3s ease; /* Agregar transición suave */
+}
+
+.sidebar {
+    width: 100px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1167CC, #083972, #000000);
+    transition: width 0.3s ease;
+    overflow: hidden;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar:hover {
+    width: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .container {
+    margin-left: 270px !important;
+    background-color: rgba(174, 174, 174, 0.85); /* Aumenta opacidad si es necesario */
+}
+
+/* Ajuste cuando el menú se expande */
+.sidebar:hover ~ .main-content {
+    padding-left: 290px; /* Mantiene la misma distancia cuando el menú se despliega */
+    transition: padding-left 0.3s ease;
+}
+
+/* Mantener la distancia de los lados */
+.main-content {
+    padding: 20px;
+    transition: padding-left 0.3s ease;
+    height: 100vh;
+    width: calc(100% - 150px); /* Mantiene el ancho total menos el margen derecho */
     margin: auto;
     margin-top: 30px;
     margin-right: 50px;
+    padding-left: 120px; /* Espacio inicial del menú cerrado */
 }
+

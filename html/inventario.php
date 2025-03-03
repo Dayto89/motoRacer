@@ -5,6 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
+
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
@@ -137,6 +138,22 @@ if (isset($_POST['codigo1'])) {
     echo "<script>alert('Error al actualizar los datos: " . mysqli_error($conexion) . "')</script>";
   }
 }
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
+    header('Content-Type: application/json'); // Para que el JS lo entienda como JSON
+    $codigo = $_POST['codigo'];
+    
+    $consulta = "DELETE FROM producto WHERE codigo1 = '$codigo'";
+    $eliminado = mysqli_query($conexion, $consulta);
+    if (!$eliminado) {
+        echo json_encode(['success' => false, 'error' => mysqli_error($conexion)]);
+        exit;
+    }
+
+    echo json_encode(['success' => $eliminado]);
+    exit; // Para evitar mezclar con HTML
+}
 ?>
 
 <!DOCTYPE html>
@@ -151,35 +168,7 @@ if (isset($_POST['codigo1'])) {
   <link rel="stylesheet" href="../css/inventario.css" />
   <link rel="stylesheet" href="../componentes/header.css">
   <script src="/js/index.js"></script>
-  <style>
-    /* Estilos básicos para el modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-    }
 
-    .modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      width: 50%;
-      position: relative;
-    }
-
-    .close {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      cursor: pointer;
-      font-size: 24px;
-    }
-  </style>
 </head>
 
 <body>
@@ -205,12 +194,12 @@ if (isset($_POST['codigo1'])) {
               <label><input type="checkbox" name="criterios[]" value="ubicacion"> Ubicación</label>
               <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
             </div>
-          
+
         </div>
       </details>
-        <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
-        <button class="search-button" type="submit">Buscar</button>
-        </form>
+      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
+      <button class="search-button" type="submit">Buscar</button>
+      </form>
       <div class="export-button">
         <form action="exportar_excel.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
@@ -273,7 +262,7 @@ if (isset($_POST['codigo1'])) {
               </td>
               <td class="text-center">
                 <button class="edit-button" data-id="<?= $fila['codigo1'] ?>">Editar</button>
-                <button class="delete-button" data-id="<?= $fila['codigo1'] ?>">Eliminar</button>
+                <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo1'] ?>')">Eliminar</button>
               </td>
             </tr>
           <?php endwhile; ?>
@@ -321,18 +310,18 @@ if (isset($_POST['codigo1'])) {
               ?>
             </select><br>
             <label for="editMarca">Marca:</label>
-              <select name="marca-id" id="editMarca" required>
-                <option value="">Seleccione una marca</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaMarcas = "SELECT codigo, nombre FROM marca";
-                $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
-                while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
-                  echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
+            <select name="marca-id" id="editMarca" required>
+              <option value="">Seleccione una marca</option>
+              <?php
+              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+              $consultaMarcas = "SELECT codigo, nombre FROM marca";
+              $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
+              while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
+                echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
+              }
+              mysqli_close($conexion2);
+              ?>
+            </select>
             <label for="editUnidadMedida">Unidad Medida:</label>
             <select name="unidadmedida-id" id="editUnidadMedida" required>
               <option value="">Seleccione una medida</option>
@@ -419,11 +408,39 @@ if (isset($_POST['codigo1'])) {
         });
       });
 
+
+
       // Listener para cerrar el modal
       closeModal.addEventListener('click', function() {
         modal.style.display = 'none';
       });
     });
+
+    function eliminarProducto(codigo) {
+    if (!confirm(`¿Está seguro de eliminar el producto con código ${codigo}?`)) {
+        return;
+    }
+
+    fetch('inventario.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+    })
+    .then(response => response.json()) // Convertir la respuesta a JSON
+    .then(data => {
+        if (data.success) {
+            alert('Producto eliminado correctamente');
+            location.reload();
+        } else {
+            alert('Error al eliminar el producto');
+        }
+    })
+    .catch(error => {
+        alert('Error en la solicitud');
+        console.error('Error en fetch:', error);
+    });
+}
+
   </script>
 </body>
 

@@ -188,5 +188,101 @@ document.addEventListener("DOMContentLoaded", function () {
                 .catch(error => alert("Error al eliminar la categoría tiene productos asociados"));
             }
         }
+
+        // Agregar evento a la tabla de ubicaciones (delegación)
+        document.getElementById("tabla-ubicaciones").addEventListener("click", function (event) {
+            const target = event.target;
+
+            if (target.classList.contains("btn-list")) {
+                const ubicacion_id = target.getAttribute("data-id");
+                console.log("Obteniendo productos de la ubicación:", ubicacion_id);
+
+                fetch("", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `lista=1&codigo=${ubicacion_id}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        alert(`Productos de la ubicación:\n${data.map(p => `- ${p.nombre}`).join("\n")}`);
+                    } else {
+                        alert("No hay productos en esta ubicación.");
+                    }
+                })
+                .catch(error => console.error("Error al obtener productos:", error));
+            }
+
+            if (target.classList.contains("btn-delete")) {
+                const codigo = target.getAttribute("data-id");
+
+                if (confirm("¿Está seguro de eliminar la ubicación?")) {
+                    fetch("", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `eliminar=1&codigo=${codigo}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Ubicación eliminada correctamente");
+                            location.reload();
+                        } else {
+                            alert("Error al eliminar la ubicación");
+                        }
+                    })
+                    .catch(error => alert("Error al eliminar la ubicación tiene productos asociados"));
+                }
+            }
+
+        });
+
+        // Agregar evento a la tabla de marcas (delegación)
+        document.getElementById("tabla-marcas").addEventListener("click", function (event) {
+            const target = event.target;
+
+            if (target.classList.contains("btn-list")) {
+                const marca_id = target.getAttribute("data-id");
+                console.log("Obteniendo productos de la marca:", marca_id);
+
+                fetch("", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `lista=1&codigo=${marca_id}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        alert(`Productos de la marca:\n${data.map(p => `- ${p.nombre}`).join("\n")}`);
+                    } else {
+                        alert("No hay productos en esta marca.");
+                    }
+                })
+                .catch(error => console.error("Error al obtener productos:", error));
+            }
+
+            if (target.classList.contains("btn-delete")) {
+                const codigo = target.getAttribute("data-id");
+
+                if (confirm("¿Está seguro de eliminar la marca?")) {
+                    fetch("", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `eliminar=1&codigo=${codigo}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Marca eliminada correctamente");
+                            location.reload();
+                        } else {
+                            alert("Error al eliminar la marca");
+                        }
+                    })
+                    .catch(error => alert("Error al eliminar la marca tiene productos asociados"));
+                }
+            }
+
+        });
     });
 });
