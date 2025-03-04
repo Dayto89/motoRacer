@@ -35,6 +35,8 @@ if ($resultado) {
     $telefono = $cliente['telefono'];
 }
 
+date_default_timezone_set('America/Bogota');
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,8 +54,15 @@ if ($resultado) {
     <div id="menu"></div>
     <div class="factura">
         <div class="factura-header">
-            <h2>Motoracer</h2>
-            <p>Fecha: <?php echo date('d/m/Y H:i'); ?></p>
+            <img src="../imagenes/LOGO.png" alt="">
+            <h2>HECTOR LEONARDO LÓPEZ CIPRIAN   </h2>
+            <p>NIT: 74182332-1</p>
+            <P>Dir.: CALLE 40 BIS 6 50</P>
+            <p>Yopal - Tel: +57 800 200 000</p>
+        </div>
+        <hr>
+        <div>
+        <p>Fecha generación: <?php echo date('d/m/Y H:i'); ?></p>
         </div>
 
         <div class="factura-datos-cliente">
@@ -73,9 +82,9 @@ if ($resultado) {
             <table>
                 <thead>
                     <tr>
-                        <th>Producto</th>
                         <th>Cant</th>
-                        <th>Precio</th>
+                        <th>Vr.Unit</th>
+                        <th>Producto</th>
                         <th>Subtotal</th>
                     </tr>
                 </thead>
@@ -94,6 +103,16 @@ if ($resultado) {
                     }
                     ?>
                 </tbody>
+                <hr>
+                <thead>
+                    <h4>Impuestos</h4>
+                    <tr>
+                        <th>ID</th>
+                        <th>%</th>
+                        <th>Base</th>
+                        <th>Impuestos</th>
+                    </tr>
+                </thead>
             </table>
         </div>
 

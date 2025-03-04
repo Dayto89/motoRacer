@@ -228,9 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
             <th>Unidad Medida</th>
             <th>Ubicación</th>
             <th>Proveedor</th>
-            <th class="text-center">
-              <input type="checkbox" />
-            </th>
+            <th> Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -260,9 +258,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
               <td data-proveedor-id="<?= htmlspecialchars($fila['proveedor_nit']) ?>">
                 <?= htmlspecialchars($fila['proveedor']) ?>
               </td>
-              <td class="text-center">
-                <button class="edit-button" data-id="<?= $fila['codigo1'] ?>">Editar</button>
-                <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo1'] ?>')">Eliminar</button>
+              <td class="acciones">
+                <button class="edit-button" data-id="<?= $fila['codigo1'] ?>">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo1'] ?>')"><i class="fa-solid fa-trash"></i></button>
               </td>
             </tr>
           <?php endwhile; ?>
@@ -272,96 +272,113 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
       <!-- Modal de edición -->
       <div id="editModal" class="modal">
         <div class="modal-content">
-          <span class="close">&times;</span>
+          <span class="close">
+          <i class="fa-solid fa-x"></i>
+          </span>
+
           <h2>Editar Producto</h2>
           <form id="editForm" method="post">
             <!-- Campo oculto para enviar el código 1 -->
             <input type="hidden" id="editCodigo1" name="codigo1">
-            <label for="editCodigo1Visible">Código:</label>
-            <input type="text" id="editCodigo1Visible" readonly><br>
-            <label for="editCodigo2">Código 2:</label>
-            <input type="text" id="editCodigo2" name="codigo2"><br>
-            <label for="editNombre">Nombre:</label>
-            <input type="text" id="editNombre" name="nombre"><br>
-            <label for="editPrecio1">Precio 1:</label>
-            <input type="text" id="editPrecio1" name="precio1"><br>
-            <label for="editPrecio2">Precio 2:</label>
-            <input type="text" id="editPrecio2" name="precio2"><br>
-            <label for="editPrecio3">Precio 3:</label>
-            <input type="text" id="editPrecio3" name="precio3"><br>
-            <label for="editCantidad">Cantidad:</label>
-            <input type="text" id="editCantidad" name="cantidad"><br>
-            <label for="editDescripcion">Descripción:</label>
-            <input type="text" id="editDescripcion" name="descripcion"><br>
-            <label for="editCategoria">Categoría:</label>
-            <select name="categoria-id" id="editCategoria" required>
-              <option value="">Seleccione una categoría</option>
-              <?php
-              $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-              if (!$conexion2) {
-                die("Error de conexión: " . mysqli_connect_error());
-              }
-              $consultaCategorias = "SELECT codigo, nombre FROM categoria";
-              $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
-              while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
-                echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select><br>
-            <label for="editMarca">Marca:</label>
-            <select name="marca-id" id="editMarca" required>
-              <option value="">Seleccione una marca</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaMarcas = "SELECT codigo, nombre FROM marca";
-              $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
-              while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
-                echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select>
-            <label for="editUnidadMedida">Unidad Medida:</label>
-            <select name="unidadmedida-id" id="editUnidadMedida" required>
-              <option value="">Seleccione una medida</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
-              $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
-              while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
-                echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select><br>
-            <label for="editUbicacion">Ubicación:</label>
-            <select name="ubicacion-id" id="editUbicacion" required>
-              <option value="">Seleccione una ubicación</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
-              $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
-              while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
-                echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select><br>
-            <label for="editProveedor">Proveedor:</label>
-            <select name="proveedor-id" id="editProveedor" required>
-              <option value="">Seleccione un proveedor</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaProveedores = "SELECT nit, nombre FROM proveedor";
-              $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
-              while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
-                echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select><br>
-            <button type="submit">Guardar Cambios</button>
+            <div class="campo"><label for="editCodigo1Visible">Código:</label>
+              <input type="text" id="editCodigo1Visible" readonly>
+            </div>
+            <div class="campo"><label for="editCodigo2">Código 2:</label>
+              <input type="text" id="editCodigo2" name="codigo2">
+            </div>
+            <div class="campo"><label for="editNombre">Nombre:</label>
+              <input type="text" id="editNombre" name="nombre">
+            </div>
+            <div class="campo"> <label for="editPrecio1">Precio 1:</label>
+              <input type="text" id="editPrecio1" name="precio1">
+            </div>
+            <div class="campo"><label for="editPrecio2">Precio 2:</label>
+              <input type="text" id="editPrecio2" name="precio2">
+            </div>
+            <div class="campo"> <label for="editPrecio3">Precio 3:</label>
+              <input type="text" id="editPrecio3" name="precio3">
+            </div>
+            <div class="campo"><label for="editCantidad">Cantidad:</label>
+              <input type="text" id="editCantidad" name="cantidad">
+            </div>
+            <div class="campo"> <label for="editDescripcion">Descripción:</label>
+              <input type="text" id="editDescripcion" name="descripcion">
+            </div>
+            <div class="campo"><label for="editCategoria">Categoría:</label>
+              <select name="categoria-id" id="editCategoria" required>
+                <option value="">Seleccione una categoría</option>
+                <?php
+                $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+                if (!$conexion2) {
+                  die("Error de conexión: " . mysqli_connect_error());
+                }
+                $consultaCategorias = "SELECT codigo, nombre FROM categoria";
+                $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
+                while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
+                  echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
+                }
+                mysqli_close($conexion2);
+                ?>
+              </select>
+            </div>
+            <div class="campo"><label for="editMarca">Marca:</label>
+              <select name="marca-id" id="editMarca" required>
+                <option value="">Seleccione una marca</option>
+                <?php
+                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+                $consultaMarcas = "SELECT codigo, nombre FROM marca";
+                $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
+                while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
+                  echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
+                }
+                mysqli_close($conexion2);
+                ?>
+              </select>
+            </div>
+            <div class="campo"><label for="editUnidadMedida">Unidad Medida:</label>
+              <select name="unidadmedida-id" id="editUnidadMedida" required>
+                <option value="">Seleccione una medida</option>
+                <?php
+                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+                $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
+                $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
+                while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
+                  echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
+                }
+                mysqli_close($conexion2);
+                ?>
+              </select>
+            </div>
+            <div class="campo"><label for="editUbicacion">Ubicación:</label>
+              <select name="ubicacion-id" id="editUbicacion" required>
+                <option value="">Seleccione una ubicación</option>
+                <?php
+                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+                $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
+                $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
+                while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
+                  echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
+                }
+                mysqli_close($conexion2);
+                ?>
+              </select>
+            </div>
+            <div class="campo"><label for="editProveedor">Proveedor:</label>
+              <select name="proveedor-id" id="editProveedor" required>
+                <option value="">Seleccione un proveedor</option>
+                <?php
+                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+                $consultaProveedores = "SELECT nit, nombre FROM proveedor";
+                $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
+                while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
+                  echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
+                }
+                mysqli_close($conexion2);
+                ?>
+              </select>
+            </div>
+            <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
+
           </form>
         </div>
       </div>

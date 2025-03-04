@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pago</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../css/pago.css">
+    <link rel="stylesheet" href="../componentes/header.css">
+    
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="/js/index.js"></script>
     
@@ -15,6 +16,10 @@
     </style>
 </head>
 <body>
+    <div class="sidebar">
+        <div id="menu"></div>
+    </div>
+    <div class="main-content">
     <div class="container">
         <div class="user-info">
             <h2>Información del Usuario</h2>
@@ -29,7 +34,7 @@
             <input type="text" id="apellido" name="apellido" placeholder="Apellido">
             <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
             <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
-            <button type="button" onclick="llenarDatosUsuarioFinal()">Usuario Final</button>
+          
         </div>
         <div class="payment-section">
             <h2>Registrar Pago</h2>
@@ -58,6 +63,9 @@
                 <textarea name="observaciones" placeholder="Ingrese observaciones..."></textarea>
             </div>
         </div>
+        </div>
+        </div>
+        
         <div class="summary-section">
             <h3>Información de pago</h3>
             <p>Total bruto: <span>$25,210.08</span></p>
@@ -68,7 +76,7 @@
             <p class="total">$30,000.00</p>
             <button class="save-btn">Guardar y enviar</button>
         </div>
-    </div>
+    
     <script>
         function llenarDatosUsuarioFinal() {
             document.getElementById("tipo_doc").value = "CC";

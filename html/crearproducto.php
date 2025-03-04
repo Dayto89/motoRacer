@@ -4,6 +4,18 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+// Incluir el archivo de verificación de permisos
+require_once 'verificar_permisos.php';
+
+$usuario_id = $_SESSION['usuario_id'];
+$permiso_id = 2; // ID del permiso "CREAR PRODUCTO"
+
+// Verificar si el usuario tiene permiso para acceder a esta sección
+if (!tiene_permiso($usuario_id, $permiso_id)) {
+    echo "<h1>Acceso denegado</h1>";
+    echo "<p>No tienes permiso para acceder a la sección de CREAR PRODUCTO.</p>";
+    exit();
+}
 
 //Almacenar informacion producto en la base de datos
 
@@ -18,6 +30,8 @@ $categorias = $conexion->query("SELECT codigo, nombre FROM categoria");
 $proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
 $ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
 $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
+
+
 
 ?>
 <!DOCTYPE html>

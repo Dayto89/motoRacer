@@ -84,11 +84,12 @@ mysqli_close($conexion);
     <div id="menu"></div>
     <!-- Información del usuario -->
     <div class="container">
-        <div class="form-container">
+       
             <h1>Usuario</h1>
             <div class="profile-pic">
             <img src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
             </div>
+            <div class="form-container">
             <div class="info-group">
                 <label for="nombre">Nombre</label>
                 <span id="nombre"><?php echo $nombre; ?></span>
@@ -115,7 +116,10 @@ mysqli_close($conexion);
             </div>
 
             <!-- Botón para abrir el popup -->
-            <button class="btn-abrir" onclick="abrirPopup()">+ Editar</button>
+             <div class="boton-editar">
+             <button class="btn-abrir" onclick="abrirPopup()"><i class='bx bx-plus bx-tada'></i>Editar</button>
+             </div>
+           
         </div>
     </div>
 

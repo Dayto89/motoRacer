@@ -117,7 +117,7 @@ input[type="checkbox"] {
         1px -1px 0 #1c51a0,  
         -1px 1px 0 #1c51a0,  
         3px 5px 0 #1c51a0;
-        margin-left: 10%;
+        
 }
 
 /* Ajustes para el filter-bar */
@@ -129,7 +129,7 @@ input[type="checkbox"] {
     gap: 10px;
     margin-bottom: 20px;
     max-width: 74%;
-    margin-left: 27%;
+    margin-left: 12%;
     padding: 10px;
     border-radius: 8px;
 }
@@ -244,22 +244,34 @@ input.form-control {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgb(0 0 0 / 74%);
+    background: rgb(0 0 0 / 78%);
   }
 
 
 
   .close {
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 31%;
+    top: 14%;
     cursor: pointer;
-    font-size: 24px;
-  }
+    font-size: 44px;
+    color: white;
+    margin-left: 13px;
+}
 
+.close i {
+    font-size: 15px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: color 0.3sease-in-out;
+    border: 2px solid #ffffff;
+    padding: 8px;
+    border-radius: 50%;
+}
 
-
-
+.close i:hover {
+    background: #c00a0a; /* Cambia a rojo cuando pasas el mouse */
+}
 
 
 
@@ -295,28 +307,73 @@ form input[type="text"], #editForm select {
 }
 
 .modal-content {
-    
-    width: 61%;
-    /* margin: 38px auto; */
+    width: 35%;
+
     text-align: center;
     background-color: rgb(174 174 174 / 46%);
     padding: 23px;
-    border-radius: 8px;
+    border-radius: 18px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 65px;
-    margin-left: 462px;
-
+    margin-top: 7%;
+    margin-left: 35%;
 }
-
 .modal-content h2 {
     font-size: 38px;
-    margin-top: -9%;
+    margin-top: -5%;
     color: white;
     text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
     margin-left: 13px;
     letter-spacing: 5px;
     padding: 16px;
 }
+.campo {
+    display: flex;
+    flex-direction: column;
+    width: 316px;
+    max-width: 101%;
+    padding: 10px;
+    margin-bottom: 1.5px;
+}
+
+.campo label {
+    margin-bottom: 5px;
+    color: white;
+    font-size: 19px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 2px 0 #1c51a0;
+    white-space: nowrap;
+}
+
+
+.modal-boton {
+    margin-left: 19%;
+    margin-top: 4%;
+}
+
+#modal-boton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #007BFF;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 3px 4px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 18px;
+    transition: background-color 0.3sease;
+    margin-right: 6%;
+    width: 157px;
+    height: 47px;
+    display: flex;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+}
+#modal-boton:hover {
+    background-color: #0056b3;
+}
+
 
 /* Barra lateral (Menú) */
 .sidebar {
@@ -447,7 +504,38 @@ form input[type="text"], #editForm select {
     width: 150px;
 }
 
+.edit-button,
+.delete-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.edit-button i,
+.delete-button i {
+    font-size: 20px; /* Tamaño del ícono */
+    color: #ffffff;  /* Color del ícono */
+    border: 2px solid transparent; /* Inicialmente sin borde */
+    padding: 5px; /* Espacio interno */
+    border-radius: 50%; /* Hace el borde circular */
+    transition: all 0.3s ease-in-out; /* Animación suave */
+}
+
+.edit-button i:hover {
+    color: #ffffff;  /* Mantiene el color del ícono */
+    background-color: #0c68a5; /* Fondo azul al hacer hover */
+    border: 2px solid #ffffff; /* Borde blanco */
+}
+
+.delete-button i:hover {
+    color: #ffffff;  /* Mantiene el color del ícono */
+    background-color: #d11212; /* Fondo rojo al hacer hover */
+    border: 2px solid #ffffff; /* Borde blanco */
+}
 
 
 

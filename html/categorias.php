@@ -56,6 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
     echo json_encode($productos);
     exit();
 }
+// Funcion Validar permisos del usuario para esta sección
+function tiene_permiso($usuario_id, $permiso_id) {
+  $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+  $query = "SELECT COUNT(*) AS count FROM usuario_permiso WHERE usuario_id = $usuario_id AND permiso_id = $permiso_id";
+  $resultado = mysqli_query($conexion, $query);
+  $fila = mysqli_fetch_assoc($resultado);
+  return $fila['count'] > 0;
+}
+
+$usuario_id = $_SESSION['usuario_id'];
+$permiso_id = 1; // ID del permiso "PRODUCTO"
+
+if (!tiene_permiso($usuario_id, $permiso_id)) {
+echo "No tienes permiso para acceder a esta sección.";
+exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
