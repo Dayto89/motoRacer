@@ -23,9 +23,18 @@ body {
     width: 200%;
     height: 200%;
 
-    z-index: -1;
-    background: linear-gradient(0deg, rgb(59, 100, 134 , 0.8), rgb(59, 100, 134 , 0.8));
+    z-index: 1;
+    background: none;
+   
     
+}
+
+.fondo{
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    z-index: -2;
+    background: linear-gradient(0deg, rgb(59, 100, 134 , 0.8), rgb(59, 100, 134 , 0.8));
 }
 
 

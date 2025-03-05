@@ -33,12 +33,11 @@ h1 {
 }
 .profile-pic {
     text-align: center;
-    margin-bottom: 20px;
 }
 
 .profile-pic img {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #87CEFA;
@@ -184,14 +183,6 @@ body::before {
     margin-right: 5%;
 }
 
-.profile-pic img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid #1e88e5;
-    margin-bottom: 15px;
-}
-
 /* Formularios */
 .form-container form {
     display: flex;
@@ -247,6 +238,11 @@ body::before {
     height: 53px;
     font-family: Arial, Helvetica, sans-serif;
     
+}
+
+.btn-abrir:hover{
+    background-color: #2615c0;
+    transform: scale(1.07);
 }
    
 
@@ -319,7 +315,7 @@ body::before {
 }
 
 .btn-cancelar:hover {
-    background: #1565c0;
+    background: #c01515;
     transform: scale(1.05);
 }
 
