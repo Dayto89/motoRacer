@@ -178,7 +178,7 @@ label {
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
-    border-radius: 20px;
+    border-radius: 10px;
     
 }
 
@@ -348,6 +348,7 @@ input[type="checkbox"] {
     width: 40px;
     height: 40px;
     z-index: 5 ;
+    margin-bottom: -9%;
 }
 
 #crearProducto h1{
@@ -633,31 +634,32 @@ input[type="checkbox"] {
     background-color: #a71d2a;
 }
 
+.icon-button:hover {
+    background-color: #218838;
+}
 .icon-button {
     display: flex;
     align-items: center;
-    padding: 5px;
+    padding: 6px 7px;
     background-color: #28a745;
     color: white;
     border: none;
     cursor: pointer;
-    border-radius: 4px;
-    margin-left: 340px;
-    margin-top: 40px;
+    border-radius: 9px;
+    margin-left: 71%;
+    margin-top: 0.5%;
 }
 
 .icon-button label {
     color: white;
-    font-size: 18px;
+    font-size: 15px;
     cursor: pointer;
+    margin-top: 2%;
 }
 
 .icon-button i {
     margin-right: 10px; /* Ajusta según necesites */
-    font-size: 30px;
+    font-size: 20px;
 }
 
-.icon-button:hover {
-    background-color: #218838;
-}
  

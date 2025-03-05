@@ -142,16 +142,25 @@ body::before {
 }
 
 .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 20px; /* Espacio horizontal entre columnas */
-    row-gap: 20px; /* Espacio vertical entre filas */
-}
+       
+grid-template-columns: repeat(2, 1fr);
+row-gap: 19px;
+margin-left: 323px;
+margin: 0;
+margin-top: 27px;
+padding: 19px;
+column-gap: -19px;
 
+}
+#proveedor-form{
+    margin-top: 27px;
+    margin-left: -2px;
+    margin-bottom: 11px;
+}
 input, select {
-    border: 1px solid #ccc; /* Agrega un borde para mayor visibilidad */
-    background-color: #ffffff; /* Fondo oscuro para coherencia con tu diseño */
-    color: rgb(0, 0, 0); /* Texto blanco */
+    border: 1px solid #444;
+    background-color: #ffffff;
+    color: rgb(9, 14, 13);
     border-radius: 5px;
     padding: 8px;
     font-size: 16px;
@@ -167,10 +176,7 @@ label {
     max-width: 100%;
     padding: 10px 88px;
     margin-bottom: 10px;
-    
-    
 }
-
 
 .campo2 {
   
@@ -190,12 +196,11 @@ input[type='text'], input[type='number'] {
     text-align: center;
     position: relative;
     display: inline-block;
-    width: 360px;
-    margin-left: 200px;
-    margin-top: 90px;
+    width: 372px;
+    margin-left: 195px;
+    margin-top: 60px;
 }
-
-.button-container  button{
+.button-container button {
     background-color: #007BFF;
     font-weight: bold;
     color: white;
@@ -204,12 +209,11 @@ input[type='text'], input[type='number'] {
     font-size: 1.2rem;
     cursor: pointer;
     border-radius: 11px;
-    transition: background-color 0.3s ease;
-    margin-left: 247px;
-    margin-top: -12px;
-    margin-bottom: 10px;
+    transition: background-color 0.3sease;
+    margin-left: 146px;
+    margin-top: -15px;
+    margin-bottom: 26px;
 }
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -269,15 +273,15 @@ input[type="checkbox"] {
 
 .container {
     display: flex;
-    background-color: rgb(174 174 174 / 59%);
-    border-radius: 10px;
-    justify-content: space-between;
-    width: 62em;
-    margin-left: 323px;
-    margin: 0;
-    padding: 0;
-    margin: auto;
-    margin-top: 27px;
+        background-color: rgb(174 174 174 / 59%);
+        border-radius: 10px;
+        justify-content: space-between;
+        width: 50em;
+        margin-left: 323px;
+        margin: 0;
+        padding: 0;
+        margin: auto;
+        margin-top: 27px;
     
 }
 
@@ -337,31 +341,34 @@ input[type="checkbox"] {
     margin-bottom: 80px;
     color: #ffffff;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 600px;
+    margin-left: 569px;
     letter-spacing: 5px;
 }
 
 #crearProveedor .campo label{
-    font-size: 25px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: -2px 2px 0 #1c51a0;
-    white-space: nowrap;
+   
+        margin-bottom: 10p;
+        font-size: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        text-shadow: -2px 2px 0 #1c51a0;
+        white-space: nowrap;
+ 
 }
 
-#crearProveedor input{
+#crearProveedor input {
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
-    border-radius: 20px;
+    border-radius: 10px;
+    width: 187%;
+}
+#proveedor-form > div {
+    margin-right: 30px; /* Ajusta este valor para el espacio entre columnas */
 }
 
-.campo #nombreProveedor{
-    margin-top: 20px;
-    height: 40px;
-    width: 250px;
-    margin-right: 45px;
+#proveedor-form > div:last-child {
+    margin-right: 0;
 }
-
 
 
 #actualizarProveedor h1{
@@ -415,7 +422,7 @@ input[type="checkbox"] {
 
 
 .campo select {
-    width: 125%;
+    width: 187%;
     padding: 10px;
     font-size: 14px;
     border-radius: 8px;

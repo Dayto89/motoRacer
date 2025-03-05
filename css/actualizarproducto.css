@@ -196,7 +196,10 @@ h1 {
     text-align: center;
     margin-top: 20px;
 }
-
+.boton{
+    display: flex;
+    
+}
 .button-container .boton button {
     background-color: #007BFF;
     font-weight: bold;

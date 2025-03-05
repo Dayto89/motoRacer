@@ -80,16 +80,21 @@ mysqli_close($conexion);
     <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
     <script src="/js/index.js"></script>
 </head>
+
 <body>
     <div id="menu"></div>
     <!-- Información del usuario -->
     <div class="container">
-       
-            <h1>Usuario</h1>
-            <div class="profile-pic">
-            <img src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
-            </div>
-            <div class="form-container">
+
+        <h1>Usuario</h1>
+        <div class="profile-pic">
+            <?php if (!empty($usuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
+        <div class="form-container">
             <div class="info-group">
                 <label for="nombre">Nombre</label>
                 <span id="nombre"><?php echo $nombre; ?></span>
@@ -116,37 +121,39 @@ mysqli_close($conexion);
             </div>
 
             <!-- Botón para abrir el popup -->
-             <div class="boton-editar">
-             <button class="btn-abrir" onclick="abrirPopup()"><i class='bx bx-plus bx-tada'></i>Editar</button>
-             </div>
-           
+            <div class="boton-editar">
+                <button class="btn-abrir" onclick="abrirPopup()"><i class='bx bx-plus bx-tada'></i>Editar</button>
+            </div>
+
         </div>
     </div>
 
-  <!-- Popup -->
-<div class="overlay" id="overlay">
-    <div class="popup">
-        <h2>Editar Usuario</h2>
-        <form method="POST" action="" enctype="multipart/form-data">
-            <div class="profile-pic">
-                <?php if (!empty($usuario['foto'])): ?>
-                    <img id="popupProfilePic" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
-                <?php else: ?>
-                    <img id="popupProfilePic" src="https://via.placeholder.com/100" alt="Usuario">
-                <?php endif; ?>
-                <input type="file" name="foto" id="imageInput" accept="image/*">
-            </div>
-            <input type="text" name="nombre" placeholder="Nombre" value="<?php echo $nombre; ?>">
-            <input type="text" name="apellido" placeholder="Apellido" value="<?php echo $apellido; ?>">
-            <input type="text" name="celular" placeholder="Celular" value="<?php echo $celular; ?>">
-            <input type="email" name="correo" placeholder="Correo Electrónico" value="<?php echo $correo; ?>">
-            <div>
-                <button type="button" class="btn-cancelar" onclick="cerrarPopup()">Cancelar</button>
-                <button type="submit" class="btn-guardar">Guardar</button>
-            </div>
-        </form>
+    <!-- Popup -->
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <h2>Editar Usuario</h2>
+            <form method="POST" action="" enctype="multipart/form-data">
+                <div class="profile-pic">
+                    <div class="profile-pic">
+                        <?php if (!empty($usuario['foto'])): ?>
+                            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
+                        <?php else: ?>
+                            <img id="profilePic" src="../imagenes/icono.png" alt="Usuario por defecto">
+                        <?php endif; ?>
+                    </div>
+                    <input type="file" name="foto" id="imageInput" accept="image/*">
+                </div>
+                <input type="text" name="nombre" placeholder="Nombre" value="<?php echo $nombre; ?>">
+                <input type="text" name="apellido" placeholder="Apellido" value="<?php echo $apellido; ?>">
+                <input type="text" name="celular" placeholder="Celular" value="<?php echo $celular; ?>">
+                <input type="email" name="correo" placeholder="Correo Electrónico" value="<?php echo $correo; ?>">
+                <div>
+                    <button type="button" class="btn-cancelar" onclick="cerrarPopup()">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
 
     <script>
@@ -177,15 +184,8 @@ mysqli_close($conexion);
                 reader.readAsDataURL(imageInput.files[0]);
             }
         }
+        document.getElementById('imageInput').addEventListener('change', uploadImage);
     </script>
 </body>
 
 </html>
-
-
-
-
-
- 
-
-

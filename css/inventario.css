@@ -28,6 +28,12 @@ body::before {
     margin-right: 100px;
 }
 
+.main-content table {
+    filter: drop-shadow(0px 0px 10px #bebfc5);
+    margin-bottom: 20px;
+}
+
+
 .main-content h1 {
     color: white;
     text-align: center;

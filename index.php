@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     mysqli_close($conexion);
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="es">

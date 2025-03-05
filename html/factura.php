@@ -136,12 +136,10 @@ if (isset($_POST['guardar'])) {
                     echo "<div class='card' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-precio='{$fila['precio3']}'>
                     <span class='contador-producto'>0</span>
                     <div class='card-header'>
-                        <span class='product-id'>" . htmlspecialchars($fila['codigo1']) . "</span>
-                       
+                        <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
                     </div>
-                    <p class='product-name'>" . htmlspecialchars($fila['nombre']) . "</p>
-                    <p class='product-code'>" . htmlspecialchars($fila['precio2']) . "</p>
-                    <p class='product-price'>$" . number_format($fila['precio3'], 2) . "</p>
+                    <p class='product-price'>$" . number_format($fila['precio2']) . "</p>
+                    <p class='product-price'>$" . number_format($fila['precio3']) . "</p>
                     <div class='iconos-container'>
                         <div class='icono-accion' onclick='agregarAlResumen(this.parentNode.parentNode)'>
                             $icono1
@@ -163,12 +161,6 @@ if (isset($_POST['guardar'])) {
 
     <div class="sidebar-right">
 
-        <!-- Abrir Modal para información de cliente -->
-        <button onclick="openModal()" class="icon-button" aria-label="Información de cliente" title="Información de cliente">
-            <i class="fas fa-info-circle"></i>
-            <label style="color: white; font-size: 14px;"> Información de cliente</label>
-        </button>
-
         <h3>Resumen</h3>
 
         <!-- Contenedor con Scroll -->
@@ -187,25 +179,6 @@ if (isset($_POST['guardar'])) {
         </div>
     </div>
 
-
-    <!-- Modal para información de cliente -->
-    <div id="modalConfirm" class="modal hidden">
-        <div class="modal-content">
-            <form action="" method="POST">
-                <h2 id="modalTitle">Información de cliente</h2>
-                <p id="modalMessage">Ingrese la información de cliente</p>
-                <label for="nombre">Nombre</label> <input type="text" name="nombre"><br>
-                <label for="apellido">Apellido</label> <input type="text" name="apellido"><br>
-                <label for="email">Email</label> <input type="text" name="email"><br>
-                <label for="telefono">Telefono</label> <input type="text" name="telefono"><br>
-                <label for="direccion">Dirección</label> <input type="text" name="direccion">
-                <div id="modalButtons" class="modal-buttons">
-                    <button type="button"  id="cancelButton">Cancelar</button>
-                    <button type="submit" name="guardar">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <script>
         // Funcion cobrar abre modal de metodo de pago
         function cobrar() {

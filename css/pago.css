@@ -70,6 +70,7 @@ body::before {
 }
 .user-info{
     margin-top: 100px;
+    margin-left: 100px;
     
 }
 
@@ -77,23 +78,31 @@ body::before {
     text-align: start;
     margin-left: 10px;
     font-size: 45px;
+    margin-top: 10px;
 }
 .payment-section{   
     margin-top: 100px;
+
  }
 
  .payment-section h2{
     text-align: start;
-    margin-left: 10px;
+    margin-left: 100px;
     font-size: 45px;
  }
 .summary-section{
-    margin-top: 200px;
+    margin-top: 80px;
+    background-color: white;
+    border-radius: 10px;
+    width: 300px;
+    height: 300px;
+    margin-right: 310px;
+
 }
+
 input{
-    margin-top: 50px;
-    margin-left: 20px;
-    height: 30px;
+    
+    height: 45px;
     width: 20%;
     font-size: 15px;
     border-radius: 5px;
@@ -101,6 +110,11 @@ input{
 .user-info label{
     font-size: 25px;
     margin-left: 30px;
+    text-shadow:
+    -1px -1px 0 rgb(0, 140, 255),
+    1px -1px 0 rgb(0, 140, 255),
+    -1px 1px 0 rgb(0, 140, 255),
+    1px 1px 0 rgb(0, 140, 255);
 }
 #tipo_doc{
     margin-top: 50px;
@@ -111,14 +125,118 @@ input{
     border-radius: 5px;
 }
 #apellido{
-    margin-left: 17%;
+    margin-left: 18.4%;
+}
+
+.payment-methods {
+margin-right: 100px;
+margin-left: 0px;
 }
 .payment-methods h3{
     font-size: 25px;
     font-weight: normal;
     margin-left: 30px;
     margin-top: 35px;
+    text-shadow:
+    -1px -1px 0 rgb(0, 140, 255),
+    1px -1px 0 rgb(0, 140, 255),
+    -1px 1px 0 rgb(0, 140, 255),
+    1px 1px 0 rgb(0, 140, 255);
+}
+
+.content{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 100px;
 }
 button{
+    margin-left: 10px;
+    background-color: #1AA906;
+    cursor: pointer;
+    width: 90px;
+    height: 30px;
+    color: white;
+    border-radius: 15px;
+
+}
+input[name="valor_efectivo"] {
+    height: 45px;
+   
+    
+}
+
+.payment-box select{
+    margin-left: 20px;
+    width: 20%;
+    height: 40px;
+    font-size: 15px;
+    border-radius: 5px;
+
+
+}
+.payment-box input {
+    
+    height: 45px;
+    width: 35%;
+    font-size: 15px;
+    border-radius: 5px;
+    margin-left: 20px;
+}
+input[name="valor_tarjeta"]{
+    margin-left: 0px;
+}
+.notes h3{
+    font-size: 25px;
+    font-weight: normal;
     margin-left: 30px;
+    margin-top: 35px;
+    text-shadow:
+        -1px -1px 0 rgb(0, 140, 255),
+        1px -1px 0 rgb(0, 140, 255),
+        -1px 1px 0 rgb(0, 140, 255),
+        1px 1px 0 rgb(0, 140, 255);
+        
+}
+textarea[name="observaciones"]{
+    margin-left: 20px;
+    width: 33%;
+    height: 100px;
+}
+ .summary-section h3{
+    margin-top: 20px;
+    border-radius: 10px;
+    width: 300px;
+    margin-left: 30px;
+    text-shadow:
+        -1px -1px 0 rgb(255, 251, 0),
+        1px -1px 0 rgb(255, 251, 0),
+        -1px 1px 0 rgb(255, 251, 0),
+        1px 1px 0 rgb(255, 251, 0);
+    margin-right: 310px;
+ }
+ p {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
+    margin-left: 30px;
+    margin-top: 10px;
+}
+
+p span {
+    font-weight: bold; /* Hacer que los valores sean más visibles */
+    color: #007bff; /* Azul para resaltar los montos */
+    margin-left: 10px; /* Espacio entre el texto y el monto */
+}
+.total{
+    margin-left: 90px;
+}
+
+.save-btn{
+    margin-left: 70px;
+    margin-top: 10px;
+    width: 150px;
+    height: 40px;
+}
+button:hover {
+    background-color: #0056b3; /* Azul más oscuro */
 }

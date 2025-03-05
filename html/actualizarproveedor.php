@@ -21,14 +21,14 @@ if (!isset($_SESSION['usuario_id'])) {
 
 <body>
 
-<div id="menu"></div>
+    <div id="menu"></div>
 
     <div id="actualizarProveedor" class="form-section">
         <h1>Actualizar Proveedor</h1>
 
-        <div class="container">  <!-- Agregar el contenedor -->
+        <div class="container"> <!-- Agregar el contenedor -->
             <form id="update-provider-form" method="POST" action="">
-            <div class="form-grid">
+                <div class="form-grid">
                     <div class="campo">
                         <label for="selectProveedor">Seleccionar Proveedor:</label>
                         <select id="selectProveedor" name="selectProveedor" onchange="this.form.submit()">
@@ -91,17 +91,19 @@ if (!isset($_SESSION['usuario_id'])) {
                         <input type="text" id="estado" name="estado" value="<?php echo isset($estado) ? $estado : ''; ?>" required>
                     </div>
 
-                    <div class="button-container">
-                        <div class="boton">
-                            <button type="submit" name="guardar">Guardar</button>
-                            <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
-                        </div>
-                    </div>
+               
 
+                    <div class="button-container">
+                    <div class="boton">
+                        <button type="submit" name="guardar">Guardar</button>
+                        <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
+                    </div>
                 </div>
-            </form>
-        </div>
+
+            </div>
+        </form>
     </div>
+</div>
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {

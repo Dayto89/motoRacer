@@ -53,6 +53,7 @@ date_default_timezone_set('America/Bogota');
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Factura</title>
@@ -60,11 +61,18 @@ date_default_timezone_set('America/Bogota');
     <link rel="stylesheet" href="../componentes/header.css">
     <script defer src="../js/index.js"></script>
 </head>
+
 <body>
     <div class="sidebar">
-    <div id="menu"></div>
+        <div id="menu"></div>
     </div>
-    
+
+    <form action="factura_pdf.php" method="post" target="_blank">
+        <input type="hidden" name="codigo_cliente" value="<?php echo $codigo; ?>">
+        <button type="submit">Descargar Factura en PDF</button>
+    </form>
+
+
     <div class="factura">
         <div class="factura-header">
             <img src="../imagenes/LOGO.png" alt="">
@@ -83,7 +91,7 @@ date_default_timezone_set('America/Bogota');
         </div>
 
         <div class="factura-datos-vendedor">
-            <strong>Vendedor:</strong> <?php echo $nombre. ' ' . $apellido; ?><br>
+            <strong>Vendedor:</strong> <?php echo $nombre . ' ' . $apellido; ?><br>
         </div>
 
         <hr>
@@ -99,7 +107,7 @@ date_default_timezone_set('America/Bogota');
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($productos as $prod): 
+                    <?php foreach ($productos as $prod):
                         $subtotal = $prod['cantidad'] * $prod['precio']; ?>
                         <tr>
                             <td><?php echo $prod['cantidad']; ?></td>
@@ -146,4 +154,5 @@ date_default_timezone_set('America/Bogota');
         </div>
     </div>
 </body>
+
 </html>

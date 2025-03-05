@@ -20,7 +20,7 @@ body {
     max-width: 44%;
     padding: 29px;
     margin-left: 7%;
-    height: 71%;
+    height: 80%;
 }
 h1 {
     font-size: 44px;
@@ -79,14 +79,20 @@ h1 {
     display: block;
     margin: 20px auto;
     padding: 10px 20px;
-    background-color: #0056b3;
+    background-color: #1167CC;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    margin-left: 87%;
+    margin-top: 18%;
+    width: 30%;
 }
-
+.btn-abrir:hover {
+    background-color: #0056b3;
+    transform: scale(1.07);
+}
 /* Estilo del fondo oscuro */
 .overlay {
     display: none;
@@ -223,28 +229,7 @@ body::before {
     resize: none;
     height: 80px;
 }
-.btn-abrir{
-       
-    background-color: #007BFF;
-    font-weight: bold;
-    color: white;
-    border: none;
-    padding: 3px 4px;
-    font-size: 17px;
-    cursor: pointer;
-    border-radius: 24px;
-    transition: background-color 0.3sease;
-    width: 135px;
-    height: 53px;
-    font-family: Arial, Helvetica, sans-serif;
-    
-}
 
-.btn-abrir:hover{
-    background-color: #2615c0;
-    transform: scale(1.07);
-}
-   
 
 
 /* Estilos para la ventana emergente */
