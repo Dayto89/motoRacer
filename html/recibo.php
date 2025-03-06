@@ -49,6 +49,7 @@ $base = $totalBruto / (1 + ($ivaPorcentaje / 100));
 $impuesto = $totalBruto - $base;
 
 date_default_timezone_set('America/Bogota');
+  
 ?>
 
 <!DOCTYPE html>

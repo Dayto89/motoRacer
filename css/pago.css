@@ -27,7 +27,6 @@ body::before {
     height: 850px;
     margin: auto;
     margin-top: 30px;
-    
     transition: margin-left 0.3s ease, background-color 0.3s ease; /* Agregar transición suave */
 }
 
