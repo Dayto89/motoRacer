@@ -209,58 +209,61 @@ if (isset($_POST['cobrar'])) {
 
         // Funcion cobrar abre modal de metodo de pago
         function cobrar() {
-    if (document.querySelectorAll("#listaResumen li").length === 0) {
-        alert("No hay productos en el resumen.");
-    } else {
-        let productos = [];
-        let items = document.querySelectorAll("#listaResumen li");
+            if (document.querySelectorAll("#listaResumen li").length === 0) {
+                alert("No hay productos en el resumen.");
+            } else {
+                let productos = [];
+                let items = document.querySelectorAll("#listaResumen li");
 
-        items.forEach(item => {
-            let nombre = item.getAttribute("data-nombre");
-            let precio = parseFloat(item.getAttribute("data-precio"));
-            let cantidad = parseInt(item.getAttribute("data-cantidad"));
+                items.forEach(item => {
+                    let nombre = item.getAttribute("data-nombre");
+                    let precio = parseFloat(item.getAttribute("data-precio"));
+                    let cantidad = parseInt(item.getAttribute("data-cantidad"));
 
-            productos.push({
-                nombre: nombre,
-                precio: precio,
-                cantidad: cantidad
-            });
-        });
+                    productos.push({
+                        nombre: nombre,
+                        precio: precio,
+                        cantidad: cantidad
+                    });
+                });
 
-        // Crear un formulario dinámico para enviar los datos al servidor
-        let form = document.createElement("form");
-        form.method = "POST";
-        form.action = "prueba.php";
+                // Crear formulario dinámico
+                let form = document.createElement("form");
+                form.method = "POST";
+                form.action = "factura.php"; // Asegúrate de que la ruta sea correcta
 
-        let input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "cobrar";
-        form.appendChild(input);
+                // Campo para indicar que se está cobrando
+                let inputCobrar = document.createElement("input");
+                inputCobrar.type = "hidden";
+                inputCobrar.name = "cobrar";
+                form.appendChild(inputCobrar);
 
-        productos.forEach((producto, index) => {
-            let inputNombre = document.createElement("input");
-            inputNombre.type = "hidden";
-            inputNombre.name = `productos[${index}][nombre]`;
-            inputNombre.value = producto.nombre;
-            form.appendChild(inputNombre);
+                // Agregar productos como campos ocultos
+                productos.forEach((producto, index) => {
+                    let inputNombre = document.createElement("input");
+                    inputNombre.type = "hidden";
+                    inputNombre.name = `productos[${index}][nombre]`;
+                    inputNombre.value = producto.nombre;
+                    form.appendChild(inputNombre);
 
-            let inputPrecio = document.createElement("input");
-            inputPrecio.type = "hidden";
-            inputPrecio.name = `productos[${index}][precio]`;
-            inputPrecio.value = producto.precio;
-            form.appendChild(inputPrecio);
+                    let inputPrecio = document.createElement("input");
+                    inputPrecio.type = "hidden";
+                    inputPrecio.name = `productos[${index}][precio]`;
+                    inputPrecio.value = producto.precio;
+                    form.appendChild(inputPrecio);
 
-            let inputCantidad = document.createElement("input");
-            inputCantidad.type = "hidden";
-            inputCantidad.name = `productos[${index}][cantidad]`;
-            inputCantidad.value = producto.cantidad;
-            form.appendChild(inputCantidad);
-        });
+                    let inputCantidad = document.createElement("input");
+                    inputCantidad.type = "hidden";
+                    inputCantidad.name = `productos[${index}][cantidad]`;
+                    inputCantidad.value = producto.cantidad;
+                    form.appendChild(inputCantidad);
+                });
 
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
+                document.body.appendChild(form);
+                form.submit(); // Enviar el formulario
+            }
+        }
+        
 
         function abrirModal() {
             const modal = document.getElementById("modalPaymentMethod");
