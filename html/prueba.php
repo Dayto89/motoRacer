@@ -1,4 +1,7 @@
 <?php
+// session_start() debe ser lo primero
+session_start();
+var_dump($_SESSION);
 // Conexión a la base de datos
 $servername = "localhost";
 $username = "root";
@@ -31,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     if ($data) {
-        session_start();
         $_SESSION["resumen"] = $data;
         echo "Datos recibidos correctamente";
     } else {
@@ -40,12 +42,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 // Recuperar datos para mostrar en prueba.php
-session_start();
-$resumen = isset($_SESSION["resumen"]) ? $_SESSION["resumen"] : null;
+$productos = $_SESSION['productos'] ?? [];
+$total = $_SESSION['total'] ?? 0;
+
+// Limpiar los datos de la sesión después de usarlos
+unset($_SESSION['productos']);
+unset($_SESSION['total']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,10 +58,8 @@ $resumen = isset($_SESSION["resumen"]) ? $_SESSION["resumen"] : null;
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="../css/pago.css">
     <link rel="stylesheet" href="../componentes/header.css">
-
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="/js/index.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
 
@@ -81,7 +84,6 @@ $resumen = isset($_SESSION["resumen"]) ? $_SESSION["resumen"] : null;
         }
     </style>
 </head>
-
 <body>
     <div class="sidebar">
         <div id="menu"></div>
@@ -103,7 +105,6 @@ $resumen = isset($_SESSION["resumen"]) ? $_SESSION["resumen"] : null;
                 <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
                 <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
             </div>
-            <!-- Traer datos de factura.php y mostrar los datos en la página -->
             <div class="payment-section">
                 <h2>Registrar Pago</h2>
                 <div class="content">
@@ -139,167 +140,26 @@ $resumen = isset($_SESSION["resumen"]) ? $_SESSION["resumen"] : null;
                         </div>
                     </div>
                     <div id="summary-section" class="summary-section">
-        <?php if ($resumen): ?>
-            <p><strong>Total:</strong> <?php echo $resumen["total"]; ?></p>
-            <h3>Productos:</h3>
-            <ul>
-                <?php foreach ($resumen["productos"] as $producto): ?>
-                    <li>
-                        <?php echo $producto["cantidad"] . " x " . $producto["nombre"] . " - $" . $producto["precio"]; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php else: ?>
-            <p>No hay datos en el resumen.</p>
-        <?php endif; ?>
-    </div>
+                        <?php if (!empty($productos)): ?>
+                            <p><strong>Total:</strong> $<?php echo number_format($total, 2); ?></p>
+                            <h3>Productos:</h3>
+                            <ul>
+                                <?php foreach ($productos as $producto): ?>
+                                    <li>
+                                        <?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - $" . number_format($producto['precio'], 2); ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p>No hay productos en el resumen.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     <script>
-function llenarValor(tipoPago, valor) {
-    let input = document.querySelector(`input[name='valor_${tipoPago}']`);
-    input.value = valor;
-
-    // Crear y disparar el evento input manualmente
-    let event = new Event("input", { bubbles: true });
-    input.dispatchEvent(event);
-}
-
-
-        function buscarCodigo() {
-            let input = document.getElementById("codigo").value;
-            let suggestionsBox = document.getElementById("suggestions");
-
-            fetch(`?codigo=${input}`)
-                .then(response => response.json())
-                .then(data => {
-                    suggestionsBox.innerHTML = "";
-                    if (data.length > 0) {
-                        suggestionsBox.style.display = "block";
-                        data.forEach(user => {
-                            let div = document.createElement("div");
-                            div.textContent = user.codigo + " - " + user.nombre;
-                            div.onclick = () => seleccionarCodigo(user);
-                            suggestionsBox.appendChild(div);
-                        });
-                    } else {
-                        suggestionsBox.style.display = "none";
-                    }
-                })
-                .catch(error => console.error("Error al obtener datos:", error));
-        }
-
-        function seleccionarCodigo(user) {
-            document.getElementById("codigo").value = user.codigo;
-            document.getElementById("suggestions").style.display = "none";
-            document.getElementById("tipo_doc").value = user.identificacion;
-            document.getElementById("nombre").value = user.nombre;
-            document.getElementById("apellido").value = user.apellido;
-            document.getElementById("telefono").value = user.telefono;
-            document.getElementById("correo").value = user.correo;
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            let efectivoInput = document.querySelector("input[name='valor_efectivo']");
-
-            let tarjetaSelect = document.querySelector("select[name='tipo_tarjeta']");
-            let tarjetaInput = document.querySelector("input[name='valor_tarjeta']");
-            let voucherInput = document.querySelector("input[name='voucher']");
-            let grupoTarjeta = [tarjetaSelect, tarjetaInput, voucherInput];
-
-            let otroSelect = document.querySelector("select[name='tipo_otro']");
-            let otroInput = document.querySelector("input[name='valor_otro']");
-            let grupoOtro = [otroSelect, otroInput];
-
-            function disableGroups(selectedGroup) {
-                let allGroups = [efectivoInput, grupoTarjeta, grupoOtro];
-
-                allGroups.forEach(group => {
-                    if (group === selectedGroup) {
-                        enableGroup(group); // Habilita el grupo seleccionado
-                    } else {
-                        disableGroup(group); // Deshabilita los demás grupos
-                    }
-                });
-            }
-
-            function disableGroup(group) {
-                if (Array.isArray(group)) {
-                    group.forEach(input => {
-                        input.disabled = true;
-                        input.value = "";
-                    });
-                } else {
-                    group.disabled = true;
-                    group.value = "";
-                }
-            }
-
-            function enableGroup(group) {
-                if (Array.isArray(group)) {
-                    group.forEach(input => input.disabled = false);
-                } else {
-                    group.disabled = false;
-                }
-            }
-
-            function checkEmptyAndEnable() {
-                if (!efectivoInput.value.trim() &&
-                    !tarjetaInput.value.trim() &&
-                    !otroInput.value.trim() &&
-                    tarjetaSelect.value === "" &&
-                    otroSelect.value === "") {
-                    enableGroup(efectivoInput);
-                    enableGroup(grupoTarjeta);
-                    enableGroup(grupoOtro);
-                }
-            }
-
-            efectivoInput.addEventListener("input", () => {
-                if (efectivoInput.value.trim() !== "") {
-                    disableGroups(efectivoInput);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            tarjetaInput.addEventListener("input", () => {
-                if (tarjetaInput.value.trim() !== "") {
-                    disableGroups(grupoTarjeta);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            tarjetaSelect.addEventListener("change", () => {
-                if (tarjetaSelect.value !== "") {
-                    disableGroups(grupoTarjeta);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            otroInput.addEventListener("input", () => {
-                if (otroInput.value.trim() !== "") {
-                    disableGroups(grupoOtro);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            otroSelect.addEventListener("change", () => {
-                if (otroSelect.value !== "") {
-                    disableGroups(grupoOtro);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-        });
+        // ... (tu código JavaScript actual)
     </script>
 </body>
-
 </html>

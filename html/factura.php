@@ -1,5 +1,6 @@
 <?php
 session_start();
+var_dump($_POST);
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -58,6 +59,30 @@ if (isset($_POST['guardar'])) {
     } else {
         echo "Error al guardar los datos: " . mysqli_error($conexion);
     }
+}
+
+// Almacenar los productos y el total en la sesión antes de redirigir
+if (isset($_POST['cobrar'])) {
+    $productos = [];
+    $total = 0;
+
+    // Recorrer los productos en el resumen y almacenarlos en un array
+    foreach ($_POST['productos'] as $producto) {
+        $productos[] = [
+            'nombre' => $producto['nombre'],
+            'precio' => $producto['precio'],
+            'cantidad' => $producto['cantidad']
+        ];
+        $total += $producto['precio'] * $producto['cantidad'];
+    }
+
+    // Guardar los productos y el total en la sesión
+    $_SESSION['productos'] = $productos;
+    $_SESSION['total'] = $total;
+
+    // Redirigir a prueba.php
+    header("Location: prueba.php");
+    exit();
 }
 
 
@@ -184,11 +209,58 @@ if (isset($_POST['guardar'])) {
 
         // Funcion cobrar abre modal de metodo de pago
         function cobrar() {
-            if (document.querySelectorAll("#summary-section ul li").length === 0) {
-                alert("No hay productos en el resumen.");
-            }
-        }
+    if (document.querySelectorAll("#listaResumen li").length === 0) {
+        alert("No hay productos en el resumen.");
+    } else {
+        let productos = [];
+        let items = document.querySelectorAll("#listaResumen li");
 
+        items.forEach(item => {
+            let nombre = item.getAttribute("data-nombre");
+            let precio = parseFloat(item.getAttribute("data-precio"));
+            let cantidad = parseInt(item.getAttribute("data-cantidad"));
+
+            productos.push({
+                nombre: nombre,
+                precio: precio,
+                cantidad: cantidad
+            });
+        });
+
+        // Crear un formulario dinámico para enviar los datos al servidor
+        let form = document.createElement("form");
+        form.method = "POST";
+        form.action = "prueba.php";
+
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "cobrar";
+        form.appendChild(input);
+
+        productos.forEach((producto, index) => {
+            let inputNombre = document.createElement("input");
+            inputNombre.type = "hidden";
+            inputNombre.name = `productos[${index}][nombre]`;
+            inputNombre.value = producto.nombre;
+            form.appendChild(inputNombre);
+
+            let inputPrecio = document.createElement("input");
+            inputPrecio.type = "hidden";
+            inputPrecio.name = `productos[${index}][precio]`;
+            inputPrecio.value = producto.precio;
+            form.appendChild(inputPrecio);
+
+            let inputCantidad = document.createElement("input");
+            inputCantidad.type = "hidden";
+            inputCantidad.name = `productos[${index}][cantidad]`;
+            inputCantidad.value = producto.cantidad;
+            form.appendChild(inputCantidad);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 
         function abrirModal() {
             const modal = document.getElementById("modalPaymentMethod");

@@ -60,6 +60,8 @@ date_default_timezone_set('America/Bogota');
     <title>Factura</title>
     <link rel="stylesheet" href="../css/recibo.css">
     <link rel="stylesheet" href="../componentes/header.css">
+    
+    
     <script defer src="../js/index.js"></script>
 </head>
 
@@ -68,9 +70,17 @@ date_default_timezone_set('America/Bogota');
         <div id="menu"></div>
     </div>
 
-    <form action="factura_pdf.php" method="post" target="_blank">
+    <form class="form-descarga" action="factura_pdf.php" method="post" target="_blank">
         <input type="hidden" name="codigo_cliente" value="<?php echo $codigo; ?>">
-        <button type="submit">Descargar Factura en PDF</button>
+        <button type="submit" class="btn-descargar"><animated-icons
+  src="https://animatedicons.co/get-icon?name=Pdf&style=minimalistic&token=d5afb04f-d10f-4540-bf0a-27e0b4e06ce8"
+  trigger="click"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}'
+  height="120"
+  width="120"
+></animated-icons></button>
+<script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+
     </form>
 
 

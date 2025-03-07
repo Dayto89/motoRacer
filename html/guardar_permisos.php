@@ -1,32 +1,35 @@
 <?php
-include '../conexion.php'; // Conexión a la base de datos
+print_r($_POST);
+exit;
+
+include '../conexion/conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_usuario = $_POST['identificacion']; // ID del gerente
-    $permisos = isset($_POST['permisos']) ? $_POST['permisos'] : []; // Permisos seleccionados
-
-    // Eliminar permisos anteriores del gerente
-    $sqlDelete = "DELETE FROM accesos WHERE id_usuario = ?";
-    $stmtDelete = $conn->prepare($sqlDelete);
-    $stmtDelete->bind_param("i", $id_usuario);
-    $stmtDelete->execute();
-    $stmtDelete->close();
-
-    // Insertar los nuevos permisos seleccionados
-    $sqlInsert = "INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES (?, ?, ?, ?)";
-    $stmtInsert = $conn->prepare($sqlInsert);
-
-    foreach ($permisos as $permiso) {
-        list($seccion, $sub_seccion, $permitido) = explode('|', $permiso); // Separar seccion, subseccion y permiso
-        $stmtInsert->bind_param("isss", $id_usuario, $seccion, $sub_seccion, $permitido);
-        $stmtInsert->execute();
+    $id_usuario = $_POST['id_usuario']?? null;
+    $seccion = $_POST['seccion'] ?? null;
+    if ($id_usuario === null || $seccion === null) {
+        die("Error: Faltan datos en el formulario.");
     }
+    $sub_seccion = !empty($_POST['sub_seccion']) ? $_POST['sub_seccion'] : NULL;
+    $permitido = isset($_POST['permitido']) ? 1 : 0;
 
-    $stmtInsert->close();
-    $conn->close();
+    try {
+        $sql = "INSERT INTO usuario_permisos (id_usuario, seccion, sub_seccion, permitido) 
+                VALUES (:id_usuario, :seccion, :sub_seccion, :permitido)";
 
-    echo "Permisos actualizados correctamente";
-} else {
-    echo "Acceso no autorizado";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+        $stmt->bindParam(':seccion', $seccion, PDO::PARAM_STR);
+        $stmt->bindParam(':sub_seccion', $sub_seccion, PDO::PARAM_STR);
+        $stmt->bindParam(':permitido', $permitido, PDO::PARAM_INT);
+
+        if ($stmt->execute()) {
+            echo "Permiso guardado correctamente.";
+        } else {
+            echo "Error al guardar el permiso.";
+        }
+    } catch (PDOException $e) {
+        echo "Error en la base de datos: " . $e->getMessage();
+    }
 }
 ?>
