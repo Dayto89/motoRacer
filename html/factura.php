@@ -133,7 +133,7 @@ if (isset($_POST['guardar'])) {
 
             if ($resultado->num_rows > 0) {
                 while ($fila = mysqli_fetch_assoc($resultado)) {
-                    echo "<div class='card' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-precio='{$fila['precio3']}'>
+                    echo "<div class='card' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-precio='{$fila['precio2']}'>
                     <span class='contador-producto'>0</span>
                     <div class='card-header'>
                         <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
@@ -175,21 +175,20 @@ if (isset($_POST['guardar'])) {
         </div>
 
         <div class="resumen-botones">
-            <button class="btn-cobrar" onclick="cobrar()">Cobrar</button>
+            <button class="btn-cobrar" id="btnCobrar" onclick="cobrar()">Cobrar</button>
         </div>
     </div>
 
     <script>
+        let total = 0;
+
         // Funcion cobrar abre modal de metodo de pago
         function cobrar() {
-            if (document.querySelectorAll(".resumen-scroll ul li").length === 0) {
-                alert("No hay productos en el resumen");
-            } else {
-                const modal = document.getElementById("modalPaymentMethod");
-                // ir a pago.php
-                window.location.href = "../html/pago.php";
+            if (document.querySelectorAll("#summary-section ul li").length === 0) {
+                alert("No hay productos en el resumen.");
             }
         }
+
 
         function abrirModal() {
             const modal = document.getElementById("modalPaymentMethod");
@@ -227,7 +226,7 @@ if (isset($_POST['guardar'])) {
             closeModal(); // Cerrar el modal
         });
 
-        let total = 0;
+
 
         function agregarAlResumen(elemento) {
             let nombre = elemento.getAttribute("data-nombre");

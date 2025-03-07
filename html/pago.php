@@ -48,10 +48,11 @@ if (isset($_GET['codigo'])) {
             position: absolute;
             background: white;
             border: 1px solid #ccc;
-            width: 200px;
+            width: 150px;
             max-height: 150px;
             overflow-y: auto;
             display: none;
+            margin-left: 27%;
         }
 
         .suggestions div {
@@ -78,33 +79,32 @@ if (isset($_GET['codigo'])) {
                     <option value="CC">Cédula de Ciudadanía</option>
                     <option value="TI">Tarjeta de Identidad</option>
                     <option value="NIT">NIT</option>
-                </select>>
+                </select>
                 <input type="text" id="codigo" name="codigo" onfocus="buscarCodigo()" oninput="buscarCodigo()">
                 <div id="suggestions" class="suggestions"></div>
                 <input type="text" id="nombre" name="nombre" placeholder="Nombre">
                 <input type="text" id="apellido" name="apellido" placeholder="Apellido">
                 <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
                 <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
-
-                <!-- Botón para llenar datos automáticamente -->
-                <button onclick="fillDefaultUser()">Llenar Datos</button>
             </div>
-    <!-- Traer datos de factura.php y mostrar los datos en la página -->
+            <!-- Traer datos de factura.php y mostrar los datos en la página -->
             <div class="payment-section">
                 <h2>Registrar Pago</h2>
                 <div class="content">
                     <div class="payment-methods">
                         <div class="payment-box">
                             <h3>Pagos en efectivo</h3>
-                            <button>$30,000</button>
-                            <button>$50,000</button>
-                            <button>$100,000</button>
+                            <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
+                            <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
+                            <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
                             <input type="text" name="valor_efectivo" placeholder="Valor">
                         </div>
                         <div class="payment-box">
                             <h3>Pagos con tarjeta</h3>
                             <select name="tipo_tarjeta">
-                                <option>Tipo</option>
+                                <option value=""></option>
+                                <option value="credito">Crédito</option>
+                                <option value="debito">Débito</option>
                             </select>
                             <input type="text" name="voucher" placeholder="Nro. voucher">
                             <input type="text" name="valor_tarjeta" placeholder="$0.00">
@@ -112,7 +112,8 @@ if (isset($_GET['codigo'])) {
                         <div class="payment-box">
                             <h3>Otros pagos</h3>
                             <select name="tipo_otro">
-                                <option>Tipo</option>
+                                <option value=""></option>
+                                <option value="transferencia">Transferencia</option>
                             </select>
                             <input type="text" name="valor_otro" placeholder="$0.00">
                         </div>
@@ -138,14 +139,15 @@ if (isset($_GET['codigo'])) {
 
 
     <script>
-        function fillDefaultUser() {
-            document.getElementById("tipo_doc").value = "CC";
-            document.getElementById("cedula").value = "0000000000";
-            document.getElementById("nombre").value = "Consumidor";
-            document.getElementById("apellido").value = "Final";
-            document.getElementById("telefono").value = "0000000000";
-            document.getElementById("correo").value = "consumidorfinal@email.com";
-        }
+function llenarValor(tipoPago, valor) {
+    let input = document.querySelector(`input[name='valor_${tipoPago}']`);
+    input.value = valor;
+
+    // Crear y disparar el evento input manualmente
+    let event = new Event("input", { bubbles: true });
+    input.dispatchEvent(event);
+}
+
 
         function buscarCodigo() {
             let input = document.getElementById("codigo").value;
@@ -179,6 +181,103 @@ if (isset($_GET['codigo'])) {
             document.getElementById("telefono").value = user.telefono;
             document.getElementById("correo").value = user.correo;
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let efectivoInput = document.querySelector("input[name='valor_efectivo']");
+
+            let tarjetaSelect = document.querySelector("select[name='tipo_tarjeta']");
+            let tarjetaInput = document.querySelector("input[name='valor_tarjeta']");
+            let voucherInput = document.querySelector("input[name='voucher']");
+            let grupoTarjeta = [tarjetaSelect, tarjetaInput, voucherInput];
+
+            let otroSelect = document.querySelector("select[name='tipo_otro']");
+            let otroInput = document.querySelector("input[name='valor_otro']");
+            let grupoOtro = [otroSelect, otroInput];
+
+            function disableGroups(selectedGroup) {
+                let allGroups = [efectivoInput, grupoTarjeta, grupoOtro];
+
+                allGroups.forEach(group => {
+                    if (group === selectedGroup) {
+                        enableGroup(group); // Habilita el grupo seleccionado
+                    } else {
+                        disableGroup(group); // Deshabilita los demás grupos
+                    }
+                });
+            }
+
+            function disableGroup(group) {
+                if (Array.isArray(group)) {
+                    group.forEach(input => {
+                        input.disabled = true;
+                        input.value = "";
+                    });
+                } else {
+                    group.disabled = true;
+                    group.value = "";
+                }
+            }
+
+            function enableGroup(group) {
+                if (Array.isArray(group)) {
+                    group.forEach(input => input.disabled = false);
+                } else {
+                    group.disabled = false;
+                }
+            }
+
+            function checkEmptyAndEnable() {
+                if (!efectivoInput.value.trim() &&
+                    !tarjetaInput.value.trim() &&
+                    !otroInput.value.trim() &&
+                    tarjetaSelect.value === "" &&
+                    otroSelect.value === "") {
+                    enableGroup(efectivoInput);
+                    enableGroup(grupoTarjeta);
+                    enableGroup(grupoOtro);
+                }
+            }
+
+            efectivoInput.addEventListener("input", () => {
+                if (efectivoInput.value.trim() !== "") {
+                    disableGroups(efectivoInput);
+                } else {
+                    checkEmptyAndEnable();
+                }
+            });
+
+            tarjetaInput.addEventListener("input", () => {
+                if (tarjetaInput.value.trim() !== "") {
+                    disableGroups(grupoTarjeta);
+                } else {
+                    checkEmptyAndEnable();
+                }
+            });
+
+            tarjetaSelect.addEventListener("change", () => {
+                if (tarjetaSelect.value !== "") {
+                    disableGroups(grupoTarjeta);
+                } else {
+                    checkEmptyAndEnable();
+                }
+            });
+
+            otroInput.addEventListener("input", () => {
+                if (otroInput.value.trim() !== "") {
+                    disableGroups(grupoOtro);
+                } else {
+                    checkEmptyAndEnable();
+                }
+            });
+
+            otroSelect.addEventListener("change", () => {
+                if (otroSelect.value !== "") {
+                    disableGroups(grupoOtro);
+                } else {
+                    checkEmptyAndEnable();
+                }
+            });
+        });
     </script>
 </body>
 
