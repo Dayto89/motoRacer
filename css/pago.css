@@ -26,7 +26,7 @@ body::before {
     width: 1400px;
     height: 850px;
     margin: auto;
-    margin-top: 30px;
+
     transition: margin-left 0.3s ease, background-color 0.3s ease; /* Agregar transición suave */
 }
 
@@ -63,12 +63,11 @@ body::before {
     height: 100vh;
     width: calc(100% - 150px); /* Mantiene el ancho total menos el margen derecho */
     margin: auto;
-    margin-top: 30px;
+    margin-top: 20px;
     margin-right: 50px;
     padding-left: 120px; /* Espacio inicial del menú cerrado */
 }
 .user-info{
-    margin-top: 100px;
     margin-left: 100px;
     
 }
@@ -164,6 +163,10 @@ input[name="valor_efectivo"] {
     
 }
 
+.payment-box{
+    width: 600px;
+}
+
 .payment-box select{
     margin-left: 20px;
     width: 20%;
@@ -176,7 +179,7 @@ input[name="valor_efectivo"] {
 .payment-box input {
     
     height: 45px;
-    width: 35%;
+    width: 32.8%;
     font-size: 15px;
     border-radius: 5px;
     margin-left: 20px;
@@ -239,3 +242,39 @@ p span {
 button:hover {
     background-color: #0056b3; /* Azul más oscuro */
 }
+
+.plus-icon{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.plus-icon img{
+    width: 30px;
+    height: 30px;
+    margin-top: 40px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.payment-box img {
+    width: 30px;
+    height: 30px;  
+ }
+
+ .barra {
+    max-height: 90px; 
+    overflow-y: auto; 
+    display: flex;
+    flex-direction: column;
+    padding-right: 5px; 
+ }
+
+ .tarjeta-content, .otro-content {
+    display: flex;
+    align-items: center;
+ }
+
+
+
+

@@ -1,7 +1,6 @@
 <?php
 // session_start() debe ser lo primero
 session_start();
-var_dump($_SESSION);
 // Conexión a la base de datos
 $servername = "localhost";
 $username = "root";
@@ -40,8 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "No se recibieron datos";
     }
 }
-
-
 // Recuperar datos para mostrar en prueba.php
 $productos = $_SESSION['productos'] ?? [];
 $total = $_SESSION['total'] ?? 0;
@@ -52,6 +49,7 @@ unset($_SESSION['total']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,6 +83,7 @@ unset($_SESSION['total']);
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <div id="menu"></div>
@@ -117,23 +116,40 @@ unset($_SESSION['total']);
                             <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
                             <input type="text" name="valor_efectivo" placeholder="Valor">
                         </div>
-                        <div class="payment-box">
-                            <h3>Pagos con tarjeta</h3>
-                            <select name="tipo_tarjeta">
-                                <option value=""></option>
-                                <option value="credito">Crédito</option>
-                                <option value="debito">Débito</option>
-                            </select>
-                            <input type="text" name="voucher" placeholder="Nro. voucher">
-                            <input type="text" name="valor_tarjeta" placeholder="$0.00">
+                        <div class="payment-box" id="tarjeta">
+                            <div class="plus-icon">
+                                <h3>Pagos con tarjeta</h3>
+                                <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
+                            </div>
+                            <div class="barra">
+                                <div class="tarjeta-content">
+                                    <select name="tipo_tarjeta">
+                                        <option value=""></option>
+                                        <option value="credito">Crédito</option>
+                                        <option value="debito">Débito</option>
+                                    </select>
+                                    <input type="text" name="voucher" placeholder="Nro. voucher">
+                                    <input type="text" name="valor_tarjeta" placeholder="$0.00">
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="payment-box">
-                            <h3>Otros pagos</h3>
-                            <select name="tipo_otro">
-                                <option value=""></option>
-                                <option value="transferencia">Transferencia</option>
-                            </select>
-                            <input type="text" name="valor_otro" placeholder="$0.00">
+
+                        <div class="payment-box" id="otro">
+                            <div class="plus-icon">
+                                <h3>Otros pagos</h3>
+                                <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
+                            </div>
+                            <div class="barra">
+                                <div class="otro-content">
+                                    <select name="tipo_otro">
+                                        <option value=""></option>
+                                        <option value="transferencia">Transferencia</option>
+                                    </select>
+                                    <input type="text" name="valor_otro" placeholder="$0.00">
+
+                                </div>
+                            </div>
                         </div>
                         <div class="notes">
                             <h3>Observaciones</h3>
@@ -144,7 +160,7 @@ unset($_SESSION['total']);
                         <h3>Informacion de pago</h3>
                         <?php if (!empty($productos)): ?>
                             <h3>Productos:</h3>
-                           
+
                             <ul>
                                 <?php foreach ($productos as $producto): ?>
                                     <li>
@@ -152,7 +168,9 @@ unset($_SESSION['total']);
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
-                            <p><h3>Total a pagar:</h3> $<?php echo number_format($total, 2); ?></p>
+                            <p>
+                            <h3>Total a pagar:</h3> $<?php echo number_format($total, 2); ?></p>
+                            <button onclick="pagar()">Pagar</button>
                         <?php else: ?>
                             <p>No hay productos en el resumen.</p>
                         <?php endif; ?>
@@ -162,14 +180,70 @@ unset($_SESSION['total']);
         </div>
     </div>
     <script>
-function llenarValor(tipoPago, valor) {
-    let input = document.querySelector(`input[name='valor_${tipoPago}']`);
-    input.value = valor;
+        function AgregarOtraTarjeta() {
+            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
+            let clone = tarjeta.cloneNode(true);
 
-    // Crear y disparar el evento input manualmente
-    let event = new Event("input", { bubbles: true });
-    input.dispatchEvent(event);
-}
+            // Crear botón de eliminar solo para clones
+            let eliminar = document.createElement("img");
+            eliminar.src = "../imagenes/delete.svg";
+            eliminar.alt = "Eliminar";
+            eliminar.style.cursor = "pointer";
+            eliminar.onclick = function() {
+                clone.remove();
+            };
+
+            clone.appendChild(eliminar);
+            tarjeta.insertAdjacentElement("afterend", clone);
+        }
+
+        function AgregarOtroPago() {
+            let otro = document.querySelector("#otro .otro-content");
+            let clone = otro.cloneNode(true);
+
+            // Limpiar los valores de los inputs clonados
+            clone.querySelector("select").value = "";
+            clone.querySelector("input").value = "";
+
+            // Crear botón de eliminar solo para clones
+            let eliminar = document.createElement("img");
+            eliminar.src = "../imagenes/delete.svg";
+            eliminar.alt = "Eliminar";
+            eliminar.style.cursor = "pointer";
+            eliminar.style.marginLeft = "10px"; // Espaciado
+            eliminar.onclick = function() {
+                clone.remove();
+            };
+
+            // Añadir el botón dentro del clon (después del input)
+            clone.appendChild(eliminar);
+
+            // Insertar el clon después del elemento original
+            otro.insertAdjacentElement("afterend", clone);
+        }
+
+
+        function EliminarTarjeta() {
+            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
+            tarjeta.remove();
+        }
+
+        function EliminarOtroPago() {
+            let otro = document.querySelector("#otro .otro-content");
+            otro.remove();
+        }
+
+
+        function llenarValor(tipoPago, valor) {
+            let input = document.querySelector(`input[name='valor_${tipoPago}']`);
+            input.value = valor;
+
+            // Crear y disparar el evento input manualmente
+            let event = new Event("input", {
+                bubbles: true
+            });
+            input.dispatchEvent(event);
+        }
 
 
         function buscarCodigo() {
@@ -303,4 +377,5 @@ function llenarValor(tipoPago, valor) {
         });
     </script>
 </body>
+
 </html>
