@@ -4,6 +4,7 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -39,7 +40,7 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion" required></div>
                 <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol" required>
                         <option value="gerente" selected>Gerente </option>
-                       
+
                     </select></div>
                 <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre" required></div>
                 <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido" required></div>
@@ -135,9 +136,45 @@ if (!isset($_SESSION['usuario_id'])) {
         // Ejecutar la sentencia
         if ($stmt->execute()) {
             echo "<script>alert('Registro exitoso');</script>";
+            //Asignar permisos al nuevo usuario
+            $resultado = $conexion->query("INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES
+                ($identificacion, 'PRODUCTO', 'Crear Producto', 1),
+                ($identificacion, 'PRODUCTO', 'Actualizar Producto', 1),
+                ($identificacion, 'PRODUCTO', 'Categorías', 1),
+                ($identificacion, 'PRODUCTO', 'Ubicación', 1),
+                ($identificacion, 'PRODUCTO', 'Marca', 1),
+                
+                ($identificacion, 'PROVEEDOR', 'Crear Proveedor', 1),
+                ($identificacion, 'PROVEEDOR', 'Actualizar Proveedor', 1),
+                ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 1),
+
+                ($identificacion, 'INVENTARIO', 'Lista de Productos', 1),
+
+                ($identificacion, 'FACTURA', 'Venta', 1),
+                ($identificacion, 'FACTURA', 'Reporte', 1),
+
+                ($identificacion, 'USUARIO', 'Información', 1),
+
+                ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
+                ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
+                ($identificacion, 'CONFIGURACIÓN', 'Personalización de Reportes', 0),
+                ($identificacion, 'CONFIGURACIÓN', 'Personalización de Reportes', 0),
+                ($identificacion, 'CONFIGURACIÓN', 'Notificaciones de Stock', 0),
+                ($identificacion, 'CONFIGURACIÓN', 'Frecuencia Automática de Reportes', 0)");
+            if ($resultado) {
+                echo "<script>alert('Permisos guardados');</script>";
+            } else {
+                echo "<script>alert('Error al guardar' );</script>";
+            }
+
+                
         } else {
             echo "<script>alert('Error al guardar');</script>";
         }
+
+
+
+
 
         // Cerrar la sentencia
         $stmt->close();
@@ -145,6 +182,8 @@ if (!isset($_SESSION['usuario_id'])) {
 
     // Cerrar la conexión
     $conexion->close();
+
+
     ?>
 </body>
 

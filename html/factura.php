@@ -1,6 +1,5 @@
 <?php
 session_start();
-var_dump($_POST);
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -263,7 +262,7 @@ if (isset($_POST['cobrar'])) {
                 form.submit(); // Enviar el formulario
             }
         }
-        
+
 
         function abrirModal() {
             const modal = document.getElementById("modalPaymentMethod");

@@ -140,6 +140,7 @@ date_default_timezone_set('America/Bogota');
                     <th>%</th>
                     <th>Base</th>
                     <th>Impuesto</th>
+                    <th>Metodo de Pago</th>
                 </tr>
             </thead>
             <tbody>

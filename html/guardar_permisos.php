@@ -1,35 +1,36 @@
 <?php
-print_r($_POST);
-exit;
-
-include '../conexion/conexion.php';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_usuario = $_POST['id_usuario']?? null;
-    $seccion = $_POST['seccion'] ?? null;
-    if ($id_usuario === null || $seccion === null) {
-        die("Error: Faltan datos en el formulario.");
-    }
-    $sub_seccion = !empty($_POST['sub_seccion']) ? $_POST['sub_seccion'] : NULL;
-    $permitido = isset($_POST['permitido']) ? 1 : 0;
-
-    try {
-        $sql = "INSERT INTO usuario_permisos (id_usuario, seccion, sub_seccion, permitido) 
-                VALUES (:id_usuario, :seccion, :sub_seccion, :permitido)";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
-        $stmt->bindParam(':seccion', $seccion, PDO::PARAM_STR);
-        $stmt->bindParam(':sub_seccion', $sub_seccion, PDO::PARAM_STR);
-        $stmt->bindParam(':permitido', $permitido, PDO::PARAM_INT);
-
-        if ($stmt->execute()) {
-            echo "Permiso guardado correctamente.";
-        } else {
-            echo "Error al guardar el permiso.";
-        }
-    } catch (PDOException $e) {
-        echo "Error en la base de datos: " . $e->getMessage();
-    }
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+  header("Location: ../index.php");
+  exit();
 }
+
+$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+if ($conexion->connect_error) {
+  die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
+}
+
+$id_usuario = $_POST['identificacion'];
+$permisos = $_POST['permisos'];
+
+// Primero, desactivar todos los permisos para este usuario
+$sqlDesactivar = "UPDATE accesos SET permitido = 0 WHERE id_usuario = ?";
+$stmtDesactivar = $conexion->prepare($sqlDesactivar);
+$stmtDesactivar->bind_param("i", $id_usuario);
+$stmtDesactivar->execute();
+$stmtDesactivar->close();
+
+// Luego, activar solo los permisos seleccionados
+foreach ($permisos as $permiso) {
+  list($seccion, $subseccion) = explode('_', $permiso);
+  $subseccion = str_replace('_', ' ', $subseccion);
+
+  $sqlActivar = "UPDATE accesos SET permitido = 1 WHERE id_usuario = ? AND seccion = ? AND sub_seccion = ?";
+  $stmtActivar = $conexion->prepare($sqlActivar);
+  $stmtActivar->bind_param("iss", $id_usuario, $seccion, $subseccion);
+  $stmtActivar->execute();
+  $stmtActivar->close();
+}
+
+echo "Permisos actualizados correctamente";
 ?>

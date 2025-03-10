@@ -275,103 +275,51 @@ unset($_SESSION['total']);
             document.getElementById("correo").value = user.correo;
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Agregar clones de tarjetas y otros pagos para que bloqueen los demas pagos
-            let efectivoInput = document.querySelector("input[name='valor_efectivo']");
+        //Deshabilitar solo si el valor total de los productos se completo
+            
+    document.addEventListener("DOMContentLoaded", function () {
+        function actualizarEstadoInputs() {
+            let totalPagar = <?php echo $total; ?>;
+            let sumaPagos = 0;
 
-            let tarjetaSelect = document.querySelector("select[name='tipo_tarjeta']");
-            let tarjetaInput = document.querySelector("input[name='valor_tarjeta']");
-            let voucherInput = document.querySelector("input[name='voucher']");
-            let grupoTarjeta = [tarjetaSelect, tarjetaInput, voucherInput];
+            // Obtener valores de pago ingresados
+            let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+            let otros = document.querySelectorAll("input[name='valor_otro']");
 
-            let otroSelect = document.querySelector("select[name='tipo_otro']");
-            let otroInput = document.querySelector("input[name='valor_otro']");
-            let grupoOtro = [otroSelect, otroInput];
+            sumaPagos += efectivo;
 
-            function disableGroups(selectedGroup) {
-                let allGroups = [efectivoInput, grupoTarjeta, grupoOtro];
+            tarjetas.forEach(input => {
+                let valor = parseFloat(input.value) || 0;
+                sumaPagos += valor;
+            });
 
-                allGroups.forEach(group => {
-                    if (group === selectedGroup) {
-                        enableGroup(group); // Habilita el grupo seleccionado
-                    } else {
-                        disableGroup(group); // Deshabilita los demás grupos
+            otros.forEach(input => {
+                let valor = parseFloat(input.value) || 0;
+                sumaPagos += valor;
+            });
+
+            // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
+            if (sumaPagos >= totalPagar) {
+                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                    if (input.value.trim() === "") {
+                        input.disabled = true;
                     }
                 });
+            } else {
+                // Si la suma aún no llega al total, habilitar todos los inputs
+                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                    input.disabled = false;
+                });
             }
+        }
 
-            function disableGroup(group) {
-                if (Array.isArray(group)) {
-                    group.forEach(input => {
-                        input.disabled = true;
-                        input.value = "";
-                    });
-                } else {
-                    group.disabled = true;
-                    group.value = "";
-                }
-            }
+        // Agregar eventos para verificar en tiempo real
+        document.addEventListener("input", actualizarEstadoInputs);
+        document.addEventListener("change", actualizarEstadoInputs);
+    });
 
-            function enableGroup(group) {
-                if (Array.isArray(group)) {
-                    group.forEach(input => input.disabled = false);
-                } else {
-                    group.disabled = false;
-                }
-            }
 
-            function checkEmptyAndEnable() {
-                if (!efectivoInput.value.trim() &&
-                    !tarjetaInput.value.trim() &&
-                    !otroInput.value.trim() &&
-                    tarjetaSelect.value === "" &&
-                    otroSelect.value === "") {
-                    enableGroup(efectivoInput);
-                    enableGroup(grupoTarjeta);
-                    enableGroup(grupoOtro);
-                }
-            }
-
-            efectivoInput.addEventListener("input", () => {
-                if (efectivoInput.value.trim() !== "") {
-                    disableGroups(efectivoInput);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            tarjetaInput.addEventListener("input", () => {
-                if (tarjetaInput.value.trim() !== "") {
-                    disableGroups(grupoTarjeta);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            tarjetaSelect.addEventListener("change", () => {
-                if (tarjetaSelect.value !== "") {
-                    disableGroups(grupoTarjeta);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            otroInput.addEventListener("input", () => {
-                if (otroInput.value.trim() !== "") {
-                    disableGroups(grupoOtro);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            otroSelect.addEventListener("change", () => {
-                if (otroSelect.value !== "") {
-                    disableGroups(grupoOtro);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-        });
     </script>
 </body>
 

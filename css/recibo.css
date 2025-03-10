@@ -94,3 +94,4 @@
     right: 550px;
     top: 80px;
          }
+         th:nth-child(5) { background-color: #ffddff; } /* Método de Pago */
