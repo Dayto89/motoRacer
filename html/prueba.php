@@ -114,7 +114,7 @@ unset($_SESSION['total']);
                             <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
                             <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
                             <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
-                            <input type="text" name="valor_efectivo" placeholder="Valor">
+                            <input type="text" name="valor_efectivo" placeholder="Valor" oninput="actualizarSaldoPendiente()">
                         </div>
                         <div class="payment-box" id="tarjeta">
                             <div class="plus-icon">
@@ -129,7 +129,7 @@ unset($_SESSION['total']);
                                         <option value="debito">Débito</option>
                                     </select>
                                     <input type="text" name="voucher" placeholder="Nro. voucher">
-                                    <input type="text" name="valor_tarjeta" placeholder="$0.00">
+                                    <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
 
                                 </div>
                             </div>
@@ -146,7 +146,7 @@ unset($_SESSION['total']);
                                         <option value=""></option>
                                         <option value="transferencia">Transferencia</option>
                                     </select>
-                                    <input type="text" name="valor_otro" placeholder="$0.00">
+                                    <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
 
                                 </div>
                             </div>
@@ -168,6 +168,8 @@ unset($_SESSION['total']);
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
+
+                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
                             <p>
                             <h3>Total a pagar:</h3> $<?php echo number_format($total, 2); ?></p>
                             <button onclick="pagar()">Pagar</button>
@@ -180,6 +182,26 @@ unset($_SESSION['total']);
         </div>
     </div>
     <script>
+        function actualizarSaldoPendiente() {
+            let total = <?php echo $total; ?>; // Total desde PHP
+            let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+            let otros = document.querySelectorAll("input[name='valor_otro']");
+
+            let totalPagado = efectivo;
+
+            tarjetas.forEach(input => {
+                totalPagado += parseFloat(input.value) || 0;
+            });
+
+            otros.forEach(input => {
+                totalPagado += parseFloat(input.value) || 0;
+            });
+
+            let saldoPendiente = total - totalPagado;
+            document.getElementById("saldoPendiente").textContent = "Saldo pendiente: $" + saldoPendiente.toFixed(2);
+        }
+
         function AgregarOtraTarjeta() {
             let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
             let clone = tarjeta.cloneNode(true);
@@ -229,16 +251,12 @@ unset($_SESSION['total']);
             otro.remove();
         }
 
-
         function llenarValor(tipoPago, valor) {
             let input = document.querySelector(`input[name='valor_${tipoPago}']`);
             input.value = valor;
-
-            // Crear y disparar el evento input manualmente
-            let event = new Event("input", {
+            input.dispatchEvent(new Event("input", {
                 bubbles: true
-            });
-            input.dispatchEvent(event);
+            })); // Para disparar el evento
         }
 
 
@@ -276,50 +294,81 @@ unset($_SESSION['total']);
         }
 
         //Deshabilitar solo si el valor total de los productos se completo
-            
-    document.addEventListener("DOMContentLoaded", function () {
-        function actualizarEstadoInputs() {
-            let totalPagar = <?php echo $total; ?>;
-            let sumaPagos = 0;
 
-            // Obtener valores de pago ingresados
-            let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
-            let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
-            let otros = document.querySelectorAll("input[name='valor_otro']");
+        document.addEventListener("DOMContentLoaded", function() {
+            function actualizarEstadoInputs() {
+                let totalPagar = <?php echo $total; ?>;
+                let sumaPagos = 0;
 
-            sumaPagos += efectivo;
+                // Obtener valores de pago ingresados
+                let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+                let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+                let otros = document.querySelectorAll("input[name='valor_otro']");
 
-            tarjetas.forEach(input => {
-                let valor = parseFloat(input.value) || 0;
-                sumaPagos += valor;
-            });
+                sumaPagos += efectivo;
 
-            otros.forEach(input => {
-                let valor = parseFloat(input.value) || 0;
-                sumaPagos += valor;
-            });
+                tarjetas.forEach(input => {
+                    let valor = parseFloat(input.value) || 0;
+                    sumaPagos += valor;
+                });
 
-            // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
-            if (sumaPagos >= totalPagar) {
-                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                    if (input.value.trim() === "") {
-                        input.disabled = true;
+                otros.forEach(input => {
+                    let valor = parseFloat(input.value) || 0;
+                    sumaPagos += valor;
+                });
+
+                // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
+                if (sumaPagos >= totalPagar) {
+                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                        if (input.value.trim() === "") {
+                            input.disabled = true;
+                        }
+                    });
+                } else {
+                    // Si la suma aún no llega al total, habilitar todos los inputs
+                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                        input.disabled = false;
+                    });
+                }
+            }
+
+            // Agregar eventos para verificar en tiempo real
+            document.addEventListener("input", actualizarEstadoInputs);
+            document.addEventListener("change", actualizarEstadoInputs);
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            actualizarSaldoPendiente(); // Asegúrate de que esta función se ejecuta al cargar la página.
+
+            document.querySelectorAll("input").forEach(input => {
+                input.addEventListener("click", function() {
+                    if (this.value.trim() === "") { // Si el input está vacío
+                        let saldoRestante = calcularSaldoRestante(); // Calcula el saldo restante
+                        this.value = saldoRestante; // Autocompleta el input con el saldo restante
+
+                        // Disparar manualmente el evento 'input' para que cualquier otra lógica lo detecte
+                        this.dispatchEvent(new Event("input", {
+                            bubbles: true
+                        }));
                     }
                 });
-            } else {
-                // Si la suma aún no llega al total, habilitar todos los inputs
-                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                    input.disabled = false;
-                });
-            }
+            });
+        });
+
+        function calcularSaldoRestante() {
+            let total = <?php echo $total; ?>; // Total desde PHP
+            let sumaInputs = 0;
+
+            document.querySelectorAll("input").forEach(input => {
+                let valor = parseFloat(input.value) || 0; // Convierte a número o usa 0 si está vacío
+                sumaInputs += valor;
+            });
+
+            return total - sumaInputs; // Retorna el saldo restante
         }
 
-        // Agregar eventos para verificar en tiempo real
-        document.addEventListener("input", actualizarEstadoInputs);
-        document.addEventListener("change", actualizarEstadoInputs);
-    });
 
-
+        document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
     </script>
 </body>
 
