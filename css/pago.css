@@ -24,7 +24,7 @@ body::before {
     border-radius: 10px;
     justify-content: space-between;
     width: 1400px;
-    height: 850px;
+    height: 900px;
     margin: auto;
 
     transition: margin-left 0.3s ease, background-color 0.3s ease; /* Agregar transición suave */
@@ -164,7 +164,7 @@ input[name="valor_efectivo"] {
 }
 
 .payment-box{
-    width: 600px;
+    width: 500px;
 }
 
 .payment-box select{
@@ -273,6 +273,14 @@ button:hover {
  .tarjeta-content, .otro-content {
     display: flex;
     align-items: center;
+ }
+
+ .barra-1 {
+    max-height: 90px; 
+    overflow-y: auto; 
+    display: flex;
+    flex-direction: column;
+    padding-right: 5px; 
  }
 
 

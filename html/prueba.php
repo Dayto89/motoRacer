@@ -140,7 +140,7 @@ unset($_SESSION['total']);
                                 <h3>Otros pagos</h3>
                                 <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
                             </div>
-                            <div class="barra">
+                            <div class="barra-1">
                                 <div class="otro-content">
                                     <select name="tipo_otro">
                                         <option value=""></option>
@@ -200,10 +200,6 @@ unset($_SESSION['total']);
         function AgregarOtroPago() {
             let otro = document.querySelector("#otro .otro-content");
             let clone = otro.cloneNode(true);
-
-            // Limpiar los valores de los inputs clonados
-            clone.querySelector("select").value = "";
-            clone.querySelector("input").value = "";
 
             // Crear botón de eliminar solo para clones
             let eliminar = document.createElement("img");
@@ -280,6 +276,7 @@ unset($_SESSION['total']);
         }
 
         document.addEventListener("DOMContentLoaded", function() {
+            // Agregar clones de tarjetas y otros pagos para que bloqueen los demas pagos
             let efectivoInput = document.querySelector("input[name='valor_efectivo']");
 
             let tarjetaSelect = document.querySelector("select[name='tipo_tarjeta']");
