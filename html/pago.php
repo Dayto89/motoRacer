@@ -1,4 +1,6 @@
 <?php
+// session_start() debe ser lo primero
+session_start();
 // Conexión a la base de datos
 $servername = "localhost";
 $username = "root";
@@ -26,6 +28,24 @@ if (isset($_GET['codigo'])) {
     echo json_encode($clientes);
     exit;
 }
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($data) {
+        $_SESSION["resumen"] = $data;
+        echo "Datos recibidos correctamente";
+    } else {
+        echo "No se recibieron datos";
+    }
+}
+// Recuperar datos para mostrar en prueba.php
+$productos = $_SESSION['productos'] ?? [];
+$total = $_SESSION['total'] ?? 0;
+
+// Limpiar los datos de la sesión después de usarlos
+unset($_SESSION['productos']);
+unset($_SESSION['total']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,10 +57,8 @@ if (isset($_GET['codigo'])) {
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="../css/pago.css">
     <link rel="stylesheet" href="../componentes/header.css">
-
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="/js/index.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
 
@@ -87,7 +105,6 @@ if (isset($_GET['codigo'])) {
                 <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
                 <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
             </div>
-            <!-- Traer datos de factura.php y mostrar los datos en la página -->
             <div class="payment-section">
                 <h2>Registrar Pago</h2>
                 <div class="content">
@@ -97,56 +114,150 @@ if (isset($_GET['codigo'])) {
                             <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
                             <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
                             <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
-                            <input type="text" name="valor_efectivo" placeholder="Valor">
+                            <input type="text" name="valor_efectivo" placeholder="Valor" oninput="actualizarSaldoPendiente()">
                         </div>
-                        <div class="payment-box">
-                            <h3>Pagos con tarjeta</h3>
-                            <select name="tipo_tarjeta">
-                                <option value=""></option>
-                                <option value="credito">Crédito</option>
-                                <option value="debito">Débito</option>
-                            </select>
-                            <input type="text" name="voucher" placeholder="Nro. voucher">
-                            <input type="text" name="valor_tarjeta" placeholder="$0.00">
+                        <div class="payment-box" id="tarjeta">
+                            <div class="plus-icon">
+                                <h3>Pagos con tarjeta</h3>
+                                <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
+                            </div>
+                            <div class="barra">
+                                <div class="tarjeta-content">
+                                    <select name="tipo_tarjeta">
+                                        <option value=""></option>
+                                        <option value="credito">Crédito</option>
+                                        <option value="debito">Débito</option>
+                                    </select>
+                                    <input type="text" name="voucher" placeholder="Nro. voucher">
+                                    <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="payment-box">
-                            <h3>Otros pagos</h3>
-                            <select name="tipo_otro">
-                                <option value=""></option>
-                                <option value="transferencia">Transferencia</option>
-                            </select>
-                            <input type="text" name="valor_otro" placeholder="$0.00">
+
+                        <div class="payment-box" id="otro">
+                            <div class="plus-icon">
+                                <h3>Otros pagos</h3>
+                                <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
+                            </div>
+                            <div class="barra-1">
+                                <div class="otro-content">
+                                    <select name="tipo_otro">
+                                        <option value=""></option>
+                                        <option value="transferencia">Transferencia</option>
+                                    </select>
+                                    <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+
+                                </div>
+                            </div>
                         </div>
                         <div class="notes">
                             <h3>Observaciones</h3>
                             <textarea name="observaciones" placeholder="Ingrese observaciones..."></textarea>
                         </div>
                     </div>
-                    <div class="summary-section">
-                        <h3>Información de pago</h3>
-                        <p>Total bruto: <span>$25,210.08</span></p>
-                        <p>Descuento aplicado: <span>$0.00</span></p>
-                        <p>Subtotal: <span>$25,210.08</span></p>
-                        <p>Total IVA: <span>$4,789.92</span></p>
-                        <h3>Total a pagar</h3>
-                        <p class="total">$30,000.00</p>
-                        <button class="save-btn">Guardar y enviar</button>
+                    <div id="summary-section" class="summary-section">
+                        <h3>Informacion de pago</h3>
+                        <?php if (!empty($productos)): ?>
+                            <h3>Productos:</h3>
+
+                            <ul>
+                                <?php foreach ($productos as $producto): ?>
+                                    <li>
+                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+
+                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
+                            <p>
+                            <h3>Total a pagar:</h3> $<?php echo number_format($total, 2); ?></p>
+                            <button onclick="pagar()">Pagar</button>
+                        <?php else: ?>
+                            <p>No hay productos en el resumen.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     <script>
-function llenarValor(tipoPago, valor) {
-    let input = document.querySelector(`input[name='valor_${tipoPago}']`);
-    input.value = valor;
+        function actualizarSaldoPendiente() {
+            let total = <?php echo $total; ?>; // Total desde PHP
+            let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+            let otros = document.querySelectorAll("input[name='valor_otro']");
 
-    // Crear y disparar el evento input manualmente
-    let event = new Event("input", { bubbles: true });
-    input.dispatchEvent(event);
-}
+            let totalPagado = efectivo;
+
+            tarjetas.forEach(input => {
+                totalPagado += parseFloat(input.value) || 0;
+            });
+
+            otros.forEach(input => {
+                totalPagado += parseFloat(input.value) || 0;
+            });
+
+            let saldoPendiente = total - totalPagado;
+            document.getElementById("saldoPendiente").textContent = "Saldo pendiente: $" + saldoPendiente.toFixed(2);
+        }
+
+        function AgregarOtraTarjeta() {
+            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
+            let clone = tarjeta.cloneNode(true);
+
+            // Crear botón de eliminar solo para clones
+            let eliminar = document.createElement("img");
+            eliminar.src = "../imagenes/delete.svg";
+            eliminar.alt = "Eliminar";
+            eliminar.style.cursor = "pointer";
+            eliminar.onclick = function() {
+                clone.remove();
+            };
+
+            clone.appendChild(eliminar);
+            tarjeta.insertAdjacentElement("afterend", clone);
+        }
+
+        function AgregarOtroPago() {
+            let otro = document.querySelector("#otro .otro-content");
+            let clone = otro.cloneNode(true);
+
+            // Crear botón de eliminar solo para clones
+            let eliminar = document.createElement("img");
+            eliminar.src = "../imagenes/delete.svg";
+            eliminar.alt = "Eliminar";
+            eliminar.style.cursor = "pointer";
+            eliminar.style.marginLeft = "10px"; // Espaciado
+            eliminar.onclick = function() {
+                clone.remove();
+            };
+
+            // Añadir el botón dentro del clon (después del input)
+            clone.appendChild(eliminar);
+
+            // Insertar el clon después del elemento original
+            otro.insertAdjacentElement("afterend", clone);
+        }
+
+
+        function EliminarTarjeta() {
+            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
+            tarjeta.remove();
+        }
+
+        function EliminarOtroPago() {
+            let otro = document.querySelector("#otro .otro-content");
+            otro.remove();
+        }
+
+        function llenarValor(tipoPago, valor) {
+            let input = document.querySelector(`input[name='valor_${tipoPago}']`);
+            input.value = valor;
+            input.dispatchEvent(new Event("input", {
+                bubbles: true
+            })); // Para disparar el evento
+        }
 
 
         function buscarCodigo() {
@@ -182,102 +293,82 @@ function llenarValor(tipoPago, valor) {
             document.getElementById("correo").value = user.correo;
         }
 
+        //Deshabilitar solo si el valor total de los productos se completo
+
         document.addEventListener("DOMContentLoaded", function() {
-            let efectivoInput = document.querySelector("input[name='valor_efectivo']");
+            function actualizarEstadoInputs() {
+                let totalPagar = <?php echo $total; ?>;
+                let sumaPagos = 0;
 
-            let tarjetaSelect = document.querySelector("select[name='tipo_tarjeta']");
-            let tarjetaInput = document.querySelector("input[name='valor_tarjeta']");
-            let voucherInput = document.querySelector("input[name='voucher']");
-            let grupoTarjeta = [tarjetaSelect, tarjetaInput, voucherInput];
+                // Obtener valores de pago ingresados
+                let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+                let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+                let otros = document.querySelectorAll("input[name='valor_otro']");
 
-            let otroSelect = document.querySelector("select[name='tipo_otro']");
-            let otroInput = document.querySelector("input[name='valor_otro']");
-            let grupoOtro = [otroSelect, otroInput];
+                sumaPagos += efectivo;
 
-            function disableGroups(selectedGroup) {
-                let allGroups = [efectivoInput, grupoTarjeta, grupoOtro];
-
-                allGroups.forEach(group => {
-                    if (group === selectedGroup) {
-                        enableGroup(group); // Habilita el grupo seleccionado
-                    } else {
-                        disableGroup(group); // Deshabilita los demás grupos
-                    }
+                tarjetas.forEach(input => {
+                    let valor = parseFloat(input.value) || 0;
+                    sumaPagos += valor;
                 });
-            }
 
-            function disableGroup(group) {
-                if (Array.isArray(group)) {
-                    group.forEach(input => {
-                        input.disabled = true;
-                        input.value = "";
+                otros.forEach(input => {
+                    let valor = parseFloat(input.value) || 0;
+                    sumaPagos += valor;
+                });
+
+                // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
+                if (sumaPagos >= totalPagar) {
+                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                        if (input.value.trim() === "") {
+                            input.disabled = true;
+                        }
                     });
                 } else {
-                    group.disabled = true;
-                    group.value = "";
+                    // Si la suma aún no llega al total, habilitar todos los inputs
+                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                        input.disabled = false;
+                    });
                 }
             }
 
-            function enableGroup(group) {
-                if (Array.isArray(group)) {
-                    group.forEach(input => input.disabled = false);
-                } else {
-                    group.disabled = false;
-                }
-            }
+            // Agregar eventos para verificar en tiempo real
+            document.addEventListener("input", actualizarEstadoInputs);
+            document.addEventListener("change", actualizarEstadoInputs);
+        });
 
-            function checkEmptyAndEnable() {
-                if (!efectivoInput.value.trim() &&
-                    !tarjetaInput.value.trim() &&
-                    !otroInput.value.trim() &&
-                    tarjetaSelect.value === "" &&
-                    otroSelect.value === "") {
-                    enableGroup(efectivoInput);
-                    enableGroup(grupoTarjeta);
-                    enableGroup(grupoOtro);
-                }
-            }
+        document.addEventListener("DOMContentLoaded", function() {
+            actualizarSaldoPendiente(); // Asegúrate de que esta función se ejecuta al cargar la página.
 
-            efectivoInput.addEventListener("input", () => {
-                if (efectivoInput.value.trim() !== "") {
-                    disableGroups(efectivoInput);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
+            document.querySelectorAll("input").forEach(input => {
+                input.addEventListener("click", function() {
+                    if (this.value.trim() === "") { // Si el input está vacío
+                        let saldoRestante = calcularSaldoRestante(); // Calcula el saldo restante
+                        this.value = saldoRestante; // Autocompleta el input con el saldo restante
 
-            tarjetaInput.addEventListener("input", () => {
-                if (tarjetaInput.value.trim() !== "") {
-                    disableGroups(grupoTarjeta);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            tarjetaSelect.addEventListener("change", () => {
-                if (tarjetaSelect.value !== "") {
-                    disableGroups(grupoTarjeta);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            otroInput.addEventListener("input", () => {
-                if (otroInput.value.trim() !== "") {
-                    disableGroups(grupoOtro);
-                } else {
-                    checkEmptyAndEnable();
-                }
-            });
-
-            otroSelect.addEventListener("change", () => {
-                if (otroSelect.value !== "") {
-                    disableGroups(grupoOtro);
-                } else {
-                    checkEmptyAndEnable();
-                }
+                        // Disparar manualmente el evento 'input' para que cualquier otra lógica lo detecte
+                        this.dispatchEvent(new Event("input", {
+                            bubbles: true
+                        }));
+                    }
+                });
             });
         });
+
+        function calcularSaldoRestante() {
+            let total = <?php echo $total; ?>; // Total desde PHP
+            let sumaInputs = 0;
+
+            document.querySelectorAll("input").forEach(input => {
+                let valor = parseFloat(input.value) || 0; // Convierte a número o usa 0 si está vacío
+                sumaInputs += valor;
+            });
+
+            return total - sumaInputs; // Retorna el saldo restante
+        }
+
+
+        document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
     </script>
 </body>
 

@@ -92,7 +92,7 @@ if (isset($_POST['cobrar'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario</title>
+    <title>Facturar</title>
     <link rel="stylesheet" href="../css/factura.css">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/index.js"></script>
