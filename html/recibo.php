@@ -53,7 +53,9 @@ date_default_timezone_set('America/Bogota');
 ?>
 
 <!DOCTYPE html>
-<html>
+
+<html lang="es">
+>>>>>>> 2bef08b (Inicio de boton pago)
 
 <head>
     <meta charset="UTF-8">

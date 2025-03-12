@@ -48,8 +48,8 @@ unset($_SESSION['productos']);
 unset($_SESSION['total']);
 ?>
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
+>>>>>>> 2bef08b (Inicio de boton pago)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -336,15 +336,15 @@ unset($_SESSION['total']);
             document.addEventListener("input", actualizarEstadoInputs);
             document.addEventListener("change", actualizarEstadoInputs);
         });
-
         document.addEventListener("DOMContentLoaded", function() {
             actualizarSaldoPendiente(); // Asegúrate de que esta función se ejecuta al cargar la página.
 
-            document.querySelectorAll("input").forEach(input => {
+            // Seleccionar solo los inputs con name específico
+            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
                 input.addEventListener("click", function() {
                     if (this.value.trim() === "") { // Si el input está vacío
                         let saldoRestante = calcularSaldoRestante(); // Calcula el saldo restante
-                        this.value = saldoRestante; // Autocompleta el input con el saldo restante
+                        this.value = saldoRestante; // Autocompleta en los inputs específicos
 
                         // Disparar manualmente el evento 'input' para que cualquier otra lógica lo detecte
                         this.dispatchEvent(new Event("input", {
@@ -359,7 +359,8 @@ unset($_SESSION['total']);
             let total = <?php echo $total; ?>; // Total desde PHP
             let sumaInputs = 0;
 
-            document.querySelectorAll("input").forEach(input => {
+
+            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
                 let valor = parseFloat(input.value) || 0; // Convierte a número o usa 0 si está vacío
                 sumaInputs += valor;
             });
