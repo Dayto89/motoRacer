@@ -133,25 +133,45 @@ date_default_timezone_set('America/Bogota');
 
         <hr>
         <h4>Impuestos</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>%</th>
-                    <th>Base</th>
-                    <th>Impuesto</th>
-                    <th>Metodo de Pago</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>A</td>
-                    <td><?php echo $ivaPorcentaje; ?>%</td>
-                    <td>$<?php echo number_format($base, 2); ?></td>
-                    <td>$<?php echo number_format($impuesto, 2); ?></td>
-                </tr>
-            </tbody>
-        </table>
+<table width="100%" cellspacing="0" cellpadding="5" style="border-collapse: collapse; text-align: left;">
+    <tr>
+        <th style="border-bottom: 2px solid black;">ID</th>
+        <th style="border-bottom: 2px solid black;">A</th>
+    </tr>
+    <tr>
+        <td>%</td>
+        <td>19%</td>
+    </tr>
+    <tr>
+        <td>Base Impuesto</td>
+        <td>$0.00</td>
+    </tr>
+</table>
+<hr>
+
+<th style="border-bottom: 2px solid black;">Pago</th>
+    </tr>
+    </table>
+    
+    <table width="100%" cellspacing="0" cellpadding="5" style="border-collapse: collapse; text-align: left;">
+    <tr>
+        <th style="border-bottom: 2px solid black;">Método</th>
+        <th style="border-bottom: 2px solid black;">Valor</th>
+    </tr>
+    <tr>
+        <td style="border-bottom: 1px solid black;">Efectivo</td>
+        <td style="border-bottom: 1px solid black;">$0.00</td>
+    </tr>
+    <tr>
+        <td style="border-bottom: 1px solid black;">Tarjeta</td>
+        <td style="border-bottom: 1px solid black;">$0.00</td>
+    </tr>
+    <tr>
+        <td style=>Transferencia</td>
+        <td style=>$0.00</td>
+    </tr>
+</table>
+
 
         <hr>
 

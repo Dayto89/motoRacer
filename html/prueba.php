@@ -29,6 +29,36 @@ if (isset($_GET['codigo'])) {
     exit;
 }
 
+// Guardar cliente en la base de datos
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $codigo = $data["codigo"];
+    $tipoDoc = $data["tipoDoc"];
+    $nombre = $data["nombre"];
+    $apellido = $data["apellido"];
+    $telefono = $data["telefono"];
+    $correo = $data["correo"];
+
+    // Consultar si el cliente ya existe
+    $sql = "SELECT * FROM cliente WHERE codigo = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $codigo);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        echo json_encode(["success" => false, "error" => "El cliente ya existe"]);
+    } else {
+        $sql = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
+        $stmt->execute();
+        echo json_encode(["success" => true]);
+    }
+    // Si cliente existe o se registró correctamente, continuar con el proceso de facturación
+    $sql = "INSERT INTO fACTURA () VALUES ()";
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
@@ -172,7 +202,7 @@ unset($_SESSION['total']);
                             <p id="saldoPendiente">Saldo pendiente: $0.00</p>
                             <p>
                             <h3>Total a pagar:</h3> $<?php echo number_format($total, 2); ?></p>
-                            <button onclick="pagar()">Pagar</button>
+                            <button onclick="guardarCliente()">Pagar</button>
                         <?php else: ?>
                             <p>No hay productos en el resumen.</p>
                         <?php endif; ?>
@@ -182,6 +212,40 @@ unset($_SESSION['total']);
         </div>
     </div>
     <script>
+        // Funcion para almacenar el cliente en la base de datos
+        function guardarCliente() {
+            let codigo = document.getElementById("codigo").value;
+            let tipoDoc = document.getElementById("tipo_doc").value;
+            let nombre = document.getElementById("nombre").value;
+            let apellido = document.getElementById("apellido").value;
+            let telefono = document.getElementById("telefono").value;
+            let correo = document.getElementById("correo").value;
+
+            fetch("", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        codigo: codigo,
+                        tipoDoc: tipoDoc,
+                        nombre: nombre,
+                        apellido: apellido,
+                        telefono: telefono,
+                        correo: correo
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Datos guardados correctamente");
+                    } else {
+                        alert("Error al guardar datos");
+                    }
+                })
+                .catch(error => console.error("Error al guardar datos:", error));
+        }
+
         function actualizarSaldoPendiente() {
             let total = <?php echo $total; ?>; // Total desde PHP
             let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;

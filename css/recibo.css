@@ -7,6 +7,7 @@
         h1, h3, p {
             margin: 0;
             padding: 0;
+            margin: 50px;
         }
 
         .factura {
@@ -62,20 +63,32 @@
         hr{
             width: 100%;
             border: 1px solid #000;
-            margin-top: 20px;
+           
             margin-bottom: 20px;
         }
 
-        /* Estilos de impresión (opcional) */
         @media print {
-            /* Quita bordes, margenes, etc. para optimizar la impresión */
+            @page {
+                margin: 20mm; /* Ajusta según sea necesario */
+            }
             body {
-                margin: 0;
+                
+                    padding: 20px;
+                }
+                
+            
             }
+
             .factura {
-                border: none;
+                margin: 20px auto; /* Ajusta el valor para separarla más */
+                padding: 10px;
+                background: white;
+                width: 80%; /* Ajusta según el diseño */
             }
-        }
+            
+            
+        
+        
 
         .btn-descargar {
             
@@ -92,6 +105,33 @@
          .form-descarga{
             position: absolute;
     right: 550px;
-    top: 80px;
+    margin-top: -26px;
          }
-         th:nth-child(5) { background-color: #ffddff; } /* Método de Pago */
+      
+
+         .impuestos-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .metodo-pago {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse; /* Evita bordes dobles */
+            width: 100%;
+        }
+        
+        th, td {
+            border: none; /* Elimina los bordes */
+            padding: 8px;
+        }
+        .metodo-pago-tabla tr:nth-last-child(2) td {
+            border-bottom: none;
+        }
+        
+        
+        
+      
