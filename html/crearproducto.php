@@ -5,6 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+
 //Almacenar informacion producto en la base de datos
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');

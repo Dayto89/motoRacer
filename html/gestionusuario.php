@@ -104,6 +104,7 @@ $stmt->close();
             </label><br>
             <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
               <?php foreach ($subsecciones as $subseccion): ?>
+                <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
                 <label>
                   <input type="checkbox" class="<?php echo $seccion; ?>" name="permisos[]" value="<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>" <?php echo $subseccion['permitido'] ? 'checked' : ''; ?> onclick="verificarSubPermisos('<?php echo $seccion; ?>_todo', '<?php echo $seccion; ?>')">
                   <?php echo $subseccion['sub_seccion']; ?>
@@ -121,6 +122,7 @@ $stmt->close();
   <script>
     function guardarPermisos() {
       var formData = new FormData(document.getElementById("formPermisos"));
+      
       fetch("../html/guardar_permisos.php", {
           method: "POST",
           body: formData
@@ -148,7 +150,7 @@ $stmt->close();
       let subPermisos = document.querySelectorAll(`.${clase}`);
       let totalMarcados = document.querySelectorAll(`.${clase}:checked`).length;
 
-      seccionCheckbox.checked = (totalMarcados === subPermisos.length);
+      seccionCheckbox.checked = (totalMarcados === subPermisos.length); 
     }
 
     function toggleSeccion(mainCheckbox, generalCheck) {

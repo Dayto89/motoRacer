@@ -1,36 +1,45 @@
-<?php
+<?php 
 session_start();
-if (!isset($_SESSION['usuario_id'])) {
-  header("Location: ../index.php");
-  exit();
-}
 
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+
 if ($conexion->connect_error) {
   die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
 }
 
-$id_usuario = $_POST['identificacion'];
-$permisos = $_POST['permisos'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $identificacion = $_POST['identificacion'];
+  $permisos = $_POST['permisos'] ?? [];
 
-// Primero, desactivar todos los permisos para este usuario
-$sqlDesactivar = "UPDATE accesos SET permitido = 0 WHERE id_usuario = ?";
-$stmtDesactivar = $conexion->prepare($sqlDesactivar);
-$stmtDesactivar->bind_param("i", $id_usuario);
-$stmtDesactivar->execute();
-$stmtDesactivar->close();
+  // Recorremos los permisos enviados
+  foreach ($permisos as $permiso => $valor) {
+      $permitido = $valor == "1" ? 1 : 0;
 
-// Luego, activar solo los permisos seleccionados
-foreach ($permisos as $permiso) {
-  list($seccion, $subseccion) = explode('_', $permiso);
-  $subseccion = str_replace('_', ' ', $subseccion);
+      // Verificamos si ya existe el permiso en la BD
+      $query = "SELECT COUNT(*) as existe FROM permisos WHERE usuario_id = ? AND permiso = ?";
+      $stmt = $conn->prepare($query);
+      $stmt->bind_param("is", $identificacion, $permiso);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $row = $result->fetch_assoc();
 
-  $sqlActivar = "UPDATE accesos SET permitido = 1 WHERE id_usuario = ? AND seccion = ? AND sub_seccion = ?";
-  $stmtActivar = $conexion->prepare($sqlActivar);
-  $stmtActivar->bind_param("iss", $id_usuario, $seccion, $subseccion);
-  $stmtActivar->execute();
-  $stmtActivar->close();
+      if ($row['existe'] > 0) {
+          // Si ya existe, actualizamos
+          $query = "UPDATE permisos SET permitido = ? WHERE usuario_id = ? AND permiso = ?";
+          $stmt = $conn->prepare($query);
+          $stmt->bind_param("iis", $permitido, $identificacion, $permiso);
+      } else {
+          // Si no existe, insertamos
+          $query = "INSERT INTO permisos (usuario_id, permiso, permitido) VALUES (?, ?, ?)";
+          $stmt = $conn->prepare($query);
+          $stmt->bind_param("isi", $identificacion, $permiso, $permitido);
+      }
+      $stmt->execute();
+  }
+
+  echo "Permisos actualizados correctamente";
+} else {
+  echo "Método no permitido";
 }
-
-echo "Permisos actualizados correctamente";
 ?>
+

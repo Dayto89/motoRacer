@@ -138,22 +138,22 @@ if (!isset($_SESSION['usuario_id'])) {
             echo "<script>alert('Registro exitoso');</script>";
             //Asignar permisos al nuevo usuario
             $resultado = $conexion->query("INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES
-                ($identificacion, 'PRODUCTO', 'Crear Producto', 1),
-                ($identificacion, 'PRODUCTO', 'Actualizar Producto', 1),
-                ($identificacion, 'PRODUCTO', 'Categorías', 1),
-                ($identificacion, 'PRODUCTO', 'Ubicación', 1),
-                ($identificacion, 'PRODUCTO', 'Marca', 1),
+                ($identificacion, 'PRODUCTO', 'Crear Producto', 0),
+                ($identificacion, 'PRODUCTO', 'Actualizar Producto', 0),
+                ($identificacion, 'PRODUCTO', 'Categorías', 0),
+                ($identificacion, 'PRODUCTO', 'Ubicación', 0),
+                ($identificacion, 'PRODUCTO', 'Marca', 0),
                 
-                ($identificacion, 'PROVEEDOR', 'Crear Proveedor', 1),
-                ($identificacion, 'PROVEEDOR', 'Actualizar Proveedor', 1),
-                ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 1),
+                ($identificacion, 'PROVEEDOR', 'Crear Proveedor', 0),
+                ($identificacion, 'PROVEEDOR', 'Actualizar Proveedor', 0),
+                ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
 
-                ($identificacion, 'INVENTARIO', 'Lista de Productos', 1),
+                ($identificacion, 'INVENTARIO', 'Lista de Productos', 0),
 
-                ($identificacion, 'FACTURA', 'Venta', 1),
-                ($identificacion, 'FACTURA', 'Reporte', 1),
+                ($identificacion, 'FACTURA', 'Venta', 0),
+                ($identificacion, 'FACTURA', 'Reporte', 0),
 
-                ($identificacion, 'USUARIO', 'Información', 1),
+                ($identificacion, 'USUARIO', 'Información', 0),
 
                 ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
                 ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),

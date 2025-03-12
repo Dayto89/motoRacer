@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mostrar u ocultar el dropdown actual
         if (!isVisible) {
             dropdown.classList.add('open');
+            
         }
     };
 
