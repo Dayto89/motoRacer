@@ -57,7 +57,9 @@ unset($_SESSION['total']);
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="../css/pago.css">
     <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.php">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');

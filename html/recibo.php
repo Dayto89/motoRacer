@@ -62,8 +62,8 @@ date_default_timezone_set('America/Bogota');
     <title>Factura</title>
     <link rel="stylesheet" href="../css/recibo.css">
     <link rel="stylesheet" href="../componentes/header.css">
-    
-    
+    <link rel="stylesheet" href="../componentes/header.php">
+    <script src="../js/header.js"></script>
     <script defer src="../js/index.js"></script>
 </head>
 

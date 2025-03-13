@@ -94,7 +94,9 @@ if (isset($_POST['cobrar'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facturar</title>
     <link rel="stylesheet" href="../css/factura.css">
+    <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
+    <script src="../js/header.js"></script>
     <script src="../js/index.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <style>

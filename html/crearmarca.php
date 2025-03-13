@@ -66,8 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/css/marca.css">
   <link rel="stylesheet" href="../componentes/header.css">
-  <link rel="stylesheet" href="../componentes/header.html">
+  <link rel="stylesheet" href="../componentes/header.php">
   <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
+  <script src="../js/header.js"></script>
   <script src="../js/marcas.js"></script>
 </head>
 <body>

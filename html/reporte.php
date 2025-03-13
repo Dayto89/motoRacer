@@ -167,6 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../css/reporte.css" />
   <link rel="stylesheet" href="../componentes/header.css">
+  <link rel="stylesheet" href="../componentes/header.php">
+  <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
 
 </head>

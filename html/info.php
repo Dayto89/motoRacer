@@ -78,6 +78,9 @@ mysqli_close($conexion);
     <title>Información de Usuario</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
+    <link rel="stylesheet" href="../componentes/header.php">
+    <link rel="stylesheet" href="../componentes/header.css">
+    <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
 </head>
 
