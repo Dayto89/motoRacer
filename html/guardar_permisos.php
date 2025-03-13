@@ -10,7 +10,6 @@ if ($conexion->connect_error) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $identificacion = $_POST['identificacion'];
   $permisos = $_POST['permisos'] ?? [];
-
   // Recorremos los permisos enviados
   foreach ($permisos as $permiso => $valor) {
       $permitido = $valor == "1" ? 1 : 0;

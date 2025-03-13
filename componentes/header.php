@@ -24,10 +24,10 @@ $stmtRol->close();
 // Si el usuario es administrador, mostrar todas las secciones
 if ($rol === 'administrador') {
   $permisos = [
-    'PRODUCTO' => ['Crear Producto', 'Actualizar Producto', 'Categorias', 'Ubicación', 'Marca'],
+    'PRODUCTO' => ['Crear Producto', 'Actualizar Producto', 'Categorias', 'crear ubicación', 'crear marca'],
     'PROVEEDOR' => ['Crear Proveedor', 'Actualizar Proveedor', 'Lista Proveedor'],
-    'INVENTARIO' => ['Lista de Productos'],
-    'FACTURA' => ['Venta', 'Reportes'],
+    'INVENTARIO' => ['inventario'],
+    'FACTURA' => ['factura', 'Reportes'],
     'USUARIO' => ['Información'],
     'CONFIGURACION' => ['Stock', 'Gestion de Usuarios', 'Personalizacion de Reportes', 'Notificaciones de Stock', 'Frecuencia de Reportes Automáticos']
   ];
@@ -53,7 +53,8 @@ if ($rol === 'administrador') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/logo.webp">
-  <script src="../prueba/header.js"></script>
+  <script src="../js/header.js"></script>
+  <script src="../js/index.js"></script>
   <link
     href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
     rel="stylesheet"
@@ -77,32 +78,47 @@ if ($rol === 'administrador') {
     </div>
     
     <ul class="menu">
-      <?php foreach ($permisos as $seccion => $subsecciones): 
-        ?>
-        <li>
-          <a href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')"
-            ><i class="bx bx-package bx-tada icon"></i><span><?php echo $seccion; ?></span
-            ><i class="bx bx-chevron-down icon2"></i
-          ></a>
-          <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
-            <?php foreach ($subsecciones as $subseccion): ?>
-              <li>
-                <a href="../html/<?php echo strtolower(str_replace(' ', '', $subseccion)); ?>.php">
-                  <?php echo $subseccion; ?>
-                </a>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
-      <?php endforeach; ?>
+  <?php 
+  // Definir un array con los iconos específicos para cada sección
+  $iconos = [
+      "PRODUCTO" => "bx bx-package bx-tada icon",
+      "PROVEEDOR" => "bx bxs-truck bx-tada icon",
+      "INVENTARIO" => "bx bx-task bx-tada icon",
+      "FACTURA" => "bx bx-file bx-tada icon",
+      "USUARIO" => "bx bx-user-circle bx-tada icon",
+      "CONFIGURACION" => "bx bxs-cog bx-tada icon"
+  ];
 
-      <li>
-        <a href="../componentes/logout.php"
-          ><i class="bx bx-log-out-circle bx-tada icon"></i
-          ><span>Salir</span></a
-        >
-      </li>
-    </ul>
+  foreach ($permisos as $seccion => $subsecciones): 
+    // Usar un icono por defecto si la sección no tiene un icono definido
+    $icono = isset($iconos[$seccion]) ? $iconos[$seccion] : "bx bx-folder";
+  ?>
+    <li>
+      <a href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')">
+        <i class="<?php echo $icono; ?> bx-tada icon"></i>
+        <span><?php echo $seccion; ?></span>
+        <i class="bx bx-chevron-down icon2"></i>
+      </a>
+      <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
+        <?php foreach ($subsecciones as $subseccion): ?>
+          <li>
+            <a href="../html/<?php echo strtolower(str_replace(' ', '', $subseccion)); ?>.php">
+              <?php echo $subseccion; ?>
+            </a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </li>
+  <?php endforeach; ?>
+
+  <li>
+    <a href="../componentes/logout.php">
+      <i class="bx bx-log-out-circle bx-tada icon"></i>
+      <span>Salir</span>
+    </a>
+  </li>
+</ul>
+
   </div>
 </body>
 

@@ -15,8 +15,9 @@ if (!isset($_SESSION['usuario_id'])) {
     <title>Inicio/Moto Racer</title>
     <link rel="icon" type="image/x-icon" href="../imagenes/logo1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/componentes/header.html">
+    <link rel="stylesheet" href="/componentes/header.php">
     <link rel="stylesheet" href="/componentes/header.css">
+    <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <link rel="stylesheet" href="/css/inicio.css">
     <script src="https://kit.fontawesome.com/d6f1e7ff1f.js"></script>

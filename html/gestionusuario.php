@@ -19,20 +19,32 @@ if ($_POST && isset($_POST['eliminar'])) {
   echo json_encode(["success" => $resultado]);
   exit();
 }
-// Consultar los permisos disponibles
-$sqlPermisos = "SELECT seccion, sub_seccion, permitido FROM accesos WHERE id_usuario = ?";
-$stmt = $conexion->prepare($sqlPermisos);
-$stmt->bind_param("i", $_SESSION['usuario_id']);
-$stmt->execute();
-$resultPermisos = $stmt->get_result();
-$permisos = [];
-while ($row = $resultPermisos->fetch_assoc()) {
-  $permisos[$row['seccion']][] = [
-    'sub_seccion' => $row['sub_seccion'],
-    'permitido' => $row['permitido']
-  ];
+
+// Consultar los permisos del usuario seleccionado
+if ($_POST && isset($_POST['permisos'])) {
+  $id = $conexion->real_escape_string($_POST['id']);
+  $query = "SELECT seccion, sub_seccion, permitido FROM accesos WHERE id_usuario = ?";
+  $stmt = $conexion->prepare($query);
+  $stmt->bind_param("i", $id); // CORREGIDO: Era $smt en vez de $stmt
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $permisos = [];
+
+  while ($row = $result->fetch_assoc()) {
+    $permisos[$row['seccion']][] = [
+      'sub_seccion' => $row['sub_seccion'],
+      'permitido' => $row['permitido']
+    ];
+  }
+
+  $stmt->close();
+
+  // Asegurar que la respuesta JSON se envíe correctamente
+  echo json_encode($permisos);
+  exit();
 }
-$stmt->close();
+
+
 
 ?>
 
@@ -44,10 +56,14 @@ $stmt->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Usuarios</title>
   <link rel="stylesheet" href="/css/gestionusuario.css">
+  <link rel="stylesheet" href="../componentes/header.php">
+  <link rel="stylesheet" href="../componentes/header.css">
+  <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
 </head>
 
 <body>
+  <div id="menu"></div>
   <h1>Gestión de Usuarios</h1>
   <div class="container">
     <table class="user-table">
@@ -72,7 +88,7 @@ $stmt->close();
           echo "<td>" . $row['rol'] . "</td>";
 
           if ($row['rol'] == 'gerente') {
-            echo "<td><button onclick='abrirModal(" . $row['identificacion'] . ")'>Permisos</button></td>";
+            echo "<td><button class='btn-permisos' onclick='abrirModal(" . $row['identificacion'] . ")' data-id='" . $row['identificacion'] . "'>Permisos</button></td>";
           } else {
             echo "<td></td>";
           }
@@ -88,7 +104,7 @@ $stmt->close();
 
   <button class='btn-registro' onclick="location.href='../html/registro.php'">Registrar nuevo usuario</button>
 
-   <!-- Modal -->
+  <!-- Modal -->
   <div id="modalPermisos" class="modal">
     <div class="modal-content">
       <span class="close" onclick="cerrarModal()">&times;</span>
@@ -96,7 +112,9 @@ $stmt->close();
       <form id="formPermisos" method="POST">
         <input type="hidden" id="identificacion" name="identificacion">
 
+        <?php $permisos = $permisos ?? []; ?>
         <?php foreach ($permisos as $seccion => $subsecciones): ?>
+
           <div>
             <label>
               <input type="checkbox" id="<?php echo $seccion; ?>_todo" onclick="toggleSeccion('<?php echo $seccion; ?>', '<?php echo $seccion; ?>_todo'), toggleSeccionAll('<?php echo $seccion; ?>_todo', '<?php echo $seccion; ?>')">
@@ -122,7 +140,7 @@ $stmt->close();
   <script>
     function guardarPermisos() {
       var formData = new FormData(document.getElementById("formPermisos"));
-      
+
       fetch("../html/guardar_permisos.php", {
           method: "POST",
           body: formData
@@ -135,6 +153,22 @@ $stmt->close();
   </script>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[id$="_todo"]').forEach(function(seccionCheckbox) {
+        let seccion = seccionCheckbox.id.replace('_todo', '');
+        let subPermisos = document.querySelectorAll(`.${seccion}`);
+        let totalMarcados = document.querySelectorAll(`.${seccion}:checked`).length;
+
+        // Si todos los subpermisos están marcados, marcar el principal
+        seccionCheckbox.checked = (totalMarcados === subPermisos.length);
+
+        // Mostrar las subsecciones si al menos un checkbox está marcado
+        if (totalMarcados > 0) {
+          document.getElementById(seccion + '_subsecciones').style.display = 'block';
+        }
+      });
+    });
+
     // Funciones JavaScript para manejar los permisos
     function toggleSeccionAll(seccion, clase) {
       let seccionCheckbox = document.getElementById(seccion);
@@ -150,13 +184,13 @@ $stmt->close();
       let subPermisos = document.querySelectorAll(`.${clase}`);
       let totalMarcados = document.querySelectorAll(`.${clase}:checked`).length;
 
-      seccionCheckbox.checked = (totalMarcados === subPermisos.length); 
+      seccionCheckbox.checked = (totalMarcados === subPermisos.length);
     }
 
     function toggleSeccion(mainCheckbox, generalCheck) {
       var subSection = document.getElementById(mainCheckbox + '_subsecciones');
       var gencheck = document.getElementById(generalCheck);
-      
+
       if (gencheck.checked) {
         subSection.style.display = 'block';
       } else {
@@ -173,47 +207,94 @@ $stmt->close();
       document.getElementById("modalPermisos").style.display = "none";
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+      // Agregar evento a los botones de permisos
 
-  </script>
-    <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Agregar evento a los botones de eliminar
-    var btnDelete = document.querySelectorAll('.btn-delete');
-    btnDelete.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var userId = this.getAttribute('data-id');
-        eliminarUsuario(userId);
+      var btnPermisos = document.querySelectorAll('.btn-permisos');
+      btnPermisos.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var userId = this.getAttribute('data-id');
+          permisosUsuario(userId);
+        });
       });
+
+      function permisosUsuario(userId) {
+    fetch('gestionusuario.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'permisos=true&id=' + userId
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data) {
+            console.log(data); // Verifica en la consola si los permisos llegan correctamente
+            actualizarModalPermisos(data);
+            document.getElementById("modalPermisos").style.display = "block";
+        } else {
+            alert('No se encontraron permisos para este usuario.');
+        }
+    })
+    .catch(error => {
+        console.error('Error al obtener permisos:', error);
+    });
+}
+
+    })
+    function actualizarModalPermisos(permisos) {
+    // Limpiar checkboxes antes de asignar nuevos valores
+    document.querySelectorAll('#formPermisos input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false; // Desmarcar todo
     });
 
-    // Función para eliminar un usuario
-    function eliminarUsuario(userId) {
-      if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-        fetch('gestionusuario.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: 'eliminar=true&id=' + userId
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              alert('Usuario eliminado correctamente');
-              // Recargar la página o eliminar la fila de la tabla
-              location.reload();
-            } else {
-              alert('Error al eliminar el usuario');
+    // Recorrer los permisos obtenidos y marcarlos en el formulario
+    Object.keys(permisos).forEach(seccion => {
+        permisos[seccion].forEach(subseccion => {
+            let checkbox = document.querySelector(`input[name="permisos[${seccion}_${subseccion.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]"]`);
+            if (checkbox) {
+                checkbox.checked = subseccion.permitido == 1; // Marcar si tiene permiso
             }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
+        });
+    });
+}
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Agregar evento a los botones de eliminar
+      var btnDelete = document.querySelectorAll('.btn-delete');
+      btnDelete.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var userId = this.getAttribute('data-id');
+          eliminarUsuario(userId);
+        });
+      });
+
+      // Función para eliminar un usuario
+      function eliminarUsuario(userId) {
+        if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+          fetch('gestionusuario.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: 'eliminar=true&id=' + userId
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Usuario eliminado correctamente');
+                // Recargar la página o eliminar la fila de la tabla
+                location.reload();
+              } else {
+                alert('Error al eliminar el usuario');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+        }
       }
-    }
-  });
-</script>
- 
+    });
+  </script>
+
 </body>
 
 </html>
