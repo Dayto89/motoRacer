@@ -199,16 +199,20 @@ if (isset($_POST['cobrar'])) {
                 let items = document.querySelectorAll("#listaResumen li");
 
                 items.forEach(item => {
+                    let id = item.getAttribute("data-id")?.trim();
+
                     let nombre = item.getAttribute("data-nombre");
                     let precio = parseFloat(item.getAttribute("data-precio"));
                     let cantidad = parseInt(item.getAttribute("data-cantidad"));
-                    let id = item.getAttribute("data-id");
+
+                    console.log(id);
+                    
 
                     productos.push({
+                        id: id,
                         nombre: nombre,
                         precio: precio,
-                        cantidad: cantidad,
-                        id: id
+                        cantidad: cantidad
                     });
                 });
 
@@ -311,9 +315,9 @@ if (isset($_POST['cobrar'])) {
 
             for (let i = 0; i < items.length; i++) {
                 if (items[i].getAttribute("data-nombre") === nombre) {
+                    item[i].setAttribute("data-id", id);
                     let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
                     items[i].setAttribute("data-cantidad", cantidad);
-                    item[i].setAttribute("data-id", id);
                     items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
                     encontrado = true;
                     break;
@@ -322,6 +326,7 @@ if (isset($_POST['cobrar'])) {
 
             if (!encontrado) {
                 let item = document.createElement("li");
+                item.setAttribute("data-id", id);
                 item.setAttribute("data-nombre", nombre);
                 item.setAttribute("data-precio", precio);
                 item.setAttribute("data-cantidad", 1);

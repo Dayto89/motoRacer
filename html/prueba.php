@@ -229,7 +229,7 @@ unset($_SESSION['total']);
                             <ul>
                                 <?php foreach ($productos as $producto): ?>
                                     <li>
-                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                        <p><?php $producto['cantidad'] . " x " . $producto['nombre'] . " - <span>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -267,6 +267,7 @@ unset($_SESSION['total']);
                 let cantidad = parseInt(partes[0].trim());
                 let nombreProducto = partes[1].split(" - $")[0].trim();
                 let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
+                let id = li.querySelector("span").textContent;
 
                 productos.push({
                     nombre: nombreProducto,
