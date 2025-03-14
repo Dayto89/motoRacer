@@ -41,25 +41,6 @@ if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-if (isset($_POST['guardar'])) {
-    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-    $identificacion = mysqli_real_escape_string($conexion, $_POST['identificacion']);
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $apellido = mysqli_real_escape_string($conexion, $_POST['apellido']);
-    $email = mysqli_real_escape_string($conexion, $_POST['email']);
-    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
-    $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
-    $cliente = mysqli_real_escape_string($conexion, $_POST['cliente']);
-
-    $consulta = "INSERT INTO cliente ( codigo, identificacion, nombre, apellido, email, telefono, direccion, cliente) VALUES ('$codigo', '$identificacion', '$nombre', '$apellido', '$email', '$telefono', '$direccion', '$cliente')";
-
-    if (mysqli_query($conexion, $consulta)) {
-        echo "Datos guardados correctamente.";
-    } else {
-        echo "Error al guardar los datos: " . mysqli_error($conexion);
-    }
-}
-
 // Almacenar los productos y el total en la sesión antes de redirigir
 if (isset($_POST['cobrar'])) {
     $productos = [];
@@ -70,7 +51,8 @@ if (isset($_POST['cobrar'])) {
         $productos[] = [
             'nombre' => $producto['nombre'],
             'precio' => $producto['precio'],
-            'cantidad' => $producto['cantidad']
+            'cantidad' => $producto['cantidad'],
+            'id' => $producto['id']
         ];
         $total += $producto['precio'] * $producto['cantidad'];
     }
@@ -92,7 +74,7 @@ if (isset($_POST['cobrar'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facturar</title>
+    <title>Ventas</title>
     <link rel="stylesheet" href="../css/factura.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
@@ -111,7 +93,7 @@ if (isset($_POST['cobrar'])) {
 
     <div class="main">
         <div class="search-bar">
-            <form method="GET" action="factura.php">
+            <form method="GET" action="ventas.php">
                 <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
                     <i class="bx bx-search-alt-2 icon"></i>
                 </button>
@@ -128,7 +110,7 @@ if (isset($_POST['cobrar'])) {
             if ($resultado->num_rows > 0) {
                 while ($fila = $resultado->fetch_assoc()) {
                     // Al ser presionado alguna categoria se muestra los productos de esa categoria
-                    echo "<li><a class='brand' name='categoria' href='factura.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
+                    echo "<li><a class='brand' name='categoria' href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
                 }
             } else {
                 echo "<li>No hay categorías disponibles</li>";
@@ -220,18 +202,20 @@ if (isset($_POST['cobrar'])) {
                     let nombre = item.getAttribute("data-nombre");
                     let precio = parseFloat(item.getAttribute("data-precio"));
                     let cantidad = parseInt(item.getAttribute("data-cantidad"));
+                    let id = item.getAttribute("data-id");
 
                     productos.push({
                         nombre: nombre,
                         precio: precio,
-                        cantidad: cantidad
+                        cantidad: cantidad,
+                        id: id
                     });
                 });
 
                 // Crear formulario dinámico
                 let form = document.createElement("form");
                 form.method = "POST";
-                form.action = "factura.php"; // Asegúrate de que la ruta sea correcta
+                form.action = "ventas.php"; // Asegúrate de que la ruta sea correcta
 
                 // Campo para indicar que se está cobrando
                 let inputCobrar = document.createElement("input");
@@ -258,6 +242,12 @@ if (isset($_POST['cobrar'])) {
                     inputCantidad.name = `productos[${index}][cantidad]`;
                     inputCantidad.value = producto.cantidad;
                     form.appendChild(inputCantidad);
+
+                    let inputId = document.createElement("input");
+                    inputId.type = "hidden";
+                    inputId.name = `productos[${index}][id]`;
+                    inputId.value = producto.id;
+                    form.appendChild(inputId);
                 });
 
                 document.body.appendChild(form);
@@ -305,6 +295,7 @@ if (isset($_POST['cobrar'])) {
 
 
         function agregarAlResumen(elemento) {
+            let id = elemento.getAttribute("data-id");
             let nombre = elemento.getAttribute("data-nombre");
             let precio = parseFloat(elemento.getAttribute("data-precio"));
             let contadorElemento = elemento.querySelector(".contador-producto");
@@ -322,6 +313,7 @@ if (isset($_POST['cobrar'])) {
                 if (items[i].getAttribute("data-nombre") === nombre) {
                     let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
                     items[i].setAttribute("data-cantidad", cantidad);
+                    item[i].setAttribute("data-id", id);
                     items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
                     encontrado = true;
                     break;

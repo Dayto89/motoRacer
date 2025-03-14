@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (target.classList.contains("btn-list")) {
             const marca_id = target.getAttribute("data-id");
 
-            fetch("../html/crearmarca.php", {
+            fetch("../html/marca.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `lista=1&codigo=${marca_id}`
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const codigo = target.getAttribute("data-id");
 
             if (confirm("¿Eliminar marca?")) {
-                fetch("../html/crearmarca.php", {
+                fetch("../html/marca.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: `eliminar=1&codigo=${codigo}`

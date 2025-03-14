@@ -40,6 +40,8 @@ if ($_POST && isset($_POST['permisos'])) {
   $stmt->close();
 
   // Asegurar que la respuesta JSON se envíe correctamente
+  header('Content-Type: application/json');
+
   echo json_encode($permisos);
   exit();
 }
@@ -66,6 +68,10 @@ if ($_POST && isset($_POST['permisos'])) {
   <div id="menu"></div>
   <h1>Gestión de Usuarios</h1>
   <div class="container">
+  <div class="actions">
+  <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
+  </div>
+  <h3>Lista de Usuarios</h3>
     <table class="user-table">
       <thead>
         <tr>
@@ -73,6 +79,7 @@ if ($_POST && isset($_POST['permisos'])) {
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Rol</th>
+          <th>Permisos</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -102,7 +109,7 @@ if ($_POST && isset($_POST['permisos'])) {
     </table>
   </div>
 
-  <button class='btn-registro' onclick="location.href='../html/registro.php'">Registrar nuevo usuario</button>
+ 
 
   <!-- Modal -->
   <div id="modalPermisos" class="modal">
@@ -177,7 +184,7 @@ function guardarPermisos() {
       });
 
       function permisosUsuario(userId) {
-        fetch('gestionusuario.php', {
+        fetch('gestiondeusuarios.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
@@ -214,7 +221,7 @@ function guardarPermisos() {
       // Función para eliminar un usuario
       function eliminarUsuario(userId) {
         if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-          fetch('gestionusuario.php', {
+          fetch('gestiondeusuarios.php', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -239,43 +246,97 @@ function guardarPermisos() {
     });
 
     function actualizarModalPermisos(data) {
-      let form = document.getElementById("formPermisos");
-      form.innerHTML = ''; // Limpia el contenido previo
+    let form = document.getElementById("formPermisos");
+    let userId = document.getElementById("identificacion").value; // Guarda el ID
 
-      for (let seccion in data) {
-        let seccionDiv = document.createElement("div");
-        seccionDiv.innerHTML = `<label><strong>${seccion}</strong></label><br>`;
+    form.innerHTML = ''; // Limpia el contenido previo
 
-        let subseccionDiv = document.createElement("div");
-        subseccionDiv.style.marginLeft = "20px";
+    // Mantiene el campo oculto del ID
+    let inputId = document.createElement("input");
+    inputId.type = "hidden";
+    inputId.id = "identificacion";
+    inputId.name = "identificacion";
+    inputId.value = userId;
+    form.appendChild(inputId);
 
+    // Contenedor de columnas
+    let columnContainer = document.createElement("div");
+    columnContainer.className = "column-container";
+
+    // Crear una columna por cada sección
+    let columnCount = 0;
+    for (let seccion in data) {
+        if (columnCount % 6 === 0 && columnCount !== 0) {
+            // Si ya hay 6 columnas, crea un nuevo contenedor
+            form.appendChild(columnContainer);
+            columnContainer = document.createElement("div");
+            columnContainer.className = "column-container";
+        }
+
+        // Crear una columna
+        let column = document.createElement("div");
+        column.className = "column";
+
+        // Título de la sección
+        let sectionTitle = document.createElement("div");
+        sectionTitle.className = "section-title";
+        sectionTitle.textContent = seccion;
+        column.appendChild(sectionTitle);
+
+        // Subsecciones
         data[seccion].forEach(sub => {
-          let checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
-          checkbox.value = "1";
-          checkbox.checked = sub.permitido == 1;
+            let subsection = document.createElement("div");
+            subsection.className = "subsection";
 
-          let label = document.createElement("label");
-          label.textContent = sub.sub_seccion;
+            // Toggle switch
+            let switchContainer = document.createElement("label");
+            switchContainer.className = "switch";
 
-          let br = document.createElement("br");
+            // Input oculto para el valor no marcado
+            let hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
+            hiddenInput.value = "0"; // Si no se marca, se enviará como 0
 
-          subseccionDiv.appendChild(checkbox);
-          subseccionDiv.appendChild(label);
-          subseccionDiv.appendChild(br);
+            // Input del toggle switch
+            let toggleInput = document.createElement("input");
+            toggleInput.type = "checkbox";
+            toggleInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
+            toggleInput.value = "1";
+            toggleInput.checked = sub.permitido == 1;
+
+            // Slider del toggle switch
+            let slider = document.createElement("span");
+            slider.className = "slider";
+
+            // Label con el nombre de la subsección
+            let label = document.createElement("label");
+            label.textContent = sub.sub_seccion;
+
+            // Agregar elementos al contenedor
+            switchContainer.appendChild(hiddenInput);
+            switchContainer.appendChild(toggleInput);
+            switchContainer.appendChild(slider);
+            subsection.appendChild(switchContainer);
+            subsection.appendChild(label);
+            column.appendChild(subsection);
         });
 
-        seccionDiv.appendChild(subseccionDiv);
-        form.appendChild(seccionDiv);
-      }
-
-      let saveButton = document.createElement("button");
-      saveButton.type = "button";
-      saveButton.textContent = "Guardar Permisos";
-      saveButton.onclick = guardarPermisos;
-      form.appendChild(saveButton);
+        columnContainer.appendChild(column);
+        columnCount++;
     }
+
+    // Agregar el contenedor de columnas al formulario
+    form.appendChild(columnContainer);
+
+    // Botón para guardar permisos
+    let saveButton = document.createElement("button");
+    saveButton.type = "button";
+    saveButton.textContent = "Guardar Permisos";
+    saveButton.onclick = guardarPermisos;
+    form.appendChild(saveButton);
+}
+
   </script>
 
 </body>

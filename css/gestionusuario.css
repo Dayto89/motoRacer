@@ -9,6 +9,7 @@ body {
   background-image: url('fondoMotoRacer.png'); 
   background-size: cover;
   background-position: center;
+  margin-top: 7%;
 }
 body::before {
   position: fixed;
@@ -27,41 +28,66 @@ body::before {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 11px;
+  margin-top: 2%;
   margin-left: 583px;
 }
 
 /* Título principal */
-#gestionusuario h1 {
-  font-size: 50px;
-  margin-top: 92px;
-  color: white;
-  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-  margin-left: 790px;
-  letter-spacing: 5px;
-  padding: 18px;
-  letter-spacing: 5px;
+h1 {
+    color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-family: "Metal Mania", system-ui;
+    font-size: 60px;
+    text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
 }
 
-
-.user-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.user-table th, .user-table td {
-  padding: 10px;
-  text-align: center;
+h3 {
   font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  background-color: #98bde9;
+  padding: 9px;
+  width: 193px;
+  
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+ /* Tabla de categorías */
+ .user-table {
+  width: 100%;
+  border-collapse: collapse; 
+  
+}
+
+.user-table td {
+  padding: 1px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  width: 225px;
 }
 
 .user-table th {
-  background-color: #417ab5;
-  color: white;
   font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  background-color: #98bde9;
+  padding: 9px;
+  width: 193px;
+  
+  margin-top: 8px;
+  font-size: 16px;
 }
 
+.user-table tr:nth-child(even) {
+  background-color: #f9f9f9b7;
+  color: black;
+}
+
+.user-table tr:nth-child(odd) {
+  background-color: rgb(33 32 32 / 59%);
+  color: white;
+}
 .row-gray {
   background-color: rgb(33 32 32 / 59%);
   color: white;
@@ -133,14 +159,21 @@ body::before {
   align-items: center;
 }
 
-.modal-content {
-  background-color: rgb(174 174 174 / 59%);
+div.modal-content {
+  
+  margin: 8% auto;
   padding: 20px;
-  width: 400px;
-  border-radius: 8px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 100%;
+  background-color: rgb(200 200 200 / 76%);
+  padding: 20px;
+  border-radius: 10px;
+  width: 78%;
   text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
 }
-
 .close {
   font-family: Arial, Helvetica, sans-serif;
   float: right;
@@ -191,10 +224,10 @@ tbody input[type="checkbox"] {
 }
 
 .modal-content h2 {
-  font-size: 30px;
+  font-size: 52px;
   color: white;
   text-align: center;
-  margin-top: -3px;
+  margin-top: 2px;
   margin-left: 16px;
   font-weight: bold;
   text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
@@ -235,4 +268,95 @@ tbody input[type="checkbox"] {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Estilos para el toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 49px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #C55655;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: rgb(255 255 255);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #1f78bf;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+}
+input[type="checkbox"] {
+  display: none;
+}
+
+/* Estilos para el contenedor de columnas */
+.column-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 2fr; 
+  gap: 20px; /* Espacio entre columnas */
+  padding: 20px;
+  align-items: start; /* Alinea las columnas a la izquierda */
+
+}
+
+/* Estilos para cada columna */
+.column {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para las secciones */
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Estilos para las subsecciones */
+.subsection {
+  display: flex;
+  align-items: center; /* Centra verticalmente el label con el switch */
+  gap: 10px; /* Espacio entre el switch y el label */
+}
+
+div.subsection{
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
 }

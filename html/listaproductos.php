@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
       <details class="filter-dropdown">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
-          <form method="GET" action="inventario.php" class="search-form">
+          <form method="GET" action="../html/listaproductos.php" class="search-form">
             <div class="criteria-group">
               <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
               <label><input type="checkbox" name="criterios[]" value="codigo2"> Código 2</label>
@@ -441,7 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
         return;
       }
 
-      fetch('inventario.php', {
+      fetch('../html/listaproductos.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'

@@ -10,7 +10,7 @@ if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 
-// Agregar categoría
+// Agregar Ubicacion
 if ($_POST && isset($_POST['guardar'])) {
   if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
@@ -28,7 +28,7 @@ if ($_POST && isset($_POST['guardar'])) {
     echo "<script>alert('Error al agregar la categoría: " . mysqli_error($conexion) . "');</script>";
   }
 }
-// Eliminar categoría mediante boton
+// Eliminar ubicacion mediante boton
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
   $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
   

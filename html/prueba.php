@@ -1,5 +1,7 @@
 <?php
 // session_start() debe ser lo primero
+
+
 session_start();
 // Conexión a la base de datos
 $servername = "localhost";
@@ -29,34 +31,64 @@ if (isset($_GET['codigo'])) {
     exit;
 }
 
-// Guardar cliente en la base de datos
+// Guardar cliente y factura en la base de datos
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
+
     $codigo = $data["codigo"];
     $tipoDoc = $data["tipoDoc"];
     $nombre = $data["nombre"];
     $apellido = $data["apellido"];
     $telefono = $data["telefono"];
     $correo = $data["correo"];
+    $productos = $data["productos"]; // Array con productos
+    $metodos_pago = $data["metodos_pago"]; // Array con métodos de pago
 
-    // Consultar si el cliente ya existe
-    $sql = "SELECT * FROM cliente WHERE codigo = ?";
+    // Verificar si el cliente existe
+    $sql = "SELECT codigo FROM cliente WHERE codigo = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $codigo);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        echo json_encode(["success" => false, "error" => "El cliente ya existe"]);
-    } else {
+    if ($result->num_rows === 0) {
+        // Registrar cliente si no existe
         $sql = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
         $stmt->execute();
-        echo json_encode(["success" => true]);
+        $cliente_id = $stmt->insert_id; // Obtener el ID del cliente
+    } else {
+        $cliente = $result->fetch_assoc();
+        $cliente_id = $cliente["codigo"];
     }
-    // Si cliente existe o se registró correctamente, continuar con el proceso de facturación
-    $sql = "INSERT INTO fACTURA () VALUES ()";
+
+    // Registrar factura
+    $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, precioTotal) VALUES (NOW(), ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $total = $data["total"];
+    $usuario_id = $_SESSION["usuario_id"] ?? null;
+    $stmt->bind_param("ssd", $usuario_id, $cliente_id, $total);
+    $stmt->execute();
+    $factura_id = $stmt->insert_id; // Obtener el ID de la factura
+
+    // Registrar métodos de pago
+    foreach ($metodos_pago as $metodo) {
+        $sql = "INSERT INTO factura_metodo_pago (Factura_codigo, metodoPago, monto) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("isd", $factura_id, $metodo["tipo"], $metodo["valor"]);
+        $stmt->execute();
+    }
+
+    // Registrar productos en la factura
+    foreach ($productos as $producto) {
+        $sql = "INSERT INTO producto_factura (Factura_codigo, Producto_codigo, cantidad, precioUnitario) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iiid", $factura_id, $producto["id"], $producto["cantidad"], $producto["precio"]);
+        $stmt->execute();
+    }
+
+    echo json_encode(["success" => true, "factura_id" => $factura_id]);
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -80,6 +112,7 @@ unset($_SESSION['total']);
 <!DOCTYPE html>
 
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -123,7 +156,7 @@ unset($_SESSION['total']);
     <div class="main-content">
         <div class="container">
             <div class="user-info">
-                <h2>Información del Usuario</h2>
+                <h2>Información del Ciente</h2>
                 <label for="tipo_doc">Tipo de Documento:</label>
                 <select id="tipo_doc" name="tipo_doc">
                     <option value="CC">Cédula de Ciudadanía</option>
@@ -203,8 +236,12 @@ unset($_SESSION['total']);
 
                             <p id="saldoPendiente">Saldo pendiente: $0.00</p>
                             <p>
-                            <h3>Total a pagar:</h3> $<?php echo number_format($total, 2); ?></p>
-                            <button onclick="guardarCliente()">Pagar</button>
+                            <h3>Total a pagar:</h3>
+                            </p>
+                            <div class="contenedor-precio">
+                                <p>$<?php echo number_format($total, 2); ?></p>
+                            </div>
+                            <button onclick="guardarFactura()">Pagar</button>
                         <?php else: ?>
                             <p>No hay productos en el resumen.</p>
                         <?php endif; ?>
@@ -214,39 +251,70 @@ unset($_SESSION['total']);
         </div>
     </div>
     <script>
-        // Funcion para almacenar el cliente en la base de datos
-        function guardarCliente() {
+        function guardarFactura() {
             let codigo = document.getElementById("codigo").value;
             let tipoDoc = document.getElementById("tipo_doc").value;
             let nombre = document.getElementById("nombre").value;
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
             let correo = document.getElementById("correo").value;
+            let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(",", ""));
 
-            fetch("", {
+            // Obtener productos de la factura
+            let productos = [];
+            document.querySelectorAll(".summary-section ul li").forEach(li => {
+                let partes = li.textContent.split(" x ");
+                let cantidad = parseInt(partes[0].trim());
+                let nombreProducto = partes[1].split(" - $")[0].trim();
+                let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
+
+                productos.push({
+                    nombre: nombreProducto,
+                    cantidad,
+                    precio
+                });
+            });
+
+            // Obtener métodos de pago
+            let metodos_pago = [];
+            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                if (input.value.trim() !== "") {
+                    metodos_pago.push({
+                        tipo: input.name.replace("valor_", ""),
+                        valor: parseFloat(input.value)
+                    });
+                }
+            });
+
+            fetch("prueba.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        codigo: codigo,
-                        tipoDoc: tipoDoc,
-                        nombre: nombre,
-                        apellido: apellido,
-                        telefono: telefono,
-                        correo: correo
+                        codigo,
+                        tipoDoc,
+                        nombre,
+                        apellido,
+                        telefono,
+                        correo,
+                        total,
+                        productos,
+                        metodos_pago
                     })
                 })
-                .then(response => response.json())
+                .then(response => response.text())
+                .then(data => console.log(data))
                 .then(data => {
                     if (data.success) {
-                        alert("Datos guardados correctamente");
+                        alert("Factura registrada correctamente con ID: " + data.factura_id);
                     } else {
-                        alert("Error al guardar datos");
+                        alert("Error al registrar factura.");
                     }
                 })
-                .catch(error => console.error("Error al guardar datos:", error));
+                .catch(error => console.error("Error al registrar:", error));
         }
+
 
         function actualizarSaldoPendiente() {
             let total = <?php echo $total; ?>; // Total desde PHP

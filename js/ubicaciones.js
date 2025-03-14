@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (target.classList.contains("btn-list")) {
             const ubicacion_id = target.getAttribute("data-id");
 
-            fetch("../html/crearubicación.php", {
+            fetch("../html/ubicacion.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `lista=1&codigo=${ubicacion_id}`
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const codigo = target.getAttribute("data-id");
 
             if (confirm("¿Eliminar ubicación?")) {
-                fetch("../html/crearubicación.php", {
+                fetch("../html/ubicacion.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: `eliminar=1&codigo=${codigo}`

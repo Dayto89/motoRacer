@@ -24,10 +24,10 @@ $stmtRol->close();
 // Si el usuario es administrador, mostrar todas las secciones
 if ($rol === 'administrador') {
   $permisos = [
-    'PRODUCTO' => ['Crear Producto', 'Actualizar Producto', 'Categorias', 'crear ubicación', 'crear marca'],
+    'PRODUCTO' => ['Crear Producto', 'Actualizar Producto', 'Categorias', 'Ubicacion', 'Marca'],
     'PROVEEDOR' => ['Crear Proveedor', 'Actualizar Proveedor', 'Lista Proveedor'],
-    'INVENTARIO' => ['inventario'],
-    'FACTURA' => ['factura', 'Reportes'],
+    'INVENTARIO' => ['Lista productos'],
+    'FACTURA' => ['Ventas', 'Reportes'],
     'USUARIO' => ['Información'],
     'CONFIGURACION' => ['Stock', 'Gestion de Usuarios', 'Personalizacion de Reportes', 'Notificaciones de Stock', 'Frecuencia de Reportes Automáticos']
   ];

@@ -5,7 +5,60 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
 
+    // Verificar la conexión
+    if (!$conexion) {
+        die("Error de conexión: " . mysqli_connect_error());
+    }
+
+    if (isset($_POST['guardar'])) {
+        $codigo = $_POST['selectProducto'];
+        $codigo2 = $_POST['codigo2'];
+        $nombre = $_POST['nombre'];
+        $iva = $_POST['iva'];
+        $precio1 = $_POST['precio1'];
+        $precio2 = $_POST['precio2'];
+        $precio3 = $_POST['precio3'];
+        $cantidad = $_POST['cantidad'];
+        $descripcion = $_POST['descripcion'];
+        $categoria = $_POST['categoria'];
+        $marca = $_POST['marca'];
+        $unidadMedida = $_POST['unidadMedida'];
+        $ubicacion = $_POST['ubicacion'];
+        $proveedor = $_POST['proveedor'];
+
+        $actualizar = "UPDATE producto SET 
+                    codigo2='$codigo2', nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
+                    cantidad='$cantidad', descripcion='$descripcion', 
+                    Categoria_codigo='$categoria', Marca_codigo='$marca', 
+                    UnidadMedida_codigo='$unidadMedida', Ubicacion_codigo='$ubicacion', 
+                    proveedor_nit='$proveedor' 
+                  WHERE codigo1='$codigo'";
+
+        if (mysqli_query($conexion, $actualizar)) {
+            echo "<script>alert('Producto actualizado correctamente');</script>";
+        } else {
+            echo "<script>alert('Error al actualizar el producto: " . mysqli_error($conexion) . "');</script>";
+        }
+    }
+
+    if (isset($_POST['eliminar'])) {
+        $codigo = $_POST['selectProducto'];
+
+        if (!empty($codigo)) {
+            $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
+            if (mysqli_query($conexion, $eliminar)) {
+                echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
+            } else {
+                echo "<script>alert('Error al eliminar el producto: " . mysqli_error($conexion) . "');</script>";
+            }
+        }
+    }
+
+    mysqli_close($conexion);
+}
 
 ?>
 
@@ -210,50 +263,7 @@ if (!isset($_SESSION['usuario_id'])) {
             </form>
         </div>
     </div>
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-
-        if (isset($_POST['guardar'])) {
-            $codigo = $_POST['selectProducto'];
-            $nombre = $_POST['nombre'];
-            $iva = $_POST['iva'];
-            $precio1 = $_POST['precio1'];
-            $precio2 = $_POST['precio2'];
-            $precio3 = $_POST['precio3'];
-            $cantidad = $_POST['cantidad'];
-            $descripcion = $_POST['descripcion'];
-            $categoria = $_POST['categoria'];
-            $marca = $_POST['marca'];
-            $unidadMedida = $_POST['unidadMedida'];
-            $ubicacion = $_POST['ubicacion'];
-            $proveedor = $_POST['proveedor'];
-
-            $actualizar = "UPDATE producto SET 
-                        nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
-                        cantidad='$cantidad', descripcion='$descripcion', 
-                        Categoria_codigo='$categoria', Marca_codigo='$marca', 
-                        UnidadMedida_codigo='$unidadMedida', Ubicacion_codigo='$ubicacion', 
-                        proveedor_nit='$proveedor' 
-                      WHERE codigo1='$codigo'";
-
-            mysqli_query($conexion, $actualizar);
-            echo "<script>alert('Producto actualizado correctamente');</script>";
-        }
-
-        if (isset($_POST['eliminar'])) {
-            $codigo = $_POST['selectProducto'];
-
-            if (!empty($codigo)) {
-                $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
-                mysqli_query($conexion, $eliminar);
-                echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
-            }
-        }
-
-        mysqli_close($conexion);
-    }
-    ?>
+    
 </body>
 
 </html>

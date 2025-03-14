@@ -154,7 +154,7 @@ if (!isset($_SESSION['usuario_id'])) {
                 ($identificacion, 'FACTURA', 'Venta', 0),
                 ($identificacion, 'FACTURA', 'Reporte', 0),
 
-                ($identificacion, 'USUARIO', 'Información', 0),
+                ($identificacion, 'USUARIO', 'Información', 1),
 
                 ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
                 ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
@@ -167,8 +167,6 @@ if (!isset($_SESSION['usuario_id'])) {
             } else {
                 echo "<script>alert('Error al guardar' );</script>";
             }
-
-                
         } else {
             echo "<script>alert('Error al guardar');</script>";
         }

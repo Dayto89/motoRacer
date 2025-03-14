@@ -178,7 +178,7 @@ $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
                 </div>
                 <div class="button-container">
                     <div class="boton">
-                        <button type="button" onclick="openModal()">Guardar</button>
+                        <button type="submit" name="guardar">Guardar</button>
                     </div>
                 </div>
 

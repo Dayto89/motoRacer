@@ -284,5 +284,12 @@ button:hover {
  }
 
 
+ .summary-section ul{
+    list-style-type: none; /* Elimina las viñetas */
+    padding-left: 0; /* Ajusta el espacio izquierdo */
+ }
 
+ .contenedor-preciom p {
+   margin-left: 50px;
+}
 
