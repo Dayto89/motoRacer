@@ -1,0 +1,45 @@
+/* Añadir estas reglas */
+.dropdown {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    min-width: 250px;
+    background: linear-gradient(180deg, #1167CC, #083972, #000000);
+    border-left: 3px solid #3f6fb6;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateX(-20px);
+}
+
+.dropdown.open {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.menu li {
+    position: relative;
+}
+
+.sidebar:hover .menu li a span {
+    transition: opacity 0.3s ease 0.2s; /* Delay para sincronizar con la expansión */
+}
+
+.icon2 {
+    transition: transform 0.3s ease;
+}
+
+.icon2.open {
+    transform: rotate(180deg);
+    color: #3f6fb6;
+}
+
+/* Mejorar la transición del logo */
+.logo {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ajustar posición de los dropdowns */
+.menu li:hover > .dropdown {
+    z-index: 200;
+}

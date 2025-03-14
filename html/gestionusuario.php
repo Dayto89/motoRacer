@@ -117,14 +117,12 @@ if ($_POST && isset($_POST['permisos'])) {
 
           <div>
             <label>
-              <input type="checkbox" id="<?php echo $seccion; ?>_todo" onclick="toggleSeccion('<?php echo $seccion; ?>', '<?php echo $seccion; ?>_todo'), toggleSeccionAll('<?php echo $seccion; ?>_todo', '<?php echo $seccion; ?>')">
               <strong><?php echo ucfirst($seccion); ?></strong>
             </label><br>
             <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
               <?php foreach ($subsecciones as $subseccion): ?>
                 <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
                 <label>
-                  <input type="checkbox" class="<?php echo $seccion; ?>" name="permisos[]" value="<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>" <?php echo $subseccion['permitido'] ? 'checked' : ''; ?> onclick="verificarSubPermisos('<?php echo $seccion; ?>_todo', '<?php echo $seccion; ?>')">
                   <?php echo $subseccion['sub_seccion']; ?>
                 </label><br>
               <?php endforeach; ?>
@@ -138,65 +136,25 @@ if ($_POST && isset($_POST['permisos'])) {
   </div>
 
   <script>
-    function guardarPermisos() {
-      var formData = new FormData(document.getElementById("formPermisos"));
+function guardarPermisos() {
+  var formData = new FormData(document.getElementById("formPermisos"));
 
-      fetch("../html/guardar_permisos.php", {
-          method: "POST",
-          body: formData
-        }).then(response => response.text())
-        .then(data => {
-          alert(data);
-          cerrarModal();
-        }).catch(error => console.error("Error:", error));
-    }
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('[id$="_todo"]').forEach(function(seccionCheckbox) {
-        let seccion = seccionCheckbox.id.replace('_todo', '');
-        let subPermisos = document.querySelectorAll(`.${seccion}`);
-        let totalMarcados = document.querySelectorAll(`.${seccion}:checked`).length;
-
-        // Si todos los subpermisos están marcados, marcar el principal
-        seccionCheckbox.checked = (totalMarcados === subPermisos.length);
-
-        // Mostrar las subsecciones si al menos un checkbox está marcado
-        if (totalMarcados > 0) {
-          document.getElementById(seccion + '_subsecciones').style.display = 'block';
-        }
-      });
-    });
-
-    // Funciones JavaScript para manejar los permisos
-    function toggleSeccionAll(seccion, clase) {
-      let seccionCheckbox = document.getElementById(seccion);
-      let subPermisos = document.querySelectorAll(`.${clase}`);
-
-      subPermisos.forEach(sub => {
-        sub.checked = seccionCheckbox.checked;
-      });
-    }
-
-    function verificarSubPermisos(seccion, clase) {
-      let seccionCheckbox = document.getElementById(seccion);
-      let subPermisos = document.querySelectorAll(`.${clase}`);
-      let totalMarcados = document.querySelectorAll(`.${clase}:checked`).length;
-
-      seccionCheckbox.checked = (totalMarcados === subPermisos.length);
-    }
-
-    function toggleSeccion(mainCheckbox, generalCheck) {
-      var subSection = document.getElementById(mainCheckbox + '_subsecciones');
-      var gencheck = document.getElementById(generalCheck);
-
-      if (gencheck.checked) {
-        subSection.style.display = 'block';
+  fetch("../html/guardar_permisos.php", {
+      method: "POST",
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert("Permisos actualizados correctamente");
+        cerrarModal();
       } else {
-        subSection.style.display = 'none';
+        alert("Error al actualizar permisos");
       }
-    }
+    })
+    .catch(error => console.error("Error:", error));
+}
+
 
     function abrirModal(id) {
       document.getElementById("identificacion").value = id;
@@ -219,43 +177,29 @@ if ($_POST && isset($_POST['permisos'])) {
       });
 
       function permisosUsuario(userId) {
-    fetch('gestionusuario.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'permisos=true&id=' + userId
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data) {
-            console.log(data); // Verifica en la consola si los permisos llegan correctamente
-            actualizarModalPermisos(data);
-            document.getElementById("modalPermisos").style.display = "block";
-        } else {
-            alert('No se encontraron permisos para este usuario.');
-        }
-    })
-    .catch(error => {
-        console.error('Error al obtener permisos:', error);
-    });
-}
-
-    })
-    function actualizarModalPermisos(permisos) {
-    // Limpiar checkboxes antes de asignar nuevos valores
-    document.querySelectorAll('#formPermisos input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false; // Desmarcar todo
-    });
-
-    // Recorrer los permisos obtenidos y marcarlos en el formulario
-    Object.keys(permisos).forEach(seccion => {
-        permisos[seccion].forEach(subseccion => {
-            let checkbox = document.querySelector(`input[name="permisos[${seccion}_${subseccion.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]"]`);
-            if (checkbox) {
-                checkbox.checked = subseccion.permitido == 1; // Marcar si tiene permiso
+        fetch('gestionusuario.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'permisos=true&id=' + userId
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data) {
+              console.log(data); // Verifica en la consola si los permisos llegan correctamente
+              actualizarModalPermisos(data);
+              document.getElementById("modalPermisos").style.display = "block";
+            } else {
+              alert('No se encontraron permisos para este usuario.');
             }
-        });
-    });
-}
+          })
+          .catch(error => {
+            console.error('Error al obtener permisos:', error);
+          });
+      }
+
+    })
 
     document.addEventListener('DOMContentLoaded', function() {
       // Agregar evento a los botones de eliminar
@@ -293,6 +237,45 @@ if ($_POST && isset($_POST['permisos'])) {
         }
       }
     });
+
+    function actualizarModalPermisos(data) {
+      let form = document.getElementById("formPermisos");
+      form.innerHTML = ''; // Limpia el contenido previo
+
+      for (let seccion in data) {
+        let seccionDiv = document.createElement("div");
+        seccionDiv.innerHTML = `<label><strong>${seccion}</strong></label><br>`;
+
+        let subseccionDiv = document.createElement("div");
+        subseccionDiv.style.marginLeft = "20px";
+
+        data[seccion].forEach(sub => {
+          let checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
+          checkbox.value = "1";
+          checkbox.checked = sub.permitido == 1;
+
+          let label = document.createElement("label");
+          label.textContent = sub.sub_seccion;
+
+          let br = document.createElement("br");
+
+          subseccionDiv.appendChild(checkbox);
+          subseccionDiv.appendChild(label);
+          subseccionDiv.appendChild(br);
+        });
+
+        seccionDiv.appendChild(subseccionDiv);
+        form.appendChild(seccionDiv);
+      }
+
+      let saveButton = document.createElement("button");
+      saveButton.type = "button";
+      saveButton.textContent = "Guardar Permisos";
+      saveButton.onclick = guardarPermisos;
+      form.appendChild(saveButton);
+    }
   </script>
 
 </body>
