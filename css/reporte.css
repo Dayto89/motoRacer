@@ -122,14 +122,10 @@ input[type="checkbox"] {
 
 /* Ajustes para el filter-bar */
 .filter-bar {
-    display: flex
-;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+   display: flex;
     margin-bottom: 20px;
     max-width: 74%;
-    margin-left: 12%;
+    margin-left: 24.5%;
     padding: 10px;
     border-radius: 8px;
 }
@@ -199,19 +195,22 @@ input.form-control {
 }
 
 .export-button {
-    margin-left: auto;
-}
-
-.icon-button {
+    margin: 0; /* Elimina cualquier margen que pueda estar desplazando el botón */
     display: flex;
     align-items: center;
-    padding: 7px 16px;
-    background-color: #28a745;
-    color: white;
+    margin-left: 50px;
+}
+.icon-button {
+    height: 36px; /* Igualar altura con el botón "Buscar" */
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
+    border-radius: 5px;
+    background-color: #28a745; /* Color verde */
+    color: white;
     cursor: pointer;
-    border-radius: 4px;
-    font-size: 18px;
 }
 
 .icon-button i {
@@ -416,6 +415,7 @@ form input[type="text"], #editForm select {
     width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
     max-width: 100%; /* Evita que se desborde */
     table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
+    margin-left: 27%;
 }
 
 .main-content table th,
@@ -431,22 +431,22 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(1), 
 .main-content table td:nth-child(1) { 
-    width: 77px; 
+    width: 100px; 
 }
 
 .main-content table th:nth-child(2), 
 .main-content table td:nth-child(2) { 
-    width: 77px; 
+    width: 100px; 
 }
 
 .main-content table th:nth-child(3), 
 .main-content table td:nth-child(3) { 
-    width: 100px; 
+    width: 150px; 
 }
 
 .main-content table th:nth-child(4), 
 .main-content table td:nth-child(4) { 
-    width: 44px; 
+    width: 150px; 
 }
 
 .main-content table th:nth-child(5), 
@@ -456,7 +456,7 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(6), 
 .main-content table td:nth-child(6) { 
-    width: 100px;
+    width: 150px;
 }
 
 .main-content table th:nth-child(7), 
@@ -537,7 +537,52 @@ form input[type="text"], #editForm select {
     border: 2px solid #ffffff; /* Borde blanco */
 }
 
+.contenedor-botones {
+    display: flex;
+    align-items: center; /* Alinea verticalmente los elementos */
+    gap: 10px; /* Espacio entre los botones */
+    flex-wrap: wrap; /* Evita que los elementos bajen si no hay espacio */
+}
 
+.input-busqueda {
+    flex-grow: 1; /* Permite que el input ocupe el espacio disponible */
+    height: 32px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
 
+.boton-buscar,
+.boton-exportar,
+.boton-filtrar {
+    height: 36px; /* Asegura que todos los botones tengan la misma altura */
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
+.boton-buscar {
+    background-color: #007bff;
+    color: white;
+}
 
+.boton-exportar {
+    background-color: #28a745;
+    color: white;
+}
+
+.boton-filtrar {
+    background-color: #198754;
+    color: white;
+}
+
+.contenedor-busqueda {
+    display: flex;
+    align-items: center; /* Alinea los elementos verticalmente */
+    gap: 10px; /* Espacio entre los botones */
+    flex-wrap: wrap; /* Evita que los elementos bajen si no hay espacio */
+}

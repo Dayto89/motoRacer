@@ -10,8 +10,6 @@ if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
 }
 
-
-
 // ID de la factura (recibida por GET o POST)
 $factura_id = $_SESSION["factura_id"] ?? null;
 
@@ -27,12 +25,6 @@ $stmt->bind_param("i", $factura_id);
 $stmt->execute();
 $resultado = $stmt->get_result();
 $factura = $resultado->fetch_assoc();
-
-$_SESSION['cliente_id'] = $factura['Cliente_codigo'];
-echo "Cliente ID asignado a la sesión: " . $_SESSION['cliente_id']; // Depuración
-// Asignar factura_id a la sesión
-$_SESSION['factura_id'] = $factura_id;
-echo "Factura ID asignado: " . $_SESSION['factura_id']; // Depuración
 
 // Obtener los productos de la factura
 $sql = "SELECT pf.cantidad, pf.precioUnitario, p.nombre 

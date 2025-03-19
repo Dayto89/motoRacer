@@ -24,7 +24,7 @@ body::before {
   width: 45%;
   margin: 50px auto;
   text-align: center;
-  background-color: rgb(174 174 174 / 59%);
+  background-color:rgb(174 174 174 / 73%);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -46,12 +46,12 @@ h1 {
 h3 {
   font-family: Arial, Helvetica, sans-serif;
   color: black;
-  background-color: #98bde9;
+  background-color: #5e96d9;
   padding: 9px;
   width: 193px;
-  
   margin-top: 8px;
   font-size: 16px;
+  margin-bottom: 5px;
 }
 
  /* Tabla de categorías */
@@ -105,7 +105,7 @@ h3 {
 }
   
 
-.btn-permissions, .btn-delete {
+.btn-permisos, .btn-delete {
   padding: 8px 12px;
   margin: 5px;
   border: none;
@@ -126,8 +126,8 @@ h3 {
 
 }
 
-.btn-permissions {
-  background-color: #007bff;
+.btn-permisos {
+  background-color: #20663b;
   border-radius: 15px;
 }
 
@@ -137,8 +137,8 @@ h3 {
 }
 
 
-.btn-permissions:hover {
-  background-color: #0056b3;
+.btn-permisos:hover {
+  background-color: #1f4d30;
 }
 
 .btn-delete:hover {
@@ -256,18 +256,16 @@ tbody input[type="checkbox"] {
   max-width: 500px; /* Ancho máximo del modal */
 }
 
+.close:hover, .close:focus {
+  color: #a30d0d;
+  text-decoration: none;
+  cursor: pointer;
+}
 .close {
-  color: #aaa;
+  color: #302f2f;
   float: right;
   font-size: 28px;
   font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
 }
 
 /* Estilos para el toggle switch */
@@ -276,6 +274,7 @@ tbody input[type="checkbox"] {
   display: inline-block;
   width: 49px;
   height: 20px;
+  
 }
 
 .switch input {
@@ -326,7 +325,7 @@ input[type="checkbox"] {
 /* Estilos para el contenedor de columnas */
 .column-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 2fr; 
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 1fr 2fr;
   gap: 20px; /* Espacio entre columnas */
   padding: 20px;
   align-items: start; /* Alinea las columnas a la izquierda */
@@ -346,6 +345,7 @@ input[type="checkbox"] {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
+  font-family: arial;
 }
 
 /* Estilos para las subsecciones */
@@ -359,4 +359,20 @@ div.subsection{
 
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
+  margin-bottom: 15px; /* Ajusta el valor según necesites */
+}
+
+#btnGuardar {
+  background-color:  #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#btnGuardar:hover {
+  background-color:#0056b3;
 }

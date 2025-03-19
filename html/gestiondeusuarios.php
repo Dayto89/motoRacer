@@ -60,6 +60,9 @@ if ($_POST && isset($_POST['permisos'])) {
   <link rel="stylesheet" href="/css/gestionusuario.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <link rel="stylesheet" href="../componentes/header.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
 </head>
@@ -68,10 +71,10 @@ if ($_POST && isset($_POST['permisos'])) {
   <div id="menu"></div>
   <h1>Gestión de Usuarios</h1>
   <div class="container">
-  <div class="actions">
-  <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
-  </div>
-  <h3>Lista de Usuarios</h3>
+    <div class="actions">
+      <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
+    </div>
+    <h3>Lista de Usuarios</h3>
     <table class="user-table">
       <thead>
         <tr>
@@ -95,12 +98,15 @@ if ($_POST && isset($_POST['permisos'])) {
           echo "<td>" . $row['rol'] . "</td>";
 
           if ($row['rol'] == 'gerente') {
-            echo "<td><button class='btn-permisos' onclick='abrirModal(" . $row['identificacion'] . ")' data-id='" . $row['identificacion'] . "'>Permisos</button></td>";
+            echo "<td><button class='btn-permisos' onclick='abrirModal(" . $row['identificacion'] . ")' data-id='" . $row['identificacion'] . "'>  <i class='bx bxs-key'></i></button></td>";
           } else {
             echo "<td></td>";
           }
 
-          echo "<td><button class='btn-delete' data-id='" . $row['identificacion'] . "'>Eliminar</button></td>";
+          echo "<td><button class='btn-delete' data-id='" . $row['identificacion'] . "'>
+        <i class='fa-solid fa-trash'></i>
+      </button></td>";
+
           echo "</tr>";
         }
         ?>
@@ -109,7 +115,7 @@ if ($_POST && isset($_POST['permisos'])) {
     </table>
   </div>
 
- 
+
 
   <!-- Modal -->
   <div id="modalPermisos" class="modal">
@@ -137,35 +143,42 @@ if ($_POST && isset($_POST['permisos'])) {
           </div>
         <?php endforeach; ?>
 
-        <button type="button" onclick="guardarPermisos()">Guardar Permisos</button>
+        <button type="button" id="btnGuardar" onclick="guardarPermisos()">Guardar Permisos</button>
+
       </form>
     </div>
   </div>
 
   <script>
-function guardarPermisos() {
-  var formData = new FormData(document.getElementById("formPermisos"));
+    function guardarPermisos() {
+      var formData = new FormData(document.getElementById("formPermisos"));
 
-  fetch("../html/guardar_permisos.php", {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert("Permisos actualizados correctamente");
-        cerrarModal();
-      } else {
-        alert("Error al actualizar permisos");
-      }
-    })
-    .catch(error => console.error("Error:", error));
-}
+      fetch("../html/guardar_permisos.php", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert("Permisos actualizados correctamente");
+            cerrarModal();
+          } else {
+            alert("Error al actualizar permisos");
+          }
+        })
+        .catch(error => console.error("Error:", error));
+    }
 
 
     function abrirModal(id) {
       document.getElementById("identificacion").value = id;
       document.getElementById("modalPermisos").style.display = "block";
+      let boton = document.querySelector("#modalPermisos button"); // Encuentra el primer botón dentro del modal
+      if (boton) {
+        boton.class = "btnGuardar"; // Le asigna el ID dinámicamente
+      } else {
+        console.error("No se encontró el botón dentro del modal.");
+      }
     }
 
     function cerrarModal() {
@@ -246,31 +259,31 @@ function guardarPermisos() {
     });
 
     function actualizarModalPermisos(data) {
-    let form = document.getElementById("formPermisos");
-    let userId = document.getElementById("identificacion").value; // Guarda el ID
+      let form = document.getElementById("formPermisos");
+      let userId = document.getElementById("identificacion").value; // Guarda el ID
 
-    form.innerHTML = ''; // Limpia el contenido previo
+      form.innerHTML = ''; // Limpia el contenido previo
 
-    // Mantiene el campo oculto del ID
-    let inputId = document.createElement("input");
-    inputId.type = "hidden";
-    inputId.id = "identificacion";
-    inputId.name = "identificacion";
-    inputId.value = userId;
-    form.appendChild(inputId);
+      // Mantiene el campo oculto del ID
+      let inputId = document.createElement("input");
+      inputId.type = "hidden";
+      inputId.id = "identificacion";
+      inputId.name = "identificacion";
+      inputId.value = userId;
+      form.appendChild(inputId);
 
-    // Contenedor de columnas
-    let columnContainer = document.createElement("div");
-    columnContainer.className = "column-container";
+      // Contenedor de columnas
+      let columnContainer = document.createElement("div");
+      columnContainer.className = "column-container";
 
-    // Crear una columna por cada sección
-    let columnCount = 0;
-    for (let seccion in data) {
+      // Crear una columna por cada sección
+      let columnCount = 0;
+      for (let seccion in data) {
         if (columnCount % 6 === 0 && columnCount !== 0) {
-            // Si ya hay 6 columnas, crea un nuevo contenedor
-            form.appendChild(columnContainer);
-            columnContainer = document.createElement("div");
-            columnContainer.className = "column-container";
+          // Si ya hay 6 columnas, crea un nuevo contenedor
+          form.appendChild(columnContainer);
+          columnContainer = document.createElement("div");
+          columnContainer.className = "column-container";
         }
 
         // Crear una columna
@@ -285,58 +298,58 @@ function guardarPermisos() {
 
         // Subsecciones
         data[seccion].forEach(sub => {
-            let subsection = document.createElement("div");
-            subsection.className = "subsection";
+          let subsection = document.createElement("div");
+          subsection.className = "subsection";
 
-            // Toggle switch
-            let switchContainer = document.createElement("label");
-            switchContainer.className = "switch";
+          // Toggle switch
+          let switchContainer = document.createElement("label");
+          switchContainer.className = "switch";
 
-            // Input oculto para el valor no marcado
-            let hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
-            hiddenInput.value = "0"; // Si no se marca, se enviará como 0
+          // Input oculto para el valor no marcado
+          let hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
+          hiddenInput.value = "0"; // Si no se marca, se enviará como 0
 
-            // Input del toggle switch
-            let toggleInput = document.createElement("input");
-            toggleInput.type = "checkbox";
-            toggleInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
-            toggleInput.value = "1";
-            toggleInput.checked = sub.permitido == 1;
+          // Input del toggle switch
+          let toggleInput = document.createElement("input");
+          toggleInput.type = "checkbox";
+          toggleInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
+          toggleInput.value = "1";
+          toggleInput.checked = sub.permitido == 1;
 
-            // Slider del toggle switch
-            let slider = document.createElement("span");
-            slider.className = "slider";
+          // Slider del toggle switch
+          let slider = document.createElement("span");
+          slider.className = "slider";
 
-            // Label con el nombre de la subsección
-            let label = document.createElement("label");
-            label.textContent = sub.sub_seccion;
+          // Label con el nombre de la subsección
+          let label = document.createElement("label");
+          label.textContent = sub.sub_seccion;
 
-            // Agregar elementos al contenedor
-            switchContainer.appendChild(hiddenInput);
-            switchContainer.appendChild(toggleInput);
-            switchContainer.appendChild(slider);
-            subsection.appendChild(switchContainer);
-            subsection.appendChild(label);
-            column.appendChild(subsection);
+          // Agregar elementos al contenedor
+          switchContainer.appendChild(hiddenInput);
+          switchContainer.appendChild(toggleInput);
+          switchContainer.appendChild(slider);
+          subsection.appendChild(switchContainer);
+          subsection.appendChild(label);
+          column.appendChild(subsection);
         });
 
         columnContainer.appendChild(column);
         columnCount++;
+      }
+
+      // Agregar el contenedor de columnas al formulario
+      form.appendChild(columnContainer);
+
+      // Botón para guardar permisos
+      let saveButton = document.createElement("button");
+      saveButton.type = "button";
+      saveButton.textContent = "Guardar Permisos";
+      saveButton.id = "btnGuardar";
+      saveButton.onclick = guardarPermisos;
+      form.appendChild(saveButton);
     }
-
-    // Agregar el contenedor de columnas al formulario
-    form.appendChild(columnContainer);
-
-    // Botón para guardar permisos
-    let saveButton = document.createElement("button");
-    saveButton.type = "button";
-    saveButton.textContent = "Guardar Permisos";
-    saveButton.onclick = guardarPermisos;
-    form.appendChild(saveButton);
-}
-
   </script>
 
 </body>

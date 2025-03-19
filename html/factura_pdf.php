@@ -1,4 +1,7 @@
 <?php
+// Iniciar el buffer de salida para capturar cualquier salida no deseada
+ob_start();
+
 require('../fpdf/fpdf.php'); // Asegúrate de que la ruta es correcta
 session_start();
 
@@ -8,42 +11,72 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 $id = $_SESSION['usuario_id'];
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 
-if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+if ($conexion->connect_error) {
+    die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
+}
+
+// Recuperar factura_id de la sesión
+$factura_id = $_SESSION["factura_id"] ?? null;
+if (!$factura_id) {
+    die("Error: Factura ID no encontrado en la sesión.");
+}
+
+$codigo = $_SESSION["cliente_id"] ?? null;
+if (!$codigo) {
+    die("Error: Código de cliente no encontrado en la sesión.");
 }
 
 // Datos del vendedor
-$consulta = "SELECT * FROM usuario WHERE identificacion = $id";
-$resultado = mysqli_query($conexion, $consulta);
-if ($resultado) {
-    $usuario = $resultado->fetch_assoc();
-    $nombre = $usuario['nombre'];
-    $apellido = $usuario['apellido'];
+$consulta = "SELECT * FROM usuario WHERE identificacion = ?";
+$stmt = $conexion->prepare($consulta);
+$stmt->bind_param("s", $id);
+$stmt->execute();
+$resultado = $stmt->get_result();
+
+if ($resultado->num_rows === 0) {
+    die("Vendedor no encontrado.");
 }
+$usuario = $resultado->fetch_assoc();
+$nombre = $usuario['nombre'];
+$apellido = $usuario['apellido'];
 
 // Datos del cliente
-$codigo = 123; // Este código debería recibirse por GET o POST
-$consulta = "SELECT * FROM cliente WHERE codigo = '$codigo'";
-$resultado = mysqli_query($conexion, $consulta);
-if ($resultado) {
-    $cliente = $resultado->fetch_assoc();
-    $nombreCliente = $cliente['nombre'];
-    $apellidoCliente = $cliente['apellido'];
-    $telefono = $cliente['telefono'];
-    $identificacion = $cliente['codigo'];
+$consulta = "SELECT * FROM cliente WHERE codigo = ?";
+$stmt = $conexion->prepare($consulta);
+$stmt->bind_param("s", $codigo);
+$stmt->execute();
+$resultado = $stmt->get_result();
+
+if ($resultado->num_rows === 0) {
+    die("Cliente no encontrado.");
 }
+$cliente = $resultado->fetch_assoc();
+$nombreCliente = $cliente['nombre'];
+$apellidoCliente = $cliente['apellido'];
+$telefono = $cliente['telefono'];
+$identificacion = $cliente['codigo'];
 
 // Obtener productos de la factura
 $productos = [];
 $totalBruto = 0;
-$consulta = "SELECT * FROM ventas WHERE cliente_codigo = '$codigo'";
-$resultado = mysqli_query($conexion, $consulta);
+$consulta = "SELECT pf.cantidad, pf.precioUnitario, p.nombre 
+             FROM producto_factura pf
+             JOIN producto p ON pf.Producto_codigo = p.codigo1
+             WHERE pf.Factura_codigo = ?";
+$stmt = $conexion->prepare($consulta);
+$stmt->bind_param("i", $factura_id);
+$stmt->execute();
+$resultado = $stmt->get_result();
 
-while ($fila = mysqli_fetch_assoc($resultado)) {
+if ($resultado->num_rows === 0) {
+    die("No se encontraron productos para esta factura.");
+}
+
+while ($fila = $resultado->fetch_assoc()) {
     $productos[] = $fila;
-    $totalBruto += $fila['cantidad'] * $fila['precio'];
+    $totalBruto += $fila['cantidad'] * $fila['precioUnitario'];
 }
 
 // Cálculo de impuestos
@@ -69,6 +102,10 @@ $pdf->Cell(100, 10, "Telefono: $telefono", 0, 1);
 $pdf->Cell(100, 10, "C.C/NIT: $identificacion", 0, 1);
 $pdf->Ln(5);
 
+// Datos del Vendedor
+$pdf->Cell(100, 10, "Vendedor: $nombre $apellido", 0, 1);
+$pdf->Ln(5);
+
 // Tabla de Productos
 $pdf->SetFont('Arial', 'B', 10);
 $pdf->Cell(30, 10, "Cantidad", 1);
@@ -79,10 +116,11 @@ $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 10);
 foreach ($productos as $prod) {
-    $subtotal = $prod['cantidad'] * $prod['precio'];
+    $precio = $prod['precioUnitario'] ?? 0; // Usar 0 si el precio es null
+    $subtotal = $prod['cantidad'] * $precio;
     $pdf->Cell(30, 10, $prod['cantidad'], 1);
     $pdf->Cell(50, 10, $prod['nombre'], 1);
-    $pdf->Cell(40, 10, '$' . number_format($prod['precio'], 2), 1);
+    $pdf->Cell(40, 10, '$' . number_format($precio, 2), 1);
     $pdf->Cell(40, 10, '$' . number_format($subtotal, 2), 1);
     $pdf->Ln();
 }
@@ -93,6 +131,11 @@ $pdf->Cell(100, 10, "Subtotal: $" . number_format($base, 2), 0, 1);
 $pdf->Cell(100, 10, "IVA ($ivaPorcentaje%): $" . number_format($impuesto, 2), 0, 1);
 $pdf->Cell(100, 10, "Total a pagar: $" . number_format($totalBruto, 2), 0, 1);
 
-// Descargar el PDF
+// Mensaje de agradecimiento (corregido)
+$pdf->Ln(10);
+$pdf->Cell(190, 10, iconv('UTF-8', 'ISO-8859-1', "¡Gracias por su compra!"), 0, 1, 'C');
+
+// Limpiar el búfer de salida y descargar el PDF
+ob_end_clean(); // Limpiar el búfer de salida
 $pdf->Output('D', 'Factura.pdf');
 ?>

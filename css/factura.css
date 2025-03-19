@@ -613,3 +613,19 @@ a.brand:after {
 .icono-accion {
     cursor: pointer;
 }
+
+.card.disabled {
+    filter: brightness(0.5); /* Reduce brillo en lugar de opacidad */
+    pointer-events: none;
+}
+
+
+
+
+
+
+
+
+
+
+

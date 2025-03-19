@@ -1,8 +1,17 @@
 <?php
+// Iniciar el buffer de salida
+ob_start();
+
 // session_start() debe ser lo primero
-
-
 session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    // Si no está autorizado, devolver un JSON de error
+    ob_end_clean(); // Limpiar el buffer
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "error" => "No autorizado"]);
+    exit();
+}
+
 // Conexión a la base de datos
 $servername = "localhost";
 $username = "root";
@@ -11,12 +20,15 @@ $database = "inventariomotoracer";
 
 $conn = new mysqli($servername, $username, $password, $database);
 if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+    ob_end_clean(); // Limpiar el buffer
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "error" => "Conexión fallida: " . $conn->connect_error]);
+    exit;
 }
 
-// Obtener usuarios para autocompletar
+// Manejar solicitudes GET para autocompletar
 if (isset($_GET['codigo'])) {
-    $codigo = $_GET['codigo'] . "%"; // Filtrar solo por los que comienzan con el código ingresado
+    $codigo = $_GET['codigo'] . "%";
     $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo FROM cliente WHERE codigo LIKE ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $codigo);
@@ -27,22 +39,39 @@ if (isset($_GET['codigo'])) {
     while ($row = $result->fetch_assoc()) {
         $clientes[] = $row;
     }
+    ob_end_clean(); // Limpiar el buffer
+    header('Content-Type: application/json');
     echo json_encode($clientes);
     exit;
 }
 
-// Guardar cliente y factura en la base de datos
+// Manejar solicitudes POST para guardar la factura
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    ob_end_clean(); // Limpiar el buffer
     $data = json_decode(file_get_contents("php://input"), true);
+    if (!$data) {
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "error" => "No se recibieron datos"]);
+        exit;
+    }
 
+    // Validar datos recibidos
+    if (!isset($data["codigo"], $data["tipoDoc"], $data["nombre"], $data["apellido"], $data["telefono"], $data["correo"], $data["productos"], $data["metodos_pago"], $data["total"])) {
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "error" => "Datos incompletos"]);
+        exit;
+    }
+
+    // Asignar valores
     $codigo = $data["codigo"];
     $tipoDoc = $data["tipoDoc"];
     $nombre = $data["nombre"];
     $apellido = $data["apellido"];
     $telefono = $data["telefono"];
     $correo = $data["correo"];
-    $productos = $data["productos"]; // Array con productos
-    $metodos_pago = $data["metodos_pago"]; // Array con métodos de pago
+    $productos = $data["productos"];
+    $metodos_pago = $data["metodos_pago"];
+    $total = $data["total"];
 
     // Verificar si el cliente existe
     $sql = "SELECT codigo FROM cliente WHERE codigo = ?";
@@ -57,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
         $stmt->execute();
-        $cliente_id = $stmt->insert_id; // Obtener el ID del cliente
+        $cliente_id = $stmt->insert_id;
     } else {
         $cliente = $result->fetch_assoc();
         $cliente_id = $cliente["codigo"];
@@ -66,11 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Registrar factura
     $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, precioTotal) VALUES (NOW(), ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $total = $data["total"];
     $usuario_id = $_SESSION["usuario_id"] ?? null;
     $stmt->bind_param("ssd", $usuario_id, $cliente_id, $total);
     $stmt->execute();
-    $factura_id = $stmt->insert_id; // Obtener el ID de la factura
+    $factura_id = $stmt->insert_id;
 
     // Registrar métodos de pago
     foreach ($metodos_pago as $metodo) {
@@ -86,25 +114,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iiid", $factura_id, $producto["id"], $producto["cantidad"], $producto["precio"]);
         $stmt->execute();
-    }
 
+        // Descontar stock del producto
+        $sql = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
+        $stmt->execute();
+    }
+    $_SESSION['factura_id'] = $factura_id;
+    // Respuesta JSON
+    header('Content-Type: application/json');
     echo json_encode(["success" => true, "factura_id" => $factura_id]);
+    exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $data = json_decode(file_get_contents("php://input"), true);
-
-    if ($data) {
-        $_SESSION["resumen"] = $data;
-        echo "Datos recibidos correctamente";
-    } else {
-        echo "No se recibieron datos";
-    }
-}
-// Recuperar datos para mostrar en prueba.php
+// Si no es una solicitud POST o GET, continuar con la generación del HTML
+ob_end_clean(); // Limpiar el buffer antes de generar HTML
+// Recuperar datos para mostrar en pago.php
 $productos = $_SESSION['productos'] ?? [];
 $total = $_SESSION['total'] ?? 0;
-
 // Limpiar los datos de la sesión después de usarlos
 unset($_SESSION['productos']);
 unset($_SESSION['total']);
@@ -228,11 +256,12 @@ unset($_SESSION['total']);
 
                             <ul>
                                 <?php foreach ($productos as $producto): ?>
-                                    <li>
-                                        <p><?php $producto['cantidad'] . " x " . $producto['nombre'] . " - <span>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                    <li data-id="<?php echo $producto['id']; ?>">
+                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
+
 
                             <p id="saldoPendiente">Saldo pendiente: $0.00</p>
                             <p>
@@ -260,60 +289,86 @@ unset($_SESSION['total']);
             let correo = document.getElementById("correo").value;
             let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(",", ""));
 
-            // Obtener productos de la factura
-            let productos = [];
-            document.querySelectorAll(".summary-section ul li").forEach(li => {
-                let partes = li.textContent.split(" x ");
-                let cantidad = parseInt(partes[0].trim());
-                let nombreProducto = partes[1].split(" - $")[0].trim();
-                let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
-                let id = li.querySelector("span").textContent;
+            //Verificar si saldo pendiente es cero
+            saldoPendiente = calcularSaldoRestante();
+            if (saldoPendiente > 0) {
+                alert("Falta ingresar valores para pagar");
+                return;
 
-                productos.push({
-                    nombre: nombreProducto,
-                    cantidad,
-                    precio
-                });
-            });
+            } else {
 
-            // Obtener métodos de pago
-            let metodos_pago = [];
-            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                if (input.value.trim() !== "") {
-                    metodos_pago.push({
-                        tipo: input.name.replace("valor_", ""),
-                        valor: parseFloat(input.value)
+
+                // Obtener productos de la factura
+                let productos = [];
+                document.querySelectorAll(".summary-section ul li").forEach(li => {
+                    let partes = li.textContent.split(" x ");
+                    let cantidad = parseInt(partes[0].trim());
+                    let nombreProducto = partes[1].split(" - $")[0].trim();
+                    let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
+                    let id = li.getAttribute("data-id");
+
+                    productos.push({
+                        nombre: nombreProducto,
+                        cantidad,
+                        precio,
+                        id
                     });
-                }
-            });
+                });
 
-            fetch("prueba.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        codigo,
-                        tipoDoc,
-                        nombre,
-                        apellido,
-                        telefono,
-                        correo,
-                        total,
-                        productos,
-                        metodos_pago
-                    })
-                })
-                .then(response => response.text())
-                .then(data => console.log(data))
-                .then(data => {
-                    if (data.success) {
-                        alert("Factura registrada correctamente con ID: " + data.factura_id);
-                    } else {
-                        alert("Error al registrar factura.");
+                let metodos_pago = [];
+                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                    let valor = parseFloat(input.value);
+                    if (!isNaN(valor) && valor > 0) {
+                        let tipo = input.name.replace("valor_", "");
+                        if (tipo === "otro") {
+                            // Aquí se toma el valor del select correspondiente
+                            let tipoOtro = document.querySelector("select[name='tipo_otro']").value;
+                            if (tipoOtro) {
+                                tipo = tipoOtro; // Se usa el valor seleccionado, ej. "transferencia"
+                            } else {
+                                alert("Selecciona un tipo de pago para 'otro'");
+                                return;
+                            }
+                        }
+                        metodos_pago.push({
+                            tipo,
+                            valor
+                        });
                     }
-                })
-                .catch(error => console.error("Error al registrar:", error));
+                });
+
+
+                fetch("prueba.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            codigo,
+                            tipoDoc,
+                            nombre,
+                            apellido,
+                            telefono,
+                            correo,
+                            total,
+                            productos,
+                            metodos_pago
+                        })
+                    })
+                    .then(response => response.json()) // Parsear la respuesta como JSON
+                    .then(data => {
+                        if (data.success) {
+                            alert("Factura registrada correctamente con ID: " + data.factura_id);
+                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                        } else {
+                            alert("Error al registrar factura: " + (data.error || ""));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error al registrar:", error);
+                        alert("Error al registrar factura. Por favor, inténtalo de nuevo.");
+                    });
+            }
         }
 
 

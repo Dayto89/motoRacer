@@ -21,6 +21,7 @@ if (!isset($_SESSION['usuario_id'])) {
     <script src="/js/index.js"></script>
     <link rel="stylesheet" href="/css/inicio.css">
     <script src="https://kit.fontawesome.com/d6f1e7ff1f.js"></script>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -38,7 +39,38 @@ if (!isset($_SESSION['usuario_id'])) {
     <div class="texto-debajo">
         <h2> SOFTWARE DE INVENTARIO MOTO RACER </h2>
     </div>
+    <div id="notificaciones" class="notificaciones">
+        <h3>Notificaciones</h3>
+        <ul id="listaNotificaciones"></ul>
+    </div>
+    <button class="noti" onclick="mostrarNotificaciones()"><animated-icons
+  src="https://animatedicons.co/get-icon?name=notification&style=minimalistic&token=2a8c285f-a7a0-4f4d-b2c3-acccc136c454"
+  trigger="loop-on-hover"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":0.8400000000000001,"defaultColours":{"group-1":"#000000FF","group-2":"#000000FF","background":"#FFFA00FF"}}'
+  height="80"
+  width="80"
+></animated-icons></button>
+    <script>
+        function agregarNotificacion(mensaje) {
+            const lista = document.getElementById("listaNotificaciones");
+            const nuevaNotificacion = document.createElement("li");
+            nuevaNotificacion.classList.add("notificacion");
+            nuevaNotificacion.textContent = mensaje;
+            lista.appendChild(nuevaNotificacion);
+        }
+
+        function mostrarNotificaciones() {
+            const panel = document.getElementById("notificaciones");
+            panel.style.display = panel.style.display === "block" ? "none" : "block";
+        }
+
+        // Simulación de nuevas notificaciones
+setInterval(() => {
+    agregarNotificacion("Nueva actualización en el inventario");
+}, 10000);
+    </script>
 
 </body>
+
 
 </html>

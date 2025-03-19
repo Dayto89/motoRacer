@@ -404,7 +404,7 @@ form input[type="text"], #editForm select {
 
 /* Ajuste de contenido cuando el menú se expande */
 .sidebar:hover ~ .main-content {
-    margin-left: 215px;
+    margin-left: 240px;
     transition: margin-left 0.3s ease;
     margin-right: 0px;
 }
@@ -447,7 +447,7 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(3), 
 .main-content table td:nth-child(3) { 
-    width: 100px; 
+    width: 82px; 
 }
 
 .main-content table th:nth-child(4), 
@@ -477,7 +477,7 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(9), 
 .main-content table td:nth-child(9) { 
-    width: 300px;
+    width: 200px;
 }
 
 .main-content table th:nth-child(10), 

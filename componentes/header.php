@@ -29,7 +29,7 @@ if ($rol === 'administrador') {
     'INVENTARIO' => ['Lista productos'],
     'FACTURA' => ['Ventas', 'Reportes'],
     'USUARIO' => ['Información'],
-    'CONFIGURACION' => ['Stock', 'Gestion de Usuarios', 'Personalizacion de Reportes', 'Notificaciones de Stock', 'Frecuencia de Reportes Automáticos']
+    'CONFIGURACION' => ['Stock', 'Gestion de Usuarios', 'Personalizacion de Reportes']
   ];
 } else {
   // Si no es administrador, consultar los permisos del usuario
