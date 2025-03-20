@@ -161,7 +161,7 @@ if (isset($_POST['cobrar'])) {
             </div>";
                 }
             } else {
-                echo "<h2>No hay productos en la base de datos.</h2>";
+                echo "<script>alert('No se encontraron resultados')</script>";
             }
 
             mysqli_close($conexion);

@@ -157,11 +157,7 @@ if (!isset($_SESSION['usuario_id'])) {
                 ($identificacion, 'USUARIO', 'Información', 1),
 
                 ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Personalización de Reportes', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Personalización de Reportes', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Notificaciones de Stock', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Frecuencia Automática de Reportes', 0)");
+                ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0)");
             if ($resultado) {
                 echo "<script>alert('Permisos guardados');</script>";
             } else {
