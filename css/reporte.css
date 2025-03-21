@@ -125,7 +125,7 @@ input[type="checkbox"] {
    display: flex;
     margin-bottom: 20px;
     max-width: 74%;
-    margin-left: 24.5%;
+    margin-left: 19.5%;
     padding: 10px;
     border-radius: 8px;
 }
@@ -198,7 +198,7 @@ input.form-control {
     margin: 0; /* Elimina cualquier margen que pueda estar desplazando el botón */
     display: flex;
     align-items: center;
-    margin-left: 50px;
+    margin-left: 30px;
 }
 .icon-button {
     height: 36px; /* Igualar altura con el botón "Buscar" */
@@ -415,7 +415,7 @@ form input[type="text"], #editForm select {
     width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
     max-width: 100%; /* Evita que se desborde */
     table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
-    margin-left: 27%;
+    margin-left: 20%;
 }
 
 .main-content table th,
@@ -436,12 +436,12 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(2), 
 .main-content table td:nth-child(2) { 
-    width: 100px; 
+    width: 150px; 
 }
 
 .main-content table th:nth-child(3), 
 .main-content table td:nth-child(3) { 
-    width: 150px; 
+    width: 200px; 
 }
 
 .main-content table th:nth-child(4), 
@@ -451,7 +451,7 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(5), 
 .main-content table td:nth-child(5) { 
-    width: 100px; 
+    width: 150px; 
 }
 
 .main-content table th:nth-child(6), 
@@ -585,4 +585,24 @@ form input[type="text"], #editForm select {
     align-items: center; /* Alinea los elementos verticalmente */
     gap: 10px; /* Espacio entre los botones */
     flex-wrap: wrap; /* Evita que los elementos bajen si no hay espacio */
+}
+
+.recibo-button{
+    background-color: #ffffff00;
+    cursor: pointer;
+    border: none;
+    margin-left: 0px;
+}
+
+.recibo-button {
+    border: 2px solid transparent; /* Inicialmente sin borde */
+    padding: 5px; /* Espacio interno */
+    border-radius: 50%; /* Hace el borde circular */
+    transition: all 0.3s ease-in-out; /* Animación suave */
+}
+
+.recibo-button:hover {
+    color: #ffffff;  /* Mantiene el color del ícono */
+    background-color: #0c68a5; /* Fondo azul al hacer hover */
+    border: 2px solid #ffffff; /* Borde blanco */
 }

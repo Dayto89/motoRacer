@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
-}
+}   
 
 $sql = "SELECT * FROM producto";
 $resultado = mysqli_query($conexion, $sql);

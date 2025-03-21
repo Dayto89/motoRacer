@@ -543,6 +543,21 @@ form input[type="text"], #editForm select {
     border: 2px solid #ffffff; /* Borde blanco */
 }
 
+.boton-eliminar {
+    position: relative; /* O relative, según donde lo quieras */
+    right: 20px; /* Ajusta la posición */
+    top: 50px; /* Modifica según sea necesario */
+}
+
+#delete-selected {
+    z-index: 2;
+    padding: 9px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    position: relative;
+    margin-top: 70px;
+    margin-left: 70%;
+}
 
 
 

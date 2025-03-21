@@ -37,7 +37,7 @@ while ($fila = mysqli_fetch_assoc($result)) {
 
 
 
-
+ 
 // Dentro de pago.php va esto:
 
 // Dentro del bloque POST, después de actualizar los productos:

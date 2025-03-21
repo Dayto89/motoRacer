@@ -196,7 +196,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   <div class="sidebar">
     <div id="menu"></div>
   </div>
-  
   <div class="main-content">
     <h1>Inventario</h1>
     <div class="filter-bar">
@@ -229,15 +228,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
             <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
           </button>
         </form>
-        
-      </div>
-      <div class="boton-eliminar">
-    <button id="delete-selected" class="btn btn-danger" style="display: none;">🗑 Eliminar Seleccionados</button>
-</div>
-      
-    </div>
-    
+        <button id="delete-selected" style="display: none; background-color: red; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer;">
+  🗑 Eliminar Seleccionados
+</button>
 
+      </div>
+    </div>
 
     <?php if (mysqli_num_rows($resultado) > 0): ?>
       <table>

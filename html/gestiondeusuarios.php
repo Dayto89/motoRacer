@@ -25,7 +25,7 @@ if ($_POST && isset($_POST['permisos'])) {
   $id = $conexion->real_escape_string($_POST['id']);
   $query = "SELECT seccion, sub_seccion, permitido FROM accesos WHERE id_usuario = ?";
   $stmt = $conexion->prepare($query);
-  $stmt->bind_param("i", $id); // CORREGIDO: Era $smt en vez de $stmt
+  $stmt->bind_param("i", $id); 
   $stmt->execute();
   $result = $stmt->get_result();
   $permisos = [];
@@ -45,9 +45,6 @@ if ($_POST && isset($_POST['permisos'])) {
   echo json_encode($permisos);
   exit();
 }
-
-
-
 ?>
 
 <!DOCTYPE html>
