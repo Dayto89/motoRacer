@@ -61,16 +61,45 @@ $consulta = "
         f.Usuario_identificacion,
         f.Cliente_codigo,
         f.precioTotal,
+        c.nombre AS cliente_nombre,
+        c.apellido AS cliente_apellido,
+        n.nombre AS usuario_nombre,
+        n.apellido AS usuario_apellido,
         GROUP_CONCAT(m.metodoPago SEPARATOR ', ') AS metodoPago
     FROM 
         factura f
     LEFT JOIN 
         factura_metodo_pago m ON m.Factura_codigo = f.codigo
+    LEFT JOIN
+        cliente c ON c.codigo = f.Cliente_codigo
+    LEFT JOIN
+       usuario n ON n.identificacion = f.Usuario_identificacion
     GROUP BY 
-        f.codigo, f.fechaGeneracion, f.Usuario_identificacion, f.Cliente_codigo, f.precioTotal
+        f.codigo, f.fechaGeneracion, f.Usuario_identificacion, f.Cliente_codigo, f.precioTotal,         c.nombre, 
+        c.apellido, 
+        n.nombre, 
+        n.apellido 
 ";
 
+// Aplicar filtros dinámicos
+$filtros = [];
 
+if (!empty($_GET['fecha_desde']) && !empty($_GET['fecha_hasta'])) {
+    $fecha_desde = mysqli_real_escape_string($conexion, $_GET['fecha_desde']);
+    $fecha_hasta = mysqli_real_escape_string($conexion, $_GET['fecha_hasta']);
+    $filtros[] = "f.fechaGeneracion BETWEEN '$fecha_desde' AND '$fecha_hasta'";
+}
+
+if (!empty($_GET['busqueda'])) {
+    $busqueda = mysqli_real_escape_string($conexion, $_GET['busqueda']);
+    $filtros[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%' 
+                   OR u.nombre LIKE '%$busqueda%' OR u.apellido LIKE '%$busqueda%' 
+                   OR m.metodoPago LIKE '%$busqueda%')";
+}
+
+if (!empty($filtros)) {
+    $consulta .= " WHERE " . implode(" AND ", $filtros);
+}
 
 if (!empty($filtros)) {
   $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
@@ -165,6 +194,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
               <label><input type="checkbox" name="criterios[]" value="ubicacion"> Ubicación</label>
               <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
             </div>
+            <form method="GET" action="reportes.php">
+    <label>Desde:</label>
+    <input type="date" name="fecha_desde" required>
+
+    <label>Hasta:</label>
+    <input type="date" name="fecha_hasta" required>
+
+    <input type="text" name="busqueda" placeholder="Ingrese el valor a buscar">
+
+    <button type="submit">Filtrar</button>
+</form>
 
         </div>
       </details>
@@ -172,12 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
       <button class="search-button" type="submit">Buscar</button>
       </form>
       <div class="export-button">
-        <form action="exportar_excel.php" method="post">
+        <form action="excel_reporte.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
             <i class="fas fa-file-excel"></i>
             <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
           </button>
         </form>
+        
       </div>
 
     </div>
@@ -209,16 +250,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
               </td>
 
               <td data-marca-id="<?= htmlspecialchars($fila['Usuario_identificacion']) ?>">
-                <?= htmlspecialchars($fila['Usuario_identificacion']) ?>
+                <?= htmlspecialchars($fila['usuario_nombre'] . ' ' . $fila['usuario_apellido']) ?>
               </td>
               <td data-unidadmedida-id="<?= htmlspecialchars($fila['Cliente_codigo']) ?>">
-                <?= htmlspecialchars($fila['Cliente_codigo']) ?>
+                <?= htmlspecialchars($fila['cliente_nombre'] . ' ' . $fila['cliente_apellido']) ?>
               </td>
+
               <td data-ubicacion-id="<?= htmlspecialchars($fila['precioTotal']) ?>">
                 <?= htmlspecialchars($fila['precioTotal']) ?>
               </td>
+
               <td class="acciones">
-                <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash"></i></button>
+                <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo'] ?>')"><animated-icons
+                    src="https://animatedicons.co/get-icon?name=delete&style=minimalistic&token=c1352b7b-2e14-4124-b8fd-a064d7e44225"
+                    trigger="hover"
+                    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+                    height="25"
+                    width="25"></animated-icons></button>
                 <button class="recibo-button"><animated-icons
                     src="https://animatedicons.co/get-icon?name=search&style=minimalistic&token=12e9ffab-e7da-417f-a9d9-d7f67b64d808"
                     trigger="hover"
@@ -230,119 +278,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
           <?php endwhile; ?>
         </tbody>
       </table>
-
-      <!-- Modal de edición -->
-      <div id="editModal" class="modal">
-        <div class="modal-content">
-          <span class="close">
-            <i class="fa-solid fa-x"></i>
-          </span>
-
-
-          <!-- Campo oculto para enviar el código 1 -->
-          <input type="hidden" id="editCodigo1" name="codigo1">
-          <div class="campo"><label for="editCodigo1Visible">Código:</label>
-            <input type="text" id="editCodigo1Visible" readonly>
-          </div>
-          <div class="campo"><label for="editCodigo2">Código 2:</label>
-            <input type="text" id="editCodigo2" name="codigo2">
-          </div>
-          <div class="campo"><label for="editNombre">Nombre:</label>
-            <input type="text" id="editNombre" name="nombre">
-          </div>
-          <div class="campo"> <label for="editPrecio1">Precio 1:</label>
-            <input type="text" id="editPrecio1" name="precio1">
-          </div>
-          <div class="campo"><label for="editPrecio2">Precio 2:</label>
-            <input type="text" id="editPrecio2" name="precio2">
-          </div>
-          <div class="campo"> <label for="editPrecio3">Precio 3:</label>
-            <input type="text" id="editPrecio3" name="precio3">
-          </div>
-          <div class="campo"><label for="editCantidad">Cantidad:</label>
-            <input type="text" id="editCantidad" name="cantidad">
-          </div>
-          <div class="campo"> <label for="editDescripcion">Descripción:</label>
-            <input type="text" id="editDescripcion" name="descripcion">
-          </div>
-          <div class="campo"><label for="editCategoria">Categoría:</label>
-            <select name="categoria-id" id="editCategoria" required>
-              <option value="">Seleccione una categoría</option>
-              <?php
-              $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-              if (!$conexion2) {
-                die("Error de conexión: " . mysqli_connect_error());
-              }
-              $consultaCategorias = "SELECT codigo, nombre FROM categoria";
-              $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
-              while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
-                echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select>
-          </div>
-          <div class="campo"><label for="editMarca">Marca:</label>
-            <select name="marca-id" id="editMarca" required>
-              <option value="">Seleccione una marca</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaMarcas = "SELECT codigo, nombre FROM marca";
-              $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
-              while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
-                echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select>
-          </div>
-          <div class="campo"><label for="editUnidadMedida">Unidad Medida:</label>
-            <select name="unidadmedida-id" id="editUnidadMedida" required>
-              <option value="">Seleccione una medida</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
-              $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
-              while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
-                echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select>
-          </div>
-          <div class="campo"><label for="editUbicacion">Ubicación:</label>
-            <select name="ubicacion-id" id="editUbicacion" required>
-              <option value="">Seleccione una ubicación</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
-              $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
-              while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
-                echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select>
-          </div>
-          <div class="campo"><label for="editProveedor">Proveedor:</label>
-            <select name="proveedor-id" id="editProveedor" required>
-              <option value="">Seleccione un proveedor</option>
-              <?php
-              $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-              $consultaProveedores = "SELECT nit, nombre FROM proveedor";
-              $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
-              while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
-                echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
-              }
-              mysqli_close($conexion2);
-              ?>
-            </select>
-          </div>
-          <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
-
-          </form>
-        </div>
-      </div>
     <?php else: ?>
       <p>No se encontraron resultados con los criterios seleccionados.</p>
     <?php endif; ?>

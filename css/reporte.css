@@ -200,6 +200,9 @@ input.form-control {
     align-items: center;
     margin-left: 30px;
 }
+.export-button:hover{
+    cursor:pointer
+}
 .icon-button {
     height: 36px; /* Igualar altura con el botón "Buscar" */
     padding: 5px 10px;
@@ -215,6 +218,9 @@ input.form-control {
 
 .icon-button i {
     margin-right: 10px; /* Ajusta según necesites */
+}
+.icon-button label:hover{
+    cursor:pointer
 }
 
 .icon-button:hover {
@@ -516,11 +522,9 @@ form input[type="text"], #editForm select {
 }
 
 .edit-button i,
-.delete-button i {
-    font-size: 20px; /* Tamaño del ícono */
-    color: #ffffff;  /* Color del ícono */
+.delete-button animated-icons {
     border: 2px solid transparent; /* Inicialmente sin borde */
-    padding: 5px; /* Espacio interno */
+    padding: 3px; /* Espacio interno */
     border-radius: 50%; /* Hace el borde circular */
     transition: all 0.3s ease-in-out; /* Animación suave */
 }
@@ -531,7 +535,7 @@ form input[type="text"], #editForm select {
     border: 2px solid #ffffff; /* Borde blanco */
 }
 
-.delete-button i:hover {
+.delete-button animated-icons:hover {
     color: #ffffff;  /* Mantiene el color del ícono */
     background-color: #d11212; /* Fondo rojo al hacer hover */
     border: 2px solid #ffffff; /* Borde blanco */
@@ -596,7 +600,7 @@ form input[type="text"], #editForm select {
 
 .recibo-button {
     border: 2px solid transparent; /* Inicialmente sin borde */
-    padding: 5px; /* Espacio interno */
+    padding: 3px; /* Espacio interno */
     border-radius: 50%; /* Hace el borde circular */
     transition: all 0.3s ease-in-out; /* Animación suave */
 }
