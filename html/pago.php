@@ -122,6 +122,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->execute();
     }
 
+    
+
+    
+    $_SESSION['factura_id'] = $factura_id;
     // Respuesta JSON
     header('Content-Type: application/json');
     echo json_encode(["success" => true, "factura_id" => $factura_id]);

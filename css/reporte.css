@@ -165,7 +165,6 @@ input[type="checkbox"] {
 .search-form {
     display: flex;
     align-items: center;
-    flex-grow: 1;
 }
 input.form-control {
     color: #0b111a;
@@ -301,14 +300,14 @@ input.form-control {
 
 form input[type="text"], #editForm select {
     background-color: #ffffff;
-    border-radius: 23px;
+    border-radius: 8px;
     height: 31px;
-    width: calc(100% - 34px); /* Ajusta el ancho al tamaño del contenedor */
     color: #000;
     padding: 0 17px; /* Añade espacio a la izquierda del input */
     border: none;
     font-size: 14px;
-    margin-bottom: 5px; /* Ajusta el margen inferior */
+   margin-left: 10px;
+   width: 50%;
 }
 
 .modal-content {

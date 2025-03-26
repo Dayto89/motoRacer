@@ -5,18 +5,38 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-// Alerta para cada producto por debajo de la cantidad mínima
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
-}   
+}
 
-$sql = "SELECT * FROM producto";
-$resultado = mysqli_query($conexion, $sql);
-$inventario = [];
+// Obtener configuración existente
+$config = ['min_quantity' => 0, 'alarm_time' => '', 'notification_method' => ''];
+$stmt = $conexion->prepare("SELECT * FROM configuracion_stock ORDER BY id DESC LIMIT 1");
+if ($stmt->execute()) {
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $config = $result->fetch_assoc();
+    }
+}
 
-while ($fila = mysqli_fetch_assoc($resultado)) {
-    $inventario[] = $fila;
+// Procesar formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validar y sanitizar inputs
+    $min_quantity = isset($_POST['min_quantity']) ? (int)$_POST['min_quantity'] : 0;
+    $alarm_time = $_POST['alarm_time'] ?? null;
+    $notification_method = $_POST['notification_method'] ?? 'popup'; // Valor por defecto
+
+    $stmt = $conexion->prepare("INSERT INTO configuracion_stock 
+        (min_quantity, alarm_time, notification_method) VALUES (?, ?, ?)");
+    $stmt->bind_param("iss", $min_quantity, $alarm_time, $notification_method);
+
+    if ($stmt->execute()) {
+        header("Location: stock.php?success=1");
+    } else {
+        header("Location: stock.php?error=1");
+    }
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -51,21 +71,23 @@ while ($fila = mysqli_fetch_assoc($resultado)) {
         <h1>Configuración de stock</h1>
 
         <main>
-            <form class="config-form" id="stock-config-form">
+            <form class="config-form" method="POST">
                 <div class="form-group">
-                    <label for="min-quantity">Cantidad Mínima para Todos los Productos:</label>
-                    <input type="number" id="min-quantity" min="1" placeholder="Ej. 10" required>
+                    <label>Cantidad Mínima:</label>
+                    <input type="number" name="min_quantity"
+                        value="<?= htmlspecialchars($config['min_quantity']) ?>"
+                        min="1" required>
                 </div>
                 <div class="form-group">
-                    <label for="alarm-time">Hora de Alarma:</label>
-                    <input type="time" id="alarm-time" required>
+                    <label for="alarm_time">Hora de Alarma:</label>
+                    <input type="time" id="alarm_time" name="alarm_time" required>
                 </div>
                 <div class="form-group">
-                    <label for="notification-method">Método de Notificación:</label>
-                    <select id="notification-method">
-                        <option value="popup">Emergente</option>
-                        <option value="email"></option>
-                        <option value="both">Ambos</option>
+                    <label for="notification_method">Método de Notificación:</label>
+                    <select id="notification_method" name="notification_method" required>
+                        <option value="popup" <?= ($config['notification_method'] ?? '') === 'popup' ? 'selected' : '' ?>>Emergente</option>
+                        <option value="email" <?= ($config['notification_method'] ?? '') === 'email' ? 'selected' : '' ?>>Notificación</option>
+                        <option value="both" <?= ($config['notification_method'] ?? '') === 'both' ? 'selected' : '' ?>>Ambos</option>
                     </select>
                 </div>
                 <button type="submit">Guardar Configuración</button>

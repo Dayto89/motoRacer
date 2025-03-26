@@ -58,6 +58,8 @@ if ($_POST && isset($_POST['permisos'])) {
   <link rel="stylesheet" href="../componentes/header.php">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
   <script src="../js/header.js"></script>
@@ -148,54 +150,62 @@ if ($_POST && isset($_POST['permisos'])) {
 
   <script>
     function guardarPermisos() {
-      var formData = new FormData(document.getElementById("formPermisos"));
+  var formData = new FormData(document.getElementById("formPermisos"));
 
-      fetch("../html/guardar_permisos.php", {
-          method: "POST",
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert("Permisos actualizados correctamente");
-            cerrarModal();
-          } else {
-            alert("Error al actualizar permisos");
-          }
-        })
-        .catch(error => console.error("Error:", error));
-    }
+  fetch("../html/guardar_permisos.php", {
+      method: "POST",
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        Swal.fire({
+          title: "¡Permisos actualizados!",
+          text: "Los permisos se han actualizado correctamente.",
+          icon: "success",
+          confirmButtonColor: "#6C5CE7",
+          confirmButtonText: "OK"
+        }).then(() => {
+          cerrarModal();
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudieron actualizar los permisos.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+          confirmButtonText: "Intentar de nuevo"
+        });
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      Swal.fire({
+        title: "Error inesperado",
+        text: "Ocurrió un problema al actualizar los permisos.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Cerrar"
+      });
+    });
+}
+
 
 
     function abrirModal(id) {
-  let modal = document.getElementById("modalPermisos");
-  let modalContent = modal.querySelector(".modal-content");
+      document.getElementById("identificacion").value = id;
+      document.getElementById("modalPermisos").style.display = "block";
+      let boton = document.querySelector("#modalPermisos button"); // Encuentra el primer botón dentro del modal
+      if (boton) {
+        boton.class = "btnGuardar"; // Le asigna el ID dinámicamente
+      } else {
+        console.error("No se encontró el botón dentro del modal.");
+      }
+    }
 
-  document.getElementById("identificacion").value = id;
-  modal.style.display = "block";
-  modal.classList.add("mostrar");
-  modal.classList.remove("ocultar");
-
-  let boton = modal.querySelector("button");
-  if (boton) {
-    boton.class = "btnGuardar";
-  } else {
-    console.error("No se encontró el botón dentro del modal.");
-  }
-}
-
-function cerrarModal() {
-  let modal = document.getElementById("modalPermisos");
-
-  modal.classList.add("ocultar");
-  modal.classList.remove("mostrar");
-
-  // Esperamos a que termine la animación para ocultarlo
-  setTimeout(() => {
-    modal.style.display = "none";
-  }, 300);
-}
-
+    function cerrarModal() {
+      document.getElementById("modalPermisos").style.display = "none";
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
       // Agregar evento a los botones de permisos
@@ -234,41 +244,58 @@ function cerrarModal() {
     })
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Agregar evento a los botones de eliminar
-      var btnDelete = document.querySelectorAll('.btn-delete');
-      btnDelete.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var userId = this.getAttribute('data-id');
-          eliminarUsuario(userId);
-        });
-      });
+  // Agregar evento a los botones de eliminar
+  var btnDelete = document.querySelectorAll('.btn-delete');
+  btnDelete.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var userId = this.getAttribute('data-id');
+      eliminarUsuario(userId);
+    });
+  });
 
-      // Función para eliminar un usuario
-      function eliminarUsuario(userId) {
-        if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-          fetch('gestiondeusuarios.php', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: 'eliminar=true&id=' + userId
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                alert('Usuario eliminado correctamente');
-                // Recargar la página o eliminar la fila de la tabla
+  // Función para eliminar un usuario con SweetAlert2
+  function eliminarUsuario(userId) {
+    Swal.fire({
+      title: '¿Eliminar usuario?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#6C5CE7',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('gestiondeusuarios.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'eliminar=true&id=' + userId
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              Swal.fire({
+                title: '¡Eliminado!',
+                text: 'El usuario ha sido eliminado correctamente.',
+                icon: 'success',
+                confirmButtonColor: '#6C5CE7'
+              }).then(() => {
                 location.reload();
-              } else {
-                alert('Error al eliminar el usuario');
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-            });
-        }
+              });
+            } else {
+              Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
       }
     });
+  }
+});
+
 
     function actualizarModalPermisos(data) {
       let form = document.getElementById("formPermisos");

@@ -1,4 +1,4 @@
-* {
+    * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -233,10 +233,33 @@ tbody input[type="checkbox"] {
   text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
   letter-spacing: 5px;
 }
+/* Agregamos la animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-/* Estilos para el modal */
+/* Agregamos la animación de salida */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Estilo inicial del modal (oculto) */
 .modal {
-  display: none; /* Oculta el modal por defecto */
+  display: none;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -244,16 +267,36 @@ tbody input[type="checkbox"] {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro */
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Contenido del modal con animación */
 .modal-content {
   background-color: #fefefe;
-  margin: 10% auto; /* Centra el modal verticalmente */
+  margin: 10% auto;
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-  max-width: 500px; /* Ancho máximo del modal */
+  max-width: 500px;
+  opacity: 0; /* Oculto por defecto */
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+/* Cuando el modal está abierto */
+.modal.mostrar {
+  background-color: rgba(0, 0, 0, 0.7); /* Más oscuro */
+}
+/* Clases para activar las animaciones */
+.modal.mostrar .modal-content {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeIn 0.3s forwards;
+  
+ 
+}
+
+.modal.ocultar .modal-content {
+  animation: fadeOut 0.3s forwards;
 }
 
 .close:hover, .close:focus {

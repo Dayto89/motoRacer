@@ -64,7 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>window.location.reload(info.php);</script>";
     } else {
         echo "<script>alert('Error al actualizar los datos: " . mysqli_error($conexion) . "');</script>";
-    }
+    } 
+    
 }
 
 mysqli_close($conexion);
@@ -82,6 +83,7 @@ mysqli_close($conexion);
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>

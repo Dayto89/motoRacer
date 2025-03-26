@@ -44,30 +44,33 @@ if (!isset($_SESSION['usuario_id'])) {
         <ul id="listaNotificaciones"></ul>
     </div>
     <button class="noti" onclick="mostrarNotificaciones()"><animated-icons
-  src="https://animatedicons.co/get-icon?name=notification&style=minimalistic&token=2a8c285f-a7a0-4f4d-b2c3-acccc136c454"
-  trigger="loop-on-hover"
-  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":0.8400000000000001,"defaultColours":{"group-1":"#000000FF","group-2":"#000000FF","background":"#FFFA00FF"}}'
-  height="80"
-  width="80"
-></animated-icons></button>
+            src="https://animatedicons.co/get-icon?name=notification&style=minimalistic&token=2a8c285f-a7a0-4f4d-b2c3-acccc136c454"
+            trigger="loop-on-hover"
+            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":0.8400000000000001,"defaultColours":{"group-1":"#000000FF","group-2":"#000000FF","background":"#FFFA00FF"}}'
+            height="80"
+            width="80"></animated-icons></button>
     <script>
-        function agregarNotificacion(mensaje) {
-            const lista = document.getElementById("listaNotificaciones");
-            const nuevaNotificacion = document.createElement("li");
-            nuevaNotificacion.classList.add("notificacion");
-            nuevaNotificacion.textContent = mensaje;
-            lista.appendChild(nuevaNotificacion);
+        // Cargar notificaciones cada 30 segundos
+        function cargarNotificaciones() {
+            fetch('../html/obtener_notificaciones.php')
+                .then(response => response.json())
+                .then(data => {
+                    const lista = document.getElementById("listaNotificaciones");
+                    lista.innerHTML = data.map(notif => `
+                <li class="${notif.leida ? 'leida' : 'nueva'}" 
+                    onclick="marcarLeida(${notif.id})">
+                    ${notif.mensaje}
+                </li>
+            `).join('');
+                });
         }
 
-        function mostrarNotificaciones() {
-            const panel = document.getElementById("notificaciones");
-            panel.style.display = panel.style.display === "block" ? "none" : "block";
+        function marcarLeida(id) {
+            fetch(`../html/marcar_leida.php?id=${id}`);
         }
 
-        // Simulación de nuevas notificaciones
-setInterval(() => {
-    agregarNotificacion("Nueva actualización en el inventario");
-}, 10000);
+        setInterval(cargarNotificaciones, 30000);
+        cargarNotificaciones();
     </script>
 
 </body>

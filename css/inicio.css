@@ -34,7 +34,7 @@ body {
     width: 100%;
     position: absolute;
     z-index: -2;
-    background: linear-gradient(0deg, rgb(59, 100, 134 , 0.8), rgb(59, 100, 134 , 0.8));
+    background: linear-gradient(0deg, rgba(74, 150, 236, 0.8), rgba(74, 174, 231, 0.8));
 }
 
 

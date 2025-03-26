@@ -5,7 +5,6 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
@@ -13,44 +12,68 @@ if (!$conexion) {
 
 // Inicializar el arreglo de filtros
 $filtros = [];
-$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
 
-if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios'])) {
-  $criterios = $_GET['criterios'];
-  foreach ($criterios as $criterio) {
-    $criterio = mysqli_real_escape_string($conexion, $criterio);
-    switch ($criterio) {
-      case 'codigo':
-        $filtros[] = "p.codigo1 LIKE '%$valor%'";
-        break;
-      case 'codigo2':
-        $filtros[] = "p.codigo2 LIKE '%$valor%'";
-        break;
-      case 'nombre':
-        $filtros[] = "p.nombre LIKE '%$valor%'";
-        break;
-      case 'precio1':
-        $filtros[] = "p.precio1 LIKE '%$valor%'";
-        break;
-      case 'precio2':
-        $filtros[] = "p.precio2 LIKE '%$valor%'";
-        break;
-      case 'precio3':
-        $filtros[] = "p.precio3 LIKE '%$valor%'";
-        break;
-      case 'categoria':
-        $filtros[] = "c.nombre LIKE '%$valor%'";
-        break;
-      case 'marca':
-        $filtros[] = "m.nombre LIKE '%$valor%'";
-        break;
-      case 'ubicacion':
-        $filtros[] = "ub.nombre LIKE '%$valor%'";
-        break;
-      case 'proveedor':
-        $filtros[] = "pr.nombre LIKE '%$valor%'";
-        break;
+// Manejar filtro de fechas
+if (!empty($_GET['fecha_desde']) && !empty($_GET['fecha_hasta'])) {
+  $fecha_desde = mysqli_real_escape_string($conexion, $_GET['fecha_desde']) . " 00:00:00";
+  $fecha_hasta = mysqli_real_escape_string($conexion, $_GET['fecha_hasta']) . " 23:59:59";
+  $filtros[] = "f.fechaGeneracion BETWEEN '$fecha_desde' AND '$fecha_hasta'";
+}
+
+// Eliminar el manejo de 'valor' y usar solo 'busqueda'
+$busqueda = isset($_GET['busqueda']) ? mysqli_real_escape_string($conexion, $_GET['busqueda']) : '';
+
+// Manejar búsqueda general
+if (!empty($busqueda)) {
+  $condiciones = [];
+
+  if (isset($_GET['criterios']) && is_array($_GET['criterios'])) {
+    // Búsqueda por criterios seleccionados
+    foreach ($_GET['criterios'] as $criterio) {
+      $criterio = mysqli_real_escape_string($conexion, $criterio);
+      switch ($criterio) {
+        case 'codigo':
+          $condiciones[] = "f.codigo = '$busqueda'";
+          break;
+        case 'fechaGeneracion':
+          $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'";
+          break;
+          case 'metodoPago':
+            // Busqueda exacta en tabla de métodos
+            $condicionesBusqueda[] = "EXISTS (
+                SELECT 1 
+                FROM factura_metodo_pago tmp 
+                WHERE tmp.Factura_codigo = f.codigo 
+                AND tmp.metodoPago = '$valor'
+            )";
+            break;
+        case 'Cliente_codigo':
+          $condiciones[] = "f.Cliente_codigo LIKE '%$busqueda%'";
+          break;
+        case 'vendedor':
+          $condiciones[] = "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')";
+          break;
+        case 'cliente':
+          $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')";
+          break;
+        case 'precioTotal':
+          $condiciones[] = "f.precioTotal = '$busqueda'";
+          break;
+      }
     }
+  } else {
+    // Búsqueda general si no hay criterios seleccionados
+    $condiciones[] = "(f.codigo LIKE '%$busqueda%' 
+                          OR f.Cliente_codigo LIKE '%$busqueda%'
+                          OR c.nombre LIKE '%$busqueda%'
+                          OR c.apellido LIKE '%$busqueda%'
+                          OR n.nombre LIKE '%$busqueda%'
+                          OR n.apellido LIKE '%$busqueda%'
+                          OR m.metodoPago LIKE '%$busqueda%')";
+  }
+
+  if (!empty($condiciones)) {
+    $filtros[] = "(" . implode(" OR ", $condiciones) . ")";
   }
 }
 
@@ -65,75 +88,50 @@ $consulta = "
         c.apellido AS cliente_apellido,
         n.nombre AS usuario_nombre,
         n.apellido AS usuario_apellido,
-        GROUP_CONCAT(m.metodoPago SEPARATOR ', ') AS metodoPago
+        GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
     FROM 
         factura f
-    LEFT JOIN 
-        factura_metodo_pago m ON m.Factura_codigo = f.codigo
-    LEFT JOIN
-        cliente c ON c.codigo = f.Cliente_codigo
-    LEFT JOIN
-       usuario n ON n.identificacion = f.Usuario_identificacion
-    GROUP BY 
-        f.codigo, f.fechaGeneracion, f.Usuario_identificacion, f.Cliente_codigo, f.precioTotal,         c.nombre, 
-        c.apellido, 
-        n.nombre, 
-        n.apellido 
+    LEFT JOIN factura_metodo_pago m 
+        ON m.Factura_codigo = f.codigo
+    LEFT JOIN cliente c 
+        ON c.codigo = f.Cliente_codigo
+    LEFT JOIN usuario n 
+        ON n.identificacion = f.Usuario_identificacion
 ";
 
-// Aplicar filtros dinámicos
-$filtros = [];
-
-if (!empty($_GET['fecha_desde']) && !empty($_GET['fecha_hasta'])) {
-    $fecha_desde = mysqli_real_escape_string($conexion, $_GET['fecha_desde']);
-    $fecha_hasta = mysqli_real_escape_string($conexion, $_GET['fecha_hasta']);
-    $filtros[] = "f.fechaGeneracion BETWEEN '$fecha_desde' AND '$fecha_hasta'";
+// Añadimos esta condición si estamos buscando por método de pago
+if (in_array('metodoPago', $_GET['criterios'] ?? [])) {
+    $valor = mysqli_real_escape_string($conexion, $_GET['valor']);
+    $consulta .= " WHERE EXISTS (
+        SELECT 1 
+        FROM factura_metodo_pago tmp 
+        WHERE tmp.Factura_codigo = f.codigo 
+        AND tmp.metodoPago = '$valor'
+    )";
 }
 
-if (!empty($_GET['busqueda'])) {
-    $busqueda = mysqli_real_escape_string($conexion, $_GET['busqueda']);
-    $filtros[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%' 
-                   OR u.nombre LIKE '%$busqueda%' OR u.apellido LIKE '%$busqueda%' 
-                   OR m.metodoPago LIKE '%$busqueda%')";
-}
-
+// Añadir condiciones WHERE si hay filtros
 if (!empty($filtros)) {
-    $consulta .= " WHERE " . implode(" AND ", $filtros);
+  $consulta .= " WHERE " . implode(" AND ", $filtros);
 }
 
-if (!empty($filtros)) {
-  $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
-}
+// Agregar GROUP BY una sola vez
+$consulta .= " GROUP BY 
+    f.codigo, 
+    f.fechaGeneracion, 
+    f.Usuario_identificacion, 
+    f.Cliente_codigo, 
+    f.precioTotal, 
+    c.nombre, 
+    c.apellido, 
+    n.nombre, 
+    n.apellido";
 
+// Ejecutar la consulta
 $resultado = mysqli_query($conexion, $consulta);
 
 if (!$resultado) {
   die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
-
-// Actualización de datos del modal
-if (isset($_POST['codigo1'])) {
-  // Se reciben y se escapan las variables
-  $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
-  $fechaGeneracion = mysqli_real_escape_string($conexion, $_POST['fechaGeneracion']);
-  $Usuario_identificacion = mysqli_real_escape_string($conexion, $_POST['Usuario_identificacion']);
-  $Cliente_codigo = mysqli_real_escape_string($conexion, $_POST['Cliente_codigo']);
-  $precioTotal = mysqli_real_escape_string($conexion, $_POST['precioTotal']);
-
-
-  $consulta_update = "UPDATE producto SET 
-      codigo1 = '$codigo1', 
-      fechaGeneracion = '$fechaGeneracion', 
-      Usuario_identificacion = '$Usuario_identificacion', 
-      Cliente_codigo = '$Cliente_codigo', 
-      precioTotal = '$precioTotal', 
-
-      WHERE codigo1 = '$codigo1'";
-  if (mysqli_query($conexion, $consulta_update)) {
-    echo "<script>alert('Datos actualizados correctamente')</script>";
-  } else {
-    echo "<script>alert('Error al actualizar los datos: " . mysqli_error($conexion) . "')</script>";
-  }
 }
 
 
@@ -161,12 +159,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reportes</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+  <link rel="preload" as="image" href="https://animatedicons.co/get-icon?name=delete&style=minimalistic&token=c1352b7b-2e14-4124-b8fd-a064d7e44225">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../css/reporte.css" />
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
+
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
 
 </head>
@@ -178,38 +178,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   <div class="main-content">
     <h1>Reportes</h1>
     <div class="filter-bar">
-      <details class="filter-dropdown">
-        <summary class="filter-button">Filtrar</summary>
-        <div class="filter-options">
-          <form method="GET" action="inventario.php" class="search-form">
+      <form method="GET" action="reportes.php" class="search-form"> <!-- Form único que envía todo -->
+        <details class="filter-dropdown">
+          <summary class="filter-button">Filtrar</summary>
+          <div class="filter-options">
             <div class="criteria-group">
               <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
-              <label><input type="checkbox" name="criterios[]" value="codigo2"> Código 2</label>
-              <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
-              <label><input type="checkbox" name="criterios[]" value="precio1"> Precio 1</label>
-              <label><input type="checkbox" name="criterios[]" value="precio2"> Precio 2</label>
-              <label><input type="checkbox" name="criterios[]" value="precio3"> Precio 3</label>
-              <label><input type="checkbox" name="criterios[]" value="categoria"> Categoría</label>
-              <label><input type="checkbox" name="criterios[]" value="marca"> Marca</label>
-              <label><input type="checkbox" name="criterios[]" value="ubicacion"> Ubicación</label>
-              <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
+              <label><input type="checkbox" name="criterios[]" value="fechaGeneracion"> Fecha</label>
+              <label><input type="checkbox" name="criterios[]" value="metodoPago"> Método pago</label>
+              <label><input type="checkbox" name="criterios[]" value="vendedor"> Vendedor</label>
+              <label><input type="checkbox" name="criterios[]" value="cliente"> Cliente</label>
+              <label><input type="checkbox" name="criterios[]" value="precioTotal"> Total</label>
             </div>
-            <form method="GET" action="reportes.php">
-    <label>Desde:</label>
-    <input type="date" name="fecha_desde" required>
+            <div class="date-filters">
+              <label>Desde: <input type="date" name="fecha_desde"></label>
+              <label>Hasta: <input type="date" name="fecha_hasta"></label>
+            </div>
+          </div>
+        </details>
 
-    <label>Hasta:</label>
-    <input type="date" name="fecha_hasta" required>
-
-    <input type="text" name="busqueda" placeholder="Ingrese el valor a buscar">
-
-    <button type="submit">Filtrar</button>
-</form>
-
+        <!-- Barra de búsqueda principal -->
+        <div class="search-container">
+          <input style="width: 650px" type="text"
+            name="busqueda"
+            placeholder="Buscar..."
+            value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>">
+          <button type="submit" class="search-button">
+            <i class="fas fa-search"></i>
+          </button>
         </div>
-      </details>
-      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
-      <button class="search-button" type="submit">Buscar</button>
       </form>
       <div class="export-button">
         <form action="excel_reporte.php" method="post">
@@ -218,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
             <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
           </button>
         </form>
-        
+
       </div>
 
     </div>
@@ -267,7 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
                     attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
                     height="25"
                     width="25"></animated-icons></button>
-                <button class="recibo-button"><animated-icons
+                <button class="recibo-button" onclick=""><animated-icons
                     src="https://animatedicons.co/get-icon?name=search&style=minimalistic&token=12e9ffab-e7da-417f-a9d9-d7f67b64d808"
                     trigger="hover"
                     attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#536DFE","background":"#FFFFFFFF"}}'

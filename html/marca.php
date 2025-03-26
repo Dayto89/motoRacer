@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
               echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
               echo "<td class='options'>";
               echo "<button class='btn-list' data-id='" . htmlspecialchars($fila['codigo']) . "'>Lista de productos</button>";
-              echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'>Eliminar</button></td>";
+              echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'><i class='fa-solid fa-trash'></i></button></td>";
               echo "</td>";
               echo "</tr>";
           }

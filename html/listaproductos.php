@@ -146,30 +146,30 @@ if (isset($_POST['codigo1'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
-  
+
   // Debug: Registrar el código recibido
   error_log("Código recibido: " . $_POST['codigo']);
-  
+
   if (!$conexion) {
-      echo json_encode(['success' => false, 'error' => 'Error de conexión']);
-      exit;
+    echo json_encode(['success' => false, 'error' => 'Error de conexión']);
+    exit;
   }
-  
+
   $codigo = $_POST['codigo'];
   $stmt = $conexion->prepare("DELETE FROM producto WHERE codigo1 = ?");
   $stmt->bind_param("s", $codigo);
-  
+
   if (!$stmt->execute()) {
-      error_log("Error SQL: " . $stmt->error); // Registrar el error
-      echo json_encode(['success' => false, 'error' => $stmt->error]);
-      exit;
+    error_log("Error SQL: " . $stmt->error); // Registrar el error
+    echo json_encode(['success' => false, 'error' => $stmt->error]);
+    exit;
   }
-  
+
   if ($stmt->affected_rows === 0) {
-      echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
-      exit;
+    echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
+    exit;
   }
-  
+
   echo json_encode(['success' => true]);
   exit;
 }
@@ -196,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   <div class="sidebar">
     <div id="menu"></div>
   </div>
-  
+
   <div class="main-content">
     <h1>Inventario</h1>
     <div class="filter-bar">
@@ -229,14 +229,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
             <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
           </button>
         </form>
-        
+
       </div>
-      <div class="boton-eliminar">
-    <button id="delete-selected" class="btn btn-danger" style="display: none;">🗑 Eliminar Seleccionados</button>
-</div>
-      
+
+      <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
+
+
     </div>
-    
+
 
 
     <?php if (mysqli_num_rows($resultado) > 0): ?>
@@ -296,8 +296,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
                 <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo1'] ?>')"><i class="fa-solid fa-trash"></i></button>
               </td>
               <td>
-        <input type="checkbox" class="select-product" value="<?= $fila['codigo1'] ?>">
-      </td> <!-- Checkbox agregado -->
+                <input type="checkbox" class="select-product" value="<?= $fila['codigo1'] ?>">
+              </td> <!-- Checkbox agregado -->
             </tr>
           <?php endwhile; ?>
         </tbody>
@@ -469,103 +469,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
 
     // Función para eliminar un producto
     function eliminarProducto(codigo) {
-    if (!confirm(`¿Eliminar producto ${codigo}?`)) return;
+      if (!confirm(`¿Eliminar producto ${codigo}?`)) return;
 
-    fetch('../html/listaproductos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-    })
-    .then(response => {
-        if (!response.ok) {
+      fetch('../html/listaproductos.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+        })
+        .then(response => {
+          if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
             alert('Producto eliminado');
             location.reload();
-        } else {
+          } else {
             alert(data.error || 'Error desconocido');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('No se pudo eliminar. Ver consola para detalles.');
-    });
-}
-// funcion de los checkboxes
-document.getElementById("select-all").addEventListener("change", function () {
-  let checkboxes = document.querySelectorAll(".select-product");
-  checkboxes.forEach(checkbox => {
-    checkbox.checked = this.checked;
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  let selectAllCheckbox = document.getElementById("select-all");
-  let checkboxes = document.querySelectorAll(".select-product");
-  let deleteButton = document.getElementById("delete-selected");
-
-  function toggleDeleteButton() {
-    let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-    deleteButton.style.display = anyChecked ? "inline-block" : "none";
-  }
-
-  selectAllCheckbox.addEventListener("change", function () {
-    checkboxes.forEach(checkbox => {
-      checkbox.checked = this.checked;
-    });
-    toggleDeleteButton();
-  });
-
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener("change", toggleDeleteButton);
-  });
-
-  deleteButton.addEventListener("click", function () {
-    let selectedCodes = Array.from(checkboxes)
-      .filter(checkbox => checkbox.checked)
-      .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
-
-    if (selectedCodes.length === 0) {
-      alert("Selecciona al menos un producto para eliminar.");
-      return;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('No se pudo eliminar. Ver consola para detalles.');
+        });
     }
+    // funcion de los checkboxes
+    document.getElementById("select-all").addEventListener("change", function() {
+      let checkboxes = document.querySelectorAll(".select-product");
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
 
-    if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} productos?`)) {
-      return;
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+      let selectAllCheckbox = document.getElementById("select-all");
+      let checkboxes = document.querySelectorAll(".select-product");
+      let deleteButton = document.getElementById("delete-selected");
 
-    // Depuración: Ver datos antes de enviarlos
-    console.log("Enviando códigos a eliminar:", selectedCodes);
-
-    fetch("eliminar_productos.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ codigos: selectedCodes })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Respuesta del servidor:", data); // Depuración
-      if (data.success) {
-        alert("Productos eliminados correctamente.");
-        location.reload();
-      } else {
-        alert("Error al eliminar los productos: " + data.error);
+      function toggleDeleteButton() {
+        let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        deleteButton.style.display = anyChecked ? "inline-block" : "none";
       }
-    })
-    .catch(error => {
-      console.error("Error en la solicitud:", error);
-      alert("Error en la comunicación con el servidor.");
+
+      selectAllCheckbox.addEventListener("change", function() {
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+        toggleDeleteButton();
+      });
+
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", toggleDeleteButton);
+      });
+
+      deleteButton.addEventListener("click", function() {
+        let selectedCodes = Array.from(checkboxes)
+          .filter(checkbox => checkbox.checked)
+          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
+
+        if (selectedCodes.length === 0) {
+          alert("Selecciona al menos un producto para eliminar.");
+          return;
+        }
+
+        if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} productos?`)) {
+          return;
+        }
+
+        // Depuración: Ver datos antes de enviarlos
+        console.log("Enviando códigos a eliminar:", selectedCodes);
+
+        fetch("eliminar_productos.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              codigos: selectedCodes
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log("Respuesta del servidor:", data); // Depuración
+            if (data.success) {
+              alert("Productos eliminados correctamente.");
+              location.reload();
+            } else {
+              alert("Error al eliminar los productos: " + data.error);
+            }
+          })
+          .catch(error => {
+            console.error("Error en la solicitud:", error);
+            alert("Error en la comunicación con el servidor.");
+          });
+      });
     });
-  });
-});
-
-
-
-
   </script>
 </body>
 

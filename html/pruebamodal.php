@@ -54,7 +54,7 @@ if ($_POST && isset($_POST['permisos'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Usuarios</title>
-  <link rel="stylesheet" href="/css/gestionusuario.css">
+
   <link rel="stylesheet" href="../componentes/header.php">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -113,7 +113,6 @@ if ($_POST && isset($_POST['permisos'])) {
   </div>
 
 
-
   <!-- Modal -->
   <div id="modalPermisos" class="modal">
     <div class="modal-content">
@@ -145,7 +144,438 @@ if ($_POST && isset($_POST['permisos'])) {
       </form>
     </div>
   </div>
+  
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+body {
+  font-family: "Metal Mania", system-ui;
+  background-image: url('fondoMotoRacer.png'); 
+  background-size: cover;
+  background-position: center;
+  margin-top: 7%;
+}
+body::before {
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  z-index: -1;
+  background: black;
+  opacity: 0.6;
+}
+
+.container {
+  width: 45%;
+  margin: 50px auto;
+  text-align: center;
+  background-color:rgb(174 174 174 / 73%);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 2%;
+  margin-left: 583px;
+}
+
+/* Título principal */
+h1 {
+    color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-family: "Metal Mania", system-ui;
+    font-size: 60px;
+    text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+}
+
+h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  background-color: #5e96d9;
+  padding: 9px;
+  width: 193px;
+  margin-top: 8px;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+ /* Tabla de categorías */
+ .user-table {
+  width: 100%;
+  border-collapse: collapse; 
+  
+}
+
+.user-table td {
+  padding: 1px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  width: 225px;
+}
+
+.user-table th {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  background-color: #98bde9;
+  padding: 9px;
+  width: 193px;
+  
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.user-table tr:nth-child(even) {
+  background-color: #f9f9f9b7;
+  color: black;
+}
+
+.user-table tr:nth-child(odd) {
+  background-color: rgb(33 32 32 / 59%);
+  color: white;
+}
+.row-gray {
+  background-color: rgb(33 32 32 / 59%);
+  color: white;
+}
+
+.row-ocre {
+  background-color: #f9f9f9b7;
+  color: black;
+}
+
+/* Ajuste para mover "Nombre" hacia la derecha */
+.user-table td:nth-child(2), .user-table th:nth-child(2) {
+  padding-left: 115px;
+  text-align: left;
+}
+  
+
+.btn-permisos, .btn-delete {
+  padding: 8px 12px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+.btn-registro {
+  background-color: #219b40;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 10px 21px;
+  border: none;
+  border-radius: 11px;
+  cursor: pointer;
+  margin-right: 69%;
+  width: 33%;
+
+}
+
+.btn-permisos {
+  background-color: #20663b;
+  border-radius: 15px;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  border-radius: 15px;
+}
+
+
+.btn-permisos:hover {
+  background-color: #1f4d30;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}
+.btn-registro:hover {
+  background-color: rgb(5, 105, 30);
+}
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.78);
+  justify-content: center;
+  align-items: center;
+}
+
+div.modal-content {
+  
+  margin: 8% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 100%;
+  background-color: rgb(200 200 200 / 76%);
+  padding: 20px;
+  border-radius: 10px;
+  width: 78%;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+/* Animación de aparición */
+@keyframes slideIn {
+  from {
+      transform: translateY(-50px);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+.close {
+  font-family: Arial, Helvetica, sans-serif;
+  float: right;
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+}
+
+.permissions-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.permissions-table th, .permissions-table td {
+  padding: 10px;
+  text-align: center;
+  background-color: #f9f9f9b7;
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  font-weight: bold;
+}
+
+.permissions-table th {
+  background-color: #417ab5;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.btn-save {
+  background-color: #007bff;
+  border-radius: 15px;
+  color: white;
+  padding:  13px 36px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-save:hover {
+  background-color: #0056b3;
+}
+
+tbody input[type="checkbox"] {
+  transform: translate(175%, 9%) scale(1.5);
+  background-color: #417ab5;
+}
+
+.modal-content h2 {
+  font-size: 52px;
+  color: white;
+  text-align: center;
+  margin-top: 2px;
+  margin-left: 16px;
+  font-weight: bold;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+  letter-spacing: 5px;
+}
+/* Agregamos la animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Agregamos la animación de salida */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Estilo inicial del modal (oculto) */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Contenido del modal con animación */
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  opacity: 0; /* Oculto por defecto */
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Clases para activar las animaciones */
+.modal.mostrar .modal-content {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeIn 0.3s forwards;
+}
+
+.modal.ocultar .modal-content {
+  animation: fadeOut 0.3s forwards;
+}
+
+.close:hover, .close:focus {
+  color: #a30d0d;
+  text-decoration: none;
+  cursor: pointer;
+}
+.close {
+  color: #302f2f;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* Estilos para el toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 49px;
+  height: 20px;
+  
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #C55655;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: rgb(255 255 255);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #1f78bf;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+}
+input[type="checkbox"] {
+  display: none;
+}
+
+/* Estilos para el contenedor de columnas */
+.column-container {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 1fr 2fr;
+  gap: 20px; /* Espacio entre columnas */
+  padding: 20px;
+  align-items: start; /* Alinea las columnas a la izquierda */
+
+}
+
+/* Estilos para cada columna */
+.column {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para las secciones */
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-family: arial;
+}
+
+/* Estilos para las subsecciones */
+.subsection {
+  display: flex;
+  align-items: center; /* Centra verticalmente el label con el switch */
+  gap: 10px; /* Espacio entre el switch y el label */
+}
+
+div.subsection{
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  margin-bottom: 15px; /* Ajusta el valor según necesites */
+}
+
+#btnGuardar {
+  background-color:  #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#btnGuardar:hover {
+  background-color:#0056b3;
+}
+  </style>
+  
   <script>
     function guardarPermisos() {
       var formData = new FormData(document.getElementById("formPermisos"));
@@ -195,7 +625,6 @@ function cerrarModal() {
     modal.style.display = "none";
   }, 300);
 }
-
 
     document.addEventListener('DOMContentLoaded', function() {
       // Agregar evento a los botones de permisos

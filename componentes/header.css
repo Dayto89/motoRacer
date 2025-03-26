@@ -120,8 +120,9 @@ body::before {
     height: auto;
     margin-right: 10px;
     cursor: pointer;
-    filter: drop-shadow(0 0 1rem rgb(255, 255, 255));
+    filter: drop-shadow(0px 0px 9px #ffffff);
 }
+
 
 .meni li .logo {
     margin: 0;
