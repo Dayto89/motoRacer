@@ -38,15 +38,15 @@ if (!empty($busqueda)) {
         case 'fechaGeneracion':
           $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'";
           break;
-          case 'metodoPago':
-            // Busqueda exacta en tabla de métodos
-            $condicionesBusqueda[] = "EXISTS (
+        case 'metodoPago':
+          // Busqueda exacta en tabla de métodos
+          $condicionesBusqueda[] = "EXISTS (
                 SELECT 1 
                 FROM factura_metodo_pago tmp 
                 WHERE tmp.Factura_codigo = f.codigo 
                 AND tmp.metodoPago = '$valor'
             )";
-            break;
+          break;
         case 'Cliente_codigo':
           $condiciones[] = "f.Cliente_codigo LIKE '%$busqueda%'";
           break;
@@ -63,17 +63,21 @@ if (!empty($busqueda)) {
     }
   } else {
     // Búsqueda general si no hay criterios seleccionados
-    $condiciones[] = "(f.codigo LIKE '%$busqueda%' 
-                          OR f.Cliente_codigo LIKE '%$busqueda%'
-                          OR c.nombre LIKE '%$busqueda%'
-                          OR c.apellido LIKE '%$busqueda%'
-                          OR n.nombre LIKE '%$busqueda%'
-                          OR n.apellido LIKE '%$busqueda%'
-                          OR m.metodoPago LIKE '%$busqueda%')";
-  }
+    $condicionesGenerales = [
+      "f.codigo = '$busqueda'",
+      "f.Cliente_codigo = '$busqueda'",
+      "f.precioTotal = '$busqueda'",
+      "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')",
+      "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')",
+      "EXISTS (
+          SELECT 1 
+          FROM factura_metodo_pago tmp 
+          WHERE tmp.Factura_codigo = f.codigo 
+          AND tmp.metodoPago = '$busqueda'
+      )"
+    ];
 
-  if (!empty($condiciones)) {
-    $filtros[] = "(" . implode(" OR ", $condiciones) . ")";
+    $filtros[] = "(" . implode(" OR ", $condicionesGenerales) . ")";
   }
 }
 
@@ -98,17 +102,6 @@ $consulta = "
     LEFT JOIN usuario n 
         ON n.identificacion = f.Usuario_identificacion
 ";
-
-// Añadimos esta condición si estamos buscando por método de pago
-if (in_array('metodoPago', $_GET['criterios'] ?? [])) {
-    $valor = mysqli_real_escape_string($conexion, $_GET['valor']);
-    $consulta .= " WHERE EXISTS (
-        SELECT 1 
-        FROM factura_metodo_pago tmp 
-        WHERE tmp.Factura_codigo = f.codigo 
-        AND tmp.metodoPago = '$valor'
-    )";
-}
 
 // Añadir condiciones WHERE si hay filtros
 if (!empty($filtros)) {
