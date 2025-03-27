@@ -121,40 +121,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
         $stmt->execute();
 
-        // Después de actualizar el stock
-        $min_quantity = 0;
-        $stmt = $conexion->prepare("SELECT min_quantity FROM configuracion_stock ORDER BY id DESC LIMIT 1");
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            if ($row = $result->fetch_assoc()) {
-                $min_quantity = (int)$row['min_quantity'];
-            }
-        }
-
-        // Verificar stock bajo
-        $stmt = $conexion->prepare("
-    SELECT codigo1, nombre, cantidad 
-    FROM producto 
-    WHERE cantidad < ?
-");
-        $stmt->bind_param("i", $min_quantity);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        while ($producto = $result->fetch_assoc()) {
-            $mensaje = sprintf(
-                "Producto %s bajo mínimo! Stock actual: %d",
-                $producto['nombre'],
-                $producto['cantidad']
-            );
-
-            $insert = $conexion->prepare("INSERT INTO notificaciones (mensaje) VALUES (?)");
-            $insert->bind_param("s", $mensaje);
-            $insert->execute();
-        }
     }
 
+    $min_quantity = 0;
 
+    // 1. Usar $conn en lugar de $conexion
+    $stmt = $conn->prepare("SELECT min_quantity FROM configuracion_stock ORDER BY id DESC LIMIT 1");
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $min_quantity = (int)$row['min_quantity'];
+        }
+    }
+    
+    // 2. Verificar solo si hay cantidad mínima configurada
+    if ($min_quantity > 0) {
+        $stmt = $conn->prepare("
+            SELECT codigo1, nombre, cantidad 
+            FROM producto 
+            WHERE cantidad < ?
+        ");
+        $stmt->bind_param("i", $min_quantity);
+        
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            while ($producto = $result->fetch_assoc()) {
+                $mensaje = sprintf(
+                    "Producto %s bajo mínimo! Stock actual: %d",
+                    $producto['nombre'],
+                    $producto['cantidad']
+                );
+                
+                // 3. Manejo seguro de errores
+                try {
+                    $insert = $conn->prepare("INSERT INTO notificaciones (mensaje) VALUES (?)");
+                    $insert->bind_param("s", $mensaje);
+                    $insert->execute();
+                } catch (Exception $e) {
+                    error_log("Error en notificación: " . $e->getMessage());
+                }
+            }
+        }
+    }
     $_SESSION['factura_id'] = $factura_id;
     // Respuesta JSON
     header('Content-Type: application/json');

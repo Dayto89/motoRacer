@@ -11,10 +11,10 @@ if (!$conexion) {
 }
 
 $stmt = $conexion->prepare("
-    SELECT id, mensaje, leida 
+    SELECT id, mensaje, fecha, leida 
     FROM notificaciones 
     ORDER BY fecha DESC 
-    LIMIT 10
+    LIMIT 15
 ");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,3 +26,4 @@ while ($fila = $result->fetch_assoc()) {
 
 header('Content-Type: application/json');
 echo json_encode($notificaciones);
+?>
