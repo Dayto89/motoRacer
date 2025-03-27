@@ -88,7 +88,7 @@ if (!isset($_SESSION['usuario_id'])) {
         </div>
         <div class="button_container">
             <button type="submit" name="registrar" class="boton">Registrar</button>
-            <a href="../html/gestionusuario.php" class="botonn">Volver</a>
+            <a href="../html/gestiondeusuarios.php" class="botonn">Volver</a>
         </div>
     </form>
 

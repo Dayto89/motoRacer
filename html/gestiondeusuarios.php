@@ -235,7 +235,7 @@ function cerrarModal() {
 
     document.addEventListener('DOMContentLoaded', function() {
       // Agregar evento a los botones de eliminar
-      var btnDelete = document.querySelectorAll('.btn-delete');
+      var btnDelete = document.querySelectorAll('.btn-delete'); 
       btnDelete.forEach(function(btn) {
         btn.addEventListener('click', function() {
           var userId = this.getAttribute('data-id');

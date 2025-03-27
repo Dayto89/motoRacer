@@ -142,6 +142,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   echo json_encode(['success' => $eliminado]);
   exit; // Para evitar mezclar con HTML
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
+  $_SESSION['factura_id'] = $_POST['factura_id'];
+  header("Location: recibo.php");
+  exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -215,59 +220,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
 
     <?php if (mysqli_num_rows($resultado) > 0): ?>
       <table>
-        <thead>
-          <tr>
-            <th>Nro. Factura</th>
+    <thead>
+        <tr>
+            <th>ID</th>
             <th>Fecha</th>
-            <th>Metodo de pago</th>
-            <th>vendedor</th>
+            <th>Método de Pago</th>
+            <th>Vendedor</th>
             <th>Cliente</th>
-            <th>Total venta</th>
-            <th>Accion</th>
-
-          </tr>
-        </thead>
-        <tbody>
-          <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+            <th>Total</th>
+            <th>Acciones</th>
+            <th><input type="checkbox" id="select-all"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
             <tr>
-              <td><?= htmlspecialchars($fila['codigo']) ?></td>
-
-              <td data-categoria-id="<?= htmlspecialchars($fila['fechaGeneracion']) ?>">
-                <?= htmlspecialchars($fila['fechaGeneracion']) ?>
-              </td>
-              <td data-marca-id="<?= htmlspecialchars($fila['metodoPago']) ?>">
-                <?= htmlspecialchars($fila['metodoPago']) ?>
-              </td>
-
-              <td data-marca-id="<?= htmlspecialchars($fila['Usuario_identificacion']) ?>">
-                <?= htmlspecialchars($fila['usuario_nombre'] . ' ' . $fila['usuario_apellido']) ?>
-              </td>
-              <td data-unidadmedida-id="<?= htmlspecialchars($fila['Cliente_codigo']) ?>">
-                <?= htmlspecialchars($fila['cliente_nombre'] . ' ' . $fila['cliente_apellido']) ?>
-              </td>
-
-              <td data-ubicacion-id="<?= htmlspecialchars($fila['precioTotal']) ?>">
-                <?= htmlspecialchars($fila['precioTotal']) ?>
-              </td>
-
-              <td class="acciones">
+                <td><?php echo $fila['codigo']; ?></td>
+                <td><?php echo $fila['fechaGeneracion']; ?></td>
+                <td><?php echo $fila['metodoPago']; ?></td>
+                <td><?php echo $fila['usuario_nombre'] . " " . $fila['usuario_apellido']; ?></td>
+                <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
+                <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
+                <td class="acciones">
                 <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo'] ?>')"><animated-icons
                     src="https://animatedicons.co/get-icon?name=delete&style=minimalistic&token=c1352b7b-2e14-4124-b8fd-a064d7e44225"
                     trigger="hover"
                     attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
                     height="25"
                     width="25"></animated-icons></button>
-                <button class="recibo-button" onclick=""><animated-icons
+                    <form method="POST">
+                        <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
+                        <button type="submit" class="recibo-button">
+                        <animated-icons
                     src="https://animatedicons.co/get-icon?name=search&style=minimalistic&token=12e9ffab-e7da-417f-a9d9-d7f67b64d808"
                     trigger="hover"
                     attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#536DFE","background":"#FFFFFFFF"}}'
                     height="25"
-                    width="25"></animated-icons></button>
-              </td>
+                    width="25"></animated-icons>
+                        </button>
+                    </form>
+                </td>
+                <td>
+        <input type="checkbox" class="select-product" value="<?= $fila['codigo'] ?>">
+      </td> <!-- Checkbox agregado -->
             </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
+        <?php endwhile; ?>
+    </tbody>
+</table>
+
     <?php else: ?>
       <p>No se encontraron resultados con los criterios seleccionados.</p>
     <?php endif; ?>
@@ -319,34 +319,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
       });
     });
 
-    // Función para eliminar un producto
-    function eliminarProducto(codigo) {
-      if (!confirm(`¿Está seguro de eliminar el producto con código ${codigo}?`)) {
-        return;
-      }
+        // Función para eliminar un producto
+        function eliminarProducto(codigo) {
+    if (!confirm(`¿Eliminar producto ${codigo}?`)) return;
 
-      fetch('inventario.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-        })
-        .then(response => response.json()) // Convertir la respuesta a JSON
-        .then(data => {
-          if (data.success) {
-            alert('Producto eliminado correctamente');
+    fetch('../html/factura.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Producto eliminado');
             location.reload();
-          } else {
-            alert('Error al eliminar el producto');
-          }
-        })
-        .catch(error => {
-          alert('Error en la solicitud');
-          console.error('Error en fetch:', error);
-        });
-    }
-  </script>
-</body>
+        } else {
+            alert(data.error || 'Error desconocido');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('No se pudo eliminar. Ver consola para detalles.');
+    });
+}
+// funcion de los checkboxes
+document.getElementById("select-all").addEventListener("change", function () {
+  let checkboxes = document.querySelectorAll(".select-product");
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = this.checked;
+  });
+});
 
-</html>
+document.addEventListener("DOMContentLoaded", function () {
+  let selectAllCheckbox = document.getElementById("select-all");
+  let checkboxes = document.querySelectorAll(".select-product");
+  let deleteButton = document.getElementById("delete-selected");
+
+  function toggleDeleteButton() {
+    let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    deleteButton.style.display = anyChecked ? "inline-block" : "none";
+  }
+
+  selectAllCheckbox.addEventListener("change", function () {
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = this.checked;
+    });
+    toggleDeleteButton();
+  });
+
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener("change", toggleDeleteButton);
+  });
+
+  deleteButton.addEventListener("click", function () {
+    let selectedCodes = Array.from(checkboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
+
+    if (selectedCodes.length === 0) {
+      alert("Selecciona al menos un producto para eliminar.");
+      return;
+    }
+
+    if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} productos?`)) {
+      return;
+    }
+
+    // Depuración: Ver datos antes de enviarlos
+    console.log("Enviando códigos a eliminar:", selectedCodes);
+
+    fetch("eliminar_productos.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ codigos: selectedCodes })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Respuesta del servidor:", data); // Depuración
+      if (data.success) {
+        alert("Productos eliminados correctamente.");
+        location.reload();
+      } else {
+        alert("Error al eliminar los productos: " + data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud:", error);
+      alert("Error en la comunicación con el servidor.");
+    });
+  });
+});

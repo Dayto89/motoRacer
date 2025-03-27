@@ -154,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 
                 // 3. Manejo seguro de errores
                 try {
-                    $insert = $conn->prepare("INSERT INTO notificaciones (mensaje) VALUES (?)");
+                    $insert = $conn->prepare("INSERT INTO notificaciones (mensaje, fecha) VALUES (?, NOW())");
                     $insert->bind_param("s", $mensaje);
                     $insert->execute();
                 } catch (Exception $e) {

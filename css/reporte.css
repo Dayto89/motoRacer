@@ -467,6 +467,7 @@ form input[type="text"], #editForm select {
 .main-content table th:nth-child(7), 
 .main-content table td:nth-child(7) { 
     width: 100px;
+    display: flex;
 }
 
 .main-content table th:nth-child(8), 

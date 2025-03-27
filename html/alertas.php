@@ -1,396 +1,218 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-  header("Location: ../index.php");
-  exit();
+    header("Location: ../index.php");
+    exit();
 }
 
-$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-if ($conexion->connect_error) {
-  die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
+// Obtener datos del usuario para mostrarlos en la página
+$usuarioId = $_SESSION['usuario_id'];
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+
+if (!$conexion) {
+    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+}
+
+$consulta = "SELECT * FROM usuario WHERE identificacion = '$usuarioId'";
+$resultado = mysqli_query($conexion, $consulta);
+
+if ($resultado) {
+    $usuario = $resultado->fetch_assoc();
+    $nombre = $usuario['nombre'];
+    $apellido = $usuario['apellido'];
+    $estado = $usuario['estado'];
+    $celular = $usuario['telefono'];
+    $correo = $usuario['correo'];
+    $cargo = $usuario['rol'];
+    $foto = $usuario['foto'];
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $apellido = mysqli_real_escape_string($conexion, $_POST['apellido']);
+    $celular = mysqli_real_escape_string($conexion, $_POST['celular']);
+    $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+
+    // Verificar si se subió una imagen
+    if (!empty($_FILES['foto']['tmp_name'])) {
+        $imagen = file_get_contents($_FILES['foto']['tmp_name']); // Convertir a binario
+        $imagen = mysqli_real_escape_string($conexion, $imagen);
+        $consulta = "UPDATE usuario SET 
+            nombre = '$nombre',
+            apellido = '$apellido',
+            estado = '$estado',
+            telefono = '$celular',
+            correo = '$correo',
+            rol = '$cargo',
+            foto = '$imagen'
+            WHERE identificacion = '$usuarioId'";
+    } else {
+        $consulta = "UPDATE usuario SET 
+            nombre = '$nombre',
+            apellido = '$apellido',
+            estado = '$estado',
+            telefono = '$celular',
+            correo = '$correo',
+            rol = '$cargo'
+            WHERE identificacion = '$usuarioId'";
+    }
+
+    $resultado = mysqli_query($conexion, $consulta);
+
+    
+if ($resultado) {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+        Swal.fire({
+            title: '¡Datos actualizados!',
+            text: 'Los datos se actualizaron con éxito.',
+            icon: 'success',
+            confirmButtonColor: '#6C5CE7',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = 'alertas.php'; // Redirige a info.php después de cerrar el alert
+        });
+    </script>";
+} else {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+        Swal.fire({
+            title: 'Error',
+            text: 'Error al actualizar los datos: " . mysqli_error($conexion) . "',
+            icon: 'error',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Intentar de nuevo'
+        });
+    </script>";
 }
 
 
-// Eliminar usuario
-if ($_POST && isset($_POST['eliminar'])) {
-  $id = $conexion->real_escape_string($_POST['id']);
-  $query = "DELETE FROM usuario WHERE identificacion = '$id'";
-  $resultado = $conexion->query($query);
-  echo json_encode(["success" => $resultado]);
-  exit();
+    
 }
 
-// Consultar los permisos del usuario seleccionado
-if ($_POST && isset($_POST['permisos'])) {
-  $id = $conexion->real_escape_string($_POST['id']);
-  $query = "SELECT seccion, sub_seccion, permitido FROM accesos WHERE id_usuario = ?";
-  $stmt = $conexion->prepare($query);
-  $stmt->bind_param("i", $id); 
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $permisos = [];
-
-  while ($row = $result->fetch_assoc()) {
-    $permisos[$row['seccion']][] = [
-      'sub_seccion' => $row['sub_seccion'],
-      'permitido' => $row['permitido']
-    ];
-  }
-
-  $stmt->close();
-
-  // Asegurar que la respuesta JSON se envíe correctamente
-  header('Content-Type: application/json');
-
-  echo json_encode($permisos);
-  exit();
-}
+mysqli_close($conexion);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Usuarios</title>
-  <link rel="stylesheet" href="/css/gestionusuario.css">
-  <link rel="stylesheet" href="../componentes/header.php">
-  <link rel="stylesheet" href="../componentes/header.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-
-  <script src="../js/header.js"></script>
-  <script src="/js/index.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información de Usuario</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+    <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
+    <link rel="stylesheet" href="../componentes/header.php">
+    <link rel="stylesheet" href="../componentes/header.css">
+    <script src="../js/header.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-  <div id="menu"></div>
-  <h1>Gestión de Usuarios</h1>
-  <div class="container">
-    <div class="actions">
-      <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
-    </div>
-    <h3>Lista de Usuarios</h3>
-    <table class="user-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Rol</th>
-          <th>Permisos</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        $sql = "SELECT * FROM usuario";
-        $result = $conexion->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          echo "<tr>";
-          echo "<td>" . $row['identificacion'] . "</td>";
-          echo "<td>" . $row['nombre'] . "</td>";
-          echo "<td>" . $row['apellido'] . "</td>";
-          echo "<td>" . $row['rol'] . "</td>";
+    <div id="menu"></div>
+    <!-- Información del usuario -->
+    <div class="container">
 
-          if ($row['rol'] == 'gerente') {
-            echo "<td><button class='btn-permisos' onclick='abrirModal(" . $row['identificacion'] . ")' data-id='" . $row['identificacion'] . "'>  <i class='bx bxs-key'></i></button></td>";
-          } else {
-            echo "<td></td>";
-          }
-
-          echo "<td><button class='btn-delete' data-id='" . $row['identificacion'] . "'>
-        <i class='fa-solid fa-trash'></i>
-      </button></td>";
-
-          echo "</tr>";
-        }
-        ?>
-
-      </tbody>
-    </table>
-  </div>
-
-
-
-  <!-- Modal -->
-  <div id="modalPermisos" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="cerrarModal()">&times;</span>
-      <h2>Configurar Permisos</h2>
-      <form id="formPermisos" method="POST">
-        <input type="hidden" id="identificacion" name="identificacion">
-
-        <?php $permisos = $permisos ?? []; ?>
-        <?php foreach ($permisos as $seccion => $subsecciones): ?>
-
-          <div>
-            <label>
-              <strong><?php echo ucfirst($seccion); ?></strong>
-            </label><br>
-            <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
-              <?php foreach ($subsecciones as $subseccion): ?>
-                <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
-                <label>
-                  <?php echo $subseccion['sub_seccion']; ?>
-                </label><br>
-              <?php endforeach; ?>
+        <h1>Usuario</h1>
+        <div class="profile-pic">
+            <?php if (!empty($usuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
+        <div class="form-container">
+            <div class="info-group">
+                <label for="nombre">Nombre</label>
+                <span id="nombre"><?php echo $nombre; ?></span>
             </div>
-          </div>
-        <?php endforeach; ?>
+            <div class="info-group">
+                <label for="apellido">Apellido</label>
+                <span id="apellido"><?php echo $apellido; ?></span>
+            </div>
+            <div class="info-group">
+                <label for="estado">Estado</label>
+                <span id="estado"><?php echo $estado; ?></span>
+            </div>
+            <div class="info-group">
+                <label for="celular">Celular</label>
+                <span id="celular"><?php echo $celular; ?></span>
+            </div>
+            <div class="info-group">
+                <label for="correo">Correo Electrónico</label>
+                <span id="correo"><?php echo $correo; ?></span>
+            </div>
+            <div class="info-group">
+                <label for="cargo">Cargo</label>
+                <span id="cargo"><?php echo $cargo; ?></span>
+            </div>
 
-        <button type="button" id="btnGuardar" onclick="guardarPermisos()">Guardar Permisos</button>
+            <!-- Botón para abrir el popup -->
+            <div class="boton-editar">
+                <button class="btn-abrir" onclick="abrirPopup()"><i class='bx bx-plus bx-tada'></i>Editar</button>
+            </div>
 
-      </form>
+        </div>
     </div>
-  </div>
 
-  <script>
-    function guardarPermisos() {
-  var formData = new FormData(document.getElementById("formPermisos"));
-
-  fetch("../html/guardar_permisos.php", {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        Swal.fire({
-          title: "¡Permisos actualizados!",
-          text: "Los permisos se han actualizado correctamente.",
-          icon: "success",
-          confirmButtonColor: "#6C5CE7",
-          confirmButtonText: "OK"
-        }).then(() => {
-          cerrarModal();
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          text: "No se pudieron actualizar los permisos.",
-          icon: "error",
-          confirmButtonColor: "#d33",
-          confirmButtonText: "Intentar de nuevo"
-        });
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      Swal.fire({
-        title: "Error inesperado",
-        text: "Ocurrió un problema al actualizar los permisos.",
-        icon: "error",
-        confirmButtonColor: "#d33",
-        confirmButtonText: "Cerrar"
-      });
-    });
-}
+    <!-- Popup -->
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <h2>Editar Usuario</h2>
+            <form method="POST" action="" enctype="multipart/form-data">
+                <div class="profile-pic">
+                    <div class="profile-pic">
+                        <?php if (!empty($usuario['foto'])): ?>
+                            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>" alt="Usuario">
+                        <?php else: ?>
+                            <img id="profilePic" src="../imagenes/icono.png" alt="Usuario por defecto">
+                        <?php endif; ?>
+                    </div>
+                    <input type="file" name="foto" id="imageInput" accept="image/*">
+                </div>
+                <input type="text" name="nombre" placeholder="Nombre" value="<?php echo $nombre; ?>">
+                <input type="text" name="apellido" placeholder="Apellido" value="<?php echo $apellido; ?>">
+                <input type="text" name="celular" placeholder="Celular" value="<?php echo $celular; ?>">
+                <input type="email" name="correo" placeholder="Correo Electrónico" value="<?php echo $correo; ?>">
+                <div>
+                    <button type="button" class="btn-cancelar" onclick="cerrarPopup()">Cancelar</button>
+                    <button type="submit" class="btn-guardar">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
-
-    function abrirModal(id) {
-      document.getElementById("identificacion").value = id;
-      document.getElementById("modalPermisos").style.display = "block";
-      let boton = document.querySelector("#modalPermisos button"); // Encuentra el primer botón dentro del modal
-      if (boton) {
-        boton.class = "btnGuardar"; // Le asigna el ID dinámicamente
-      } else {
-        console.error("No se encontró el botón dentro del modal.");
-      }
-    }
-
-    function cerrarModal() {
-      document.getElementById("modalPermisos").style.display = "none";
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      // Agregar evento a los botones de permisos
-
-      var btnPermisos = document.querySelectorAll('.btn-permisos');
-      btnPermisos.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var userId = this.getAttribute('data-id');
-          permisosUsuario(userId);
-        });
-      });
-
-      function permisosUsuario(userId) {
-        fetch('gestiondeusuarios.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'permisos=true&id=' + userId
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data) {
-              console.log(data); // Verifica en la consola si los permisos llegan correctamente
-              actualizarModalPermisos(data);
-              document.getElementById("modalPermisos").style.display = "block";
-            } else {
-              alert('No se encontraron permisos para este usuario.');
-            }
-          })
-          .catch(error => {
-            console.error('Error al obtener permisos:', error);
-          });
-      }
-
-    })
-
-    document.addEventListener('DOMContentLoaded', function() {
-  // Agregar evento a los botones de eliminar
-  var btnDelete = document.querySelectorAll('.btn-delete');
-  btnDelete.forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var userId = this.getAttribute('data-id');
-      eliminarUsuario(userId);
-    });
-  });
-
-  // Función para eliminar un usuario con SweetAlert2
-  function eliminarUsuario(userId) {
-    Swal.fire({
-      title: '¿Eliminar usuario?',
-      text: 'Esta acción no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#6C5CE7',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch('gestiondeusuarios.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'eliminar=true&id=' + userId
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              Swal.fire({
-                title: '¡Eliminado!',
-                text: 'El usuario ha sido eliminado correctamente.',
-                icon: 'success',
-                confirmButtonColor: '#6C5CE7'
-              }).then(() => {
-                location.reload();
-              });
-            } else {
-              Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      }
-    });
-  }
-});
-
-
-    function actualizarModalPermisos(data) {
-      let form = document.getElementById("formPermisos");
-      let userId = document.getElementById("identificacion").value; // Guarda el ID
-
-      form.innerHTML = ''; // Limpia el contenido previo
-
-      // Mantiene el campo oculto del ID
-      let inputId = document.createElement("input");
-      inputId.type = "hidden";
-      inputId.id = "identificacion";
-      inputId.name = "identificacion";
-      inputId.value = userId;
-      form.appendChild(inputId);
-
-      // Contenedor de columnas
-      let columnContainer = document.createElement("div");
-      columnContainer.className = "column-container";
-
-      // Crear una columna por cada sección
-      let columnCount = 0;
-      for (let seccion in data) {
-        if (columnCount % 6 === 0 && columnCount !== 0) {
-          // Si ya hay 6 columnas, crea un nuevo contenedor
-          form.appendChild(columnContainer);
-          columnContainer = document.createElement("div");
-          columnContainer.className = "column-container";
+    <script>
+        // Mostrar el popup
+        function abrirPopup() {
+            document.getElementById('overlay').style.display = 'block';
+            // Copiar la imagen de perfil al popup
+            document.getElementById('popupProfilePic').src = document.getElementById('profilePic').src;
         }
 
-        // Crear una columna
-        let column = document.createElement("div");
-        column.className = "column";
+        // Cerrar el popup
+        function cerrarPopup() {
+            document.getElementById('overlay').style.display = 'none';
+        }
 
-        // Título de la sección
-        let sectionTitle = document.createElement("div");
-        sectionTitle.className = "section-title";
-        sectionTitle.textContent = seccion;
-        column.appendChild(sectionTitle);
+        // Función para subir imagen
+        function uploadImage() {
+            const imageInput = document.getElementById('imageInput');
+            const popupProfilePic = document.getElementById('popupProfilePic');
+            const profilePic = document.getElementById('profilePic');
 
-        // Subsecciones
-        data[seccion].forEach(sub => {
-          let subsection = document.createElement("div");
-          subsection.className = "subsection";
-
-          // Toggle switch
-          let switchContainer = document.createElement("label");
-          switchContainer.className = "switch";
-
-          // Input oculto para el valor no marcado
-          let hiddenInput = document.createElement("input");
-          hiddenInput.type = "hidden";
-          hiddenInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
-          hiddenInput.value = "0"; // Si no se marca, se enviará como 0
-
-          // Input del toggle switch
-          let toggleInput = document.createElement("input");
-          toggleInput.type = "checkbox";
-          toggleInput.name = `permisos[${seccion}_${sub.sub_seccion.replace(/\s+/g, '_').toLowerCase()}]`;
-          toggleInput.value = "1";
-          toggleInput.checked = sub.permitido == 1;
-
-          // Slider del toggle switch
-          let slider = document.createElement("span");
-          slider.className = "slider";
-
-          // Label con el nombre de la subsección
-          let label = document.createElement("label");
-          label.textContent = sub.sub_seccion;
-
-          // Agregar elementos al contenedor
-          switchContainer.appendChild(hiddenInput);
-          switchContainer.appendChild(toggleInput);
-          switchContainer.appendChild(slider);
-          subsection.appendChild(switchContainer);
-          subsection.appendChild(label);
-          column.appendChild(subsection);
-        });
-
-        columnContainer.appendChild(column);
-        columnCount++;
-      }
-
-      // Agregar el contenedor de columnas al formulario
-      form.appendChild(columnContainer);
-
-      // Botón para guardar permisos
-      let saveButton = document.createElement("button");
-      saveButton.type = "button";
-      saveButton.textContent = "Guardar Permisos";
-      saveButton.id = "btnGuardar";
-      saveButton.onclick = guardarPermisos;
-      form.appendChild(saveButton);
-    }
-  </script>
-
+            if (imageInput.files && imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    popupProfilePic.src = e.target.result;
+                    profilePic.src = e.target.result;
+                }
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        }
+        document.getElementById('imageInput').addEventListener('change', uploadImage);
+    </script>
 </body>
 
 </html>

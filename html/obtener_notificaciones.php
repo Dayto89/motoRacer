@@ -10,6 +10,10 @@ if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
+$result = $conexion->query("SELECT COUNT(*) AS total FROM notificaciones");
+$row = $result->fetch_assoc();
+error_log("Total notificaciones en BD: " . $row['total']);
+
 $stmt = $conexion->prepare("
     SELECT id, mensaje, fecha, leida 
     FROM notificaciones 
