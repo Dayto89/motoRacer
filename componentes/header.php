@@ -94,12 +94,16 @@ $animatedIcons = [
   <title>Document</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/logo.webp">
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="../js/header.js"></script>
   <script src="../js/index.js"></script>
   <link
     href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
     rel="stylesheet" />
   <link rel="stylesheet" href="/componentes/header.css" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
 
@@ -107,6 +111,7 @@ $animatedIcons = [
       display: flex;
       align-items: center;
     }
+
   </style>
 </head>
 
@@ -117,7 +122,7 @@ $animatedIcons = [
     </div>
 
     <ul class="menu">
-      <?php foreach ($permisos as $seccion => $subsecciones): 
+      <?php foreach ($permisos as $seccion => $subsecciones):
         $iconData = $animatedIcons[$seccion] ?? null;
       ?>
         <li>
@@ -128,8 +133,7 @@ $animatedIcons = [
                 trigger="<?php echo $iconData['trigger']; ?>"
                 attributes='<?php echo $iconData['attributes']; ?>'
                 height="<?php echo $iconData['size']; ?>"
-                width="<?php echo $iconData['size']; ?>"
-              ></animated-icons>
+                width="<?php echo $iconData['size']; ?>"></animated-icons>
             <?php else: ?>
               <i class="bx bx-folder"></i>
             <?php endif; ?>
@@ -161,5 +165,7 @@ $animatedIcons = [
       </li>
     </ul>
   </div>
+  <?php include_once __DIR__.'/accesibilidad-widget.php'; ?>
 </body>
+
 </html>
