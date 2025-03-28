@@ -47,40 +47,40 @@ if ($rol === 'administrador') {
 
 $animatedIcons = [
   'PRODUCTO' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Grocery&style=minimalistic&token=eb758eaf-90cb-43dc-9be6-dcfdc8296167',
+    'src' => 'https://animatedicons.co/get-icon?name=Product&style=minimalistic&token=64f0cb11-7ef5-4030-8e65-e6b4975a0256',
     'trigger' => 'loop',
     'attributes' => '{"variationThumbColour":"#4CAF50","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 60
+    'size' => 53.5
   ],
   'PROVEEDOR' => [
     'src' => 'https://animatedicons.co/get-icon?name=Warehouse&style=minimalistic&token=cd5fc961-b158-4062-bac4-bc62dc29ca43',
     'trigger' => 'loop',
     'attributes' => '{"variationThumbColour":"#FF9800","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 60
+    'size' => 53.5
   ],
   'INVENTARIO' => [
     'src' => 'https://animatedicons.co/get-icon?name=Research&style=minimalistic&token=debf6854-a861-4155-b483-b1a147f1f3ec',
     'trigger' => 'loop',
     'attributes' => '{"variationThumbColour":"#9C27B0","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 60
+    'size' => 53.5
   ],
   'FACTURA' => [
     'src' => 'https://animatedicons.co/get-icon?name=Invoice&style=minimalistic&token=89c130bf-0940-48c2-92e3-16b6ffe3b232',
     'trigger' => 'loop',
     'attributes' => '{"variationThumbColour":"#E91E63","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 60
+    'size' => 53.5
   ],
   'USUARIO' => [
-    'src' => 'https://animatedicons.co/get-icon?name=user%20profile&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977',
+    'src' => 'https://animatedicons.co/get-icon?name=Individual&style=minimalistic&token=ae97ee7c-56cc-4490-90bd-ecd3fc81466e',
     'trigger' => 'loop',
     'attributes' => '{"variationThumbColour":"#607D8B","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 60
+    'size' => 53.5
   ],
   'CONFIGURACION' => [
     'src' => 'https://animatedicons.co/get-icon?name=Setup&style=minimalistic&token=eb758eaf-90cb-43dc-9be6-dcfdc8296167',
     'trigger' => 'loop',
     'attributes' => '{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 60
+    'size' => 53.5
   ]
 ];
 ?>
@@ -154,8 +154,8 @@ $animatedIcons = [
             src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
             trigger="loop"
             attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}'
-            height="60"
-            width="60"></animated-icons>
+            height="52"
+            width="52"></animated-icons>
           <span>Salir</span>
         </a>
       </li>

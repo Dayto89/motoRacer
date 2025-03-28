@@ -41,6 +41,7 @@ h1 {
     font-family: "Metal Mania", system-ui;
     font-size: 60px;
     text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+    margin-left: 4%;
 }
 
 h3 {
@@ -418,4 +419,57 @@ div.subsection{
 
 #btnGuardar:hover {
   background-color:#0056b3;
+}
+
+/* Estilo para el alert personalizado */
+.custom-moto-alert {
+  font-family: 'Arial', sans-serif;
+  background-color: #1a1a1a;
+  color: white;
+  border: 2px solid #ff5722;
+  border-radius: 5px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.custom-moto-alert h3 {
+  color: #ff5722;
+  margin-top: 0;
+}
+
+.custom-moto-alert .buttons {
+  margin-top: 20px;
+}
+
+.custom-moto-alert button {
+  padding: 8px 15px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.custom-moto-alert .confirm-btn {
+  background-color: #ff5722;
+  color: white;
+}
+
+.custom-moto-alert .cancel-btn {
+  background-color: #333;
+  color: white;
+}
+
+.custom-moto-alert::before {
+  content: "🏍";
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
 }

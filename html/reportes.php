@@ -127,6 +127,47 @@ if (!$resultado) {
   die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigos'])) {
+  header('Content-Type: application/json');
+  $response = ['success' => false, 'error' => ''];
+
+  try {
+    $codigos = json_decode(file_get_contents('php://input'), true)['codigos'];
+    $conexion->autocommit(false);
+
+    foreach ($codigos as $codigo) {
+      if (!ctype_digit($codigo)) {
+        throw new Exception("Código inválido: $codigo");
+      }
+
+      // Eliminar métodos de pago
+      $stmt = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
+      $stmt->bind_param("i", $codigo);
+      if (!$stmt->execute()) throw new Exception("Error métodos pago: " . $stmt->error);
+
+      // Eliminar productos de factura
+      $stmt = $conexion->prepare("DELETE FROM producto_factura WHERE Factura_codigo = ?");
+      $stmt->bind_param("i", $codigo);
+      if (!$stmt->execute()) throw new Exception("Error productos: " . $stmt->error);
+
+      // Eliminar factura principal
+      $stmt = $conexion->prepare("DELETE FROM factura WHERE codigo = ?");
+      $stmt->bind_param("i", $codigo);
+      if (!$stmt->execute()) throw new Exception("Error factura: " . $stmt->error);
+    }
+
+    $conexion->commit();
+    $response['success'] = true;
+  } catch (Exception $e) {
+    $conexion->rollback();
+    $response['error'] = $e->getMessage();
+  } finally {
+    $conexion->autocommit(true);
+  }
+
+  echo json_encode($response);
+  exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
@@ -241,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
   <div class="main-content">
     <h1>Reportes</h1>
     <div class="filter-bar">
-      <form method="GET" action="reportes.php" class="search-form"> <!-- Form único que envía todo -->
+      <form method="GET" action="../html/reportes.php" class="search-form"> <!-- Form único que envía todo -->
         <details class="filter-dropdown">
           <summary class="filter-button">Filtrar</summary>
           <div class="filter-options">
@@ -274,10 +315,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
       <div class="export-button">
         <form action="excel_reporte.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
+
+            <!-- Agregar este botón junto al botón de exportar -->
             <i class="fas fa-file-excel"></i>
             <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
           </button>
         </form>
+
+        <button id="delete-selected" class="btn btn-danger" style="display: none;">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+
 
       </div>
 
@@ -307,21 +355,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
               <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
               <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
               <td class="acciones">
-                <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><animated-icons
-                    src="https://animatedicons.co/get-icon?name=delete&style=minimalistic&token=c1352b7b-2e14-4124-b8fd-a064d7e44225"
-                    trigger="hover"
-                    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
-                    height="25"
-                    width="25"></animated-icons></button>
+                <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash" style='color:#fffbfb'></i></button>
                 <form method="POST">
                   <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
                   <button type="submit" class="recibo-button">
-                    <animated-icons
-                      src="https://animatedicons.co/get-icon?name=search&style=minimalistic&token=12e9ffab-e7da-417f-a9d9-d7f67b64d808"
-                      trigger="hover"
-                      attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#536DFE","background":"#FFFFFFFF"}}'
-                      height="25"
-                      width="25"></animated-icons>
+                  <i class='bx bx-search-alt' style='color:#fffbfb' ></i>
                   </button>
                 </form>
               </td>
@@ -339,51 +377,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionamos todos los botones de edición
-      const editButtons = document.querySelectorAll('.edit-button');
-      // Modal y botón de cierre
-      const modal = document.getElementById('editModal');
-      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
-      const closeModal = modal.querySelector('.close');
-      // Listener para cada botón de edición
-      editButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const row = this.closest('tr');
-          // Se asume que las columnas están en el siguiente orden:
-          // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
-          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
-          const codigo1 = row.cells[0].innerText.trim();
-          document.getElementById('editCodigo1').value = codigo1;
-          document.getElementById('editCodigo1Visible').value = codigo1;
-          document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
-          document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-          // Asumimos que Precio1 está en la columna 4 (ajusta si es necesario)
-          document.getElementById('editPrecio1').value = row.cells[4].innerText.trim();
-          document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
-          document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
-          document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
-          document.getElementById('editDescripcion').value = row.cells[8].innerText.trim();
-          // Para select de Categoría: usamos el data attribute de la celda correspondiente
-          document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
-          // Para los inputs de Marca, UnidadMedida, Ubicación y Proveedor, se usan los data attributes:
-          document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
-          document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
-          document.getElementById('editUbicacion').value = row.cells[12].getAttribute('data-ubicacion-id');
-          document.getElementById('editProveedor').value = row.cells[13].getAttribute('data-proveedor-id');
-
-          modal.style.display = 'block';
-        });
-      });
-
-
-
-      // Listener para cerrar el modal
-      closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-      });
-    });
-
     // funcion de los checkboxes
     document.getElementById("select-all").addEventListener("change", function() {
       let checkboxes = document.querySelectorAll(".select-product");
@@ -419,18 +412,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
           .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
         if (selectedCodes.length === 0) {
-          alert("Selecciona al menos un producto para eliminar.");
+          alert("Selecciona al menos una factura para eliminar.");
           return;
         }
 
-        if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} productos?`)) {
+        if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} factura?`)) {
           return;
         }
 
         // Depuración: Ver datos antes de enviarlos
         console.log("Enviando códigos a eliminar:", selectedCodes);
 
-        fetch("eliminar_productos.php", {
+        fetch("../html/eliminar_factura.php", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -443,10 +436,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
           .then(data => {
             console.log("Respuesta del servidor:", data); // Depuración
             if (data.success) {
-              alert("Productos eliminados correctamente.");
+              alert("factura eliminado correctamente.");
               location.reload();
             } else {
-              alert("Error al eliminar los productos: " + data.error);
+              alert("Error al eliminar las facturas: " + data.error);
             }
           })
           .catch(error => {
@@ -455,3 +448,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
           });
       });
     });
+  </script>
+</body>
+
+</html>

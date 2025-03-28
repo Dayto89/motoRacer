@@ -18,16 +18,24 @@ const btnAbrirModal = document.getElementById('btnAbrirModal');
 const modal = document.getElementById('modal');
 const btnCancelar = document.getElementById('btnCancelar');
 
-// Abrir el modal
+// Abrir el modal con animación
 btnAbrirModal.addEventListener('click', () => {
-    modal.style.display = 'flex'; // Mostrar el modal con flexbox
-});
-
-// Cerrar el modal
-btnCancelar.addEventListener('click', () => {
-    modal.style.display = 'none'; // Ocultar el modal
-});
-
+    modal.style.display = 'flex'; // Asegurar que se muestre antes de la animación
+    setTimeout(() => modal.classList.add('show'), 10); // Agregar clase con leve retardo
+    modal.classList.remove('hide'); // Eliminar la clase de ocultar si estaba activa
+  });
+  
+  // Cerrar el modal con animación
+  btnCancelar.addEventListener('click', () => {
+    modal.classList.add('hide'); // Activar animación de cierre
+    modal.classList.remove('show');
+  
+    // Esperar a que termine la animación antes de ocultar el modal
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  });
+  
 // Cerrar modal al hacer clic fuera del contenido
 window.addEventListener('click', (event) => {
     if (event.target === modal) {

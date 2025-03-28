@@ -204,10 +204,8 @@ input.form-control {
 }
 .icon-button {
     height: 36px; /* Igualar altura con el botón "Buscar" */
+    width: 150px;
     padding: 5px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border: none;
     border-radius: 5px;
     background-color: #28a745; /* Color verde */
@@ -467,7 +465,6 @@ form input[type="text"], #editForm select {
 .main-content table th:nth-child(7), 
 .main-content table td:nth-child(7) { 
     width: 100px;
-    display: flex;
 }
 
 .main-content table th:nth-child(8), 
@@ -508,6 +505,10 @@ form input[type="text"], #editForm select {
 .main-content table th:nth-child(15), 
 .main-content table td:nth-child(15) { 
     width: 150px;
+}
+
+.acciones{
+    display: flex;
 }
 
 .edit-button,
@@ -599,14 +600,61 @@ form input[type="text"], #editForm select {
 }
 
 .recibo-button {
-    border: 2px solid transparent; /* Inicialmente sin borde */
-    padding: 3px; /* Espacio interno */
-    border-radius: 50%; /* Hace el borde circular */
-    transition: all 0.3s ease-in-out; /* Animación suave */
+    font-size: 20px;
+    color: #ffffff;
+    border: 2px solid transparent;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
 }
 
 .recibo-button:hover {
     color: #ffffff;  /* Mantiene el color del ícono */
     background-color: #0c68a5; /* Fondo azul al hacer hover */
+    border: 2px solid #ffffff; /* Borde blanco */
+}
+#delete-selected{
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.export-button {
+    margin-left: 10px;
+}
+#delete-selected i {
+    font-size: 20px;
+    color: #ffffff;
+    border: 2px solid transparent;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+    margin-left: 15px;
+
+    
+}
+#delete-selected i:hover {
+    color: #ffffff;  /* Mantiene el color del ícono */
+    background-color: #d11212; /* Fondo rojo al hacer hover */
+    border: 2px solid #ffffff; /* Borde blanco */
+}
+
+.delete-button{
+    font-size: 20px;
+    color: #ffffff;
+    border: 2px solid transparent;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+    margin-left: 10px;
+
+}
+
+.delete-button:hover{
+    color: #ffffff;  /* Mantiene el color del ícono */
+    background-color: #d11212; /* Fondo rojo al hacer hover */
     border: 2px solid #ffffff; /* Borde blanco */
 }

@@ -14,8 +14,9 @@ if (!$conexion) {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio/Moto Racer</title>
     <link rel="icon" type="image/x-icon" href="../imagenes/logo1.png">
@@ -30,30 +31,32 @@ if (!$conexion) {
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
-    <!-- ... (el head existente se mantiene igual) ... -->
     <style>
         /* Agregar estilos para las notificaciones */
         .notificaciones {
             position: fixed;
             top: 100px;
             right: 20px;
-            background: white;
+            background-color: rgb(174 174 174 / 59%);
             border: 1px solid #ccc;
-            width: 300px;
-            max-height: 400px;
+            width: 350px;
+            max-height: 85%;
             overflow-y: auto;
-            display: none; /* Oculto por defecto */
+            display: none;
+            /* Oculto por defecto */
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             padding: 15px;
         }
 
         .notificaciones h3 {
             margin-top: 0;
-            color: #333;
+            color: white;
+            font-size: 30px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+            text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
         }
 
         #listaNotificaciones {
@@ -66,20 +69,37 @@ if (!$conexion) {
         #listaNotificaciones li {
             padding: 10px;
             margin: 5px 0;
+            font-size: 20px;
             background: #f8f9fa;
-            border-left: 4px solid #ffc107;
+            font-family: Arial, Helvetica, sans-serif;
+            border-left: 8px solid rgb(255, 191, 0);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         #listaNotificaciones li.leida {
             background: #fff;
-            border-left-color: #6c757d;
+            border-left-color:rgb(0, 0, 0);
             opacity: 0.7;
         }
 
         #listaNotificaciones li:hover {
-            background: #e9ecef;
+            background:rgb(184, 186, 187);
+        }
+
+        .badge-notificaciones {
+            position: absolute;
+            top: 10px;
+            right: 8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+            min-width: 20px;
+            text-align: center;
         }
 
         .noti {
@@ -91,11 +111,29 @@ if (!$conexion) {
             cursor: pointer;
             z-index: 1001;
         }
+
+        .notificaciones::-webkit-scrollbar {
+        width: 8px;
+        background-color: rgba(174, 174, 174, 0.2);
+        border-radius: 4px;
+    }
+
+    .notificaciones::-webkit-scrollbar-track {
+        background-color: rgba(174, 174, 174, 0.3);
+        border-radius: 4px;
+    }
+
+    .notificaciones::-webkit-scrollbar-thumb {
+        background-color: rgb(6, 45, 91);
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, 0.9);
+    }
     </style>
 </head>
+
 <body>
     <!-- ... (el body existente se mantiene igual) ... -->
-        <!-- Aquí se cargará el header -->
+    <!-- Aquí se cargará el header -->
     <div id="menu"></div>
     <div class="fondo"></div>
 
@@ -113,9 +151,11 @@ if (!$conexion) {
     <button class="noti" onclick="mostrarNotificaciones()"><animated-icons
             src="https://animatedicons.co/get-icon?name=notification&style=minimalistic&token=2a8c285f-a7a0-4f4d-b2c3-acccc136c454"
             trigger="loop-on-hover"
-            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":0.8400000000000001,"defaultColours":{"group-1":"#000000FF","group-2":"#000000FF","background":"#FFFA00FF"}}'
-            height="80"
-            width="80"></animated-icons></button>
+            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#1B1B1BFF","group-2":"#000000FF","background":"#FFFFFFFF"}}'
+            height="70"
+            width="70"></animated-icons>
+        <div id="badgeNotificaciones" class="badge-notificaciones">0</div>
+    </button>
 
     <script>
         // Función para mostrar/ocultar notificaciones
@@ -126,7 +166,7 @@ if (!$conexion) {
 
         // Cargar notificaciones cada 30 segundos
         function cargarNotificaciones() {
-            fetch('../html/obtener_notificaciones.php') // Asegurar la ruta correcta
+            fetch('../html/obtener_notificaciones.php')
                 .then(response => {
                     if (!response.ok) throw new Error('Error en la respuesta');
                     return response.json();
@@ -140,6 +180,10 @@ if (!$conexion) {
                             ${notif.mensaje}
                         </li>
                     `).join('');
+                    const contador = data.filter(notif => !notif.leida).length;
+                    const badge = document.getElementById('badgeNotificaciones');
+                    badge.textContent = contador;
+                    badge.style.display = contador > 0 ? 'block' : 'none';
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -149,6 +193,14 @@ if (!$conexion) {
             fetch(`../html/marcar_leida.php?id=${id}`)
                 .then(response => {
                     if (response.ok) {
+                        if (!elemento.classList.contains('leida')) {
+                    const badge = document.getElementById('badgeNotificaciones');
+                    const currentCount = parseInt(badge.textContent) || 0;
+                    badge.textContent = currentCount - 1;
+                    if (currentCount - 1 <= 0) {
+                        badge.style.display = 'none';
+                    }
+                }
                         elemento.classList.remove('nueva');
                         elemento.classList.add('leida');
                     }
@@ -163,4 +215,5 @@ if (!$conexion) {
         });
     </script>
 </body>
+
 </html>

@@ -59,12 +59,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $resultado = mysqli_query($conexion, $consulta);
 
+    
+    
     if ($resultado) {
-        echo "<script>alert('Datos actualizados con éxito!'); </script>";
-        echo "<script>window.location.reload(info.php);</script>";
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: '¡Datos actualizados!',
+                    text: 'Los datos se actualizaron con éxito.',
+                    icon: 'success',
+                    confirmButtonColor: '#6C5CE7',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = 'información.php'; // Redirige después de cerrar el alert
+                });
+            });
+        </script>";
     } else {
-        echo "<script>alert('Error al actualizar los datos: " . mysqli_error($conexion) . "');</script>";
-    } 
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al actualizar los datos: " . mysqli_error($conexion) . "',
+                    icon: 'error',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Intentar de nuevo'
+                });
+            });
+        </script>";
+    }
+    
+    
+
+
     
 }
 
@@ -78,8 +107,8 @@ mysqli_close($conexion);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información de Usuario</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
