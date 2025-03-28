@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <link rel="stylesheet" href="../css/stock.css" />
     <link rel="stylesheet" href="/componentes/header.php" />
     <link rel="stylesheet" href="/componentes/header.css" />

@@ -44,21 +44,61 @@ if ($rol === 'administrador') {
   }
   $stmtPermisos->close();
 }
+
+$animatedIcons = [
+  'PRODUCTO' => [
+    'src' => 'https://animatedicons.co/get-icon?name=Grocery&style=minimalistic&token=eb758eaf-90cb-43dc-9be6-dcfdc8296167',
+    'trigger' => 'loop',
+    'attributes' => '{"variationThumbColour":"#4CAF50","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
+    'size' => 60
+  ],
+  'PROVEEDOR' => [
+    'src' => 'https://animatedicons.co/get-icon?name=Warehouse&style=minimalistic&token=cd5fc961-b158-4062-bac4-bc62dc29ca43',
+    'trigger' => 'loop',
+    'attributes' => '{"variationThumbColour":"#FF9800","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
+    'size' => 60
+  ],
+  'INVENTARIO' => [
+    'src' => 'https://animatedicons.co/get-icon?name=Research&style=minimalistic&token=debf6854-a861-4155-b483-b1a147f1f3ec',
+    'trigger' => 'loop',
+    'attributes' => '{"variationThumbColour":"#9C27B0","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
+    'size' => 60
+  ],
+  'FACTURA' => [
+    'src' => 'https://animatedicons.co/get-icon?name=Invoice&style=minimalistic&token=89c130bf-0940-48c2-92e3-16b6ffe3b232',
+    'trigger' => 'loop',
+    'attributes' => '{"variationThumbColour":"#E91E63","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
+    'size' => 60
+  ],
+  'USUARIO' => [
+    'src' => 'https://animatedicons.co/get-icon?name=user%20profile&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977',
+    'trigger' => 'loop',
+    'attributes' => '{"variationThumbColour":"#607D8B","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
+    'size' => 60
+  ],
+  'CONFIGURACION' => [
+    'src' => 'https://animatedicons.co/get-icon?name=Setup&style=minimalistic&token=eb758eaf-90cb-43dc-9be6-dcfdc8296167',
+    'trigger' => 'loop',
+    'attributes' => '{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
+    'size' => 60
+  ]
+];
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/logo.webp">
+  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
   <script src="../js/header.js"></script>
   <script src="../js/index.js"></script>
   <link
     href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <link rel="stylesheet" href="/componentes/header.css" />
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
@@ -69,57 +109,57 @@ if ($rol === 'administrador') {
     }
   </style>
 </head>
+
 <body>
   <div id="sidebar" class="sidebar">
     <div class="sidebar-header">
-      <a href="../html/inicio.php"
-        ><img src="../imagenes/LOGO.png" alt="Logo" class="logo"
-      /></a>
+      <a href="../html/inicio.php"><img src="../imagenes/LOGO.png" alt="Logo" class="logo" /></a>
     </div>
-    
+
     <ul class="menu">
-  <?php 
-  // Definir un array con los iconos específicos para cada sección
-  $iconos = [
-      "PRODUCTO" => "bx bx-package bx-tada icon",
-      "PROVEEDOR" => "bx bxs-truck bx-tada icon",
-      "INVENTARIO" => "bx bx-task bx-tada icon",
-      "FACTURA" => "bx bx-file bx-tada icon",
-      "USUARIO" => "bx bx-user-circle bx-tada icon",
-      "CONFIGURACION" => "bx bxs-cog bx-tada icon"
-  ];
+      <?php foreach ($permisos as $seccion => $subsecciones): 
+        $iconData = $animatedIcons[$seccion] ?? null;
+      ?>
+        <li>
+          <a href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')">
+            <?php if ($iconData): ?>
+              <animated-icons
+                src="<?php echo $iconData['src']; ?>"
+                trigger="<?php echo $iconData['trigger']; ?>"
+                attributes='<?php echo $iconData['attributes']; ?>'
+                height="<?php echo $iconData['size']; ?>"
+                width="<?php echo $iconData['size']; ?>"
+              ></animated-icons>
+            <?php else: ?>
+              <i class="bx bx-folder"></i>
+            <?php endif; ?>
+            <span><?php echo $seccion; ?></span>
+            <i class="bx bx-chevron-down icon2"></i>
+          </a>
+          <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
+            <?php foreach ($subsecciones as $subseccion): ?>
+              <li>
+                <a href="../html/<?php echo strtolower(str_replace(' ', '', $subseccion)); ?>.php">
+                  <?php echo $subseccion; ?>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </li>
+      <?php endforeach; ?>
 
-  foreach ($permisos as $seccion => $subsecciones): 
-    // Usar un icono por defecto si la sección no tiene un icono definido
-    $icono = isset($iconos[$seccion]) ? $iconos[$seccion] : "bx bx-folder";
-  ?>
-    <li>
-      <a href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')">
-        <i class="<?php echo $icono; ?> bx-tada icon"></i>
-        <span><?php echo $seccion; ?></span>
-        <i class="bx bx-chevron-down icon2"></i>
-      </a>
-      <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
-        <?php foreach ($subsecciones as $subseccion): ?>
-          <li>
-            <a href="../html/<?php echo strtolower(str_replace(' ', '', $subseccion)); ?>.php">
-              <?php echo $subseccion; ?>
-            </a>
-          </li>
-        <?php endforeach; ?>
-      </ul>
-    </li>
-  <?php endforeach; ?>
-
-  <li>
-    <a href="../componentes/logout.php">
-      <i class="bx bx-log-out-circle bx-tada icon"></i>
-      <span>Salir</span>
-    </a>
-  </li>
-</ul>
-
+      <li>
+        <a href="../componentes/logout.php">
+          <animated-icons
+            src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
+            trigger="loop"
+            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}'
+            height="60"
+            width="60"></animated-icons>
+          <span>Salir</span>
+        </a>
+      </li>
+    </ul>
   </div>
 </body>
-
 </html>

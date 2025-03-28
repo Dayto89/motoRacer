@@ -58,7 +58,7 @@ if ($_POST && isset($_POST['permisos'])) {
   <link rel="stylesheet" href="../componentes/header.php">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
 
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>

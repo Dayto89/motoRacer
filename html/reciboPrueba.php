@@ -56,6 +56,7 @@ date_default_timezone_set('America/Bogota');
 <head>
     <meta charset="UTF-8">
     <title>Factura</title>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <link rel="stylesheet" href="../css/recibo.css">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>

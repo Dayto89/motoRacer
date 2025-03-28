@@ -154,6 +154,7 @@ unset($_SESSION['total']);
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <style>

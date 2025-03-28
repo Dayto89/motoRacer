@@ -100,6 +100,7 @@ mysqli_close($conexion);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información de Usuario</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
