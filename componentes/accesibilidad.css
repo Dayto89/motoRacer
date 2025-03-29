@@ -79,3 +79,16 @@
     color: #fff !important;
     border-color: #fff !important;
 }
+
+/* Estado de botones deshabilitados */
+.accesibilidad-panel button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #ddd !important;
+}
+
+.accesibilidad-panel button:disabled:hover {
+    transform: none !important;
+    background: #ddd !important;
+    color: #666 !important;
+}
