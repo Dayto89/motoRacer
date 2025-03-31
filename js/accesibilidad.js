@@ -1,62 +1,78 @@
-// Variables globales para control de pasos
-let pasoActual = 0;
-const MAX_PASOS = 3;
-const TAMANIO_BASE = 16; // Tamaño base en px (puedes ajustarlo)
+const Accesibilidad = {
+    config: {
+        tamanioBase: 16,
+        maxPasos: 3,
+        pasoActual: 0,
+        contrastes: ['modo-normal', 'modo-alto-contraste', 'modo-inverso', 'modo-claro'],
+        contrasteActual: 0,
+        dislexia: false
+    },
 
-// Cargar configuración almacenada
-document.addEventListener('DOMContentLoaded', () => {
-    // Contraste
-    if(localStorage.getItem('contraste') === 'true') {
-        document.body.classList.add('alto-contraste');
+    init() {
+        this.cargarConfiguracion();
+        this.aplicarConfiguracion();
+        this.actualizarUI();
+    },
+
+    cargarConfiguracion() {
+        // Tamaño de fuente
+        const savedSize = localStorage.getItem('fontSize');
+        this.config.pasoActual = savedSize ? 
+            Math.round((parseFloat(savedSize) - this.config.tamanioBase) / (this.config.tamanioBase * 0.1)) : 0;
+
+        // Contraste
+        const contrasteGuardado = localStorage.getItem('contraste');
+        this.config.contrasteActual = contrasteGuardado ? 
+            Math.max(0, Math.min(3, parseInt(contrasteGuardado))) : 0;
+
+        // Dislexia
+        this.config.dislexia = localStorage.getItem('dislexia') === 'true';
+    },
+
+    aplicarConfiguracion() {
+        // Aplicar tamaño de fuente
+        const nuevoTamanio = this.config.tamanioBase * (1 + (this.config.pasoActual * 0.1));
+        document.documentElement.style.fontSize = `${nuevoTamanio}px`;
+
+        // Aplicar contraste
+        document.body.className = this.config.contrastes[this.config.contrasteActual];
+
+        // Aplicar dislexia
+        if(this.config.dislexia) {
+            document.body.classList.add('tipografia-dislexia');
+        }
+    },
+
+    cambiarContraste() {
+        this.config.contrasteActual = (this.config.contrasteActual + 1) % 4;
+        localStorage.setItem('contraste', this.config.contrasteActual);
+        document.body.className = this.config.contrastes[this.config.contrasteActual];
+    },
+
+    cambiarFuente(direccion) {
+        if (direccion === '+' && this.config.pasoActual < this.config.maxPasos) {
+            this.config.pasoActual++;
+        } else if (direccion === '-' && this.config.pasoActual > -this.config.maxPasos) {
+            this.config.pasoActual--;
+        }
+        
+        const nuevoTamanio = this.config.tamanioBase * (1 + (this.config.pasoActual * 0.1));
+        document.documentElement.style.fontSize = `${nuevoTamanio}px`;
+        localStorage.setItem('fontSize', nuevoTamanio);
+        this.actualizarUI();
+    },
+
+    alternarDislexia() {
+        this.config.dislexia = !this.config.dislexia;
+        document.body.classList.toggle('tipografia-dislexia', this.config.dislexia);
+        localStorage.setItem('dislexia', this.config.dislexia);
+    },
+
+    actualizarUI() {
+        document.getElementById('btnAumentar').disabled = this.config.pasoActual >= this.config.maxPasos;
+        document.getElementById('btnDisminuir').disabled = this.config.pasoActual <= -this.config.maxPasos;
     }
-    
-    // Tamaño de fuente
-    const savedSize = localStorage.getItem('fontSize');
-    if(savedSize) {
-        pasoActual = Math.round((parseFloat(savedSize) - TAMANIO_BASE) / (TAMANIO_BASE * 0.1));
-        document.documentElement.style.fontSize = savedSize + 'px';
-    }
-});
+};
 
-window.toggleContraste = function() {
-    document.body.classList.toggle('alto-contraste');
-    localStorage.setItem('contraste', document.body.classList.contains('alto-contraste'));
-}
-
-window.aumentarFuente = function() {
-    if(pasoActual < MAX_PASOS) {
-        pasoActual++;
-        aplicarTamanioFuente();
-    }
-}
-
-window.disminuirFuente = function() {
-    if(pasoActual > -MAX_PASOS) {
-        pasoActual--;
-        aplicarTamanioFuente();
-    }
-}
-
-function aplicarTamanioFuente() {
-    const nuevoTamanio = TAMANIO_BASE * (1 + (pasoActual * 0.1));
-    document.documentElement.style.fontSize = nuevoTamanio + 'px';
-    localStorage.setItem('fontSize', nuevoTamanio);
-}
-
-function actualizarEstadoBotones() {
-    document.getElementById('btnAumentar').disabled = pasoActual >= MAX_PASOS;
-    document.getElementById('btnDisminuir').disabled = pasoActual <= -MAX_PASOS;
-}
-
-function aplicarTamanioFuente() {
-    const nuevoTamanio = TAMANIO_BASE * (1 + (pasoActual * 0.1));
-    document.documentElement.style.fontSize = nuevoTamanio + 'px';
-    localStorage.setItem('fontSize', nuevoTamanio);
-    actualizarEstadoBotones();
-}
-
-// Inicializar al cargar
-document.addEventListener('DOMContentLoaded', () => {
-    // ... código anterior ...
-    actualizarEstadoBotones();
-});
+// Inicializar al cargar la página
+document.addEventListener('DOMContentLoaded', () => Accesibilidad.init());
