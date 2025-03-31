@@ -5,14 +5,16 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-
+    
     // Verificar la conexión
     if (!$conexion) {
         die("Error de conexión: " . mysqli_connect_error());
     }
-
+    
     if (isset($_POST['guardar'])) {
         $codigo = $_POST['selectProducto'];
         $codigo2 = $_POST['codigo2'];
@@ -28,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $unidadMedida = $_POST['unidadMedida'];
         $ubicacion = $_POST['ubicacion'];
         $proveedor = $_POST['proveedor'];
-
+        
         $actualizar = "UPDATE producto SET 
                     codigo2='$codigo2', nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
                     cantidad='$cantidad', descripcion='$descripcion', 
@@ -37,38 +39,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     proveedor_nit='$proveedor' 
                   WHERE codigo1='$codigo'";
 
-        if (mysqli_query($conexion, $actualizar)) {
-            echo "<script>alert('Producto actualizado correctamente');</script>";
-        } else {
-            echo "<script>alert('Error al actualizar el producto: " . mysqli_error($conexion) . "');</script>";
-        }
-    }
-
-    if (isset($_POST['eliminar'])) {
-        $codigo = $_POST['selectProducto'];
-
-        if (!empty($codigo)) {
-            $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
-            if (mysqli_query($conexion, $eliminar)) {
-                echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
-            } else {
-                echo "<script>alert('Error al eliminar el producto: " . mysqli_error($conexion) . "');</script>";
-            }
-        }
-    }
-
-    mysqli_close($conexion);
+if (mysqli_query($conexion, $actualizar)) {
+    echo "<script>alert('Producto actualizado correctamente');</script>";
+} else {
+    echo "<script>alert('Error al actualizar el producto: " . mysqli_error($conexion) . "');</script>";
 }
+}
+
+if (isset($_POST['eliminar'])) {
+    $codigo = $_POST['selectProducto'];
+    
+    if (!empty($codigo)) {
+        $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
+        if (mysqli_query($conexion, $eliminar)) {
+            echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
+        } else {
+            echo "<script>alert('Error al eliminar el producto: " . mysqli_error($conexion) . "');</script>";
+        }
+    }
+}
+
+mysqli_close($conexion);
+}
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
 ?>
 
 
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Actualizar Producto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>

@@ -3,6 +3,13 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+  header("Location: ../index.php");
+  exit();
+}
+
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
 if ($_POST) {
     if (isset($_POST['verificar'])) {

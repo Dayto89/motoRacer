@@ -10,6 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
+
 // Conexión a la base de datos
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {

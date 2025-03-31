@@ -10,6 +10,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
+
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
   die(json_encode(["success" => false, "error" => "Conexión fallida: " . mysqli_connect_error()]));

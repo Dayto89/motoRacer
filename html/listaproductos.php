@@ -9,6 +9,8 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -227,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
         <form action="exportar_excel.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
             <i class="fas fa-file-excel"></i>
-            <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
+            <label> Exportar a Excel</label>
           </button>
         </form>
 

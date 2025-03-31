@@ -5,6 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
 // Obtener datos del usuario para mostrarlos en la página
 $usuarioId = $_SESSION['usuario_id'];
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -59,45 +60,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $resultado = mysqli_query($conexion, $consulta);
 
-    
-    
+
+
     if ($resultado) {
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
         echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
                     title: '¡Datos actualizados!',
                     text: 'Los datos se actualizaron con éxito.',
                     icon: 'success',
                     confirmButtonColor: '#6C5CE7',
                     confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = 'información.php'; // Redirige después de cerrar el alert
-                });
-            });
-        </script>";
+                    }).then(() => {
+                        window.location.href = 'información.php'; // Redirige después de cerrar el alert
+                        });
+                        });
+                        </script>";
     } else {
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
         echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Error al actualizar los datos: " . mysqli_error($conexion) . "',
-                    icon: 'error',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Intentar de nuevo'
-                });
-            });
-        </script>";
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Error al actualizar los datos: " . mysqli_error($conexion) . "',
+                                icon: 'error',
+                                confirmButtonColor: '#d33',
+                                confirmButtonText: 'Intentar de nuevo'
+                                });
+                                });
+                                </script>";
     }
-    
-    
-
-
-    
 }
 
 mysqli_close($conexion);
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

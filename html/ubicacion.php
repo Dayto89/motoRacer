@@ -5,6 +5,8 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");

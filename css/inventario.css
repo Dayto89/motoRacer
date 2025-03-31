@@ -216,7 +216,11 @@ input.form-control {
     border: none;
     cursor: pointer;
     border-radius: 4px;
-    font-size: 18px;
+    font-size: 14px;
+}
+
+.icon-button label:hover{
+    cursor: pointer;
 }
 
 .icon-button i {
@@ -226,6 +230,7 @@ input.form-control {
 .icon-button:hover {
     background-color: #218838;
 }
+
 .criteria-group {
     display: flex;
     flex-direction: column; /* Alinea los elementos en columna */

@@ -5,6 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
 
 //Almacenar informacion producto en la base de datos
 
@@ -21,6 +22,7 @@ $ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
 $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
 
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
 ?>
 <!DOCTYPE html>

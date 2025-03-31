@@ -158,6 +158,7 @@ h3 {
   background-color: rgba(0, 0, 0, 0.78);
   justify-content: center;
   align-items: center;
+  
 }
 
 div.modal-content {
@@ -258,18 +259,7 @@ tbody input[type="checkbox"] {
   }
 }
 
-/* Estilo inicial del modal (oculto) */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
+
 
 /* Contenido del modal con animación */
 .modal-content {
@@ -421,55 +411,34 @@ div.subsection{
   background-color:#0056b3;
 }
 
-/* Estilo para el alert personalizado */
-.custom-moto-alert {
-  font-family: 'Arial', sans-serif;
-  background-color: #1a1a1a;
-  color: white;
-  border: 2px solid #ff5722;
-  border-radius: 5px;
-  padding: 20px;
-  width: 300px;
+
+/*alerta*/
+.custom-alert .alerta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   text-align: center;
-  box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
 }
 
-.custom-moto-alert h3 {
-  color: #ff5722;
-  margin-top: 0;
+.custom-alert .tornillo, 
+.custom-alert .moto {
+  width: 80px;
+}
+.custom-alert .advertencia, 
+.custom-alert .check {
+    position: absolute;
+    font-size: 30px;
+    color: red;
+    animation: girar 2s linear infinite;
 }
 
-.custom-moto-alert .buttons {
-  margin-top: 20px;
+.custom-alert .check {
+    color: green;
 }
 
-.custom-moto-alert button {
-  padding: 8px 15px;
-  margin: 0 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
+@keyframes girar {
+    0% { transform: rotate(0deg) translateX(25px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(25px) rotate(-360deg); }
 }
 
-.custom-moto-alert .confirm-btn {
-  background-color: #ff5722;
-  color: white;
-}
-
-.custom-moto-alert .cancel-btn {
-  background-color: #333;
-  color: white;
-}
-
-.custom-moto-alert::before {
-  content: "🏍";
-  font-size: 40px;
-  display: block;
-  margin-bottom: 10px;
-}

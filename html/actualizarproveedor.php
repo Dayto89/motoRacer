@@ -4,6 +4,8 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -93,19 +95,19 @@ if (!isset($_SESSION['usuario_id'])) {
                         <input type="text" id="estado" name="estado" value="<?php echo isset($estado) ? $estado : ''; ?>" required>
                     </div>
 
-               
+
 
                     <div class="button-container">
-                    <div class="boton">
-                        <button type="submit" name="guardar">Guardar</button>
-                        <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
+                        <div class="boton">
+                            <button type="submit" name="guardar">Guardar</button>
+                            <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
+                        </div>
                     </div>
-                </div>
 
-            </div>
-        </form>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {

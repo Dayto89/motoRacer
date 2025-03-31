@@ -5,6 +5,8 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
+
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {
   die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
@@ -45,6 +47,9 @@ if ($_POST && isset($_POST['permisos'])) {
   echo json_encode($permisos);
   exit();
 }
+
+
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>

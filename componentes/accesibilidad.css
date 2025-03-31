@@ -59,17 +59,93 @@
 }
 
 /* Modos de contraste */
-
-.modo-alto-contraste {
-    background: #000 !important;
-    color: #fff !important;
+.modo-alto-contraste,
+.modo-alto-contraste body,
+.modo-alto-contraste .sidebar,
+.modo-alto-contraste .main-content,
+.modo-alto-contraste .menu,
+.modo-alto-contraste .modal-content {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border-color: #FFFF00 !important;
+}
+/* Tablas */
+.modo-alto-contraste table,
+.modo-alto-contraste th,
+.modo-alto-contraste td {
+    border: 1px solid #ffffff !important;
 }
 
-.modo-alto-contraste *:not(img):not(svg):not(.excluir-contraste) {
-    background: #000 !important;
-    color: #fff !important;
-    border-color: #fff !important;
+.modo-alto-contraste th {
+    background-color: #000000 !important;
+    color:#0796ff !important;
 }
+/* 1. Dropdown de filtros */
+.modo-alto-contraste .filter-button {
+    background-color: #000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+  }
+  
+  .modo-alto-contraste .filter-button::after {
+    border-top-color: rgb(53, 155, 27) !important;
+  }
+
+  .modo-alto-contraste .filter-button:hover{
+    background-color: #3b8d34 !important;
+    color: #000 !important;
+    border: 2px solid #ffffff  !important;
+  }
+  
+  /* 2. Input de búsqueda */
+  .modo-alto-contraste .form-control[type="text"] {
+    background-color: #000 !important;
+    color: #FFF !important;
+    border: 2px solid #ffffff !important;
+  }
+  
+  .modo-alto-contraste .form-control::placeholder {
+    color: #CCC !important;
+  }
+  
+  /* 3. Botón de búsqueda */
+  .modo-alto-contraste .search-button {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #FFF !important;
+    font-weight: bold;
+  }
+  
+  .modo-alto-contraste .search-button:hover {
+    background-color: #3c4fa3 !important;
+    color: #000 !important;
+    border: 2px solid white !important;
+  }
+  
+  /* 4. Botón de exportar */
+  .modo-alto-contraste .icon-button {
+    background-color: #000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+  }
+  
+  .modo-alto-contraste .icon-button:hover {
+    background-color: #3b8d34 !important;
+    color: #000 !important;
+    border: 2px solid #ffffff !important;
+  }
+  
+  /* 5. Botón de eliminar seleccionados */
+  .modo-alto-contraste #delete-selected {
+    background-color: #FF0000 !important;
+    color: #FFF !important;
+    border: 2px solid #FFFF00 !important;
+  }
+  
+  .modo-alto-contraste #delete-selected:hover {
+    background-color: #FFF !important;
+    color: #FF0000 !important;
+  }
 
 .modo-claro {
     background: #f8f9fa !important;
@@ -102,4 +178,33 @@
     grid-template-columns: 1fr 2fr 1fr;
     gap: 5px;
     align-items: center;
+}
+
+/* Botón y panel - Posición fija */
+.accesibilidad-container {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;              /* Superior al sidebar */
+    pointer-events: none;       /* Contenedor no bloquea eventos */
+}
+
+/* Elementos interactivos */
+.accesibilidad-btn,
+.accesibilidad-panel,
+.accesibilidad-panel button {
+    pointer-events: auto;       /* Solo estos elementos reciben eventos */
+}
+
+/* Aislar completamente del sidebar */
+.accesibilidad-container::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    bottom: -50px;
+    left: -50px;
+    background: transparent;
+    z-index: -1;
 }

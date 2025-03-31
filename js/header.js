@@ -1,13 +1,14 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const sidebar = document.querySelector(".sidebar");
-    const main = document.querySelector(".main");
-
+document.addEventListener("DOMContentLoaded", () => {
+    // Lógica solo del sidebar
+    const sidebar = document.querySelector('.sidebar');
+    const main = document.querySelector('.main');
+    
     if (sidebar && main) {
-        sidebar.addEventListener("mouseover", function () {
+        sidebar.addEventListener('mouseenter', () => {
             main.style.marginLeft = "290px";
         });
-
-        sidebar.addEventListener("mouseout", function () {
+        
+        sidebar.addEventListener('mouseleave', () => {
             main.style.marginLeft = "108px";
         });
     }
