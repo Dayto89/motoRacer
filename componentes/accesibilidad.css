@@ -1,210 +1,309 @@
 /* Contenedor principal */
 .accesibilidad-container {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 9999;
-    transition: all 0.3s ease;
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  transition: all 0.3s ease;
 }
 
 /* Botón principal */
 .accesibilidad-btn {
-    background: #1c51a0;
-    border: none;
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+  background: #1c51a0;
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .accesibilidad-btn i {
-    font-size: 2em;
+  font-size: 2em;
 }
 
 .accesibilidad-btn:hover {
-    transform: scale(1.1) rotate(15deg);
+  transform: scale(1.1) rotate(15deg);
 }
 
 /* Panel de opciones */
 .accesibilidad-panel {
-    position: absolute;
-    right: 60px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    backdrop-filter: blur(5px);
-    width: 180px;
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  backdrop-filter: blur(5px);
+  width: 180px;
 }
 
 .accesibilidad-container:hover .accesibilidad-panel {
-    opacity: 1;
-    visibility: visible;
-    right: 70px;
-}
-
-/* Modos de contraste */
-.modo-alto-contraste,
-.modo-alto-contraste body,
-.modo-alto-contraste .sidebar,
-.modo-alto-contraste .main-content,
-.modo-alto-contraste .menu,
-.modo-alto-contraste .modal-content {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
-    border-color: #FFFF00 !important;
-}
-/* Tablas */
-.modo-alto-contraste table,
-.modo-alto-contraste th,
-.modo-alto-contraste td {
-    border: 1px solid #ffffff !important;
-}
-
-.modo-alto-contraste th {
-    background-color: #000000 !important;
-    color:#0796ff !important;
-}
-/* 1. Dropdown de filtros */
-.modo-alto-contraste .filter-button {
-    background-color: #000 !important;
-    color: #ffffff !important;
-    border: 2px solid #ffffff !important;
-  }
-  
-  .modo-alto-contraste .filter-button::after {
-    border-top-color: rgb(53, 155, 27) !important;
-  }
-
-  .modo-alto-contraste .filter-button:hover{
-    background-color: #3b8d34 !important;
-    color: #000 !important;
-    border: 2px solid #ffffff  !important;
-  }
-  
-  /* 2. Input de búsqueda */
-  .modo-alto-contraste .form-control[type="text"] {
-    background-color: #000 !important;
-    color: #FFF !important;
-    border: 2px solid #ffffff !important;
-  }
-  
-  .modo-alto-contraste .form-control::placeholder {
-    color: #CCC !important;
-  }
-  
-  /* 3. Botón de búsqueda */
-  .modo-alto-contraste .search-button {
-    background-color: #000000 !important;
-    color: #ffffff !important;
-    border: 2px solid #FFF !important;
-    font-weight: bold;
-  }
-  
-  .modo-alto-contraste .search-button:hover {
-    background-color: #3c4fa3 !important;
-    color: #000 !important;
-    border: 2px solid white !important;
-  }
-  
-  /* 4. Botón de exportar */
-  .modo-alto-contraste .icon-button {
-    background-color: #000 !important;
-    color: #ffffff !important;
-    border: 2px solid #ffffff !important;
-  }
-  
-  .modo-alto-contraste .icon-button:hover {
-    background-color: #3b8d34 !important;
-    color: #000 !important;
-    border: 2px solid #ffffff !important;
-  }
-  
-  /* 5. Botón de eliminar seleccionados */
-  .modo-alto-contraste #delete-selected {
-    background-color: #FF0000 !important;
-    color: #FFF !important;
-    border: 2px solid #FFFF00 !important;
-  }
-  
-  .modo-alto-contraste #delete-selected:hover {
-    background-color: #FFF !important;
-    color: #FF0000 !important;
-  }
-
-.modo-claro {
-    background: #f8f9fa !important;
-    color: #2d3436 !important;
-}
-
-.modo-claro *:not(img):not(svg):not(.excluir-contraste) {
-    background: #f8f9fa !important;
-    color: #2d3436 !important;
-    border-color: #ced4da !important;
+  opacity: 1;
+  visibility: visible;
+  right: 70px;
 }
 
 /* Tipografía dislexia */
 .tipografia-dislexia * {
-    font-family: 'OpenDyslexic', sans-serif !important;
-    line-height: 1.6 !important;
-    letter-spacing: 0.12em !important;
+  font-family: 'OpenDyslexic', sans-serif !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.12em !important;
 }
 
 /* Botones deshabilitados */
 .accesibilidad-panel button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: #ddd !important;
-    color: #666 !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #ddd !important;
+  color: #666 !important;
 }
 
 .control-fuente {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    gap: 5px;
-    align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 5px;
+  align-items: center;
 }
 
 /* Botón y panel - Posición fija */
 .accesibilidad-container {
-    position: fixed;
-    right: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1001;              /* Superior al sidebar */
-    pointer-events: none;       /* Contenedor no bloquea eventos */
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1001;
+  /* Superior al sidebar */
+  pointer-events: none;
+  /* Contenedor no bloquea eventos */
 }
 
 /* Elementos interactivos */
 .accesibilidad-btn,
 .accesibilidad-panel,
 .accesibilidad-panel button {
-    pointer-events: auto;       /* Solo estos elementos reciben eventos */
+  pointer-events: auto;
+  /* Solo estos elementos reciben eventos */
 }
 
 /* Aislar completamente del sidebar */
 .accesibilidad-container::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    right: -50px;
-    bottom: -50px;
-    left: -50px;
-    background: transparent;
-    z-index: -1;
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  bottom: -50px;
+  left: -50px;
+  background: transparent;
+  z-index: -1;
+}
+
+/* Modos de contraste */
+.modo-alto-contraste,
+.modo-alto-contraste body,
+.modo-alto-contraste .sidebar,
+.modo-alto-contraste .menu,
+.modo-alto-contraste .modal-content {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border-color: #FFFF00 !important;
+}
+
+.modo-alto-contraste .main-content{
+  background-color: #000000c5 !important;
+}
+
+/* Tablas */
+.modo-alto-contraste table,
+.modo-alto-contraste th,
+.modo-alto-contraste td {
+  border: 1px solid #ffffff !important;
+  background-color: #161616 !important;
+}
+
+.modo-alto-contraste th {
+  background-color: #000000 !important;
+  color: #0796ff !important;
+}
+
+/* 1. Dropdown de filtros */
+.modo-alto-contraste .filter-button {
+  background-color: #000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .filter-button::after {
+  border-top-color: rgb(53, 155, 27) !important;
+}
+
+.modo-alto-contraste .filter-button:hover {
+  background-color: #3b8d34 !important;
+  color: #000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+/* 2. Input de búsqueda */
+.modo-alto-contraste .form-control[type="text"] {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .form-control::placeholder {
+  color: #CCC !important;
+}
+
+/* 3. Botón de búsqueda */
+.modo-alto-contraste .search-button {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #FFF !important;
+  font-weight: bold;
+}
+
+.modo-alto-contraste .search-button:hover {
+  background-color: #3c4fa3 !important;
+  color: #000 !important;
+  border: 2px solid white !important;
+}
+
+/* 4. Botón de exportar */
+.modo-alto-contraste .icon-button {
+  background-color: #000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .icon-button:hover {
+  background-color: #3b8d34 !important;
+  color: #000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+/* 5. Botón de eliminar seleccionados */
+.modo-alto-contraste #delete-selected {
+  background-color: #000000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste #delete-selected:hover {
+  color: #FF0000 !important;
+}
+
+/* Modos de contraste */
+.modo-claro,
+.modo-claro body,
+.modo-claro .sidebar,
+.modo-claro .menu,
+.modo-claro .modal-content {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #FFFF00 !important;
+}
+
+.modo-claro .main-content{
+  background-color: #dbdbdbe8 !important;
+}
+
+/* Tablas */
+.modo-claro table,
+.modo-claro th,
+.modo-claro td {
+  border: 1px solid #000000 !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;	
+}
+
+.modo-claro th {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.modo-claro .acciones i{
+  color: #000000 !important;
+}
+
+/* 1. Dropdown de filtros */
+.modo-claro .filter-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .filter-button::after {
+  border-top-color: rgb(53, 155, 27) !important;
+}
+
+.modo-claro .filter-button:hover {
+  background-color: #3b8d34 !important;
+  color: #000 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* 2. Input de búsqueda */
+.modo-claro .form-control[type="text"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .form-control::placeholder {
+  color: #868585 !important;
+}
+
+/* 3. Botón de búsqueda */
+.modo-claro .search-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  font-weight: bold;
+}
+
+.modo-claro .search-button:hover {
+  background-color: #3c4fa3 !important;
+  color: #000 !important;
+  border: 2px solid rgb(0, 0, 0) !important;
+}
+
+/* 4. Botón de exportar */
+.modo-claro .icon-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .icon-button:hover {
+  background-color: #3b8d34 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+/* 5. Botón de eliminar seleccionados */
+.modo-claro #delete-selected {
+  background-color: #ffffff !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro #delete-selected i {
+  color: #000000 !important;
+}
+
+.modo-claro #delete-selected:hover {
+  color: #FF0000 !important;
 }
