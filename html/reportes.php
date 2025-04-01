@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -28,7 +28,7 @@ $busqueda = isset($_GET['busqueda']) ? mysqli_real_escape_string($conexion, $_GE
 // Manejar búsqueda general
 if (!empty($busqueda)) {
   $condiciones = [];
-
+  
   if (isset($_GET['criterios']) && is_array($_GET['criterios'])) {
     // Búsqueda por criterios seleccionados
     foreach ($_GET['criterios'] as $criterio) {
@@ -37,29 +37,29 @@ if (!empty($busqueda)) {
         case 'codigo':
           $condiciones[] = "f.codigo = '$busqueda'";
           break;
-        case 'fechaGeneracion':
-          $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'";
-          break;
-        case 'metodoPago':
-          // Busqueda exacta en tabla de métodos
-          $condicionesBusqueda[] = "EXISTS (
+          case 'fechaGeneracion':
+            $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'";
+            break;
+            case 'metodoPago':
+              // Busqueda exacta en tabla de métodos
+              $condicionesBusqueda[] = "EXISTS (
                 SELECT 1 
                 FROM factura_metodo_pago tmp 
                 WHERE tmp.Factura_codigo = f.codigo 
                 AND tmp.metodoPago = '$valor'
-            )";
-          break;
+                )";
+                break;
         case 'Cliente_codigo':
           $condiciones[] = "f.Cliente_codigo LIKE '%$busqueda%'";
           break;
         case 'vendedor':
           $condiciones[] = "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')";
           break;
-        case 'cliente':
-          $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')";
-          break;
-        case 'precioTotal':
-          $condiciones[] = "f.precioTotal = '$busqueda'";
+          case 'cliente':
+            $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')";
+            break;
+            case 'precioTotal':
+              $condiciones[] = "f.precioTotal = '$busqueda'";
           break;
       }
     }
@@ -72,11 +72,11 @@ if (!empty($busqueda)) {
       "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')",
       "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')",
       "EXISTS (
-          SELECT 1 
-          FROM factura_metodo_pago tmp 
-          WHERE tmp.Factura_codigo = f.codigo 
-          AND tmp.metodoPago = '$busqueda'
-      )"
+        SELECT 1 
+        FROM factura_metodo_pago tmp 
+        WHERE tmp.Factura_codigo = f.codigo 
+        AND tmp.metodoPago = '$busqueda'
+        )"
     ];
 
     $filtros[] = "(" . implode(" OR ", $condicionesGenerales) . ")";
@@ -84,80 +84,80 @@ if (!empty($busqueda)) {
 }
 
 $consulta = "
-    SELECT 
-        f.codigo,
-        f.fechaGeneracion,
-        f.Usuario_identificacion,
-        f.Cliente_codigo,
-        f.precioTotal,
-        c.nombre AS cliente_nombre,
-        c.apellido AS cliente_apellido,
-        n.nombre AS usuario_nombre,
+SELECT 
+f.codigo,
+f.fechaGeneracion,
+f.Usuario_identificacion,
+f.Cliente_codigo,
+f.precioTotal,
+c.nombre AS cliente_nombre,
+c.apellido AS cliente_apellido,
+n.nombre AS usuario_nombre,
         n.apellido AS usuario_apellido,
         GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
-    FROM 
+        FROM 
         factura f
-    LEFT JOIN factura_metodo_pago m 
+        LEFT JOIN factura_metodo_pago m 
         ON m.Factura_codigo = f.codigo
-    LEFT JOIN cliente c 
+        LEFT JOIN cliente c 
         ON c.codigo = f.Cliente_codigo
-    LEFT JOIN usuario n 
+        LEFT JOIN usuario n 
         ON n.identificacion = f.Usuario_identificacion
-";
-
-// Añadir condiciones WHERE si hay filtros
-if (!empty($filtros)) {
-  $consulta .= " WHERE " . implode(" AND ", $filtros);
-}
-
-// Agregar GROUP BY una sola vez
-$consulta .= " GROUP BY 
-    f.codigo, 
-    f.fechaGeneracion, 
-    f.Usuario_identificacion, 
-    f.Cliente_codigo, 
-    f.precioTotal, 
-    c.nombre, 
-    c.apellido, 
-    n.nombre, 
-    n.apellido";
-
-// Ejecutar la consulta
-$resultado = mysqli_query($conexion, $consulta);
-
-if (!$resultado) {
-  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigos'])) {
-  header('Content-Type: application/json');
-  $response = ['success' => false, 'error' => ''];
-
-  try {
-    $codigos = json_decode(file_get_contents('php://input'), true)['codigos'];
-    $conexion->autocommit(false);
-
-    foreach ($codigos as $codigo) {
-      if (!ctype_digit($codigo)) {
-        throw new Exception("Código inválido: $codigo");
-      }
-
-      // Eliminar métodos de pago
-      $stmt = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
-      $stmt->bind_param("i", $codigo);
-      if (!$stmt->execute()) throw new Exception("Error métodos pago: " . $stmt->error);
-
+        ";
+        
+        // Añadir condiciones WHERE si hay filtros
+        if (!empty($filtros)) {
+          $consulta .= " WHERE " . implode(" AND ", $filtros);
+        }
+        
+        // Agregar GROUP BY una sola vez
+        $consulta .= " GROUP BY 
+        f.codigo, 
+        f.fechaGeneracion, 
+        f.Usuario_identificacion, 
+        f.Cliente_codigo, 
+        f.precioTotal, 
+        c.nombre, 
+        c.apellido, 
+        n.nombre, 
+        n.apellido";
+        
+        // Ejecutar la consulta
+        $resultado = mysqli_query($conexion, $consulta);
+        
+        if (!$resultado) {
+          die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigos'])) {
+          header('Content-Type: application/json');
+          $response = ['success' => false, 'error' => ''];
+          
+          try {
+            $codigos = json_decode(file_get_contents('php://input'), true)['codigos'];
+            $conexion->autocommit(false);
+            
+            foreach ($codigos as $codigo) {
+              if (!ctype_digit($codigo)) {
+                throw new Exception("Código inválido: $codigo");
+              }
+              
+              // Eliminar métodos de pago
+              $stmt = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
+              $stmt->bind_param("i", $codigo);
+              if (!$stmt->execute()) throw new Exception("Error métodos pago: " . $stmt->error);
+              
       // Eliminar productos de factura
       $stmt = $conexion->prepare("DELETE FROM producto_factura WHERE Factura_codigo = ?");
       $stmt->bind_param("i", $codigo);
       if (!$stmt->execute()) throw new Exception("Error productos: " . $stmt->error);
-
+      
       // Eliminar factura principal
       $stmt = $conexion->prepare("DELETE FROM factura WHERE codigo = ?");
       $stmt->bind_param("i", $codigo);
       if (!$stmt->execute()) throw new Exception("Error factura: " . $stmt->error);
     }
-
+    
     $conexion->commit();
     $response['success'] = true;
   } catch (Exception $e) {
@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigos'])) {
   } finally {
     $conexion->autocommit(true);
   }
-
+  
   echo json_encode($response);
   exit;
 }
@@ -174,34 +174,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigos'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
   $response = ['success' => false, 'error' => ''];
-
+  
   try {
     $codigo = $_POST['codigo'];
-
+    
     // Iniciar transacción
     mysqli_begin_transaction($conexion);
-
+    
     // 1. Eliminar método de pago
     $stmt1 = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
     $stmt1->bind_param("i", $codigo);
     if (!$stmt1->execute()) {
       throw new Exception("Error en metodo_pago: " . $stmt1->error);
     }
-
+    
     // 2. Eliminar productos de la factura
     $stmt2 = $conexion->prepare("DELETE FROM producto_factura WHERE Factura_codigo = ?");
     $stmt2->bind_param("i", $codigo);
     if (!$stmt2->execute()) {
       throw new Exception("Error en producto_factura: " . $stmt2->error);
     }
-
+    
     // 3. Eliminar la factura principal
     $stmt3 = $conexion->prepare("DELETE FROM factura WHERE codigo = ?");
     $stmt3->bind_param("i", $codigo);
     if (!$stmt3->execute()) {
       throw new Exception("Error en factura: " . $stmt3->error);
     }
-
+    
     // Confirmar cambios si todo fue bien
     mysqli_commit($conexion);
     $response['success'] = true;
@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
     if (isset($stmt2)) $stmt2->close();
     if (isset($stmt3)) $stmt3->close();
   }
-
+  
   echo json_encode($response);
   exit;
 }
@@ -225,6 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
   header("Location: recibo.php");
   exit();
 }
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>

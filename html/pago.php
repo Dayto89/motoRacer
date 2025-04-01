@@ -12,7 +12,6 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
 // Conexión a la base de datos
 $servername = "localhost";
@@ -36,7 +35,7 @@ if (isset($_GET['codigo'])) {
     $stmt->bind_param("s", $codigo);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     $clientes = [];
     while ($row = $result->fetch_assoc()) {
         $clientes[] = $row;
@@ -56,14 +55,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo json_encode(["success" => false, "error" => "No se recibieron datos"]);
         exit;
     }
-
+    
     // Validar datos recibidos
     if (!isset($data["codigo"], $data["tipoDoc"], $data["nombre"], $data["apellido"], $data["telefono"], $data["correo"], $data["productos"], $data["metodos_pago"], $data["total"])) {
         header('Content-Type: application/json');
         echo json_encode(["success" => false, "error" => "Datos incompletos"]);
         exit;
     }
-
+    
     // Asignar valores
     $codigo = $data["codigo"];
     $tipoDoc = $data["tipoDoc"];
@@ -74,14 +73,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $productos = $data["productos"];
     $metodos_pago = $data["metodos_pago"];
     $total = $data["total"];
-
+    
     // Verificar si el cliente existe
     $sql = "SELECT codigo FROM cliente WHERE codigo = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $codigo);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     if ($result->num_rows === 0) {
         // Registrar cliente si no existe
         $sql = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)";
@@ -93,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $cliente = $result->fetch_assoc();
         $cliente_id = $cliente["codigo"];
     }
-
+    
     // Registrar factura
     $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, precioTotal) VALUES (NOW(), ?, ?, ?)";
     $stmt = $conn->prepare($sql);
@@ -101,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bind_param("ssd", $usuario_id, $cliente_id, $total);
     $stmt->execute();
     $factura_id = $stmt->insert_id;
-
+    
     // Registrar métodos de pago
     foreach ($metodos_pago as $metodo) {
         $sql = "INSERT INTO factura_metodo_pago (Factura_codigo, metodoPago, monto) VALUES (?, ?, ?)";
@@ -109,23 +108,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("isd", $factura_id, $metodo["tipo"], $metodo["valor"]);
         $stmt->execute();
     }
-
+    
     // Registrar productos en la factura
     foreach ($productos as $producto) {
         $sql = "INSERT INTO producto_factura (Factura_codigo, Producto_codigo, cantidad, precioUnitario) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iiid", $factura_id, $producto["id"], $producto["cantidad"], $producto["precio"]);
         $stmt->execute();
-
+        
         // Descontar stock del producto
         $sql = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
         $stmt->execute();
     }
-
     
-
+    
+    
     
     $_SESSION['factura_id'] = $factura_id;
     // Respuesta JSON
@@ -142,6 +141,7 @@ $total = $_SESSION['total'] ?? 0;
 // Limpiar los datos de la sesión después de usarlos
 unset($_SESSION['productos']);
 unset($_SESSION['total']);
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 

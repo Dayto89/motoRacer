@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $min_quantity = isset($_POST['min_quantity']) ? (int)$_POST['min_quantity'] : 0;
     $alarm_time = $_POST['alarm_time'] ?? null;
     $notification_method = $_POST['notification_method'] ?? 'popup'; // Valor por defecto
-
+    
     $stmt = $conexion->prepare("INSERT INTO configuracion_stock 
         (min_quantity, alarm_time, notification_method) VALUES (?, ?, ?)");
     $stmt->bind_param("iss", $min_quantity, $alarm_time, $notification_method);
-
+    
     if ($stmt->execute()) {
         header("Location: stock.php?success=1");
     } else {
@@ -40,12 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit();
 }
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8" />
+    
+    <head>
+        <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Configuracion stock</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">

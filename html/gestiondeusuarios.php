@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+ini_set('display_errors', 0);
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
@@ -31,7 +33,7 @@ if ($_POST && isset($_POST['permisos'])) {
   $stmt->execute();
   $result = $stmt->get_result();
   $permisos = [];
-
+  
   while ($row = $result->fetch_assoc()) {
     $permisos[$row['seccion']][] = [
       'sub_seccion' => $row['sub_seccion'],
@@ -47,11 +49,8 @@ if ($_POST && isset($_POST['permisos'])) {
   echo json_encode($permisos);
   exit();
 }
-
-
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 

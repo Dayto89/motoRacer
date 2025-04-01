@@ -5,7 +5,6 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {
@@ -59,17 +58,18 @@ $base = $totalBruto / (1 + ($ivaPorcentaje / 100));
 $impuesto = $totalBruto - $base;
 
 date_default_timezone_set('America/Bogota');
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Factura</title>
-    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <link rel="stylesheet" href="../css/recibo.css">
-    <link rel="stylesheet" href="../componentes/header.css">
-    <script src="../js/header.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <title>Factura</title>
+        <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+        <link rel="stylesheet" href="../css/recibo.css">
+        <link rel="stylesheet" href="../componentes/header.css">
+        <script src="../js/header.js"></script>
     <script defer src="/js/index.js"></script>
 </head>
 <body>

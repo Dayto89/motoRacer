@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['permisos']) && is_array($_POST['permisos'])) {
         $stmt = $conexion->prepare("INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES (?, ?, ?, ?)");
 
-        foreach ($_POST['permisos'] as $permiso => $valaor) {
+        foreach ($_POST['permisos'] as $permiso => $valor) {
             $permitido = ($valor == 1) ? 1 : 0;  // Si el checkbox está marcado, es 1; si no, es 0
 
             list($seccion, $sub_seccion) = explode('_', $permiso, 2);

@@ -5,11 +5,11 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-    die("<script>alert('No se pudo conectar a la base de datos');</script>");
+  die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 
 // Agregar categoría
@@ -19,11 +19,11 @@ if ($_POST && isset($_POST['guardar'])) {
   };
   $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
   $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-
+  
   $query = "INSERT INTO marca (codigo, nombre) VALUES ('$codigo', '$nombre')";
-
+  
   $resultado = mysqli_query($conexion, $query);
-
+  
   if ($resultado) {
     echo "<script>alert('Marca agregada correctamente');</script>";
   } else {
@@ -45,19 +45,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
 
 // Obtener lista de productos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
-    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-    
-    $query = "SELECT * FROM producto WHERE Marca_codigo = '$codigo'";
-    $resultado = mysqli_query($conexion, $query);
-    
-    $productos = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $productos[] = $fila;
-    }
-    
-    echo json_encode($productos);
-    exit();
+  $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
+  
+  $query = "SELECT * FROM producto WHERE Marca_codigo = '$codigo'";
+  $resultado = mysqli_query($conexion, $query);
+  
+  $productos = [];
+  while ($fila = mysqli_fetch_assoc($resultado)) {
+    $productos[] = $fila;
+  }
+  
+  echo json_encode($productos);
+  exit();
 }
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

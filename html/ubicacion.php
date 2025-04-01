@@ -4,12 +4,11 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-    die("<script>alert('No se pudo conectar a la base de datos');</script>");
+  die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 
 // Agregar Ubicacion
@@ -19,11 +18,11 @@ if ($_POST && isset($_POST['guardar'])) {
   };
   $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
   $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-
+  
   $query = "INSERT INTO ubicacion (codigo, nombre) VALUES ('$codigo', '$nombre')";
-
+  
   $resultado = mysqli_query($conexion, $query);
-
+  
   if ($resultado) {
     echo "<script>alert('Ubicación agregada correctamente');</script>";
   } else {
@@ -45,31 +44,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
 
 // Obtener lista de productos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
-    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-    
-    $query = "SELECT * FROM producto WHERE Ubicacion_codigo = '$codigo'";
-    $resultado = mysqli_query($conexion, $query);
-    
-    $productos = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $productos[] = $fila;
-    }
-    
-    echo json_encode($productos);
-    exit();
+  $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
+  
+  $query = "SELECT * FROM producto WHERE Ubicacion_codigo = '$codigo'";
+  $resultado = mysqli_query($conexion, $query);
+  
+  $productos = [];
+  while ($fila = mysqli_fetch_assoc($resultado)) {
+    $productos[] = $fila;
+  }
+  
+  echo json_encode($productos);
+  exit();
 }
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ubicación</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-  <link rel="stylesheet" href="/css/ubicacion.css">
-  <link rel="stylesheet" href="../componentes/header.css">
-  <link rel="stylesheet" href="../componentes/header.php">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubicación</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <link rel="stylesheet" href="/css/ubicacion.css">
+    <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
   <script src="/js/ubicaciones.js"></script>

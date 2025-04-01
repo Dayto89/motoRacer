@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -29,101 +29,101 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
       case 'codigo':
         $filtros[] = "p.codigo1 LIKE '%$valor%'";
         break;
-      case 'codigo2':
-        $filtros[] = "p.codigo2 LIKE '%$valor%'";
+        case 'codigo2':
+          $filtros[] = "p.codigo2 LIKE '%$valor%'";
+          break;
+          case 'nombre':
+            $filtros[] = "p.nombre LIKE '%$valor%'";
+            break;
+            case 'precio1':
+              $filtros[] = "p.precio1 LIKE '%$valor%'";
+              break;
+              case 'precio2':
+                $filtros[] = "p.precio2 LIKE '%$valor%'";
+                break;
+                case 'precio3':
+                  $filtros[] = "p.precio3 LIKE '%$valor%'";
         break;
-      case 'nombre':
-        $filtros[] = "p.nombre LIKE '%$valor%'";
-        break;
-      case 'precio1':
-        $filtros[] = "p.precio1 LIKE '%$valor%'";
-        break;
-      case 'precio2':
-        $filtros[] = "p.precio2 LIKE '%$valor%'";
-        break;
-      case 'precio3':
-        $filtros[] = "p.precio3 LIKE '%$valor%'";
-        break;
-      case 'categoria':
-        $filtros[] = "c.nombre LIKE '%$valor%'";
+        case 'categoria':
+          $filtros[] = "c.nombre LIKE '%$valor%'";
         break;
       case 'marca':
         $filtros[] = "m.nombre LIKE '%$valor%'";
         break;
-      case 'ubicacion':
-        $filtros[] = "ub.nombre LIKE '%$valor%'";
-        break;
-      case 'proveedor':
+        case 'ubicacion':
+          $filtros[] = "ub.nombre LIKE '%$valor%'";
+          break;
+          case 'proveedor':
         $filtros[] = "pr.nombre LIKE '%$valor%'";
         break;
+      }
     }
   }
-}
-
-$consulta = "
-    SELECT 
-        p.codigo1,
-        p.codigo2,
-        p.nombre,
-        p.iva,
-        p.precio1,
-        p.precio2,
-        p.precio3,
-        p.cantidad,
-        p.descripcion,
-        p.Categoria_codigo,
-        p.Marca_codigo,
-        p.UnidadMedida_codigo,
-        p.Ubicacion_codigo,
-        p.proveedor_nit,
-        c.nombre AS categoria,
-        m.nombre AS marca,
-        u.nombre AS unidadmedida,
-        ub.nombre AS ubicacion,
-        pr.nombre AS proveedor
-    FROM 
-        producto p
-    LEFT JOIN 
-        categoria c ON p.Categoria_codigo = c.codigo
-    LEFT JOIN 
-        marca m ON p.Marca_codigo = m.codigo
-    LEFT JOIN 
-        unidadmedida u ON p.UnidadMedida_codigo = u.codigo
-    LEFT JOIN 
-        ubicacion ub ON p.Ubicacion_codigo = ub.codigo
+  
+  $consulta = "
+  SELECT 
+  p.codigo1,
+  p.codigo2,
+  p.nombre,
+  p.iva,
+  p.precio1,
+  p.precio2,
+  p.precio3,
+  p.cantidad,
+  p.descripcion,
+  p.Categoria_codigo,
+  p.Marca_codigo,
+  p.UnidadMedida_codigo,
+  p.Ubicacion_codigo,
+  p.proveedor_nit,
+  c.nombre AS categoria,
+  m.nombre AS marca,
+  u.nombre AS unidadmedida,
+  ub.nombre AS ubicacion,
+  pr.nombre AS proveedor
+  FROM 
+  producto p
+  LEFT JOIN 
+  categoria c ON p.Categoria_codigo = c.codigo
+  LEFT JOIN 
+  marca m ON p.Marca_codigo = m.codigo
+  LEFT JOIN 
+  unidadmedida u ON p.UnidadMedida_codigo = u.codigo
+  LEFT JOIN 
+  ubicacion ub ON p.Ubicacion_codigo = ub.codigo
     LEFT JOIN 
         proveedor pr ON p.proveedor_nit = pr.nit
     WHERE 1=1
-";
-
-if (!empty($filtros)) {
-  $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
-}
-
-$resultado = mysqli_query($conexion, $consulta);
-
-if (!$resultado) {
-  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
-
-// Actualización de datos del modal
-if (isset($_POST['codigo1'])) {
-  // Se reciben y se escapan las variables
-  $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
-  $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
-  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-  $precio1 = mysqli_real_escape_string($conexion, $_POST['precio1']);
-  $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
-  $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
-  $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
-  $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
-  $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
-  $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
-  $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
-  $ubicacion = mysqli_real_escape_string($conexion, $_POST['ubicacion-id']);
-  $proveedor = mysqli_real_escape_string($conexion, $_POST['proveedor-id']);
-
-  $consulta_update = "UPDATE producto SET 
+    ";
+    
+    if (!empty($filtros)) {
+      $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
+    }
+    
+    $resultado = mysqli_query($conexion, $consulta);
+    
+    if (!$resultado) {
+      die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
+    }
+    
+    // Actualización de datos del modal
+    if (isset($_POST['codigo1'])) {
+      // Se reciben y se escapan las variables
+      $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
+      $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
+      $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+      $precio1 = mysqli_real_escape_string($conexion, $_POST['precio1']);
+      $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
+      $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
+      $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
+      $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
+      $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
+      $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
+      $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
+      $ubicacion = mysqli_real_escape_string($conexion, $_POST['ubicacion-id']);
+      $proveedor = mysqli_real_escape_string($conexion, $_POST['proveedor-id']);
+      
+      $consulta_update = "UPDATE producto SET 
       codigo1 = '$codigo1', 
       codigo2 = '$codigo2', 
       nombre = '$nombre', 
@@ -148,39 +148,40 @@ if (isset($_POST['codigo1'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
-
+  
   // Debug: Registrar el código recibido
   error_log("Código recibido: " . $_POST['codigo']);
-
+  
   if (!$conexion) {
     echo json_encode(['success' => false, 'error' => 'Error de conexión']);
     exit;
   }
-
+  
   $codigo = $_POST['codigo'];
   $stmt = $conexion->prepare("DELETE FROM producto WHERE codigo1 = ?");
   $stmt->bind_param("s", $codigo);
-
+  
   if (!$stmt->execute()) {
     error_log("Error SQL: " . $stmt->error); // Registrar el error
     echo json_encode(['success' => false, 'error' => $stmt->error]);
     exit;
   }
-
+  
   if ($stmt->affected_rows === 0) {
     echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
     exit;
   }
-
+  
   echo json_encode(['success' => true]);
   exit;
 }
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
+  
+  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventario</title>

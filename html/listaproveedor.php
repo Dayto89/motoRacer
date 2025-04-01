@@ -5,12 +5,12 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 
 if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+  die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
@@ -31,27 +31,28 @@ $resultado = mysqli_stmt_get_result($stmt);
 if (!$resultado) {
   die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
 }
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventario</title>
-  <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-  <link
+  
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventario</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+    <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-  <link rel="stylesheet" href="../css/listaproveedor.css" />
-  <link rel="stylesheet" href="../componentes/header.css">
-  <link rel="stylesheet" href="../componentes/header.php">
-  <script src="../js/header.js"></script>
-  <script src="/js/index.js"></script>
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
+    <link rel="stylesheet" href="../css/listaproveedor.css" />
+    <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.php">
+    <script src="../js/header.js"></script>
+    <script src="/js/index.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
   </style>
 </head>
 

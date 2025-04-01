@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 
@@ -16,23 +16,23 @@ if (!$conexion) {
 
 $icono1 = '
 <animated-icons class= "icono-accion"
-  src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
-  trigger="click"
-  attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"#FFFFFF"}}\'
-  height="50"
-  width="50"
+src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
+trigger="click"
+attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"#FFFFFF"}}\'
+height="50"
+width="50"
 
 ></animated-icons>';
 
 $icono2 = '
 <animated-icons class="icono-accion"
-  src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
-  trigger="click"
-  attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
-  height="50"
-  width="50"
+src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
+trigger="click"
+attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
+height="50"
+width="50"
 
-  ></animated-icons>';
+></animated-icons>';
 
 
 // Guardar informacion de cliente en la base de datos
@@ -47,7 +47,7 @@ if (!$conexion) {
 if (isset($_POST['cobrar'])) {
     $productos = [];
     $total = 0;
-
+    
     // Recorrer los productos en el resumen y almacenarlos en un array
     foreach ($_POST['productos'] as $producto) {
         $productos[] = [
@@ -58,26 +58,27 @@ if (isset($_POST['cobrar'])) {
         ];
         $total += $producto['precio'] * $producto['cantidad'];
     }
-
+    
     // Guardar los productos y el total en la sesión
     $_SESSION['productos'] = $productos;
     $_SESSION['total'] = $total;
-
+    
     // Redirigir a prueba.php
     header("Location: prueba.php");
     exit();
 }
 
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ventas</title>
-    <link rel="stylesheet" href="../css/factura.css">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ventas</title>
+        <link rel="stylesheet" href="../css/factura.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
