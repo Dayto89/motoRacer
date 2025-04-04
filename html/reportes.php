@@ -282,6 +282,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
   <div class="sidebar">
     <div id="menu"></div>
   </div>
+  <div class="fondo-opaco"></div>
   <div class="main-content">
     <h1>Reportes</h1>
     <div class="filter-bar">
@@ -321,7 +322,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
             <!-- Agregar este botón junto al botón de exportar -->
             <i class="fas fa-file-excel"></i>
-            <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
+            <label> Exportar a Excel</label>
           </button>
         </form>
 

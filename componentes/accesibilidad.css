@@ -166,8 +166,8 @@ h1, h2 {
   filter: drop-shadow(0px 0px 5px #ffffff);
 }
 
-.modo-alto-contraste, .modo-alto-contraste .body,.modo-alto-contraste .main-content{
-  background-color: #000000c5 !important;
+.modo-alto-contraste, .modo-alto-contraste .body,.modo-alto-contraste{
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Tablas */
@@ -254,6 +254,30 @@ h1, h2 {
   color: #FF0000 !important;
 }
 
+.modo-alto-contraste .edit-button {
+  background-color: #000000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50%;
+}
+
+.modo-alto-contraste .edit-button:hover {
+  color: #000 !important;
+  border: none;
+}
+
+.modo-alto-contraste .delete-button {
+  background-color: #000000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50%;
+}
+
+.modo-alto-contraste .delete-button:hover {
+  color: #000 !important;
+  border: none;
+}
+
 /* 
 =============================================================================================================
 Modo claro lista de productos
@@ -276,10 +300,6 @@ Modo claro lista de productos
   filter: invert(1) brightness(1.5);
 }
 
-.modo-claro .main-content{
-  background-color: #dbdbdbe8 !important;
-  background: #222;
-}
 .modo-claro main {
   background-color: #ffffffc7; /* Color claro con transparencia */
   border: 2px solid #000000; /* Borde oscuro para contraste */
@@ -380,8 +400,33 @@ Modo claro lista de productos
   color: #FF0000 !important;
 }
 
+.modo-claro .edit-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 50%;
+}
+
+.modo-claro .edit-button:hover {
+  color: #000 !important;
+  border: none;
+}
+
+.modo-claro .delete-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  border-radius: 50%;
+}
+
+.modo-claro .delete-button:hover {
+  color: #000 !important;
+  border: none;
+}
+
 /*
-=====================================================================================================================================================Modo de contraste Gestion de Usuarios
+=====================================================================================================================================================
+Modo de contraste Gestion de Usuarios
 =====================================================================================================================================================
 */
 
@@ -502,3 +547,340 @@ body.modo-alto-contraste {
   height: 100vh;
 }
 
+/*
+=====================================================================================================================================================
+  Modo claro Información
+=====================================================================================================================================================
+*/
+
+.modo-claro .profile-pic img {
+  border: 4px solid #000000;
+}
+
+.modo-claro .container h1 {
+  color: #000000 !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo alto contraste Reportes
+=====================================================================================================================================================
+*/
+
+.modo-alto-contraste input[type="text"] {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste input::placeholder {
+  color: #CCC !important;
+}
+
+.modo-alto-contraste .delete-button {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .delete-button:hover {
+  background-color: #fc0000 !important;
+  color: #000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .recibo-button {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .recibo-button:hover {
+  background-color: #0400fc !important;
+  color: #000 !important;
+  border: 2px solid #ffffff !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo claro Reportes
+=====================================================================================================================================================
+*/
+
+.modo-claro input[type="text"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro input::placeholder {
+  color: #868585 !important;
+}
+
+.modo-claro .delete-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .delete-button:hover {
+  background-color: #ff0000 !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .recibo-button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+.modo-claro .recibo-button:hover {
+  background-color: #0400fc !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo alto contraste Ventas
+=====================================================================================================================================================
+*/
+
+.modo-alto-contraste .search-icon {
+  background-color: rgba(245, 245, 245, 0);
+  color: #ffffff !important;
+}
+
+.modo-alto-contraste .breadcrumb {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .breadcrumb a {
+  color: #ffffff !important;
+}
+
+.modo-alto-contraste .breadcrumb a:hover {
+  color: #ffffff !important;
+}
+
+.modo-alto-contraste .brand:before {
+  border-bottom: 4px solid #ffffff;
+  border-left: 4px solid #ffffff;
+  transform-origin: 0 100%;
+}
+
+.modo-alto-contraste .brand:after {
+  border-top: 4px solid #ffffff;
+  border-right: 4px solid #ffffff;
+  transform-origin: 100% 0%;
+}
+
+.modo-alto-contraste .resumen-scroll {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .listaResumen li{
+  background-color: #414141 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo claro Ventas
+=====================================================================================================================================================
+*/
+
+.modo-claro .search-icon {
+  background-color: rgba(0, 0, 0, 0);
+  color: #000000 !important;
+}
+
+.modo-claro .breadcrumb {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .breadcrumb a {
+  color: #000000 !important;
+}
+
+.modo-claro .breadcrumb a:hover {
+  color: #000000 !important;
+}
+
+.modo-claro .brand:before {
+  border-bottom: 4px solid #000000;
+  border-left: 4px solid #000000;
+  transform-origin: 0 100%;
+}
+
+.modo-claro .brand:after {
+  border-top: 4px solid #000000;
+  border-right: 4px solid #000000;
+  transform-origin: 100% 0%;
+}
+
+.modo-claro .sidebar-right {
+  color: #000000 !important;
+}
+
+.modo-claro .resumen-scroll {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .listaResumen li{
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo alto contraste Lista proveedores
+=====================================================================================================================================================
+*/
+
+.modo-claro #inventario {
+  text-shadow: none;
+}
+
+/*
+=====================================================================================================================================================
+  Modo alto contraste actualizar proveedor
+=====================================================================================================================================================
+*/
+
+.modo-alto-contraste #selectProveedor {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste #selectProveedor::placeholder {
+  color: #CCC !important;
+}
+
+.modo-alto-contraste #correo {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste .boton button {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste #eliminar:hover {
+  background-color: #ff0000 !important;
+  color: #FFF !important;
+}
+
+.modo-alto-contraste #guardarProveedor:hover {
+  background-color: #007BFF !important;
+  color: #FFF !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo claro actualizar proveedor
+=====================================================================================================================================================
+*/
+
+.modo-claro .campo label {
+  color: #000000 !important;
+  text-shadow: none;
+}
+
+.mmodo-claro .container form {
+  color: #000000 !important;
+}
+
+.modo-claro #selectProveedor {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro #selectProveedor::placeholder {
+  color: #868585 !important;
+}
+
+.modo-claro #correo {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro .boton button {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro #eliminar:hover {
+  background-color: #ff0000 !important;
+  color: #000000 !important;
+}
+
+.modo-claro #guardarProveedor:hover {
+  background-color: #007BFF !important;
+  color: #000000 !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo alto contraste Crear proveedor
+=====================================================================================================================================================
+*/
+
+.modo-alto-contraste #estadoProveedor {
+  background-color: #000 !important;
+  color: #FFF !important;
+  border: 2px solid #ffffff !important;
+}
+
+.modo-alto-contraste select #estadoProveedor::placeholder {
+  color: #CCC !important;
+}
+
+.modo-alto-contraste .button-container button:hover{
+  background-color: #0056b3 !important;
+
+  border: 2px solid #ffffff !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo claro Crear proveedor
+=====================================================================================================================================================
+*/
+
+.modo-claro #estadoProveedor {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+.modo-claro select #estadoProveedor::placeholder {
+  color: #868585 !important;
+}
+
+.modo-claro #crearProveedor .campo label {
+  color: #000000 !important;
+  text-shadow: none;
+}
+
+.modo-claro .button-container button:hover{
+  background-color: #0056b3 !important;
+  border: 2px solid #000000 !important;
+}

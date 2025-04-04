@@ -62,7 +62,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div id="menu"></div>
     </div>
 
-
+    <div class="fondo-opaco"></div>
   <!--Barra de búsqueda fija con efecto deslizante -->
   <div class="search-bar">
     <form method="GET" action="listaproveedor.php">

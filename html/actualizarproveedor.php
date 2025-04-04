@@ -26,7 +26,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
 
     <div id="menu"></div>
-
+    <div class="fondo-opaco"></div>
     <div id="actualizarProveedor" class="form-section">
         <h1>Actualizar Proveedor</h1>
 
@@ -99,7 +99,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                     <div class="button-container">
                         <div class="boton">
-                            <button type="submit" name="guardar">Guardar</button>
+                            <button type="submit"  id="guardarProveedor" name="guardar">Guardar</button>
                             <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
                         </div>
                     </div>

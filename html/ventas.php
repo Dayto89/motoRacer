@@ -93,7 +93,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="sidebar">
         <div id="menu"></div>
     </div>
-
+    <div class="fondo-opaco"></div>
     <div class="main">
         <div class="search-bar">
             <form method="GET" action="ventas.php">

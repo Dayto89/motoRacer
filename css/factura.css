@@ -259,9 +259,10 @@ body::before {
 
 /* Barra lateral derecha */
 .sidebar-right {
+    color: white;
     font-family: Arial, sans-serif;
     width: 350px;
-    background: var(--secondary);
+    
     padding: 10px;
     font-size: 20px;
     flex-direction: column;
@@ -277,6 +278,7 @@ body::before {
 #listaResumen {
     list-style-type: none;
     padding: 0;
+    color: black;
 }
 
 #listaResumen li {

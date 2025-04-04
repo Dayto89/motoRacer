@@ -77,6 +77,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 <body>
   <div id="menu"></div>
+  <div class="fondo-opaco"></div>
   <div id="categorias" class="form-section">
     <h1>Marca</h1>
     <div class="container">

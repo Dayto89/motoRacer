@@ -49,7 +49,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
     <!-- Aquí se cargará el header -->
     <div id="menu"></div>
-
+    <div class="fondo-opaco"></div>
     <!-- Sección para Crear Producto -->
     <div id="crearProducto" class="form-section">
         <h1>Crear Producto</h1>
