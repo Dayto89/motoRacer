@@ -83,6 +83,7 @@ $animatedIcons = [
     'size' => 53.5
   ]
 ];
+ 
 ?>
 
 <!DOCTYPE html>
@@ -117,7 +118,7 @@ $animatedIcons = [
 <body>
   <div id="sidebar" class="sidebar">
     <div class="sidebar-header">
-      <a href="../html/inicio.php"><img src="../imagenes/LOGO.png" alt="Logo" class="logo" /></a>
+      <a href="../html/inicio.php"><img src="../imagenes/LOGO.webp" alt="Logo" class="logo" /></a>
     </div>
 
     <ul class="menu">

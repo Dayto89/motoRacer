@@ -619,6 +619,109 @@ a.brand:after {
     pointer-events: none;
 }
 
+/*alertas*/
+/* Sombra de los títulos */
+h2 {
+    text-shadow: -1px -1px 0 #000000fa, 1px -1px 0 #000000bd, 2px 1px 0 #000000e6;
+  }
+  
+  /* Estilos generales del título en SweetAlert */
+  div:where(.swal2-container) h2:where(.swal2-title) {
+    position: relative;
+    margin: 0;
+    padding: .8em 1em 0;
+    color: #9b2525;
+    font-size: 1.875em;
+    letter-spacing: 3px;
+  }
+  
+  /* Estilos generales de los párrafos */
+  p {
+    font-size: 16px;
+    color: black;
+    font-family: arial;
+    padding: 10px;
+  }
+  
+  /* Evita el desbordamiento en el contenedor de SweetAlert */
+  div:where(.swal2-container) div:where(.swal2-html-container) {
+    overflow: hidden; /* Oculta cualquier desbordamiento */
+    white-space: normal; /* Asegura que el texto se ajuste automáticamente */
+    text-overflow: ellipsis; /* Corta el texto si es muy largo */
+    max-width: 100%; /* Evita que se expanda demasiado */
+  }
+  
+  /* Ajuste para el popup de SweetAlert */
+  div:where(.swal2-container).swal2-center>.swal2-popup {
+    width: auto; /* Se ajusta automáticamente */
+    max-width: 350px; /* Define un límite de ancho */
+  }
+  
+  
+  /* Fondo de los popups */
+  div:where(.swal2-container) div:where(.swal2-popup) {
+    background: #ffffffdb;
+  }
+  
+  /* Fondo del backdrop de SweetAlert */
+  div:where(.swal2-container).swal2-backdrop-show, 
+  div:where(.swal2-container).swal2-noanimation {
+    background: rgb(0 0 0 / 66%);
+  }
+  
+  /* Contenedor del contenido dentro del popup */
+  .custom-alert .alerta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  /* Botón de "Sí, eliminar" */
+  .btn-eliminar {
+    border: 0;
+    border-radius: 1em;
+    background-color: #a10505; /* Rojo */
+    color: #fff;
+    font-size: 1em;
+  }
+  
+  /* Botón de "Cancelar" */
+  .btn-cancelar {
+    border: 0;
+    border-radius: 1em;
+    background-color: #54728d; /* Azul */
+    color: #fff;
+    font-size: 1em;
+  }
+  
+  .btn-aceptar {
+    background-color: #4CAF50 !important; /* Color verde de ejemplo */
+    color: white !important;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+  
+  
+  /* Imágenes dentro del modal */
+  .custom-alert .tornillo, .custom-alert .moto, .custom-alert .llave {
+    width: 110px;
+    height: 100px;
+  }
+  
+  
+  /* Contenedor de la imagen */
+  .contenedor-imagen {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .fondo-opaco {
+    background-color: #000000e7;
+  }
 
 
 

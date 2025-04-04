@@ -63,6 +63,8 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         <div id="modalConfirm" class="modal hidden">
             <div class="modal-content">
                 <!-- Formulario para subir el archivo -->
+                <a href="../componentes/formato_productos.xlsx" download>📥 Descargar formato de Excel</a>
+
                 <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
                     <label>Selecciona el archivo Excel:</label>
                     <input type="file" name="archivoExcel" accept=".xlsx, .xls" required>

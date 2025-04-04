@@ -1,3 +1,18 @@
+:root {
+  --color-fondo: #ffffff;
+  --color-encabezados: #ffff;
+  --color-texto: #000000;
+}
+
+body {
+  background-color: var(--color-fondo) !important;
+  color: var(--color-texto) !important;
+}
+
+h1, h2 {
+  color: var(--color-encabezados) !important;
+}
+
 /* Contenedor principal */
 .accesibilidad-container {
   position: fixed;
@@ -11,7 +26,7 @@
 /* Botón principal */
 .accesibilidad-btn {
   background: #1c51a0;
-  border: none;
+  border: none; 
   color: white;
   width: 50px;
   height: 50px;
@@ -56,6 +71,24 @@
   opacity: 1;
   visibility: visible;
   right: 70px;
+}
+
+.accesibilidad-panel button {
+  padding: 0.8rem;
+  font-size: 1rem;
+  color: aliceblue;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.accesibilidad-panel button:hover {
+  background-color: #0056b3;
 }
 
 /* Tipografía dislexia */
@@ -119,8 +152,8 @@
  */
 
 .modo-alto-contraste,
-.modo-alto-contraste body,
 .modo-alto-contraste .sidebar,
+.modo-alto-contraste .sidebar-header,
 .modo-alto-contraste .menu,
 .modo-alto-contraste .modal-content {
   background-color: #000000 !important;
@@ -128,7 +161,12 @@
   border-color: #FFFF00 !important;
 }
 
-.modo-alto-contraste .main-content{
+.modo-alto-contraste .sidebar-header .logo {
+
+  filter: drop-shadow(0px 0px 5px #ffffff);
+}
+
+.modo-alto-contraste, .modo-alto-contraste .body,.modo-alto-contraste .main-content{
   background-color: #000000c5 !important;
 }
 
@@ -199,6 +237,11 @@
   color: #000 !important;
   border: 2px solid #ffffff !important;
 }
+.modo-alto-contraste button{
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    color: #000000;
+}
 
 /* 5. Botón de eliminar seleccionados */
 .modo-alto-contraste #delete-selected {
@@ -221,13 +264,28 @@ Modo claro lista de productos
 .modo-claro .sidebar,
 .modo-claro .menu,
 .modo-claro .modal-content {
-  background-color: #ffffff !important;
+  background-color: white;
   color: #000000 !important;
   border-color: #FFFF00 !important;
+}
+.menu li a {
+  color: black; /* Los íconos heredarán este color */
+}
+
+.modo-claro animated-icons {
+  filter: invert(1) brightness(1.5);
 }
 
 .modo-claro .main-content{
   background-color: #dbdbdbe8 !important;
+  background: #222;
+}
+.modo-claro main {
+  background-color: #ffffffc7; /* Color claro con transparencia */
+  border: 2px solid #000000; /* Borde oscuro para contraste */
+}
+.modo-claro label{
+  color: #000;
 }
 
 /* Tablas */
@@ -265,6 +323,11 @@ Modo claro lista de productos
   border: 2px solid #000000 !important;
 }
 
+.modo-claro button{
+  background-color: #000;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
 /* 2. Input de búsqueda */
 .modo-claro .form-control[type="text"] {
   background-color: #ffffff !important;
@@ -316,3 +379,126 @@ Modo claro lista de productos
 .modo-claro #delete-selected:hover {
   color: #FF0000 !important;
 }
+
+/*
+=====================================================================================================================================================Modo de contraste Gestion de Usuarios
+=====================================================================================================================================================
+*/
+
+.modo-alto-contraste .fondo-opaco {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+
+.modo-alto-contraste .container {
+  background-color: #000000 !important;
+  border: 2px solid #ffffff;
+}
+
+.modo-alto-contraste .actions button {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+ border: 2px solid #000000;
+}
+
+.modo-alto-contraste .actions button:hover {
+  background-color: #219b40;
+  color: #000000;
+  border: 2px solid #000000;
+}
+
+.modo-alto-contraste .container h3 {
+  background-color: #000000;
+  color: white;
+  border: 2px solid #ffffff;
+}
+
+.modo-alto-contraste .user-table td {
+  background-color: #1f1f1f !important;
+  color: white !important;
+}
+
+/*
+==============================================================================
+  Modo Claro Gestio de Usuarios
+==============================================================================
+*/
+
+.modo-claro .sidebar-header .logo {
+  filter: drop-shadow(0px 0px 5px #000000);
+}
+.modo-claro .info-group span{
+    border: 2px solid black; /* Grosor, estilo y color del borde */
+}
+.modo-claro .info-group label{
+  color: #000;
+  text-shadow: none;
+}
+.modo-claro .fondo{
+  background-color: rgba(255, 255, 255, 0.548);
+}
+.modo-claro .sidebar-header {
+  background-color: #ffffff;
+}
+
+.modo-claro .fondo-opaco {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff85;
+  z-index: -1;
+}
+
+
+.modo-claro .container {
+  background-color: #ffffff !important;
+  border: 2px solid #000000 ;
+}
+
+.modo-claro .actions button {
+  background-color: #000000;
+  color: rgb(255, 255, 255);
+  border: 2px solid #ffffff;
+}
+
+.modo-claro .actions button:hover {
+  background-color: #219b40;
+  color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.modo-claro .container h3 {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: 2px solid #000000;
+}
+
+.modo-claro .user-table td {
+  background-color: #ffffff !important;
+  color: rgb(0, 0, 0) !important;
+}
+
+/*
+=====================================================================================================================================================
+  Modo de contraste Stock
+=====================================================================================================================================================
+*/
+
+.modo-alto-contraste main {
+  background-color: #000000c5;
+  border: 2px solid #ffffff;
+}
+body.modo-alto-contraste {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  width: 100%;
+  height: 100vh;
+}
+

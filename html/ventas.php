@@ -24,7 +24,7 @@ width="50"
 
 ></animated-icons>';
 
-$icono2 = '
+$icono2 = ' 
 <animated-icons class="icono-accion"
 src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
 trigger="click"
@@ -196,11 +196,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <script>
         let total = 0;
-
-        // Funcion cobrar abre modal de metodo de pago
-        function cobrar() {
+// Funcion cobrar abre modal de metodo de pago
+function cobrar() {
             if (document.querySelectorAll("#listaResumen li").length === 0) {
-                alert("No hay productos en el resumen.");
+                Swal.fire({
+                        title: `<span class="titulo">Error</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" class="llave">
+                                </div>
+                                <p>No hay productos en la orden de venta.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                        }
+                    });
             } else {
                 let productos = [];
                 let items = document.querySelectorAll("#listaResumen li");

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Verificador de Permisos
  * 
@@ -37,12 +38,12 @@ $mapeo_permisos = [
     'crearproveedor.php' => ['seccion' => 'PROVEEDOR', 'subseccion' => 'Crear Proveedor'],
     'actualizarproveedor.php' => ['seccion' => 'PROVEEDOR', 'subseccion' => 'Actualizar Proveedor'],
     'listaproveedor.php' => ['seccion' => 'PROVEEDOR', 'subseccion' => 'Lista Proveedor'],
-    'inventario.php' => ['seccion' => 'INVENTARIO', 'subseccion' => 'Lista Productos'],
-    'ventas.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Realizar Venta'],
-    'reportes.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Ver Reportes'],
+    'listaproductos.php' => ['seccion' => 'INVENTARIO', 'subseccion' => 'Lista de Productos'],
+    'ventas.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Venta'],
+    'reportes.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Reporte'],
     'información.php' => ['seccion' => 'USUARIO', 'subseccion' => 'Información'],
     'stock.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Stock'],
-    'gestiondeusuarios.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Gestión de Usuarios'], 
+    'gestiondeusuarios.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Gestión de Usuarios'],
     // Agrega más páginas según sea necesario
 ];
 
@@ -90,4 +91,3 @@ $stmt->close();
 $conexion->close();
 
 // Si llegó hasta aquí, tiene permiso y puede continuar cargando la página
-?>

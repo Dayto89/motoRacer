@@ -59,6 +59,7 @@ h3 {
  .user-table {
   width: 100%;
   border-collapse: collapse; 
+  border: 3px solid #000000 !important;;
   
 }
 
@@ -101,8 +102,8 @@ h3 {
 
 /* Ajuste para mover "Nombre" hacia la derecha */
 .user-table td:nth-child(2), .user-table th:nth-child(2) {
-  padding-left: 115px;
-  text-align: left;
+  padding-left: 10px;
+  
 }
   
 
@@ -232,7 +233,7 @@ tbody input[type="checkbox"] {
   margin-top: 2px;
   margin-left: 16px;
   font-weight: bold;
-  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+  text-shadow: -1px -1px 0 #00000091, 1px -1px 0 #00000073, 2px 1px 0 #000000e6;
   letter-spacing: 5px;
 }
 /* Agregamos la animación de entrada */
@@ -411,8 +412,56 @@ div.subsection{
   background-color:#0056b3;
 }
 
+/* Sombra de los títulos */
+h2 {
+  text-shadow: -1px -1px 0 #000000fa, 1px -1px 0 #000000bd, 2px 1px 0 #000000e6;
+}
 
-/*alerta*/
+/* Estilos generales del título en SweetAlert */
+div:where(.swal2-container) h2:where(.swal2-title) {
+  position: relative;
+  margin: 0;
+  padding: .8em 1em 0;
+  color:#9b9496;
+  font-size: 1.875em;
+  letter-spacing: 3px;
+}
+
+/* Estilos generales de los párrafos */
+p {
+  font-size: 16px;
+  color: black;
+  font-family: arial;
+  padding: 10px;
+}
+
+/* Evita el desbordamiento en el contenedor de SweetAlert */
+div:where(.swal2-container) div:where(.swal2-html-container) {
+  overflow: hidden; /* Oculta cualquier desbordamiento */
+  white-space: normal; /* Asegura que el texto se ajuste automáticamente */
+  text-overflow: ellipsis; /* Corta el texto si es muy largo */
+  max-width: 100%; /* Evita que se expanda demasiado */
+}
+
+/* Ajuste para el popup de SweetAlert */
+div:where(.swal2-container).swal2-center>.swal2-popup {
+  width: auto; /* Se ajusta automáticamente */
+  max-width: 350px; /* Define un límite de ancho */
+}
+
+
+/* Fondo de los popups */
+div:where(.swal2-container) div:where(.swal2-popup) {
+  background: #ffffffdb;
+}
+
+/* Fondo del backdrop de SweetAlert */
+div:where(.swal2-container).swal2-backdrop-show, 
+div:where(.swal2-container).swal2-noanimation {
+  background: rgb(0 0 0 / 66%);
+}
+
+/* Contenedor del contenido dentro del popup */
 .custom-alert .alerta {
   position: relative;
   display: flex;
@@ -421,24 +470,45 @@ div.subsection{
   text-align: center;
 }
 
-.custom-alert .tornillo, 
-.custom-alert .moto {
-  width: 80px;
-}
-.custom-alert .advertencia, 
-.custom-alert .check {
-    position: absolute;
-    font-size: 30px;
-    color: red;
-    animation: girar 2s linear infinite;
+/* Botón de "Sí, eliminar" */
+.btn-eliminar {
+  border: 0;
+  border-radius: 1em;
+  background-color: #a10505; /* Rojo */
+  color: #fff;
+  font-size: 1em;
 }
 
-.custom-alert .check {
-    color: green;
+/* Botón de "Cancelar" */
+.btn-cancelar {
+  border: 0;
+  border-radius: 1em;
+  background-color: #54728d; /* Azul */
+  color: #fff;
+  font-size: 1em;
 }
 
-@keyframes girar {
-    0% { transform: rotate(0deg) translateX(25px) rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(25px) rotate(-360deg); }
+/* Botón de "Aceptar" */
+.btn-aceptar {
+  border: 0;
+  border-radius: 1em;
+  background-color: #007bff; /* Verde */
+  color: #fff;
+  font-size: 1em;
 }
+
+
+/* Imágenes dentro del modal */
+.custom-alert .tornillo, .custom-alert .moto {
+  width: 110px;
+  height: 100px;
+}
+
+
+/* Contenedor de la imagen */
+.contenedor-imagen {
+  position: relative;
+  display: inline-block;
+}
+
 

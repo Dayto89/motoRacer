@@ -1,5 +1,3 @@
-
-
 <?php
 // Funcion para validar usuario y contraseña
 function validarUsuario($usuario, $contrasena) {

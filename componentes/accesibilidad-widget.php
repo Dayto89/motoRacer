@@ -15,11 +15,30 @@
             </button>
             <button onclick="Accesibilidad.cambiarFuente('+')" id="btnAumentar">
                 <i class="fas fa-text-height"></i> A+
-            </button>
+            </button> 
         </div>
         <button onclick="Accesibilidad.alternarDislexia()">
             <i class="fas fa-font"></i> Fuente Legible
         </button>
+        
+        <!-- Nuevo panel de ajuste de color -->
+        <div class="control-color">
+            <div class="ajuste-color-header">
+                <span>Personalizar colores</span>
+            </div>
+            <div class="botones-modo">
+                <button onclick="Accesibilidad.cambiarModo('fondos')">Fondos</button>
+                <button onclick="Accesibilidad.cambiarModo('encabezados')">Encabezados</button>
+                <button onclick="Accesibilidad.cambiarModo('contenido')">Contenido</button>
+            </div>
+            <div class="color-picker-container">
+                <input type="color" id="colorPicker" onchange="Accesibilidad.aplicarColorPersonalizado()">
+                <label for="colorPicker">Seleccionar color</label>
+            </div>
+            <button onclick="Accesibilidad.restablecerColores()" class="btn-restablecer">
+                <i class="fas fa-undo"></i> Restablecer
+            </button>
+        </div>
     </div>
 </div>
 

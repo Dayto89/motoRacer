@@ -67,11 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form name="formulario" method="post" action="">
             <div class="input-wrapper">
                 <i class='bx bx-user-circle'></i>
-                <input type="text" placeholder="Identificación" name="identificacion" />
+                <input type="text" placeholder="Identificación" name="identificacion" require/>
             </div>
             <div class="input-wrapper">
                 <i class='bx bx-lock-alt'></i>
-                <input type="password" placeholder="Contraseña" name="contrasena" />
+                <input type="password" placeholder="Contraseña" name="contrasena" require/>
             </div>
            
             <button type="submit" class="boton">Iniciar Sesión</button>

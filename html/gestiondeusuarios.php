@@ -72,25 +72,27 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <body>
   <div id="menu"></div>
-  <h1>Gestión de Usuarios</h1>
-  <div class="container">
-    <div class="actions">
-      <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
-    </div>
-    <h3>Lista de Usuarios</h3>
-    <table class="user-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Rol</th>
-          <th>Permisos</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
+  <div class="fondo-opaco"></div>
+    
+    <h1>Gestión de Usuarios</h1>
+    <div class="container">
+      <div class="actions">
+        <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
+      </div>
+      <h3>Lista de Usuarios</h3>
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Rol</th>
+            <th>Permisos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
         $sql = "SELECT * FROM usuario";
         $result = $conexion->query($sql);
         while ($row = $result->fetch_assoc()) {
@@ -99,100 +101,108 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           echo "<td>" . $row['nombre'] . "</td>";
           echo "<td>" . $row['apellido'] . "</td>";
           echo "<td>" . $row['rol'] . "</td>";
-
+          
           if ($row['rol'] == 'gerente') {
             echo "<td><button class='btn-permisos' onclick='abrirModal(" . $row['identificacion'] . ")' data-id='" . $row['identificacion'] . "'>  <i class='bx bxs-key'></i></button></td>";
           } else {
             echo "<td></td>";
           }
-
+          
           echo "<td><button class='btn-delete' data-id='" . $row['identificacion'] . "'>
-        <i class='fa-solid fa-trash'></i>
-      </button></td>";
-
+          <i class='fa-solid fa-trash'></i>
+          </button></td>";
+          
           echo "</tr>";
         }
         ?>
 
-      </tbody>
-    </table>
-  </div>
+</tbody>
+</table>
+</div>
 
 
 
-  <!-- Modal -->
-  <div id="modalPermisos" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="cerrarModal()">&times;</span>
-      <h2>Configurar Permisos</h2>
-      <form id="formPermisos" method="POST">
-        <input type="hidden" id="identificacion" name="identificacion">
-
-        <?php $permisos = $permisos ?? []; ?>
-        <?php foreach ($permisos as $seccion => $subsecciones): ?>
-
-          <div>
-            <label>
-              <strong><?php echo ucfirst($seccion); ?></strong>
-            </label><br>
-            <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
-              <?php foreach ($subsecciones as $subseccion): ?>
-                <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
-                <label>
-                  <?php echo $subseccion['sub_seccion']; ?>
-                </label><br>
+<!-- Modal -->
+<div id="modalPermisos" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="cerrarModal()">&times;</span>
+    <h2>Configurar Permisos</h2>
+    <form id="formPermisos" method="POST">
+      <input type="hidden" id="identificacion" name="identificacion">
+      
+      <?php $permisos = $permisos ?? []; ?>
+      <?php foreach ($permisos as $seccion => $subsecciones): ?>
+        
+        <div>
+          <label>
+            <strong><?php echo ucfirst($seccion); ?></strong>
+          </label><br>
+          <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
+            <?php foreach ($subsecciones as $subseccion): ?>
+              <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
+              <label>
+                <?php echo $subseccion['sub_seccion']; ?>
+              </label><br>
               <?php endforeach; ?>
             </div>
           </div>
-        <?php endforeach; ?>
-
-        <button type="button" id="btnGuardar" onclick="guardarPermisos()">Guardar Permisos</button>
-
-      </form>
+          <?php endforeach; ?>
+          
+          <button type="button" id="btnGuardar" onclick="guardarPermisos()">Guardar Permisos</button>
+          
+        </form>
+      </div>
     </div>
-  </div>
-
-  <script>
+      
+    
+    <script>
      function guardarPermisos() {
-  var formData = new FormData(document.getElementById("formPermisos"));
+      var formData = new FormData(document.getElementById("formPermisos"));
 
-  fetch("../html/guardar_permisos.php", {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        Swal.fire({
-          title: "¡Permisos actualizados!",
-          text: "Los permisos se han actualizado correctamente.",
-          icon: "success",
-          confirmButtonColor: "#6C5CE7",
-          confirmButtonText: "OK"
-        }).then(() => {
-          cerrarModal();
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          text: "No se pudieron actualizar los permisos.",
-          icon: "error",
-          confirmButtonColor: "#d33",
-          confirmButtonText: "Intentar de nuevo"
-        });
-      }
-    })
-    .catch(error => {
-      console.error("Error:", error);
-      Swal.fire({
-        title: "Error inesperado",
-        text: "Ocurrió un problema al actualizar los permisos.",
-        icon: "error",
-        confirmButtonColor: "#d33",
-        confirmButtonText: "Cerrar"
-      });
-    });
-}
+      fetch("../html/guardar_permisos.php", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+                        title: `<span class="titulo">Permisos Actualizados</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" class="moto">
+                                </div>
+                                <p>Los permisos se han actualizado correctamente.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                        }
+                    })
+                  } else {
+                    Swal.fire({
+                      title: `<span class="titulo">Error</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" class="moto">
+                                </div>
+                                <p>Error al eliminar el usuario.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                        }
+                    } );
+                }
+            })
+        .catch(error => console.error("Error:", error));
+    }
 
 
     function abrirModal(id) {
@@ -262,57 +272,90 @@ function cerrarModal() {
     })
 
     document.addEventListener('DOMContentLoaded', function() {
-  // Agregar evento a los botones de eliminar
-  var btnDelete = document.querySelectorAll('.btn-delete');
-  btnDelete.forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var userId = this.getAttribute('data-id');
-      eliminarUsuario(userId);
+    var btnDelete = document.querySelectorAll('.btn-delete');
+    btnDelete.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var userId = this.getAttribute('data-id');
+            eliminarUsuario(userId);
+        });
     });
-  });
 
-  // Función para eliminar un usuario con SweetAlert2
-  function eliminarUsuario(userId) {
+    function eliminarUsuario(userId) {
     Swal.fire({
-      title: '¿Eliminar usuario?',
-      text: 'Esta acción no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#6C5CE7',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+        title: "¿Estás seguro?",
+        html: `
+            <div class="alerta">
+                <img src="../imagenes/tornillo.png" class="tornillo">
+                <p>El usuario será eliminado permanentemente.</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",  // Clase personalizada para el botón de confirmación
+            cancelButton: "btn-cancelar"  // Clase personalizada para el botón de cancelar
+        }
     }).then((result) => {
-      if (result.isConfirmed) {
-        fetch('gestiondeusuarios.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'eliminar=true&id=' + userId
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              Swal.fire({
-                title: '¡Eliminado!',
-                text: 'El usuario ha sido eliminado correctamente.',
-                icon: 'success',
-                confirmButtonColor: '#6C5CE7'
-              }).then(() => {
-                location.reload();
-              });
-            } else {
-              Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      }
+        if (result.isConfirmed) {
+            fetch('gestiondeusuarios.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'eliminar=true&id=' + userId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: `<span class="titulo">Usuario Eliminado</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" class="moto">
+                                </div>
+                                <p>Usuario eliminado correctamente.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                      title: `<span class="titulo">Error</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" class="llave">
+                                </div>
+                                <p>Error al eliminar el usuario.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                        }
+                    } );
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
     });
-  }
+}
+
 });
+
+
 
 
     function actualizarModalPermisos(data) {

@@ -65,33 +65,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($resultado) {
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
         echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                    title: '¡Datos actualizados!',
-                    text: 'Los datos se actualizaron con éxito.',
-                    icon: 'success',
-                    confirmButtonColor: '#6C5CE7',
-                    confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = 'información.php'; // Redirige después de cerrar el alert
-                        });
-                        });
-                        </script>";
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: `<span class='titulo'>Datos Actualizados</span>`,
+                    html: `
+                        <div class='alerta'>
+                            <div class='contenedor-imagen'>
+                                <img src='../imagenes/moto.png' class='moto'>
+                            </div>
+                            <p>Los datos se actualizaron con éxito.</p>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        confirmButton: 'btn-aceptar' // Clase personalizada para el botón de aceptar
+                    }
+                }).then(() => {
+                    window.location.href = 'información.php'; // Redirige después de cerrar el alert
+                });
+            });
+        </script>";
     } else {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Error al actualizar los datos: " . mysqli_error($conexion) . "',
-                                icon: 'error',
-                                confirmButtonColor: '#d33',
-                                confirmButtonText: 'Intentar de nuevo'
-                                });
-                                });
-                                </script>";
-    }
-}
+    
+          echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+          echo "<script>
+                          document.addEventListener('DOMContentLoaded', function() {
+                              Swal.fire({
+                        title: '<span class=\"titulo\">Error</span>',
+                          html: `
+                              <div class='alerta'>
+                                  <div class='contenedor-imagen'>
+                                      <img src='../imagenes/llave.png' class='llave'>
+                                  </div>
+                                  <p>Error al actualizar los datos.</p>
+                              </div>
+                          `,
+                          showConfirmButton: true,
+                          confirmButtonText: 'Aceptar',
+                          customClass: {
+                              confirmButton: 'btn-aceptar'  // Clase personalizada para el botón de aceptar
+                          }
+                      } );
+                                  });
+                                  </script>";
+      }
+  }
 
 mysqli_close($conexion);
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
@@ -116,6 +135,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
     <div id="menu"></div>
     <!-- Información del usuario -->
+    <div class="fondo-opaco"></div>
     <div class="container">
 
         <h1>Usuario</h1>
@@ -180,7 +200,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <input type="text" name="celular" placeholder="Celular" value="<?php echo $celular; ?>">
                 <input type="email" name="correo" placeholder="Correo Electrónico" value="<?php echo $correo; ?>">
                 <div>
-                    <button type="button" class="btn-cancelar" onclick="cerrarPopup()">Cancelar</button>
+                    <button type="button" class="btn-cancelar1" onclick="cerrarPopup()">Cancelar</button>
                     <button type="submit" class="btn-guardar">Guardar</button>
                 </div>
             </form>

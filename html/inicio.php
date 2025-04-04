@@ -10,7 +10,7 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +49,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             padding: 15px;
+            letter-spacing: 1px;
         }
 
         .notificaciones h3 {
@@ -58,6 +59,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
             text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+            letter-spacing: 3px;
         }
 
         #listaNotificaciones {
@@ -70,7 +72,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         #listaNotificaciones li {
             padding: 10px;
             margin: 5px 0;
-            font-size: 20px;
+            font-size: 14px;
             background: #f8f9fa;
             font-family: Arial, Helvetica, sans-serif;
             border-left: 8px solid rgb(255, 191, 0);
@@ -80,12 +82,12 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
         #listaNotificaciones li.leida {
             background: #fff;
-            border-left-color:rgb(0, 0, 0);
+            border-left-color: rgb(0, 0, 0);
             opacity: 0.7;
         }
 
         #listaNotificaciones li:hover {
-            background:rgb(184, 186, 187);
+            background: rgb(184, 186, 187);
         }
 
         .badge-notificaciones {
@@ -114,21 +116,21 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         }
 
         .notificaciones::-webkit-scrollbar {
-        width: 8px;
-        background-color: rgba(174, 174, 174, 0.2);
-        border-radius: 4px;
-    }
+            width: 8px;
+            background-color: rgba(174, 174, 174, 0.2);
+            border-radius: 4px;
+        }
 
-    .notificaciones::-webkit-scrollbar-track {
-        background-color: rgba(174, 174, 174, 0.3);
-        border-radius: 4px;
-    }
+        .notificaciones::-webkit-scrollbar-track {
+            background-color: rgba(174, 174, 174, 0.3);
+            border-radius: 4px;
+        }
 
-    .notificaciones::-webkit-scrollbar-thumb {
-        background-color: rgb(6, 45, 91);
-        border-radius: 4px;
-        border: 1px solid rgba(0, 0, 0, 0.9);
-    }
+        .notificaciones::-webkit-scrollbar-thumb {
+            background-color: rgb(6, 45, 91);
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.9);
+        }
     </style>
 </head>
 
@@ -139,7 +141,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     <div class="fondo"></div>
 
     <div class="inicio-img-container">
-        <img src="/imagenes/LOGO.png" alt="Imagen centrada" class="inicio-img">
+        <img src="/imagenes/LOGO.webp" alt="Imagen centrada" class="inicio-img">
 
     </div>
     <div class="texto-debajo">
@@ -195,13 +197,13 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 .then(response => {
                     if (response.ok) {
                         if (!elemento.classList.contains('leida')) {
-                    const badge = document.getElementById('badgeNotificaciones');
-                    const currentCount = parseInt(badge.textContent) || 0;
-                    badge.textContent = currentCount - 1;
-                    if (currentCount - 1 <= 0) {
-                        badge.style.display = 'none';
-                    }
-                }
+                            const badge = document.getElementById('badgeNotificaciones');
+                            const currentCount = parseInt(badge.textContent) || 0;
+                            badge.textContent = currentCount - 1;
+                            if (currentCount - 1 <= 0) {
+                                badge.style.display = 'none';
+                            }
+                        }
                         elemento.classList.remove('nueva');
                         elemento.classList.add('leida');
                     }

@@ -17,12 +17,12 @@ const Accesibilidad = {
     cargarConfiguracion() {
         // Tamaño de fuente
         const savedSize = localStorage.getItem('fontSize');
-        this.config.pasoActual = savedSize ? 
+        this.config.pasoActual = savedSize ?
             Math.round((parseFloat(savedSize) - this.config.tamanioBase) / (this.config.tamanioBase * 0.1)) : 0;
 
         // Contraste
         const contrasteGuardado = localStorage.getItem('contraste');
-        this.config.contrasteActual = contrasteGuardado ? 
+        this.config.contrasteActual = contrasteGuardado ?
             Math.max(0, Math.min(3, parseInt(contrasteGuardado))) : 0;
 
         // Dislexia
@@ -38,7 +38,7 @@ const Accesibilidad = {
         document.body.className = this.config.contrastes[this.config.contrasteActual];
 
         // Aplicar dislexia
-        if(this.config.dislexia) {
+        if (this.config.dislexia) {
             document.body.classList.add('tipografia-dislexia');
         }
     },
@@ -55,7 +55,7 @@ const Accesibilidad = {
         } else if (direccion === '-' && this.config.pasoActual > -this.config.maxPasos) {
             this.config.pasoActual--;
         }
-        
+
         const nuevoTamanio = this.config.tamanioBase * (1 + (this.config.pasoActual * 0.1));
         document.documentElement.style.fontSize = `${nuevoTamanio}px`;
         localStorage.setItem('fontSize', nuevoTamanio);
@@ -71,7 +71,41 @@ const Accesibilidad = {
     actualizarUI() {
         document.getElementById('btnAumentar').disabled = this.config.pasoActual >= this.config.maxPasos;
         document.getElementById('btnDisminuir').disabled = this.config.pasoActual <= -this.config.maxPasos;
+    },
+
+    modoActual: 'fondos',
+
+    cambiarModo: function (modo) {
+        this.modoActual = modo;
+        // Opcional: feedback visual del modo seleccionado
+        document.querySelectorAll('.botones-modo button').forEach(btn => {
+            btn.classList.remove('modo-activo');
+        });
+        event.target.classList.add('modo-activo');
+    },
+
+    aplicarColorPersonalizado: function () {
+        const color = document.getElementById('colorPicker').value;
+        switch (this.modoActual) {
+            case 'fondos':
+                document.documentElement.style.setProperty('--color-fondo', color);
+                break;
+            case 'encabezados':
+                document.documentElement.style.setProperty('--color-encabezados', color);
+                break;
+            case 'contenido':
+                document.documentElement.style.setProperty('--color-texto', color);
+                break;
+        }
+    },
+
+    restablecerColores: function () {
+        // Restablece a los valores por defecto de tu CSS
+        document.documentElement.style.removeProperty('--color-fondo');
+        document.documentElement.style.removeProperty('--color-encabezados');
+        document.documentElement.style.removeProperty('--color-texto');
     }
+
 };
 
 // Inicializar al cargar la página
