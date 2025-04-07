@@ -139,11 +139,54 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
       Proveedor_nit = '$proveedor' 
       WHERE codigo1 = '$codigo1'";
   if (mysqli_query($conexion, $consulta_update)) {
-    echo "<script>alert('Datos actualizados correctamente')</script>";
-  } else {
-    echo "<script>alert('Error al actualizar los datos: " . mysqli_error($conexion) . "')</script>";
-  }
-}
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: `<span class='titulo'>Datos Actualizados</span>`,
+                    html: `
+                        <div class='alerta'>
+                            <div class='contenedor-imagen'>
+                                <img src='../imagenes/moto.png' class='moto'>
+                            </div>
+                            <p>Los datos se actualizaron con éxito.</p>
+                        </div>
+                    `,
+                    showConfirmButton: true,
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        confirmButton: 'btn-aceptar' // Clase personalizada para el botón de aceptar
+                    }
+                }).then(() => {
+                    window.location.href = 'listproductos.php'; // Redirige después de cerrar el alert
+                });
+            });
+        </script>";
+      } else {
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+              echo "<script>
+                              document.addEventListener('DOMContentLoaded', function() {
+                                  Swal.fire({
+                            title: '<span class=\"titulo\">Error</span>',
+                              html: `
+                                  <div class='alerta'>
+                                      <div class='contenedor-imagen'>
+                                          <img src='../imagenes/llave.png' class='llave'>
+                                      </div>
+                                      <p>Error al actualizar los datos.</p>
+                                  </div>
+                              `,
+                              showConfirmButton: true,
+                              confirmButtonText: 'Aceptar',
+                              customClass: {
+                                  confirmButton: 'btn-aceptar'  // Clase personalizada para el botón de aceptar
+                              }
+                          } );
+                                      });
+                                      </script>";
+      }
+    }
+
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
@@ -193,6 +236,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
@@ -471,36 +515,92 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
     });
 
-    // Función para eliminar un producto
-    function eliminarProducto(codigo) {
-      if (!confirm(`¿Eliminar producto ${codigo}?`)) return;
+    // Función para eliminar un producto con SweetAlert2
+function eliminarProducto(codigo) {
+    Swal.fire({
+        title: "¿Estás seguro?",
+        
+        html: `
+            <div class="alerta">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/tornillo.png" class="tornillo">
+                </div>
+                <p>¿Quieres eliminar el producto <strong>${codigo}</strong>?</p>
+            </div>
+        `,
+       
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",
+            cancelButton: "btn-cancelar"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Enviar la solicitud al servidor
+            fetch('../html/listaproductos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mostrar alerta de éxito
+                    Swal.fire({
+                        title: "Producto eliminado",
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" class="moto">
+                                </div>
+                                 <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
+                            </div>
+                        `,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"
+                        }
+                    }).then(() => {
+                        location.reload(); // Recargar página después de cerrar la alerta
+                    });
+                } else {
+                    // Mostrar alerta de error
+                    Swal.fire({
+                        title: "Error",
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" class="llave">
+                                </div>
+                                <p>Error al eliminar el producto.</p>
+                            </div>
+                        `,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
+            });
+        }
+    });
+}
 
-      fetch('../html/listaproductos.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.success) {
-            alert('Producto eliminado');
-            location.reload();
-          } else {
-            alert(data.error || 'Error desconocido');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('No se pudo eliminar. Ver consola para detalles.');
-        });
-    }
+
     // funcion de los checkboxes
     document.getElementById("select-all").addEventListener("change", function() {
       let checkboxes = document.querySelectorAll(".select-product");
@@ -530,47 +630,81 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         checkbox.addEventListener("change", toggleDeleteButton);
       });
 
-      deleteButton.addEventListener("click", function() {
-        let selectedCodes = Array.from(checkboxes)
-          .filter(checkbox => checkbox.checked)
-          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
+      deleteButton.addEventListener("click", function () {
+    let selectedCodes = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
-        if (selectedCodes.length === 0) {
-          alert("Selecciona al menos un producto para eliminar.");
-          return;
+    if (selectedCodes.length === 0) {
+        alert("Selecciona al menos un producto para eliminar.");
+        return;
+    }
+
+    // Mostrar la alerta con SweetAlert
+    Swal.fire({
+        title: "¿Estás seguro?",
+        html: `
+            <div class="alerta">
+                <img src="../imagenes/tornillo.png" class="tornillo">
+                <p>Los productos se eliminarán de forma permanente.</p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        
+        customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",  // Clase personalizada para el botón de confirmación
+            cancelButton: "btn-cancelar"  // Clase personalizada para el botón de cancelar
         }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Depuración: Ver datos antes de enviarlos
+            console.log("Enviando códigos a eliminar:", selectedCodes);
 
-        if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} productos?`)) {
-          return;
-        }
-
-        // Depuración: Ver datos antes de enviarlos
-        console.log("Enviando códigos a eliminar:", selectedCodes);
-
-        fetch("eliminar_productos.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              codigos: selectedCodes
+            // Enviar datos al servidor
+            fetch("eliminar_productos.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    codigos: selectedCodes
+                })
             })
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log("Respuesta del servidor:", data); // Depuración
-            if (data.success) {
-              alert("Productos eliminados correctamente.");
-              location.reload();
-            } else {
-              alert("Error al eliminar los productos: " + data.error);
-            }
-          })
-          .catch(error => {
-            console.error("Error en la solicitud:", error);
-            alert("Error en la comunicación con el servidor.");
-          });
-      });
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data); // Depuración
+                    if (data.success) {
+                      Swal.fire({
+                        title: `<span class="titulo">Productos Eliminados</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" class="moto">
+                                </div>
+                                <p>Productos elimanados correctamente.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                        }
+                    })
+                            .then(() => location.reload()); // Recargar página después de cerrar la alerta
+                    } else {
+                        Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error en la solicitud:", error);
+                    Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
+                });
+        }
+    });
+});
     });
   </script>
 </body>

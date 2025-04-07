@@ -12,7 +12,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 // Conexión a la base de datos
 $servername = "localhost";
@@ -122,7 +122,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
         $stmt->execute();
-
     }
 
     $min_quantity = 0;
@@ -135,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $min_quantity = (int)$row['min_quantity'];
         }
     }
-    
+
     // 2. Verificar solo si hay cantidad mínima configurada
     if ($min_quantity > 0) {
         $stmt = $conn->prepare("
@@ -144,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             WHERE cantidad < ?
         ");
         $stmt->bind_param("i", $min_quantity);
-        
+
         if ($stmt->execute()) {
             $result = $stmt->get_result();
             while ($producto = $result->fetch_assoc()) {
@@ -153,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $producto['nombre'],
                     $producto['cantidad']
                 );
-                
+
                 // 3. Manejo seguro de errores
                 try {
                     $insert = $conn->prepare("INSERT INTO notificaciones (mensaje, fecha) VALUES (?, NOW())");
@@ -228,7 +227,6 @@ unset($_SESSION['total']);
     </div>
     <div class="main-content">
         <div class="container">
-            <div class="user-info">
                 <h2>Información del Ciente</h2>
                 <label for="tipo_doc">Tipo de Documento:</label>
                 <select id="tipo_doc" name="tipo_doc">
@@ -242,8 +240,8 @@ unset($_SESSION['total']);
                 <input type="text" id="apellido" name="apellido" placeholder="Apellido">
                 <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
                 <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
-            </div>
-            <div class="payment-section">
+            
+             <div class="payment-section">
                 <h2>Registrar Pago</h2>
                 <div class="content">
                     <div class="payment-methods">

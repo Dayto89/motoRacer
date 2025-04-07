@@ -1,91 +1,204 @@
 <?php
+// Iniciar el buffer de salida
+ob_start();
+
+// session_start() debe ser lo primero
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    // Si no está autorizado, devolver un JSON de error
+    ob_end_clean(); // Limpiar el buffer
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "error" => "No autorizado"]);
     exit();
 }
 
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
+// Conexión a la base de datos
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "inventariomotoracer";
 
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
-if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+$conn = new mysqli($servername, $username, $password, $database);
+if ($conn->connect_error) {
+    ob_end_clean(); // Limpiar el buffer
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "error" => "Conexión fallida: " . $conn->connect_error]);
+    exit;
 }
 
+// Manejar solicitudes GET para autocompletar
+if (isset($_GET['codigo'])) {
+    $codigo = $_GET['codigo'] . "%";
+    $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo FROM cliente WHERE codigo LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $codigo);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$icono1 = '
-<animated-icons class= "icono-accion"
-src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
-trigger="click"
-attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"#FFFFFF"}}\'
-height="50"
-width="50"
-
-></animated-icons>';
-
-$icono2 = '
-<animated-icons class="icono-accion"
-src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
-trigger="click"
-attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
-height="50"
-width="50"
-
-></animated-icons>';
-
-
-// Guardar informacion de cliente en la base de datos
-
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
-if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
-}
-
-// Almacenar los productos y el total en la sesión antes de redirigir
-if (isset($_POST['cobrar'])) {
-    $productos = [];
-    $total = 0;
-    
-    // Recorrer los productos en el resumen y almacenarlos en un array
-    foreach ($_POST['productos'] as $producto) {
-        $productos[] = [
-            'nombre' => $producto['nombre'],
-            'precio' => $producto['precio'],
-            'cantidad' => $producto['cantidad'],
-            'id' => $producto['id']
-        ];
-        $total += $producto['precio'] * $producto['cantidad'];
+    $clientes = [];
+    while ($row = $result->fetch_assoc()) {
+        $clientes[] = $row;
     }
-    
-    // Guardar los productos y el total en la sesión
-    $_SESSION['productos'] = $productos;
-    $_SESSION['total'] = $total;
-    
-    // Redirigir a prueba.php
-    header("Location: prueba.php");
-    exit();
+    ob_end_clean(); // Limpiar el buffer
+    header('Content-Type: application/json');
+    echo json_encode($clientes);
+    exit;
 }
 
+// Manejar solicitudes POST para guardar la factura
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    ob_end_clean(); // Limpiar el buffer
+    $data = json_decode(file_get_contents("php://input"), true);
+    if (!$data) {
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "error" => "No se recibieron datos"]);
+        exit;
+    }
 
+    // Validar datos recibidos
+    if (!isset($data["codigo"], $data["tipoDoc"], $data["nombre"], $data["apellido"], $data["telefono"], $data["correo"], $data["productos"], $data["metodos_pago"], $data["total"])) {
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "error" => "Datos incompletos"]);
+        exit;
+    }
 
+    // Asignar valores
+    $codigo = $data["codigo"];
+    $tipoDoc = $data["tipoDoc"];
+    $nombre = $data["nombre"];
+    $apellido = $data["apellido"];
+    $telefono = $data["telefono"];
+    $correo = $data["correo"];
+    $productos = $data["productos"];
+    $metodos_pago = $data["metodos_pago"];
+    $total = $data["total"];
+
+    // Verificar si el cliente existe
+    $sql = "SELECT codigo FROM cliente WHERE codigo = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $codigo);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        // Registrar cliente si no existe
+        $sql = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
+        $stmt->execute();
+        $cliente_id = $stmt->insert_id;
+    } else {
+        $cliente = $result->fetch_assoc();
+        $cliente_id = $cliente["codigo"];
+    }
+
+    // Registrar factura
+    $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, precioTotal) VALUES (NOW(), ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $usuario_id = $_SESSION["usuario_id"] ?? null;
+    $stmt->bind_param("ssd", $usuario_id, $cliente_id, $total);
+    $stmt->execute();
+    $factura_id = $stmt->insert_id;
+
+    // Registrar métodos de pago
+    foreach ($metodos_pago as $metodo) {
+        $sql = "INSERT INTO factura_metodo_pago (Factura_codigo, metodoPago, monto) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("isd", $factura_id, $metodo["tipo"], $metodo["valor"]);
+        $stmt->execute();
+    }
+
+    // Registrar productos en la factura
+    foreach ($productos as $producto) {
+        $sql = "INSERT INTO producto_factura (Factura_codigo, Producto_codigo, cantidad, precioUnitario) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iiid", $factura_id, $producto["id"], $producto["cantidad"], $producto["precio"]);
+        $stmt->execute();
+
+        // Descontar stock del producto
+        $sql = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
+        $stmt->execute();
+    }
+
+    $min_quantity = 0;
+
+    // 1. Usar $conn en lugar de $conexion
+    $stmt = $conn->prepare("SELECT min_quantity FROM configuracion_stock ORDER BY id DESC LIMIT 1");
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $min_quantity = (int)$row['min_quantity'];
+        }
+    }
+
+    // 2. Verificar solo si hay cantidad mínima configurada
+    if ($min_quantity > 0) {
+        $stmt = $conn->prepare("
+            SELECT codigo1, nombre, cantidad 
+            FROM producto 
+            WHERE cantidad < ?
+        ");
+        $stmt->bind_param("i", $min_quantity);
+
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            while ($producto = $result->fetch_assoc()) {
+                $mensaje = sprintf(
+                    "Producto %s bajo mínimo! Stock actual: %d",
+                    $producto['nombre'],
+                    $producto['cantidad']
+                );
+
+                // 3. Manejo seguro de errores
+                try {
+                    $insert = $conn->prepare("INSERT INTO notificaciones (mensaje, fecha) VALUES (?, NOW())");
+                    $insert->bind_param("s", $mensaje);
+                    $insert->execute();
+                } catch (Exception $e) {
+                    error_log("Error en notificación: " . $e->getMessage());
+                }
+            }
+        }
+    }
+    $_SESSION['factura_id'] = $factura_id;
+    // Respuesta JSON
+    header('Content-Type: application/json');
+    echo json_encode(["success" => true, "factura_id" => $factura_id]);
+    exit;
+}
+
+// Si no es una solicitud POST o GET, continuar con la generación del HTML
+ob_end_clean(); // Limpiar el buffer antes de generar HTML
+// Recuperar datos para mostrar en pago.php
+$productos = $_SESSION['productos'] ?? [];
+$total = $_SESSION['total'] ?? 0;
+// Limpiar los datos de la sesión después de usarlos
+unset($_SESSION['productos']);
+unset($_SESSION['total']);
 ?>
 <!DOCTYPE html>
-<html lang="es">
-    
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ventas</title>
-        <link rel="stylesheet" href="../css/factura.css">
-        <link rel="stylesheet" href="../componentes/header.php">
-        <link rel="stylesheet" href="../componentes/header.css">
-        <script src="../js/header.js"></script>
-        <script src="../js/index.js"></script>
-    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <style>
 
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago</title>
+    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+
+    <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.php">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="../js/header.js"></script>
+    <script src="/js/index.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
 
@@ -93,365 +206,806 @@ if (isset($_POST['cobrar'])) {
     <div class="sidebar">
         <div id="menu"></div>
     </div>
-
-    <div class="main">
-        <div class="search-bar">
-            <form method="GET" action="ventas.php">
-                <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
-                    <i class="bx bx-search-alt-2 icon"></i>
-                </button>
-                <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
-            </form>
-        </div>
-
-        <ul class="breadcrumb">
-            <?php
-            $stmt = $conexion->prepare("SELECT * FROM categoria");
-            $stmt->execute();
-            $resultado = $stmt->get_result();
-
-            if ($resultado->num_rows > 0) {
-                while ($fila = $resultado->fetch_assoc()) {
-                    // Al ser presionado alguna categoria se muestra los productos de esa categoria
-                    echo "<li><a class='brand' name='categoria' href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
-                }
-            } else {
-                echo "<li>No hay categorías disponibles</li>";
-            }
-
-            $stmt->close();
-            ?>
-        </ul>
-
-        <div class="products">
-            <?php
-            if (isset($_GET['busqueda'])) {
-                $buscar = "%" . $_GET['busqueda'] . "%";
-                $stmt = $conexion->prepare("SELECT * FROM producto WHERE nombre LIKE ? OR codigo1 LIKE ?");
-                $stmt->bind_param("ss", $buscar, $buscar);
-                $stmt->execute();
-                $resultado = $stmt->get_result();
-            } else if (isset($_GET['categoria'])) {
-                $categoria = $_GET['categoria'];
-                $stmt = $conexion->prepare("SELECT * FROM producto WHERE Categoria_codigo = ?");
-                $stmt->bind_param("s", $categoria);
-                $stmt->execute();
-                $resultado = $stmt->get_result();
-            } else {
-                $consulta = "SELECT * FROM producto";
-                $resultado = mysqli_query($conexion, $consulta);
-            }
-
-            if ($resultado->num_rows > 0) {
-                while ($fila = mysqli_fetch_assoc($resultado)) {
-                    $disabledClass = $fila['cantidad'] <= 0 ? 'disabled' : '';
-                    echo "<div class='card $disabledClass' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-precio='{$fila['precio2']}' data-cantidad='{$fila['cantidad']}'>
-                    <span class='contador-producto'>0</span>
-                    <div class='card-header'>
-                        <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
+    <div class="container">
+        <div class="main-content">
+            <div class="content">
+                <div class="user-info">
+                    <h2>Información del Cliente</h2>
+                    <label for="tipo_doc">Tipo de Documento:</label>
+                    <select id="tipo_doc" name="tipo_doc">
+                        <option value="CC">Cédula de Ciudadanía</option>
+                        <option value="TI">Tarjeta de Identidad</option>
+                        <option value="NIT">NIT</option>
+                    </select>
+                    <div class="input-group">
+                        <input type="text" id="codigo" name="codigo" onfocus="buscarCodigo()" oninput="buscarCodigo()">
+                        <div id="suggestions" class="suggestions"></div>
                     </div>
-                <p class='product-price'>$" . number_format($fila['precio2']) . "</p>
-                <p class='product-price'>$" . number_format($fila['precio3']) . "</p>
-                <p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>
-                <div class='iconos-container'>
-                    <div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'>
-                        $icono1
-                    </div>
-                    <div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'>
-                        $icono2
+
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre">
+                    <input type="text" id="apellido" name="apellido" placeholder="Apellido">
+                    <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
+                    <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
+                </div>
+                <div class="payment-box">
+                    <div class="payment-section">
+                        <h2>Registrar Pago</h2>
+                        <div class="payment-methods">
+                            <h3>Pagos en efectivo</h3>
+                            <div class="efectivo-row">
+                                <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
+                                <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
+                                <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
+                                <input type="text" class="efectivo-input" name="valor_efectivo" placeholder="Valor" oninput="actualizarSaldoPendiente()">
+                            </div>
+                        </div>
+                        <div class="payment-box" id="tarjeta">
+                            <div class="plus-icon">
+                                <h3>Pagos con tarjeta</h3>
+                                <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
+                            </div>
+                            <div class="barra">
+                                <div class="tarjeta-content">
+                                    <select name="tipo_tarjeta">
+                                        <option value=""></option>
+                                        <option value="credito">Crédito</option>
+                                        <option value="debito">Débito</option>
+                                    </select>
+                                    <input type="text" name="voucher" placeholder="Nro. voucher">
+                                    <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-box" id="otro">
+                            <div class="plus-icon">
+                                <h3>Otros pagos</h3>
+                                <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
+                            </div>
+                            <div class="barra-1">
+                                <div class="otro-content">
+                                    <select name="tipo_otro">
+                                        <option value=""></option>
+                                        <option value="transferencia">Transferencia</option>
+                                    </select>
+                                    <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notes">
+                            <h3>Observaciones</h3>
+                            <textarea name="observaciones" placeholder="Ingrese observaciones..."></textarea>
+                        </div>
                     </div>
                 </div>
-            </div>";
-                }
-            } else {
-                echo "<script>alert('No se encontraron resultados')</script>";
-            }
+                <div class="summary-section">
+                    <h3>Información de pago</h3>
+                    <?php if (!empty($productos)): ?>
+                        <h3>Productos:</h3>
 
-            mysqli_close($conexion);
-            ?>
-        </div>
+                        <ul>
+                            <?php foreach ($productos as $producto): ?>
+                                <li data-id="<?php echo $producto['id']; ?>">
+                                    <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
 
 
-    </div>
+                        <p id="saldoPendiente">Saldo pendiente: $0.00</p>
 
-    <div class="sidebar-right">
+                        <h3>Total a pagar:</h3>
 
-        <h3>Resumen</h3>
-
-        <!-- Contenedor con Scroll -->
-
-        <div class="resumen-scroll">
-            <ul id="listaResumen" class="listaResumen"></ul>
-        </div>
-
-        <div class="total">
-            <span>Total:</span>
-            <span id="total-price">$0.00</span>
-        </div>
-
-        <div class="resumen-botones">
-            <button class="btn-cobrar" id="btnCobrar" onclick="cobrar()">Cobrar</button>
+                        <div class="contenedor-precio">
+                            <p>$<?php echo number_format($total, 2); ?></p>
+                        </div>
+                        <button onclick="guardarFactura()">Pagar</button>
+                    <?php else: ?>
+                        <p>No hay productos en el resumen.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
+    </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: "Metal Mania", system-ui;
+            background-image: url('fondoMotoRacer.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        body::before {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            z-index: -1;
+            background: black;
+            opacity: 0.6;
+        }
+
+        .container {
+            /* background-color: rgba(174, 174, 174, 0.59); */
+            /* border-radius: 10px; */
+            justify-content: space-between;
+            width: 1698px;
+            /* height: 901px; */
+            margin: auto;
+            transition: margin-left 0.3s ease, background-color 0.3s ease;
+        }
+
+
+        .sidebar {
+            width: 100px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1167CC, #083972, #000000);
+            transition: width 0.3s ease;
+            overflow: hidden;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar:hover {
+            width: 270px;
+        }
+
+        /* Ajuste de contenido cuando el menú se expande */
+        .sidebar:hover~.container {
+            margin-left: 270px !important;
+        }
+
+        /* Ajuste cuando el menú se expande */
+        .sidebar:hover~.main-content {
+            padding-left: 290px;
+            /* Mantiene la misma distancia cuando el menú se despliega */
+            transition: padding-left 0.3s ease;
+        }
+
+        /* Mantener la distancia de los lados */
+        .main-content {
+            transition: padding-left 0.3s ease;
+            width: calc(100% - 150px);
+            margin: auto;
+            margin-top: 72px;
+            margin-right: 62px;
+            padding-left: 179px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 21px;
+        }
+
+        .user-info h2 {
+            text-align: start;
+            margin-left: 10px;
+            font-size: 41px;
+            margin-top: 23px;
+            font-family: metal mania;
+            text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+        }
+
+        .form-grid {
+
+            grid-template-columns: repeat(2, 1fr);
+            row-gap: 19px;
+            margin-left: 323px;
+            margin: 0;
+            margin-top: 27px;
+            padding: 19px;
+            column-gap: -19px;
+
+        }
+
+        .payment-section {
+            margin-top: 100px;
+
+        }
+
+        .payment-section h2 {
+            text-align: start;
+            margin-left: 10px;
+            font-size: 41px;
+            font-family: metal mania;
+            text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+        }
+
+
+        .summary-section {
+            margin-top: 80px;
+            background-color: white;
+            border-radius: 10px;
+            width: 300px;
+            height: 300px;
+            margin-right: 310px;
+
+        }
+
+        input {
+
+            height: 45px;
+            width: 20%;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+
+        .user-info label,
+        .payment-methods h3 {
+            font-size: 20px;
+            text-shadow: -1px 1px 0 rgb(85 170 239);
+            font-family: arial;
+            margin-top: 10%;
+            font-weight: normal;
+            /* <- ESTO ayuda a igualar el grosor */
+        }
+
+        #tipo_doc {
+            /* margin-top: 55px; */
+            /* margin-left: 1px; */
+            height: 44px;
+            width: 100%;
+            font-size: 15px;
+            border-radius: 9px;
+        }
+
+
+        .payment-methods {
+            margin-right: 100px;
+            margin-left: 0px;
+        }
+
+        .efectivo-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .efectivo-row input {
+            flex: 1;
+            min-width: 153px;
+
+        }
+
+
+
+        .content {
+            display: flex;
+            justify-content: space-evenly;
+            margin-left: -200px;
+        }
+
+        button {
+            flex-shrink: 0;
+            background-color: #5496c3;
+            cursor: pointer;
+            width: 74px;
+            height: 40px;
+            color: white;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+
+
+        .payment-box {
+            width: 500px;
+        }
+
+        .payment-box select {
+            width: 19%;
+            height: 40px;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+
+
+        .payment-box input {
+            height: 40px;
+            width: 140px;
+            font-size: 15px;
+            border-radius: 5px;
+            margin-left: 20px;
+
+        }
+
+        input[name="valor_tarjeta"] {
+            margin-left: 6px;
+            width: 140px;
+        }
+
+        .notes h3 {
+            font-size: 25px;
+            font-weight: normal;
+            margin-left: 30px;
+            margin-top: 35px;
+            text-shadow:
+                -1px -1px 0 rgb(0, 140, 255),
+                1px -1px 0 rgb(0, 140, 255),
+                -1px 1px 0 rgb(0, 140, 255),
+                1px 1px 0 rgb(0, 140, 255);
+
+        }
+
+        textarea[name="observaciones"] {
+            margin-left: 20px;
+            width: 33%;
+            height: 100px;
+        }
+
+        .summary-section h3 {
+            margin-top: 20px;
+            border-radius: 10px;
+            width: 300px;
+            margin-left: 30px;
+            text-shadow:
+                -1px -1px 0 rgb(255, 251, 0),
+                1px -1px 0 rgb(255, 251, 0),
+                -1px 1px 0 rgb(255, 251, 0),
+                1px 1px 0 rgb(255, 251, 0);
+            margin-right: 310px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #333;
+            margin: 5px 0;
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        p span {
+            font-weight: bold;
+            /* Hacer que los valores sean más visibles */
+            color: #007bff;
+            /* Azul para resaltar los montos */
+            margin-left: 10px;
+            /* Espacio entre el texto y el monto */
+        }
+
+        .total {
+            margin-left: 90px;
+        }
+
+        .save-btn {
+            margin-left: 70px;
+            margin-top: 10px;
+            width: 150px;
+            height: 40px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            /* Azul más oscuro */
+        }
+
+        .plus-icon h3 {
+            font-family: Arial, sans-serif;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        .plus-icon {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-top: 29px;
+        }
+
+        .plus-icon img {
+            width: 20px;
+            /* o el tamaño que prefieras */
+            height: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            /* ajusta si lo ves muy pegado al texto */
+        }
+
+
+        .payment-box img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .barra {
+            max-height: 90px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+
+        .tarjeta-content,
+        .otro-content {
+
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: nowrap;
+            /* evita salto */
+            width: 100%;
+
+        }
+
+        .tarjeta-content input,
+        .tarjeta-content select {
+            flex: 1;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        .summary-section ul {
+            list-style-type: none;
+            /* Elimina las viñetas */
+            padding-left: 0;
+            /* Ajusta el espacio izquierdo */
+        }
+
+        .contenedor-preciom p {
+            margin-left: 50px;
+        }
+
+        .content>div {
+            flex: 1;
+            margin-right: 40px;
+            padding: 43px;
+        }
+
+        .user-info input,
+        .user-info select {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            box-sizing: border-box;
+            border-radius: 9px;
+        }
+
+        .user-info,
+        .payment-box,
+        .summary-section {
+            background-color: rgb(255 255 255 / 52%);
+            border-radius: 10px;
+        }
+
+        #tarjeta,
+        #otro.payment-box {
+            background: #fdfdfd00;
+        }
+
+        .input-group {
+            position: relative;
+            /* clave para posicionar las sugerencias debajo del input */
+            width: 100%;
+        }
+
+        #codigo {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            font-size: 13px;
+            font-family: arial;
+            margin-left: 1px;
+        }
+
+        .icono-eliminar {
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .icono-eliminar:hover {
+            color: red;
+        }
+    </style>
     <script>
-        let total = 0;
-// Funcion cobrar abre modal de metodo de pago
-function cobrar() {
-            if (document.querySelectorAll("#listaResumen li").length === 0) {
-                Swal.fire({
-                        title: `<span class="titulo">Error</span>`,
-                        html: `
-                            <div class="alerta">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" class="llave">
-                                </div>
-                                <p>No hay productos en la orden de venta.</p>
-                            </div>
-                        `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
-                        }
-                    });
+        function guardarFactura() {
+            let codigo = document.getElementById("codigo").value;
+            let tipoDoc = document.getElementById("tipo_doc").value;
+            let nombre = document.getElementById("nombre").value;
+            let apellido = document.getElementById("apellido").value;
+            let telefono = document.getElementById("telefono").value;
+            let correo = document.getElementById("correo").value;
+            let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(",", ""));
+
+            //Verificar si saldo pendiente es cero
+            saldoPendiente = calcularSaldoRestante();
+            if (saldoPendiente > 0) {
+                alert("Falta ingresar valores para pagar");
+                return;
+
             } else {
+
+
+                // Obtener productos de la factura
                 let productos = [];
-                let items = document.querySelectorAll("#listaResumen li");
-
-                items.forEach(item => {
-                    let id = item.getAttribute("data-id")?.trim();
-
-                    let nombre = item.getAttribute("data-nombre");
-                    let precio = parseFloat(item.getAttribute("data-precio"));
-                    let cantidad = parseInt(item.getAttribute("data-cantidad"));
-
-                    console.log(id);
-
+                document.querySelectorAll(".summary-section ul li").forEach(li => {
+                    let partes = li.textContent.split(" x ");
+                    let cantidad = parseInt(partes[0].trim());
+                    let nombreProducto = partes[1].split(" - $")[0].trim();
+                    let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
+                    let id = li.getAttribute("data-id");
 
                     productos.push({
-                        id: id,
-                        nombre: nombre,
-                        precio: precio,
-                        cantidad: cantidad
+                        nombre: nombreProducto,
+                        cantidad,
+                        precio,
+                        id
                     });
                 });
 
-                // Crear formulario dinámico
-                let form = document.createElement("form");
-                form.method = "POST";
-                form.action = "ventas.php"; // Asegúrate de que la ruta sea correcta
-
-                // Campo para indicar que se está cobrando
-                let inputCobrar = document.createElement("input");
-                inputCobrar.type = "hidden";
-                inputCobrar.name = "cobrar";
-                form.appendChild(inputCobrar);
-
-                // Agregar productos como campos ocultos
-                productos.forEach((producto, index) => {
-                    let inputNombre = document.createElement("input");
-                    inputNombre.type = "hidden";
-                    inputNombre.name = `productos[${index}][nombre]`;
-                    inputNombre.value = producto.nombre;
-                    form.appendChild(inputNombre);
-
-                    let inputPrecio = document.createElement("input");
-                    inputPrecio.type = "hidden";
-                    inputPrecio.name = `productos[${index}][precio]`;
-                    inputPrecio.value = producto.precio;
-                    form.appendChild(inputPrecio);
-
-                    let inputCantidad = document.createElement("input");
-                    inputCantidad.type = "hidden";
-                    inputCantidad.name = `productos[${index}][cantidad]`;
-                    inputCantidad.value = producto.cantidad;
-                    form.appendChild(inputCantidad);
-
-                    let inputId = document.createElement("input");
-                    inputId.type = "hidden";
-                    inputId.name = `productos[${index}][id]`;
-                    inputId.value = producto.id;
-                    form.appendChild(inputId);
+                let metodos_pago = [];
+                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                    let valor = parseFloat(input.value);
+                    if (!isNaN(valor) && valor > 0) {
+                        let tipo = input.name.replace("valor_", "");
+                        if (tipo === "otro") {
+                            // Aquí se toma el valor del select correspondiente
+                            let tipoOtro = document.querySelector("select[name='tipo_otro']").value;
+                            if (tipoOtro) {
+                                tipo = tipoOtro; // Se usa el valor seleccionado, ej. "transferencia"
+                            } else {
+                                alert("Selecciona un tipo de pago para 'otro'");
+                                return;
+                            }
+                        }
+                        metodos_pago.push({
+                            tipo,
+                            valor
+                        });
+                    }
                 });
 
-                document.body.appendChild(form);
-                form.submit(); // Enviar el formulario
+
+                fetch("prueba.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            codigo,
+                            tipoDoc,
+                            nombre,
+                            apellido,
+                            telefono,
+                            correo,
+                            total,
+                            productos,
+                            metodos_pago
+                        })
+                    })
+                    .then(response => response.json()) // Parsear la respuesta como JSON
+                    .then(data => {
+                        if (data.success) {
+                            alert("Factura registrada correctamente con ID: " + data.factura_id);
+                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                        } else {
+                            alert("Error al registrar factura: " + (data.error || ""));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error al registrar:", error);
+                        alert("Error al registrar factura. Por favor, inténtalo de nuevo.");
+                    });
             }
         }
 
 
-        function abrirModal() {
-            const modal = document.getElementById("modalPaymentMethod");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+        function actualizarSaldoPendiente() {
+            let total = <?php echo $total; ?>; // Total desde PHP
+            let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+            let otros = document.querySelectorAll("input[name='valor_otro']");
+
+            let totalPagado = efectivo;
+
+            tarjetas.forEach(input => {
+                totalPagado += parseFloat(input.value) || 0;
+            });
+
+            otros.forEach(input => {
+                totalPagado += parseFloat(input.value) || 0;
+            });
+
+            let saldoPendiente = total - totalPagado;
+            document.getElementById("saldoPendiente").textContent = "Saldo pendiente: $" + saldoPendiente.toFixed(2);
         }
 
-        function cerrarModal() {
-            const modal = document.getElementById("modalPaymentMethod");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+        function AgregarOtraTarjeta() {
+            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
+            let clone = tarjeta.cloneNode(true);
+
+
+            let eliminar = document.createElement("i");
+            eliminar.className = "fa-solid fa-trash";
+            eliminar.style.cursor = "pointer";
+            eliminar.onclick = function() {
+                clone.remove();
+            };
+
+            clone.appendChild(eliminar);
+            tarjeta.insertAdjacentElement("afterend", clone);
         }
 
-        // Función para abrir el modal de información de cliente
-        function openModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+        function AgregarOtroPago() {
+            let otro = document.querySelector("#otro .otro-content");
+            let clone = otro.cloneNode(true);
+
+            // Crear botón de eliminar solo para clones
+            let eliminar = document.createElement("img");
+            eliminar.src = "../imagenes/delete.svg";
+            eliminar.alt = "Eliminar";
+            eliminar.style.cursor = "pointer";
+            eliminar.style.marginLeft = "10px"; // Espaciado
+            eliminar.onclick = function() {
+                clone.remove();
+            };
+
+            // Añadir el botón dentro del clon (después del input)
+            clone.appendChild(eliminar);
+
+            // Insertar el clon después del elemento original
+            otro.insertAdjacentElement("afterend", clone);
         }
 
-        // Función para cerrar el modal de información de cliente
-        function closeModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+
+        function EliminarTarjeta() {
+            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
+            tarjeta.remove();
         }
 
-        // Prevenir el envío del formulario al hacer clic en "Cancelar"
-        document.getElementById("cancelButton").addEventListener("click", function(event) {
-            event.preventDefault(); // Evitar el envío del formulario
-            closeModal(); // Cerrar el modal
+        function EliminarOtroPago() {
+            let otro = document.querySelector("#otro .otro-content");
+            otro.remove();
+        }
+
+        function llenarValor(tipoPago, valor) {
+            let input = document.querySelector(`input[name='valor_${tipoPago}']`);
+            input.value = valor;
+            input.dispatchEvent(new Event("input", {
+                bubbles: true
+            })); // Para disparar el evento
+        }
+
+
+        function buscarCodigo() {
+            let input = document.getElementById("codigo").value;
+            let suggestionsBox = document.getElementById("suggestions");
+
+            fetch(`?codigo=${input}`)
+                .then(response => response.json())
+                .then(data => {
+                    suggestionsBox.innerHTML = "";
+                    if (data.length > 0) {
+                        suggestionsBox.style.display = "block";
+                        data.forEach(user => {
+                            let div = document.createElement("div");
+                            div.textContent = user.codigo + " - " + user.nombre;
+                            div.onclick = () => seleccionarCodigo(user);
+                            suggestionsBox.appendChild(div);
+                        });
+                    } else {
+                        suggestionsBox.style.display = "none";
+                    }
+                })
+                .catch(error => console.error("Error al obtener datos:", error));
+        }
+
+        function seleccionarCodigo(user) {
+            document.getElementById("codigo").value = user.codigo;
+            document.getElementById("suggestions").style.display = "none";
+            document.getElementById("tipo_doc").value = user.identificacion;
+            document.getElementById("nombre").value = user.nombre;
+            document.getElementById("apellido").value = user.apellido;
+            document.getElementById("telefono").value = user.telefono;
+            document.getElementById("correo").value = user.correo;
+        }
+
+        //Deshabilitar solo si el valor total de los productos se completo
+
+        document.addEventListener("DOMContentLoaded", function() {
+            function actualizarEstadoInputs() {
+                let totalPagar = <?php echo $total; ?>;
+                let sumaPagos = 0;
+
+                // Obtener valores de pago ingresados
+                let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+                let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
+                let otros = document.querySelectorAll("input[name='valor_otro']");
+
+                sumaPagos += efectivo;
+
+                tarjetas.forEach(input => {
+                    let valor = parseFloat(input.value) || 0;
+                    sumaPagos += valor;
+                });
+
+                otros.forEach(input => {
+                    let valor = parseFloat(input.value) || 0;
+                    sumaPagos += valor;
+                });
+
+                // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
+                if (sumaPagos >= totalPagar) {
+                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                        if (input.value.trim() === "") {
+                            input.disabled = true;
+                        }
+                    });
+                } else {
+                    // Si la suma aún no llega al total, habilitar todos los inputs
+                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                        input.disabled = false;
+                    });
+                }
+            }
+
+            // Agregar eventos para verificar en tiempo real
+            document.addEventListener("input", actualizarEstadoInputs);
+            document.addEventListener("change", actualizarEstadoInputs);
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            actualizarSaldoPendiente(); // Asegúrate de que esta función se ejecuta al cargar la página.
+
+            // Seleccionar solo los inputs con name específico
+            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                input.addEventListener("click", function() {
+                    if (this.value.trim() === "") { // Si el input está vacío
+                        let saldoRestante = calcularSaldoRestante(); // Calcula el saldo restante
+                        this.value = saldoRestante; // Autocompleta en los inputs específicos
+
+                        // Disparar manualmente el evento 'input' para que cualquier otra lógica lo detecte
+                        this.dispatchEvent(new Event("input", {
+                            bubbles: true
+                        }));
+                    }
+                });
+            });
         });
 
-        function agregarAlResumen(elemento) {
-            if (elemento.classList.contains("disabled")) {
-                alert("Este producto está agotado.");
-                return;
-            }
 
-            let id = elemento.getAttribute("data-id");
-            let nombre = elemento.getAttribute("data-nombre");
-            let precio = parseFloat(elemento.getAttribute("data-precio"));
-            let contadorElemento = elemento.querySelector(".contador-producto");
-            let cantidElement = elemento.querySelector('.product-cantidad');
-            let cantidActual = parseInt(elemento.getAttribute('data-cantidad'));
+        function calcularSaldoRestante() {
+            let total = <?php echo $total; ?>; // Total desde PHP
+            let sumaInputs = 0;
 
-            if (cantidActual <= 0) {
-                alert("No hay más stock disponible.");
-                return;
-            }
+            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
+                let valor = parseFloat(input.value) || 0; // Convierte a número o usa 0 si está vacío
+                sumaInputs += valor;
+            });
 
-            // Actualizar contador visual
-            let contador = parseInt(contadorElemento.textContent) || 0;
-            contador++;
-            contadorElemento.textContent = contador;
-            contadorElemento.style.display = "block";
-
-            // Reducir stock y actualizar visualmente
-            cantidActual--;
-            elemento.setAttribute('data-cantidad', cantidActual);
-            cantidElement.textContent = `Cantidad: ${cantidActual}`;
-
-            if (cantidActual === 0) {
-                elemento.classList.add('disabled');
-                elemento.style.pointerEvents = "none";
-                let btnQuitar = elemento.querySelector(".btn-remove");
-                if (btnQuitar) {
-                    btnQuitar.style.pointerEvents = "auto"; // Mantener activo
-                    btnQuitar.style.opacity = "1"; // Mantener visible
-                    btnQuitar.style.position = "relative"; // Mantener posición
-                }
-
-            }
-
-            // Actualizar lista de resumen
-            let listaResumen = document.getElementById("listaResumen");
-            let items = listaResumen.getElementsByTagName("li");
-            let encontrado = false;
-
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].getAttribute("data-nombre") === nombre) {
-                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
-                    items[i].setAttribute("data-cantidad", cantidad);
-                    items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
-                    encontrado = true;
-                    break;
-                }
-            }
-
-            if (!encontrado) {
-                let item = document.createElement("li");
-                item.setAttribute("data-id", id);
-                item.setAttribute("data-nombre", nombre);
-                item.setAttribute("data-precio", precio);
-                item.setAttribute("data-cantidad", 1);
-                item.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
-                listaResumen.appendChild(item);
-            }
-
-            // Actualizar total
-            total += precio;
-            document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+            return total - sumaInputs; // Retorna el saldo restante
         }
 
 
-        function quitarDelResumen(elemento) {
-            let nombre = elemento.getAttribute("data-nombre");
-            let precio = parseFloat(elemento.getAttribute("data-precio"));
-            let contadorElemento = elemento.querySelector(".contador-producto");
-
-            let contador = parseInt(contadorElemento.textContent) || 0;
-            let listaResumen = document.getElementById("listaResumen");
-            let items = listaResumen.getElementsByTagName("li");
-            let encontrado = false;
-
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].getAttribute("data-nombre") === nombre) {
-                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) - 1;
-
-                    if (cantidad > 0) {
-                        items[i].setAttribute("data-cantidad", cantidad);
-                        items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
-                    } else {
-                        listaResumen.removeChild(items[i]);
-                    }
-
-                    total -= precio;
-                    document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
-
-                    encontrado = true;
-                    break;
-                }
-            }
-
-            // Solo aumentar la cantidad si el producto estaba en el resumen
-            if (encontrado) {
-                let cantidElement = elemento.querySelector('.product-cantidad');
-                let cantidActual = parseInt(elemento.getAttribute('data-cantidad'));
-
-                if (!isNaN(cantidActual)) {
-                    cantidActual++; // Aumentar stock
-                    elemento.setAttribute('data-cantidad', cantidActual);
-                    cantidElement.textContent = `Cantidad: ${cantidActual}`;
-                }
-
-                // Habilitar nuevamente el producto si estaba deshabilitado
-                if (cantidActual > 0) {
-                    elemento.classList.remove('disabled');
-                    elemento.style.pointerEvents = "auto";
-                    elemento.style.opacity = "1";
-
-                    let btnQuitar = elemento.querySelector(".btn-remove");
-                    if (btnQuitar) {
-                        btnQuitar.style.pointerEvents = "auto"; // Mantener activo
-                        btnQuitar.style.opacity = "1"; // Mantener visible
-                    }
-                }
-
-                // Reducir el contador si es mayor a 0
-                if (contador > 0) {
-                    contador--;
-                    contadorElemento.textContent = contador;
-                    if (contador === 0) contadorElemento.style.display = "none";
-                }
-            }
-        }
+        document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
     </script>
-
 </body>
 
 </html>

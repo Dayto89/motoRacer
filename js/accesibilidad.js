@@ -3,7 +3,7 @@ const Accesibilidad = {
         tamanioBase: 16,
         maxPasos: 3,
         pasoActual: 0,
-        contrastes: ['modo-normal', 'modo-alto-contraste', 'modo-inverso', 'modo-claro'],
+        contrastes: ['modo-normal', 'modo-alto-contraste', 'modo-claro'],
         contrasteActual: 0,
         dislexia: false
     },
@@ -44,7 +44,7 @@ const Accesibilidad = {
     },
 
     cambiarContraste() {
-        this.config.contrasteActual = (this.config.contrasteActual + 1) % 4;
+        this.config.contrasteActual = (this.config.contrasteActual + 1) % 3;
         localStorage.setItem('contraste', this.config.contrasteActual);
         document.body.className = this.config.contrastes[this.config.contrasteActual];
     },

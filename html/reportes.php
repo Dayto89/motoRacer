@@ -306,7 +306,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
         <!-- Barra de búsqueda principal -->
         <div class="search-container">
-          <input style="width: 650px" type="text"
+          <input style="width: 650px" id="barraReportes" type="text"
             name="busqueda"
             placeholder="Buscar..."
             value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>">
@@ -321,7 +321,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
             <!-- Agregar este botón junto al botón de exportar -->
             <i class="fas fa-file-excel"></i>
-            <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
+            <label> Exportar a Excel</label>
           </button>
         </form>
 

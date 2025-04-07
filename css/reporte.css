@@ -203,7 +203,7 @@ input.form-control {
     cursor:pointer
 }
 .icon-button {
-    height: 36px; /* Igualar altura con el botón "Buscar" */
+    
     width: 150px;
     padding: 5px 10px;
     border: none;
@@ -509,6 +509,7 @@ form input[type="text"], #editForm select {
 
 .acciones{
     display: flex;
+    align-items: baseline;
 }
 
 .edit-button,

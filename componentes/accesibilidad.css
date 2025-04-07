@@ -1,17 +1,4 @@
-:root {
-  --color-fondo: #ffffff;
-  --color-encabezados: #ffff;
-  --color-texto: #000000;
-}
 
-body {
-  background-color: var(--color-fondo) !important;
-  color: var(--color-texto) !important;
-}
-
-h1, h2 {
-  color: var(--color-encabezados) !important;
-}
 
 /* Contenedor principal */
 .accesibilidad-container {
@@ -161,6 +148,7 @@ h1, h2 {
   border-color: #FFFF00 !important;
 }
 
+
 .modo-alto-contraste .sidebar-header .logo {
 
   filter: drop-shadow(0px 0px 5px #ffffff);
@@ -168,6 +156,11 @@ h1, h2 {
 
 .modo-alto-contraste, .modo-alto-contraste .body,.modo-alto-contraste .main-content{
   background-color: #000000c5 !important;
+}
+.modo-alto-contraste .main-content{
+  background-color: #dbdbdbc9 !important;
+  background: #222;
+  margin-right: 0px;
 }
 
 /* Tablas */
@@ -218,7 +211,9 @@ h1, h2 {
   border: 2px solid #FFF !important;
   font-weight: bold;
 }
-
+.modo-alto-contraste .search-icon{
+  border: none;
+}
 .modo-alto-contraste .search-button:hover {
   background-color: #3c4fa3 !important;
   color: #000 !important;
@@ -238,16 +233,27 @@ h1, h2 {
   border: 2px solid #ffffff !important;
 }
 .modo-alto-contraste button{
-    background-color: #ffffff;
-    border: 2px solid #000000;
-    color: #000000;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
+.modo-alto-contraste .recibo-button{
+  background-color:#00000000 ;
+  border: none;
+}
+.modo-alto-contraste .edit-button{
+  background-color:rgba(255, 222, 173, 0);
+  border:rgba(255, 222, 173, 0) ;
+}
+.modo-alto-contraste .delete-button{
+  background-color:rgba(255, 222, 173, 0);
+  border:rgba(255, 222, 173, 0) ;
 }
 
 /* 5. Botón de eliminar seleccionados */
 .modo-alto-contraste #delete-selected {
-  background-color: #000000 !important;
-  color: #FFF !important;
-  border: 2px solid #ffffff !important;
+  background-color: #00000000 !important;
+    color: #ffffff00 !important;
+    border: 2px solid #ffffff00 !important;;
 }
 
 .modo-alto-contraste #delete-selected:hover {
@@ -268,8 +274,25 @@ Modo claro lista de productos
   color: #000000 !important;
   border-color: #FFFF00 !important;
 }
+.modo-claro .campo label{
+color:black;
+}
+.modo-claro .modal-content{
+  background-color: #ffffffa6;
+}
+.modo-claro #editForm label{
+  text-shadow: 1px 0 #1c51a0;
+  color: #000000;
+}
+
+.modo-claro .filter-options{
+  background-color: rgba(255, 255, 255, 0.438);
+}
 .menu li a {
   color: black; /* Los íconos heredarán este color */
+}
+.modo-claro #barraReportes{
+  border: 2px solid #000000 !important;;
 }
 
 .modo-claro animated-icons {
@@ -277,8 +300,12 @@ Modo claro lista de productos
 }
 
 .modo-claro .main-content{
-  background-color: #dbdbdbe8 !important;
+  background-color: #dbdbdbc9 !important;
   background: #222;
+  margin-right: 0px;
+}
+.modo-claro .sidebar{
+  background-color: #dbdbdbc9 !important;
 }
 .modo-claro main {
   background-color: #ffffffc7; /* Color claro con transparencia */
@@ -296,10 +323,13 @@ Modo claro lista de productos
   background-color: #ffffff !important;
   color: #000000 !important;	
 }
-
-.modo-claro th {
+.modo-claro .search-icon{
+  border: none;
+}
+.modo-claro table {
   background-color: #ffffff !important;
   color: #000000 !important;
+  text-shadow: none;
 }
 
 .modo-claro .acciones i{
@@ -312,7 +342,14 @@ Modo claro lista de productos
   color: #000000 !important;
   border: 2px solid #000000 !important;
 }
-
+.modo-claro .edit-button{
+  background-color:rgba(255, 222, 173, 0);
+  border:rgba(255, 222, 173, 0) ;
+}
+.modo-claro .delete-button{
+  background-color:rgba(255, 222, 173, 0);
+  border:rgba(255, 222, 173, 0) ;
+}
 .modo-claro .filter-button::after {
   border-top-color: rgb(53, 155, 27) !important;
 }
@@ -324,7 +361,6 @@ Modo claro lista de productos
 }
 
 .modo-claro button{
-  background-color: #000;
   border: 2px solid #ffffff;
   color: #ffffff;
 }
@@ -368,9 +404,10 @@ Modo claro lista de productos
 
 /* 5. Botón de eliminar seleccionados */
 .modo-claro #delete-selected {
-  background-color: #ffffff !important;
-  border: 2px solid #000000 !important;
+  background-color: #ffffff00 !important;
+    border: 2px solid #00000000 !important;
 }
+
 
 .modo-claro #delete-selected i {
   color: #000000 !important;
@@ -495,6 +532,7 @@ Modo claro lista de productos
 .modo-alto-contraste main {
   background-color: #000000c5;
   border: 2px solid #ffffff;
+  margin-right: 0px;
 }
 body.modo-alto-contraste {
   background-color: rgba(0, 0, 0, 0.7) !important;

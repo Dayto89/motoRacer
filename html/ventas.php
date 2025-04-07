@@ -84,6 +84,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <script src="../js/header.js"></script>
         <script src="../js/index.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
 
     </style>

@@ -44,6 +44,7 @@ $mapeo_permisos = [
     'información.php' => ['seccion' => 'USUARIO', 'subseccion' => 'Información'],
     'stock.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Stock'],
     'gestiondeusuarios.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Gestión de Usuarios'],
+    'copiadeseguridad.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Copia de Seguridad'],
     // Agrega más páginas según sea necesario
 ];
 

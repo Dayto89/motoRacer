@@ -160,7 +160,8 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 ($identificacion, 'USUARIO', 'Información', 1),
 
                 ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0)");
+                ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
+                ($identificacion, 'CONFIGURACIÓN', 'Copia de Seguridad', 0)");
             if ($resultado) {
                 echo "<script>alert('Permisos guardados');</script>";
             } else {

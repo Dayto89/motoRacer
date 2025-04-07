@@ -188,7 +188,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" class="moto">
+                                    <img src="../imagenes/llave.png" class="llave">
                                 </div>
                                 <p>Error al eliminar el usuario.</p>
                             </div>
