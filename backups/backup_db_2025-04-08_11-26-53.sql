@@ -31,7 +31,7 @@ CREATE TABLE `accesos` (
   PRIMARY KEY (`id`),
   KEY `fk_usuario` (`id_usuario`),
   CONSTRAINT `fk_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`identificacion`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2145 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2159 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `accesos` (
 
 LOCK TABLES `accesos` WRITE;
 /*!40000 ALTER TABLE `accesos` DISABLE KEYS */;
-INSERT INTO `accesos` VALUES (1,123,'PRODUCTO','Crear Producto',1),(2,123,'PRODUCTO','Actualizar Producto',1),(3,123,'PRODUCTO','Categorías',1),(4,123,'PRODUCTO','Ubicación',1),(5,123,'PRODUCTO','Marca',1),(6,123,'PROVEEDOR','Crear Proveedor',1),(7,123,'PROVEEDOR','Actualizar Proveedor',1),(8,123,'PROVEEDOR','Lista Proveedor',1),(9,123,'INVENTARIO','Lista de Productos',1),(10,123,'FACTURA','Venta',1),(11,123,'FACTURA','Reporte',1),(12,123,'USUARIO','Información',1),(13,123,'CONFIGURACIÓN','Stock',1),(14,123,'CONFIGURACIÓN','Gestión de Usuarios',1),(2131,125,'PRODUCTO','crear producto',0),(2132,125,'PRODUCTO','actualizar producto',0),(2133,125,'PRODUCTO','categorías',0),(2134,125,'PRODUCTO','ubicación',0),(2135,125,'PRODUCTO','marca',0),(2136,125,'PROVEEDOR','crear proveedor',0),(2137,125,'PROVEEDOR','actualizar proveedor',0),(2138,125,'PROVEEDOR','lista proveedor',0),(2139,125,'INVENTARIO','lista de productos',1),(2140,125,'FACTURA','venta',0),(2141,125,'FACTURA','reporte',0),(2142,125,'USUARIO','información',1),(2143,125,'CONFIGURACIÓN','stock',0),(2144,125,'CONFIGURACIÓN','gestión de usuarios',0);
+INSERT INTO `accesos` VALUES (1,123,'PRODUCTO','Crear Producto',1),(2,123,'PRODUCTO','Actualizar Producto',1),(3,123,'PRODUCTO','Categorías',1),(4,123,'PRODUCTO','Ubicación',1),(5,123,'PRODUCTO','Marca',1),(6,123,'PROVEEDOR','Crear Proveedor',1),(7,123,'PROVEEDOR','Actualizar Proveedor',1),(8,123,'PROVEEDOR','Lista Proveedor',1),(9,123,'INVENTARIO','Lista de Productos',1),(10,123,'FACTURA','Venta',1),(11,123,'FACTURA','Reporte',1),(12,123,'USUARIO','Información',1),(13,123,'CONFIGURACIÓN','Stock',1),(14,123,'CONFIGURACIÓN','Gestión de Usuarios',1),(2145,125,'PRODUCTO','crear producto',0),(2146,125,'PRODUCTO','actualizar producto',0),(2147,125,'PRODUCTO','categorías',0),(2148,125,'PRODUCTO','ubicación',0),(2149,125,'PRODUCTO','marca',0),(2150,125,'PROVEEDOR','crear proveedor',0),(2151,125,'PROVEEDOR','actualizar proveedor',0),(2152,125,'PROVEEDOR','lista proveedor',0),(2153,125,'INVENTARIO','lista de productos',1),(2154,125,'FACTURA','venta',0),(2155,125,'FACTURA','reporte',0),(2156,125,'USUARIO','información',1),(2157,125,'CONFIGURACIÓN','stock',0),(2158,125,'CONFIGURACIÓN','gestión de usuarios',0);
 /*!40000 ALTER TABLE `accesos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -562,4 +562,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-07 16:40:08
+-- Dump completed on 2025-04-08  6:26:54

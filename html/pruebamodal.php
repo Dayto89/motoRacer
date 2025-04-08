@@ -244,10 +244,11 @@ unset($_SESSION['total']);
                                 <h3>Pagos con tarjeta</h3>
                                 <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
                             </div>
+
                             <div class="barra">
                                 <div class="tarjeta-content">
                                     <select name="tipo_tarjeta">
-                                        <option value=""></option>
+                                        <option value="">Opciones</option>
                                         <option value="credito">Crédito</option>
                                         <option value="debito">Débito</option>
                                     </select>
@@ -263,10 +264,10 @@ unset($_SESSION['total']);
                                 <h3>Otros pagos</h3>
                                 <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
                             </div>
-                            <div class="barra-1">
+                            <div class="barra">
                                 <div class="otro-content">
                                     <select name="tipo_otro">
-                                        <option value=""></option>
+                                        <option value="">Opciones</option>
                                         <option value="transferencia">Transferencia</option>
                                     </select>
                                     <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
@@ -275,9 +276,11 @@ unset($_SESSION['total']);
                             </div>
                         </div>
                         <div class="notes">
-                            <h3>Observaciones</h3>
-                            <textarea name="observaciones" placeholder="Ingrese observaciones..."></textarea>
+                            <label for="observaciones">Observaciones:</label><br>
+                            <input type="text" id="observaciones" name="observaciones" placeholder="Ingrese observaciones...">
                         </div>
+
+
                     </div>
                 </div>
                 <div class="summary-section">
@@ -310,421 +313,7 @@ unset($_SESSION['total']);
         </div>
     </div>
     </div>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: "Metal Mania", system-ui;
-            background-image: url('fondoMotoRacer.png');
-            background-size: cover;
-            background-position: center;
-        }
-
-        body::before {
-            position: fixed;
-            width: 200%;
-            height: 200%;
-            z-index: -1;
-            background: black;
-            opacity: 0.6;
-        }
-
-        .container {
-            /* background-color: rgba(174, 174, 174, 0.59); */
-            /* border-radius: 10px; */
-            justify-content: space-between;
-            width: 1698px;
-            /* height: 901px; */
-            margin: auto;
-            transition: margin-left 0.3s ease, background-color 0.3s ease;
-        }
-
-
-        .sidebar {
-            width: 100px;
-            height: 100vh;
-            background: linear-gradient(180deg, #1167CC, #083972, #000000);
-            transition: width 0.3s ease;
-            overflow: hidden;
-            position: fixed;
-            left: 0;
-            top: 0;
-        }
-
-        .sidebar:hover {
-            width: 270px;
-        }
-
-        /* Ajuste de contenido cuando el menú se expande */
-        .sidebar:hover~.container {
-            margin-left: 270px !important;
-        }
-
-        /* Ajuste cuando el menú se expande */
-        .sidebar:hover~.main-content {
-            padding-left: 290px;
-            /* Mantiene la misma distancia cuando el menú se despliega */
-            transition: padding-left 0.3s ease;
-        }
-
-        /* Mantener la distancia de los lados */
-        .main-content {
-            transition: padding-left 0.3s ease;
-            width: calc(100% - 150px);
-            margin: auto;
-            margin-top: 72px;
-            margin-right: 62px;
-            padding-left: 179px;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 21px;
-        }
-
-        .user-info h2 {
-            text-align: start;
-            margin-left: 10px;
-            font-size: 41px;
-            margin-top: 23px;
-            font-family: metal mania;
-            text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
-        }
-
-        .form-grid {
-
-            grid-template-columns: repeat(2, 1fr);
-            row-gap: 19px;
-            margin-left: 323px;
-            margin: 0;
-            margin-top: 27px;
-            padding: 19px;
-            column-gap: -19px;
-
-        }
-
-        .payment-section {
-            margin-top: 100px;
-
-        }
-
-        .payment-section h2 {
-            text-align: start;
-            margin-left: 10px;
-            font-size: 41px;
-            font-family: metal mania;
-            text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
-        }
-
-
-        .summary-section {
-            margin-top: 80px;
-            background-color: white;
-            border-radius: 10px;
-            width: 300px;
-            height: 300px;
-            margin-right: 310px;
-
-        }
-
-        input {
-
-            height: 45px;
-            width: 20%;
-            font-size: 15px;
-            border-radius: 5px;
-        }
-
-        .user-info label,
-        .payment-methods h3 {
-            font-size: 20px;
-            text-shadow: -1px 1px 0 rgb(85 170 239);
-            font-family: arial;
-            margin-top: 10%;
-            font-weight: normal;
-            /* <- ESTO ayuda a igualar el grosor */
-        }
-
-        #tipo_doc {
-            /* margin-top: 55px; */
-            /* margin-left: 1px; */
-            height: 44px;
-            width: 100%;
-            font-size: 15px;
-            border-radius: 9px;
-        }
-
-
-        .payment-methods {
-            margin-right: 100px;
-            margin-left: 0px;
-        }
-
-        .efectivo-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            width: 100%;
-        }
-
-        .efectivo-row input {
-            flex: 1;
-            min-width: 153px;
-
-        }
-
-
-
-        .content {
-            display: flex;
-            justify-content: space-evenly;
-            margin-left: -200px;
-        }
-
-        button {
-            flex-shrink: 0;
-            background-color: #5496c3;
-            cursor: pointer;
-            width: 74px;
-            height: 40px;
-            color: white;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-
-
-        .payment-box {
-            width: 500px;
-        }
-
-        .payment-box select {
-            width: 19%;
-            height: 40px;
-            font-size: 15px;
-            border-radius: 8px;
-        }
-
-
-        .payment-box input {
-            height: 40px;
-            width: 140px;
-            font-size: 15px;
-            border-radius: 5px;
-            margin-left: 20px;
-
-        }
-
-        input[name="valor_tarjeta"] {
-            margin-left: 6px;
-            width: 140px;
-        }
-
-        .notes h3 {
-            font-size: 25px;
-            font-weight: normal;
-            margin-left: 30px;
-            margin-top: 35px;
-            text-shadow:
-                -1px -1px 0 rgb(0, 140, 255),
-                1px -1px 0 rgb(0, 140, 255),
-                -1px 1px 0 rgb(0, 140, 255),
-                1px 1px 0 rgb(0, 140, 255);
-
-        }
-
-        textarea[name="observaciones"] {
-            margin-left: 20px;
-            width: 33%;
-            height: 100px;
-        }
-
-        .summary-section h3 {
-            margin-top: 20px;
-            border-radius: 10px;
-            width: 300px;
-            margin-left: 30px;
-            text-shadow:
-                -1px -1px 0 rgb(255, 251, 0),
-                1px -1px 0 rgb(255, 251, 0),
-                -1px 1px 0 rgb(255, 251, 0),
-                1px 1px 0 rgb(255, 251, 0);
-            margin-right: 310px;
-        }
-
-        p {
-            font-size: 16px;
-            color: #333;
-            margin: 5px 0;
-            margin-left: 30px;
-            margin-top: 10px;
-        }
-
-        p span {
-            font-weight: bold;
-            /* Hacer que los valores sean más visibles */
-            color: #007bff;
-            /* Azul para resaltar los montos */
-            margin-left: 10px;
-            /* Espacio entre el texto y el monto */
-        }
-
-        .total {
-            margin-left: 90px;
-        }
-
-        .save-btn {
-            margin-left: 70px;
-            margin-top: 10px;
-            width: 150px;
-            height: 40px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            /* Azul más oscuro */
-        }
-
-        .plus-icon h3 {
-            font-family: Arial, sans-serif;
-            font-weight: normal;
-            margin: 0;
-        }
-
-        .plus-icon {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            margin-top: 29px;
-        }
-
-        .plus-icon img {
-            width: 20px;
-            /* o el tamaño que prefieras */
-            height: 20px;
-            cursor: pointer;
-            margin-left: 10px;
-            /* ajusta si lo ves muy pegado al texto */
-        }
-
-
-        .payment-box img {
-            width: 30px;
-            height: 30px;
-        }
-
-        .barra {
-            max-height: 90px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-
-        .tarjeta-content,
-        .otro-content {
-
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            flex-wrap: nowrap;
-            /* evita salto */
-            width: 100%;
-
-        }
-
-        .tarjeta-content input,
-        .tarjeta-content select {
-            flex: 1;
-            min-width: 0;
-            box-sizing: border-box;
-        }
-
-        .summary-section ul {
-            list-style-type: none;
-            /* Elimina las viñetas */
-            padding-left: 0;
-            /* Ajusta el espacio izquierdo */
-        }
-
-        .contenedor-preciom p {
-            margin-left: 50px;
-        }
-
-        .content>div {
-            flex: 1;
-            margin-right: 40px;
-            padding: 43px;
-        }
-
-        .user-info input,
-        .user-info select {
-            width: 100%;
-            padding: 10px;
-            font-size: 15px;
-            box-sizing: border-box;
-            border-radius: 9px;
-        }
-
-        .user-info,
-        .payment-box,
-        .summary-section {
-            background-color: rgb(255 255 255 / 52%);
-            border-radius: 10px;
-        }
-
-        #tarjeta,
-        #otro.payment-box {
-            background: #fdfdfd00;
-        }
-
-        .input-group {
-            position: relative;
-            /* clave para posicionar las sugerencias debajo del input */
-            width: 100%;
-        }
-
-        #codigo {
-            width: 100%;
-            padding: 10px;
-            font-size: 15px;
-        }
-
-        .suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-top: none;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 1000;
-            font-size: 13px;
-            font-family: arial;
-            margin-left: 1px;
-        }
-
-        .icono-eliminar {
-            color: white;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .icono-eliminar:hover {
-            color: red;
-        }
-    </style>
     <script>
         function guardarFactura() {
             let codigo = document.getElementById("codigo").value;
@@ -843,8 +432,10 @@ unset($_SESSION['total']);
             let clone = tarjeta.cloneNode(true);
 
 
+
             let eliminar = document.createElement("i");
-            eliminar.className = "fa-solid fa-trash";
+            eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
+            eliminar.alt = "Eliminar";
             eliminar.style.cursor = "pointer";
             eliminar.onclick = function() {
                 clone.remove();
@@ -858,20 +449,16 @@ unset($_SESSION['total']);
             let otro = document.querySelector("#otro .otro-content");
             let clone = otro.cloneNode(true);
 
-            // Crear botón de eliminar solo para clones
-            let eliminar = document.createElement("img");
-            eliminar.src = "../imagenes/delete.svg";
+            // Crear botón de eliminar con el mismo estilo que tarjeta
+            let eliminar = document.createElement("i");
+            eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
             eliminar.alt = "Eliminar";
             eliminar.style.cursor = "pointer";
-            eliminar.style.marginLeft = "10px"; // Espaciado
             eliminar.onclick = function() {
                 clone.remove();
             };
 
-            // Añadir el botón dentro del clon (después del input)
             clone.appendChild(eliminar);
-
-            // Insertar el clon después del elemento original
             otro.insertAdjacentElement("afterend", clone);
         }
 

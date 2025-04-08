@@ -79,6 +79,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             max-width: 1200px;
             margin: 0 auto;
             color: white;
+            margin-top: 50px;
         }
 
         .main-content h1 {
@@ -91,6 +92,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             border-collapse: collapse;
             margin-top: 1.5rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .backup-table thead{
+            align-items: center;
+            justify-content:center ;
         }
 
         .backup-table th,
@@ -200,6 +206,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             width: 300px;
             height: 40px;
         }
+
+        .search-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            height: 40px;
+            width: 100px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .boton-agregar {
+            
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            height: 40px;
+            width: 200px;
+            font-size: 15px;
+            cursor: pointer;
+       
+        }
+
+        .boton-agregar:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 
@@ -210,7 +248,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         <!-- Barra de búsqueda mejorada -->
         <div class="filter-bar">
-            <form method="GET" action="backups.php" class="search-form">
+            <form method="GET" action="copiadeseguridad.php" class="search-form">
                 <div class="search-container">
                     <input id="#search-input" type="text"
                         name="busqueda"
@@ -222,6 +260,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     </button>
                 </div>
             </form>
+            <button class="boton boton-agregar" onclick="agregarBackup()">Nueva Copia de Seguridad</button>
         </div>
 
         <?php if (!empty($backups)): ?>
@@ -272,6 +311,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
     <script>
+        function agregarBackup() {
+            window.location.href = "../includes/backup.php";
+        }
+
         async function restoreBackup(filename) {
             if (!confirm(`¿Restaurar ${filename}? ¡Esto sobrescribirá datos!`)) return;
 

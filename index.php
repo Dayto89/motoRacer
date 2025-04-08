@@ -1,47 +1,47 @@
 <?php
 session_start();
 
+$mensaje = null;  // Variable para almacenar el estado del mensaje
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identificacion = htmlspecialchars(trim($_POST['identificacion']));
     $contrasena = trim($_POST['contrasena']);
 
     if (empty($identificacion) || empty($contrasena)) {
-        echo "<script>alert('Por favor, llena todos los campos.');</script>";
-        exit;
-    }
-
-    $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-
-    if (!$conexion) {
-        die("Error en la conexión: " . mysqli_connect_error());
-    }
-
-    $stmt = $conexion->prepare("SELECT * FROM usuario WHERE identificacion = ?");
-    $stmt->bind_param("s", $identificacion);
-    $stmt->execute();
-    $resultado = $stmt->get_result();
-
-    if ($resultado->num_rows === 1) {
-        $usuario = $resultado->fetch_assoc();
-
-        if (password_verify($contrasena, $usuario['contraseña'])) {
-            $_SESSION['usuario_id'] = $usuario['identificacion']; // Establecer variables de sesión
-            $_SESSION['usuario_nombre'] = $usuario['nombre'];
-
-            header("Location: ../html/inicio.php");
-            exit;
-        } else {
-            echo "<script>alert('Contraseña incorrecta.');</script>";
-        }
+        $mensaje = 'campos_vacios';
     } else {
-        echo "<script>alert('Usuario no encontrado.');</script>";
+        $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+
+        if (!$conexion) {
+            die("Error en la conexión: " . mysqli_connect_error());
+        }
+
+        $stmt = $conexion->prepare("SELECT * FROM usuario WHERE identificacion = ?");
+        $stmt->bind_param("s", $identificacion);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        if ($resultado->num_rows === 1) {
+            $usuario = $resultado->fetch_assoc();
+
+            if (password_verify($contrasena, $usuario['contraseña'])) {
+                $_SESSION['usuario_id'] = $usuario['identificacion'];
+                $_SESSION['usuario_nombre'] = $usuario['nombre'];
+
+                header("Location: ../html/inicio.php");
+                exit;
+            } else {
+                $mensaje = 'contrasena_incorrecta';
+            }
+        } else {
+            $mensaje = 'usuario_no_encontrado';
+        }
+        $stmt->close();
+        mysqli_close($conexion);
     }
-
-    $stmt->close();
-    mysqli_close($conexion);
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -49,9 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moto Racer</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="../style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        
+  
+
+
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
@@ -81,6 +86,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     </form>
     </div>
+    <script>
+    const mensaje = "<?php echo $mensaje; ?>";
+
+    if (mensaje === "campos_vacios") {
+        Swal.fire({
+            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>Por favor, llena todos los campos.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } else if (mensaje === "contrasena_incorrecta") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Contraseña incorrecta.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } else if (mensaje === "usuario_no_encontrado") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Usuario no encontrado.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    }
+</script>
+
+
+
+
+    
 
 </body>
 

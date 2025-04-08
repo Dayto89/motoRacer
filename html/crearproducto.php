@@ -40,6 +40,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     <link rel="stylesheet" href="/componentes/header.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -211,6 +212,8 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
     <?php
 
+$mensaje = null;  // Variable para almacenar el estado del mensaje
+
     if ($_POST) {
         if (!$conexion) {
             die("<script>alert('No se pudo conectar a la base de datos');</script>");
@@ -237,9 +240,9 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         $resultado = mysqli_query($conexion, $query);
 
         if ($resultado) {
-            echo "<script>alert('Producto agregado con éxito!')</script>";
+            $mensaje = 'producto_agregado';
         } else {
-            echo "<script>alert('Error al agregar el producto!')</script>";
+            $mensaje = 'error_al_agregar';
         }
     }
 
@@ -261,6 +264,55 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
             modal.style.display = "none"; // Ocultar el modal
             btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
         }
+
+
+        //llamar la variable mensaje y alertas
+
+        const mensaje = "<?php echo $mensaje; ?>";
+
+    if (mensaje === "producto_agregado") {
+        Swal.fire({
+            title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                    </div>
+                    <p>Producto agregado con éxito al inventario.</p>
+                </div>
+            `,
+            background: 'hsl(0deg 0% 100% / 76%)',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } else if (mensaje === "error_al_agregar") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al agregar el producto.</p>
+                </div>
+            `,
+            background: 'hsl(0deg 0% 100% / 76%)',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } 
+
+
     </script>
 
 </body>

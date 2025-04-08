@@ -3,12 +3,14 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: "Metal Mania", system-ui;
-    background-image: url('fondoMotoRacer.png'); 
+    background-image: url('fondoMotoRacer.png');
     background-size: cover;
     background-position: center;
 }
+
 body::before {
     position: fixed;
     width: 200%;
@@ -19,16 +21,15 @@ body::before {
 }
 
 .container {
-    
-    background-color: rgba(174, 174, 174, 0.59); /* Mantiene el fondo semitransparente */
-    border-radius: 10px;
+    /* background-color: rgba(174, 174, 174, 0.59); */
+    /* border-radius: 10px; */
     justify-content: space-between;
-    width: 1400px;
-    height: 900px;
+    width: 1698px;
+    /* height: 901px; */
     margin: auto;
-
-    transition: margin-left 0.3s ease, background-color 0.3s ease; /* Agregar transición suave */
+    transition: margin-left 0.3s ease, background-color 0.3s ease;
 }
+
 
 .sidebar {
     width: 100px;
@@ -46,41 +47,44 @@ body::before {
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .container {
+.sidebar:hover~.container {
     margin-left: 270px !important;
 }
 
 /* Ajuste cuando el menú se expande */
-.sidebar:hover ~ .main-content {
-    padding-left: 290px; /* Mantiene la misma distancia cuando el menú se despliega */
+.sidebar:hover~.main-content {
+    padding-left: 290px;
+    /* Mantiene la misma distancia cuando el menú se despliega */
     transition: padding-left 0.3s ease;
 }
 
 /* Mantener la distancia de los lados */
 .main-content {
-    padding: 20px;
     transition: padding-left 0.3s ease;
-    height: 100vh;
-    width: calc(100% - 150px); /* Mantiene el ancho total menos el margen derecho */
+    width: calc(100% - 150px);
     margin: auto;
-    margin-top: 20px;
-    margin-right: 50px;
-    padding-left: 120px; /* Espacio inicial del menú cerrado */
-}
-.user-info{
-    margin-left: 100px;
-    
+    margin-top: 72px;
+    margin-right: 62px;
+    padding-left: 179px;
 }
 
-.user-info h2{
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 21px;
+}
+
+.user-info h2 {
     text-align: start;
     margin-left: 10px;
-    font-size: 45px;
-    margin-top: 10px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-size: 41px;
+    margin-top: 23px;
+    font-family: metal mania;
+    text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
 }
+
 .form-grid {
-       
+
     grid-template-columns: repeat(2, 1fr);
     row-gap: 19px;
     margin-left: 323px;
@@ -88,180 +92,218 @@ body::before {
     margin-top: 27px;
     padding: 19px;
     column-gap: -19px;
-    
-    }
-.payment-section{   
+
+}
+
+.payment-section {
     margin-top: 100px;
 
- }
-
- .payment-section h2{
-    text-align: start;
-    margin-left: 100px;
-    font-size: 45px;
- }
-.summary-section{
-    margin-top: 80px;
-    background-color: white;
-    border-radius: 10px;
-    width: 300px;
-    height: 300px;
-    margin-right: 310px;
-
-}
-
-input{
-    
-    height: 45px;
-    width: 20%;
-    font-size: 15px;
-    border-radius: 5px;
-}
-.user-info label{
-    font-size: 25px;
-    margin-left: 30px;
-    text-shadow:
-    -1px -1px 0 rgb(0, 140, 255),
-    1px -1px 0 rgb(0, 140, 255),
-    -1px 1px 0 rgb(0, 140, 255),
-    1px 1px 0 rgb(0, 140, 255);
-}
-#tipo_doc{
-    margin-top: 50px;
-    margin-left: 20px;
-    height: 30px;
-    width: 20%;
-    font-size: 15px;
-    border-radius: 5px;
-}
-#apellido{
-    margin-left: 18.4%;
 }
 
 .payment-methods {
-margin-right: 100px;
-margin-left: 0px;
-}
-.payment-methods h3{
-    font-size: 25px;
-    font-weight: normal;
-    margin-left: 30px;
-    margin-top: 35px;
-    text-shadow:
-    -1px -1px 0 rgb(0, 140, 255),
-    1px -1px 0 rgb(0, 140, 255),
-    -1px 1px 0 rgb(0, 140, 255),
-    1px 1px 0 rgb(0, 140, 255);
+    margin-right: 100px;
+    margin-left: 0px;
 }
 
-.content{
-    display: flex;
-    justify-content: space-between;
-    margin-left: 100px;
-}
-button{
+.payment-section h2 {
+    text-align: center;
     margin-left: 10px;
-    background-color: #1AA906;
-    cursor: pointer;
-    width: 90px;
-    height: 30px;
-    color: white;
-    border-radius: 15px;
-
-}
-input[name="valor_efectivo"] {
-    height: 45px;
-   
-    
+    font-size: 41px;
+    font-family: metal mania;
+    text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
 }
 
-.payment-box{
+.user-info label{
+    font-size: 20px;
+    text-shadow: -1px 1px 0 rgb(85 170 239);
+    font-family: arial;
+    margin-top: 3%;
+    font-weight: normal;
+    /* <- ESTO ayuda a igualar el grosor */
+}
+.payment-methods h3 {
+    font-size: 20px;
+    text-shadow: -1px 1px 0 rgb(85 170 239);
+    font-family: arial;
+    margin-top: 10%;
+    font-weight: normal;
+    /* <- ESTO ayuda a igualar el grosor */
+}
+
+.payment-box {
     width: 500px;
 }
 
-.payment-box select{
-    margin-left: 20px;
-    width: 20%;
+.payment-box select {
+    width: 19%;
     height: 40px;
     font-size: 15px;
-    border-radius: 5px;
-
-
+    border-radius: 8px;
 }
+
+
 .payment-box input {
-    
-    height: 45px;
-    width: 32.8%;
+    height: 40px;
+    width: 140px;
     font-size: 15px;
     border-radius: 5px;
-    margin-left: 20px;
+
+
 }
-input[name="valor_tarjeta"]{
-    margin-left: 0px;
+
+.user-info,
+.payment-box,
+.summary-section {
+    background-color: rgb(255 255 255 / 52%);
+    border-radius: 10px;
 }
-.notes h3{
+
+#tarjeta,
+#otro.payment-box {
+    background: transparent;
+    width: 100%;
+}
+
+
+input {
+
+    height: 45px;
+    width: 20%;
+    font-size: 15px;
+    border-radius: 5px;
+}
+
+
+
+#tipo_doc {
+    /* margin-top: 55px; */
+    /* margin-left: 1px; */
+    height: 44px;
+    width: 100%;
+    font-size: 15px;
+    border-radius: 9px;
+}
+
+
+.efectivo-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+}
+
+.efectivo-row input {
+    flex: 1;
+    min-width: 153px;
+
+}
+
+
+.content {
+    display: flex;
+    justify-content: space-evenly;
+    margin-left: -200px;
+    margin-top: 10%;
+}
+
+
+input[name="valor_tarjeta"] {
+    margin-left: 6px;
+    width: 140px;
+}
+
+.notes h3 {
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 25px;
     font-weight: normal;
     margin-left: 30px;
     margin-top: 35px;
-    text-shadow:
-        -1px -1px 0 rgb(0, 140, 255),
-        1px -1px 0 rgb(0, 140, 255),
-        -1px 1px 0 rgb(0, 140, 255),
-        1px 1px 0 rgb(0, 140, 255);
-        
+    text-shadow: -1px 1px 0 rgb(85 170 239);
+
 }
-textarea[name="observaciones"]{
+
+textarea[name="observaciones"] {
     margin-left: 20px;
     width: 33%;
     height: 100px;
 }
- .summary-section h3{
-    margin-top: 20px;
+
+.summary-section {
+    background-color: white;
     border-radius: 10px;
-    width: 300px;
-    margin-left: 30px;
-    text-shadow:
-        -1px -1px 0 rgb(255, 251, 0),
-        1px -1px 0 rgb(255, 251, 0),
-        -1px 1px 0 rgb(255, 251, 0),
-        1px 1px 0 rgb(255, 251, 0);
+    width: 268px;
+    height: 680px;
     margin-right: 310px;
- }
- p {
-    font-size: 16px;
-    color: #333;
-    margin: 5px 0;
-    margin-left: 30px;
-    margin-top: 10px;
 }
 
-p span {
-    font-weight: bold; /* Hacer que los valores sean más visibles */
-    color: #007bff; /* Azul para resaltar los montos */
-    margin-left: 10px; /* Espacio entre el texto y el monto */
+.summary-section h3 {
+    text-align: center;
+    font-size: 41px;
+    font-family: metal mania;
+    text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+    color: white;
+    margin-top: 23px;
 }
-.total{
+.summary-section h2 {
+    text-align: start;
+    font-size: 20px;
+    text-shadow: -1px 1px 0 rgb(85 170 239);
+    font-family: arial;
+    margin-top: 10%;
+    font-weight: normal;
+    margin-left: 0px;
+    color: black;
+}
+
+.summary-section ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+.summary-container{
+    background-color: white;
+}
+
+p {
+    font-size: 15px;
+    color: black;
+    margin: 5px 0;
+    margin-top: 33px;
+    font-family: arial;
+    border-radius: 8px
+}
+
+
+.total {
     margin-left: 90px;
 }
 
-.save-btn{
+.save-btn {
     margin-left: 70px;
     margin-top: 10px;
     width: 150px;
     height: 40px;
 }
+
 button:hover {
-    background-color: #0056b3; /* Azul más oscuro */
+    background-color: #0056b3;
+    /* Azul más oscuro */
 }
 
-.plus-icon{
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    margin-bottom: 10px;
+.plus-icon h3 {
+    font-family: Arial, sans-serif;
+    text-shadow: -1px 1px 0 rgb(85 170 239);
+    font-weight: normal;
+    font-size: 20px;
 }
-.plus-icon img{
+
+.plus-icon {
+    display: flex;
+    margin-bottom: 4px;
+
+    align-items: flex-end;
+}
+
+.plus-icon img {
     width: 30px;
     height: 30px;
     margin-top: 40px;
@@ -269,39 +311,162 @@ button:hover {
     cursor: pointer;
 }
 
-.payment-box img {
-    width: 30px;
-    height: 30px;  
- }
 
- .barra {
-    max-height: 90px; 
-    overflow-y: auto; 
-    display: flex;
-    flex-direction: column;
-    padding-right: 5px; 
- }
 
- .tarjeta-content, .otro-content {
-    display: flex;
+.tarjeta-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 8px;
     align-items: center;
- }
-
- .barra-1 {
-    max-height: 90px; 
-    overflow-y: auto; 
-    display: flex;
-    flex-direction: column;
-    padding-right: 5px; 
- }
-
-
- .summary-section ul{
-    list-style-type: none; /* Elimina las viñetas */
-    padding-left: 0; /* Ajusta el espacio izquierdo */
- }
-
- .contenedor-preciom p {
-   margin-left: 50px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
+.otro-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.tarjeta-content label,
+.otro-content label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.tarjeta-content input,
+.tarjeta-content select,
+.otro-content input,
+.otro-content select {
+    width: 86%;
+    padding: 8px 12px;
+    border: 1px solid #121111;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.notes label {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    text-shadow: -1px 1px 0 rgb(85 170 239);
+}
+
+.notes {
+    margin-top: 11px;
+}
+
+input#observaciones {
+    margin-top: 11px;
+    height: 94px;
+    width: 100%;
+}
+
+.contenedor-preciom p {
+    margin-left: 50px;
+}
+
+.content>div {
+    flex: 1;
+    margin-right: 40px;
+    padding: 43px;
+}
+
+.user-info input,
+.user-info select {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    box-sizing: border-box;
+    border-radius: 9px;
+}
+
+.user-info,
+.payment-box,
+.summary-section {
+    background-color: rgb(255 255 255 / 52%);
+    border-radius: 10px;
+}
+
+#tarjeta,
+#otro.payment-box {
+    background: transparent;
+    width: 100%;
+}
+
+.input-group {
+    position: relative;
+    /* clave para posicionar las sugerencias debajo del input */
+    width: 100%;
+}
+
+#codigo {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+}
+
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    font-size: 13px;
+    font-family: arial;
+    margin-left: 1px;
+}
+
+.barra {
+    max-height: 90px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    flex-shrink: 0;
+    background-color: #5496c3;
+    cursor: pointer;
+    width: 74px;
+    height: 40px;
+    color: white;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+
+
+.icono-eliminar-circular {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    width: 30px;
+    height: 30px;
+}
+
+
+.icono-eliminar-circular:hover {
+    background-color: #d30404;
+
+}

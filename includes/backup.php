@@ -20,4 +20,7 @@ if ($sql_code !== 0) {
     die("Error al generar backup de la BD: " . implode("\n", $sql_output));
 }
 
+// Volver a los backups
+echo '<script>location.href="../html/copiadeseguridad.php"</script>';
+
 ?>

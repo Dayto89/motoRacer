@@ -189,35 +189,17 @@ unset($_SESSION['total']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pago</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="../css/pago.css">
+
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
+    <link rel="stylesheet" href="../css/pago.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-
-        .suggestions {
-            position: absolute;
-            background: white;
-            border: 1px solid #ccc;
-            width: 150px;
-            max-height: 150px;
-            overflow-y: auto;
-            display: none;
-            margin-left: 27%;
-        }
-
-        .suggestions div {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .suggestions div:hover {
-            background: #f0f0f0;
-        }
     </style>
 </head>
 
@@ -225,42 +207,49 @@ unset($_SESSION['total']);
     <div class="sidebar">
         <div id="menu"></div>
     </div>
-    <div class="main-content">
-        <div class="container">
-                <h2>Información del Ciente</h2>
-                <label for="tipo_doc">Tipo de Documento:</label>
-                <select id="tipo_doc" name="tipo_doc">
-                    <option value="CC">Cédula de Ciudadanía</option>
-                    <option value="TI">Tarjeta de Identidad</option>
-                    <option value="NIT">NIT</option>
-                </select>
-                <input type="text" id="codigo" name="codigo" onfocus="buscarCodigo()" oninput="buscarCodigo()">
-                <div id="suggestions" class="suggestions"></div>
-                <input type="text" id="nombre" name="nombre" placeholder="Nombre">
-                <input type="text" id="apellido" name="apellido" placeholder="Apellido">
-                <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
-                <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
-            
-             <div class="payment-section">
-                <h2>Registrar Pago</h2>
-                <div class="content">
-                    <div class="payment-methods">
-                        <div class="payment-box">
+    <div class="container">
+        <div class="main-content">
+            <div class="content">
+                <div class="user-info">
+                    <h2>Información del Cliente</h2>
+                    <label for="tipo_doc">Tipo de Documento:</label>
+                    <select id="tipo_doc" name="tipo_doc">
+                        <option value="CC">Cédula de Ciudadanía</option>
+                        <option value="TI">Tarjeta de Identidad</option>
+                        <option value="NIT">NIT</option>
+                    </select>
+                    <div class="input-group">
+                        <input type="text" id="codigo" name="codigo" onfocus="buscarCodigo()" oninput="buscarCodigo()">
+                        <div id="suggestions" class="suggestions"></div>
+                    </div>
+
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre">
+                    <input type="text" id="apellido" name="apellido" placeholder="Apellido">
+                    <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
+                    <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
+                </div>
+                <div class="payment-box">
+                    <div class="payment-section">
+                        <h2>Registrar Pago</h2>
+                        <div class="payment-methods">
                             <h3>Pagos en efectivo</h3>
-                            <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
-                            <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
-                            <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
-                            <input type="text" name="valor_efectivo" placeholder="Valor" oninput="actualizarSaldoPendiente()">
+                            <div class="efectivo-row">
+                                <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
+                                <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
+                                <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
+                                <input type="text" class="efectivo-input" name="valor_efectivo" placeholder="Valor" oninput="actualizarSaldoPendiente()">
+                            </div>
                         </div>
                         <div class="payment-box" id="tarjeta">
                             <div class="plus-icon">
                                 <h3>Pagos con tarjeta</h3>
                                 <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
                             </div>
+
                             <div class="barra">
                                 <div class="tarjeta-content">
                                     <select name="tipo_tarjeta">
-                                        <option value=""></option>
+                                        <option value="">Opciones</option>
                                         <option value="credito">Crédito</option>
                                         <option value="debito">Débito</option>
                                     </select>
@@ -276,10 +265,10 @@ unset($_SESSION['total']);
                                 <h3>Otros pagos</h3>
                                 <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
                             </div>
-                            <div class="barra-1">
+                            <div class="barra">
                                 <div class="otro-content">
                                     <select name="tipo_otro">
-                                        <option value=""></option>
+                                        <option value="">Opciones</option>
                                         <option value="transferencia">Transferencia</option>
                                     </select>
                                     <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
@@ -288,40 +277,46 @@ unset($_SESSION['total']);
                             </div>
                         </div>
                         <div class="notes">
-                            <h3>Observaciones</h3>
-                            <textarea name="observaciones" placeholder="Ingrese observaciones..."></textarea>
+                            <label for="observaciones">Observaciones:</label><br>
+                            <input type="text" id="observaciones" name="observaciones" placeholder="Ingrese observaciones...">
                         </div>
-                    </div>
-                    <div id="summary-section" class="summary-section">
-                        <h3>Informacion de pago</h3>
-                        <?php if (!empty($productos)): ?>
-                            <h3>Productos:</h3>
-
-                            <ul>
-                                <?php foreach ($productos as $producto): ?>
-                                    <li data-id="<?php echo $producto['id']; ?>">
-                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
 
 
-                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
-                            <p>
-                            <h3>Total a pagar:</h3>
-                            </p>
-                            <div class="contenedor-precio">
-                                <p>$<?php echo number_format($total, 2); ?></p>
-                            </div>
-                            <button onclick="guardarFactura()">Pagar</button>
-                        <?php else: ?>
-                            <p>No hay productos en el resumen.</p>
-                        <?php endif; ?>
                     </div>
                 </div>
+                <div class="summary-section">
+                    <h3>Información de pago</h3>
+                    <?php if (!empty($productos)): ?>
+                        <div class="summary-container"></div>
+                        <h2>Productos:</h2>
+
+                        <ul>
+                            <?php foreach ($productos as $producto): ?>
+                                <li data-id="<?php echo $producto['id']; ?>">
+                                    <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+
+
+                        <p id="saldoPendiente">Saldo pendiente: $0.00</p>
+
+                        <h2>Total a pagar:</h2>
+
+                        <div class="contenedor-precio">
+                            <p>$<?php echo number_format($total, 2); ?></p>
+                        </div>
+                        <button onclick="guardarFactura()">Pagar</button>
+                </div>
+            <?php else: ?>
+                <p>No hay productos en el resumen.</p>
+            <?php endif; ?>
             </div>
         </div>
     </div>
+    </div>
+    </div>
+
     <script>
         function guardarFactura() {
             let codigo = document.getElementById("codigo").value;
@@ -439,9 +434,10 @@ unset($_SESSION['total']);
             let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
             let clone = tarjeta.cloneNode(true);
 
-            // Crear botón de eliminar solo para clones
-            let eliminar = document.createElement("img");
-            eliminar.src = "../imagenes/delete.svg";
+
+
+            let eliminar = document.createElement("i");
+            eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
             eliminar.alt = "Eliminar";
             eliminar.style.cursor = "pointer";
             eliminar.onclick = function() {
@@ -456,20 +452,16 @@ unset($_SESSION['total']);
             let otro = document.querySelector("#otro .otro-content");
             let clone = otro.cloneNode(true);
 
-            // Crear botón de eliminar solo para clones
-            let eliminar = document.createElement("img");
-            eliminar.src = "../imagenes/delete.svg";
+            // Crear botón de eliminar con el mismo estilo que tarjeta
+            let eliminar = document.createElement("i");
+            eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
             eliminar.alt = "Eliminar";
             eliminar.style.cursor = "pointer";
-            eliminar.style.marginLeft = "10px"; // Espaciado
             eliminar.onclick = function() {
                 clone.remove();
             };
 
-            // Añadir el botón dentro del clon (después del input)
             clone.appendChild(eliminar);
-
-            // Insertar el clon después del elemento original
             otro.insertAdjacentElement("afterend", clone);
         }
 
