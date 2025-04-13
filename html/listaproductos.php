@@ -29,38 +29,38 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
       case 'codigo':
         $filtros[] = "p.codigo1 LIKE '%$valor%'";
         break;
-        case 'codigo2':
-          $filtros[] = "p.codigo2 LIKE '%$valor%'";
-          break;
-          case 'nombre':
-            $filtros[] = "p.nombre LIKE '%$valor%'";
-            break;
-            case 'precio1':
-              $filtros[] = "p.precio1 LIKE '%$valor%'";
-              break;
-              case 'precio2':
-                $filtros[] = "p.precio2 LIKE '%$valor%'";
-                break;
-                case 'precio3':
-                  $filtros[] = "p.precio3 LIKE '%$valor%'";
+      case 'codigo2':
+        $filtros[] = "p.codigo2 LIKE '%$valor%'";
         break;
-        case 'categoria':
-          $filtros[] = "c.nombre LIKE '%$valor%'";
+      case 'nombre':
+        $filtros[] = "p.nombre LIKE '%$valor%'";
+        break;
+      case 'precio1':
+        $filtros[] = "p.precio1 LIKE '%$valor%'";
+        break;
+      case 'precio2':
+        $filtros[] = "p.precio2 LIKE '%$valor%'";
+        break;
+      case 'precio3':
+        $filtros[] = "p.precio3 LIKE '%$valor%'";
+        break;
+      case 'categoria':
+        $filtros[] = "c.nombre LIKE '%$valor%'";
         break;
       case 'marca':
         $filtros[] = "m.nombre LIKE '%$valor%'";
         break;
-        case 'ubicacion':
-          $filtros[] = "ub.nombre LIKE '%$valor%'";
-          break;
-          case 'proveedor':
+      case 'ubicacion':
+        $filtros[] = "ub.nombre LIKE '%$valor%'";
+        break;
+      case 'proveedor':
         $filtros[] = "pr.nombre LIKE '%$valor%'";
         break;
-      }
     }
   }
-  
-  $consulta = "
+}
+
+$consulta = "
   SELECT 
   p.codigo1,
   p.codigo2,
@@ -95,35 +95,35 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
         proveedor pr ON p.proveedor_nit = pr.nit
     WHERE 1=1
     ";
-    
-    if (!empty($filtros)) {
-      $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
-    }
-    
-    $resultado = mysqli_query($conexion, $consulta);
-    
-    if (!$resultado) {
-      die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-    }
-    
-    // Actualización de datos del modal
-    if (isset($_POST['codigo1'])) {
-      // Se reciben y se escapan las variables
-      $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
-      $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
-      $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-      $precio1 = mysqli_real_escape_string($conexion, $_POST['precio1']);
-      $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
-      $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
-      $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
-      $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
-      $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
-      $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
-      $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
-      $ubicacion = mysqli_real_escape_string($conexion, $_POST['ubicacion-id']);
-      $proveedor = mysqli_real_escape_string($conexion, $_POST['proveedor-id']);
-      
-      $consulta_update = "UPDATE producto SET 
+
+if (!empty($filtros)) {
+  $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
+}
+
+$resultado = mysqli_query($conexion, $consulta);
+
+if (!$resultado) {
+  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
+}
+
+// Actualización de datos del modal
+if (isset($_POST['codigo1'])) {
+  // Se reciben y se escapan las variables
+  $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
+  $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $precio1 = mysqli_real_escape_string($conexion, $_POST['precio1']);
+  $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
+  $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
+  $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
+  $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
+  $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
+  $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
+  $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
+  $ubicacion = mysqli_real_escape_string($conexion, $_POST['ubicacion-id']);
+  $proveedor = mysqli_real_escape_string($conexion, $_POST['proveedor-id']);
+
+  $consulta_update = "UPDATE producto SET 
       codigo1 = '$codigo1', 
       codigo2 = '$codigo2', 
       nombre = '$nombre', 
@@ -140,7 +140,7 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
       WHERE codigo1 = '$codigo1'";
   if (mysqli_query($conexion, $consulta_update)) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
+    echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: `<span class='titulo'>Datos Actualizados</span>`,
@@ -162,9 +162,9 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
                 });
             });
         </script>";
-      } else {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-              echo "<script>
+  } else {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
                               document.addEventListener('DOMContentLoaded', function() {
                                   Swal.fire({
                             title: '<span class=\"titulo\">Error</span>',
@@ -184,37 +184,37 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
                           } );
                                       });
                                       </script>";
-      }
-    }
+  }
+}
 
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
-  
+
   // Debug: Registrar el código recibido
   error_log("Código recibido: " . $_POST['codigo']);
-  
+
   if (!$conexion) {
     echo json_encode(['success' => false, 'error' => 'Error de conexión']);
     exit;
   }
-  
+
   $codigo = $_POST['codigo'];
   $stmt = $conexion->prepare("DELETE FROM producto WHERE codigo1 = ?");
   $stmt->bind_param("s", $codigo);
-  
+
   if (!$stmt->execute()) {
     error_log("Error SQL: " . $stmt->error); // Registrar el error
     echo json_encode(['success' => false, 'error' => $stmt->error]);
     exit;
   }
-  
+
   if ($stmt->affected_rows === 0) {
     echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
     exit;
   }
-  
+
   echo json_encode(['success' => true]);
   exit;
 }
@@ -223,8 +223,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <!DOCTYPE html>
 <html lang="es">
-  
-  <head>
+
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventario</title>
@@ -516,10 +516,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     });
 
     // Función para eliminar un producto con SweetAlert2
-function eliminarProducto(codigo) {
-    Swal.fire({
+    function eliminarProducto(codigo) {
+      Swal.fire({
         title: "¿Estás seguro?",
-        
+
         html: `
             <div class="alerta">
                 <div class="contenedor-imagen">
@@ -528,37 +528,37 @@ function eliminarProducto(codigo) {
                 <p>¿Quieres eliminar el producto <strong>${codigo}</strong>?</p>
             </div>
         `,
-       
+
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
         customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar",
-            cancelButton: "btn-cancelar"
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar"
         }
-    }).then((result) => {
+      }).then((result) => {
         if (result.isConfirmed) {
-            // Enviar la solicitud al servidor
-            fetch('../html/listaproductos.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+          // Enviar la solicitud al servidor
+          fetch('../html/listaproductos.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
             })
             .then(data => {
-                if (data.success) {
-                    // Mostrar alerta de éxito
-                    Swal.fire({
-                        title: "Producto eliminado",
-                        html: `
+              if (data.success) {
+                // Mostrar alerta de éxito
+                Swal.fire({
+                  title: "Producto eliminado",
+                  html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" class="moto">
@@ -566,18 +566,18 @@ function eliminarProducto(codigo) {
                                  <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
                             </div>
                         `,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"
-                        }
-                    }).then(() => {
-                        location.reload(); // Recargar página después de cerrar la alerta
-                    });
-                } else {
-                    // Mostrar alerta de error
-                    Swal.fire({
-                        title: "Error",
-                        html: `
+                  confirmButtonText: "Aceptar",
+                  customClass: {
+                    confirmButton: "btn-aceptar"
+                  }
+                }).then(() => {
+                  location.reload(); // Recargar página después de cerrar la alerta
+                });
+              } else {
+                // Mostrar alerta de error
+                Swal.fire({
+                  title: "Error",
+                  html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/llave.png" class="llave">
@@ -585,20 +585,20 @@ function eliminarProducto(codigo) {
                                 <p>Error al eliminar el producto.</p>
                             </div>
                         `,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"
-                        }
-                    });
-                }
+                  confirmButtonText: "Aceptar",
+                  customClass: {
+                    confirmButton: "btn-aceptar"
+                  }
+                });
+              }
             })
             .catch(error => {
-                console.error("Error:", error);
-                Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
+              console.error("Error:", error);
+              Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
             });
         }
-    });
-}
+      });
+    }
 
 
     // funcion de los checkboxes
@@ -630,36 +630,36 @@ function eliminarProducto(codigo) {
         checkbox.addEventListener("change", toggleDeleteButton);
       });
 
-      deleteButton.addEventListener("click", function () {
-    let selectedCodes = Array.from(checkboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
+      deleteButton.addEventListener("click", function() {
+        let selectedCodes = Array.from(checkboxes)
+          .filter(checkbox => checkbox.checked)
+          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
-    if (selectedCodes.length === 0) {
-        alert("Selecciona al menos un producto para eliminar.");
-        return;
-    }
+        if (selectedCodes.length === 0) {
+          alert("Selecciona al menos un producto para eliminar.");
+          return;
+        }
 
-    // Mostrar la alerta con SweetAlert
-    Swal.fire({
-        title: "¿Estás seguro?",
-        html: `
+        // Mostrar la alerta con SweetAlert
+        Swal.fire({
+          title: "¿Estás seguro?",
+          html: `
             <div class="alerta">
                 <img src="../imagenes/tornillo.png" class="tornillo">
                 <p>Los productos se eliminarán de forma permanente.</p>
             </div>
         `,
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-        
-        customClass: {
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+
+          customClass: {
             popup: "custom-alert",
-            confirmButton: "btn-eliminar",  // Clase personalizada para el botón de confirmación
-            cancelButton: "btn-cancelar"  // Clase personalizada para el botón de cancelar
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
+            confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
+            cancelButton: "btn-cancelar" // Clase personalizada para el botón de cancelar
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
             // Depuración: Ver datos antes de enviarlos
             console.log("Enviando códigos a eliminar:", selectedCodes);
 
@@ -667,19 +667,19 @@ function eliminarProducto(codigo) {
             fetch("eliminar_productos.php", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                  "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    codigos: selectedCodes
+                  codigos: selectedCodes
                 })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Respuesta del servidor:", data); // Depuración
-                    if (data.success) {
-                      Swal.fire({
-                        title: `<span class="titulo">Productos Eliminados</span>`,
-                        html: `
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log("Respuesta del servidor:", data); // Depuración
+                if (data.success) {
+                  Swal.fire({
+                      title: `<span class="titulo">Productos Eliminados</span>`,
+                      html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" class="moto">
@@ -687,24 +687,24 @@ function eliminarProducto(codigo) {
                                 <p>Productos elimanados correctamente.</p>
                             </div>
                         `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
-                        }
+                      showConfirmButton: true,
+                      confirmButtonText: "Aceptar",
+                      customClass: {
+                        confirmButton: "btn-aceptar" // Clase personalizada para el botón de aceptar
+                      }
                     })
-                            .then(() => location.reload()); // Recargar página después de cerrar la alerta
-                    } else {
-                        Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error en la solicitud:", error);
-                    Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
-                });
-        }
-    });
-});
+                    .then(() => location.reload()); // Recargar página después de cerrar la alerta
+                } else {
+                  Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
+                }
+              })
+              .catch(error => {
+                console.error("Error en la solicitud:", error);
+                Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
+              });
+          }
+        });
+      });
     });
   </script>
 </body>

@@ -325,7 +325,7 @@ CREATE TABLE `producto` (
 
 LOCK TABLES `producto` WRITE;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` VALUES (1,2,'lana',19,3256979,216164797,3164798789,2147483647,'465498',1,1,3,2,753),(2,3,'sdgsadg',19,24567987645,321659878,316487,15,'sdgasdgg',1,1,3,3,753),(12,23,'123',19,213123,2223123,23,225356230,'16549848',3,3,4,2,157),(147,5565,'llantas',19,12500,150000,23523456,345345345,'5435797',2,2,3,2,45686),(149,0,'fghdhf',19,2384,16849,1231849,36,'sfhdh',5,3,2,3,753),(158,78,'chazis',19,31654,1520000,60000,19,'cjcg',1,1,1,1,87),(232,0,'efhedjh',19,26519,65254,59299,1,'ssdggs',5,3,1,2,753),(369,0,'Faro',19,1619498,1561949,199494,789,'amarillo',4,3,2,3,87),(457,0,'jlijkñ',54275,52752,7527,7272,72,'hjkhjkh',4,3,2,2,87),(458,0,'rhefh',19,16847,2682,1987654,52,'sgsg',4,3,1,3,89849),(475,0,'freno',19,540000,650000,4250000,25,'frenos buennos',5,4,2,45,89849),(564,0,'filtro de aceite fz18 200',19,18462,9515159,453543,4,'asmknd kjas dkja sjkd kjas dkj sakjc jkas ckj sakjc ksa kc jsac',2,2,1,4,9298),(745,0,'pin pastilla freno set xt660',19,860,8191915981,5119191,5,'nn',5,3,1,3,753),(879,0,'foco',19,5620000,652000,4600000,9,'buena iluminacion',4,2,2,1,753),(895,0,'fhdh',15,194941,54949,59849,19,'fdhdfh',4,4,2,3,753),(954,0,'kit de arrastre cb 190r honda original',19,1659,6516516516,651651651,6,'dlgknsodnvosdnvoknsdklnvlksdmnvmsdomvnk',2,5,1,4,648465165),(1204,0,'dulce',19,3456346,876876,8757865,7,'r6utr6utryjtryujty',2,2,1,3,9298),(1564,0,'sdgdjhfgj',18,49494,5000000,4800000,45,'no se bndad',5,3,2,3,753),(1654,0,'AKT',19,25614949,5648949,659494,65,'adfsjyupo}+´p',4,4,2,3,45686);
+INSERT INTO `producto` VALUES (1,2,'lana',19,3256979,216164797,3164798789,2147483647,'465498',1,1,3,2,753),(2,3,'alana',19,24567987645,321659878,316487,15,'sdgasdgg',1,1,3,3,753),(12,23,'123',19,213123,2223123,23,225356230,'16549848',3,3,4,2,157),(147,5565,'llantas',19,12500,150000,23523456,345345345,'5435797',2,2,3,2,45686),(149,0,'fghdhf',19,2384,16849,1231849,36,'sfhdh',5,3,2,3,753),(232,0,'efhedjh',19,26519,65254,59299,1,'ssdggs',5,3,1,2,753),(369,0,'Faro',19,1619498,1561949,199494,789,'amarillo',4,3,2,3,87),(457,0,'jlijkñ',54275,52752,7527,7272,72,'hjkhjkh',4,3,2,2,87),(458,0,'rhefh',19,16847,2682,1987654,52,'sgsg',4,3,1,3,89849),(475,0,'freno',19,540000,650000,4250000,25,'frenos buennos',5,4,2,45,89849),(564,0,'filtro de aceite fz18 200',19,18462,9515159,453543,4,'asmknd kjas dkja sjkd kjas dkj sakjc jkas ckj sakjc ksa kc jsac',2,2,1,4,9298),(745,0,'pin pastilla freno set xt660',19,860,8191915981,5119191,5,'nn',5,3,1,3,753),(879,0,'foco',19,5620000,652000,4600000,9,'buena iluminacion',4,2,2,1,753),(895,0,'fhdh',15,194941,54949,59849,19,'fdhdfh',4,4,2,3,753),(954,0,'kit de arrastre cb 190r honda original',19,1659,6516516516,651651651,6,'dlgknsodnvosdnvoknsdklnvlksdmnvmsdomvnk',2,5,1,4,648465165),(1204,0,'dulce',19,3456346,876876,8757865,7,'r6utr6utryjtryujty',2,2,1,3,9298),(1564,0,'sdgdjhfgj',18,49494,5000000,4800000,45,'no se bndad',5,3,2,3,753),(1654,0,'AKT',19,25614949,5648949,659494,65,'adfsjyupo}+´p',4,4,2,3,45686);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -356,7 +356,7 @@ CREATE TABLE `producto_factura` (
 
 LOCK TABLES `producto_factura` WRITE;
 /*!40000 ALTER TABLE `producto_factura` DISABLE KEYS */;
-INSERT INTO `producto_factura` VALUES (69,64,158,1,0),(76,70,12,1,2223);
+INSERT INTO `producto_factura` VALUES (76,70,12,1,2223);
 /*!40000 ALTER TABLE `producto_factura` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -562,4 +562,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-08 11:04:09
+-- Dump completed on 2025-04-09  6:45:39

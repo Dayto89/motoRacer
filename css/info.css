@@ -252,8 +252,8 @@ body::before {
    text-align: center;
    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
    animation: slideIn 0.3s ease-out;
-   margin-left: 40%;
-   margin-top: 4.5%;
+   margin-left: 43%;
+    margin-top: 5.7%;
 }
 @keyframes slideIn {
     from {

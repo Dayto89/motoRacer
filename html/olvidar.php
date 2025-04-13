@@ -4,6 +4,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+$mensaje = null;  // Variable para almacenar el estado del mensaje
+
 if ($_POST) {
     if (isset($_POST['verificar'])) {
         // Conectar a la base de datos
@@ -26,7 +28,7 @@ if ($_POST) {
             header("Location: ../html/resetear.php?usuario=$usuario");
             exit();
         } else {
-            echo "<script>alert('Respuesta incorrecta. Inténtelo de nuevo.');</script>";
+            $mensaje = 'respuesta_incorrecta';
         }
 
         $conexion->close();
@@ -45,6 +47,7 @@ if ($_POST) {
     <link rel="stylesheet" href="/css/olvidar.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -106,6 +109,32 @@ if ($_POST) {
 
         </form>
     </div>
+
+    <script>
+    const mensaje = "<?php echo $mensaje; ?>";
+
+    if (mensaje === "respuesta_incorrecta") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Respuesta incorrecta.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    }
+</script>
 </body>
 
 </html>

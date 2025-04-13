@@ -287,33 +287,34 @@ unset($_SESSION['total']);
                 <div class="summary-section">
                     <h3>Información de pago</h3>
                     <?php if (!empty($productos)): ?>
-                        <div class="summary-container"></div>
-                        <h2>Productos:</h2>
+                        <div class="summary-container">
+                            <h2>Productos:</h2>
 
-                        <ul>
-                            <?php foreach ($productos as $producto): ?>
-                                <li data-id="<?php echo $producto['id']; ?>">
-                                    <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                            <ul>
+                                <?php foreach ($productos as $producto): ?>
+                                    <li data-id="<?php echo $producto['id']; ?>">
+                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
 
 
-                        <p id="saldoPendiente">Saldo pendiente: $0.00</p>
+                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
 
-                        <h2>Total a pagar:</h2>
+                            <h2>Total a pagar:</h2>
 
-                        <div class="contenedor-precio">
-                            <p>$<?php echo number_format($total, 2); ?></p>
+                            <div class="contenedor-precio">
+                                <p>$<?php echo number_format($total, 2); ?></p>
+                            </div>
                         </div>
-                        <button onclick="guardarFactura()">Pagar</button>
+                        <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
+
+                    <?php else: ?>
+                        <p>No hay productos en el resumen.</p>
+                    <?php endif; ?>
                 </div>
-            <?php else: ?>
-                <p>No hay productos en el resumen.</p>
-            <?php endif; ?>
             </div>
         </div>
-    </div>
     </div>
     </div>
 
@@ -434,7 +435,12 @@ unset($_SESSION['total']);
             let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
             let clone = tarjeta.cloneNode(true);
 
-
+            // Crear contenedor del icono
+            let contenedorIcono = document.createElement("div");
+            contenedorIcono.style.display = "flex";
+            contenedorIcono.style.alignItems = "center";
+            contenedorIcono.style.justifyContent = "center";
+            contenedorIcono.style.marginLeft = "10px";
 
             let eliminar = document.createElement("i");
             eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
@@ -445,6 +451,8 @@ unset($_SESSION['total']);
             };
 
             clone.appendChild(eliminar);
+            clone.appendChild(contenedorIcono);
+
             tarjeta.insertAdjacentElement("afterend", clone);
         }
 

@@ -27,7 +27,7 @@ if ($rol === 'administrador') {
     'PRODUCTO' => ['Crear Producto', 'Actualizar Producto', 'Categorias', 'Ubicacion', 'Marca'],
     'PROVEEDOR' => ['Crear Proveedor', 'Actualizar Proveedor', 'Lista Proveedor'],
     'INVENTARIO' => ['Lista productos'],
-    'FACTURA' => ['Ventas', 'Reportes'],
+    'FACTURA' => ['Ventas', 'Reportes', 'Lista Clientes'],
     'USUARIO' => ['Información'],
     'CONFIGURACION' => ['Stock', 'Gestion de Usuarios', 'Copia de Seguridad']
   ];

@@ -4,7 +4,8 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+
+require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -24,9 +25,58 @@ if ($_POST && isset($_POST['guardar'])) {
   $resultado = mysqli_query($conexion, $query);
   
   if ($resultado) {
-    echo "<script>alert('Ubicación agregada correctamente');</script>";
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
+            html: `
+                <div class=\"custom-alert\">
+                    <div class=\"contenedor-imagen\">
+                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                    </div>
+                    <p>Ubicación agregada correctamente.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    });
+</script>";
   } else {
-    echo "<script>alert('Error al agregar la categoría: " . mysqli_error($conexion) . "');</script>";
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+
+$error = mysqli_error($conexion); // Captura el error fuera del script JS
+
+echo "<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: '<span class=\"titulo-alerta error\">Error</span>',
+        html: `
+            <div class=\"custom-alert\">
+                <div class=\"contenedor-imagen\">
+                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                </div>
+                <p>La ubicación no fue agregada.<br><small>$error</small></p>
+            </div>
+        `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-aceptar',
+            container: 'fondo-oscuro'
+        }
+    });
+});
+</script>";
   }
 }
 // Eliminar ubicacion mediante boton
@@ -67,6 +117,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <title>Ubicación</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/ubicacion.css">
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">

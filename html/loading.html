@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading Dino Moto</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #111;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #loading-screen {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    .moto-dino {
+      width: 350px;
+      transform: translateX(-150%);
+      animation: entradaMoto 2s ease-out forwards;
+      position: relative;
+    }
+
+    .mensaje {
+      color: #fff;
+      margin-top: 20px;
+      font-size: 20px;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in 2s forwards;
+    }
+
+    .humo {
+      position: absolute;
+      left: -30px;
+      bottom: 30px;
+      width: 30px;
+      height: 30px;
+      background: rgba(200, 200, 200, 0.4);
+      border-radius: 50%;
+      animation: humoAnim 0.5s ease-out infinite;
+      opacity: 0;
+      animation-delay: 1.7s;
+    }
+
+    @keyframes humoAnim {
+      0% {
+        transform: scale(0.5) translateY(0);
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: scale(2) translateY(-80px); 
+        opacity: 0;
+      }
+    }
+
+    @keyframes entradaMoto {
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes salidaMoto {
+      to {
+        transform: translateX(160%);
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading-screen">
+    <div class="moto-dino" id="moto">
+      <div class="humo"></div>
+      <img src="../imagenes/dino-moto.png" alt="Dino Moto" style="width: 100%; border-radius: 10px; transform: scaleX(-1);">
+
+    </div>
+    <p class="mensaje">Encendiendo motores jurásicos...</p>
+  </div>
+
+  <!-- 🔊 SONIDO -->
+  <audio id="moto-audio" src="../audio/dino-moto.mp3" autoplay muted></audio>
+
+  <script>
+    // Reproducir sonido cuando entre el loading
+    window.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('moto-audio');
+      // Intenta reproducir (algunos navegadores requieren interacción del usuario)
+      audio.play().catch(e => {
+        console.log("El audio no pudo reproducirse automáticamente:", e);
+      });
+    });
+
+    // Salida de la moto y fin del loading
+    setTimeout(() => {
+      const moto = document.getElementById('moto');
+      const screen = document.getElementById('loading-screen');
+
+      moto.style.animation = 'salidaMoto 1.2s ease-in forwards';
+
+      setTimeout(() => {
+        screen.style.display = 'none';
+      }, 1300);
+
+    }, 4000); // 4 segundos de loading
+  </script>
+
+</body>
+</html>

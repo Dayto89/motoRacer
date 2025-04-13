@@ -4,17 +4,17 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
-require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
+$mensaje = null;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-    
-    // Verificar la conexión
+
     if (!$conexion) {
         die("Error de conexión: " . mysqli_connect_error());
     }
-    
+
     if (isset($_POST['guardar'])) {
         $codigo = $_POST['selectProducto'];
         $codigo2 = $_POST['codigo2'];
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $unidadMedida = $_POST['unidadMedida'];
         $ubicacion = $_POST['ubicacion'];
         $proveedor = $_POST['proveedor'];
-        
+
         $actualizar = "UPDATE producto SET 
                     codigo2='$codigo2', nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
                     cantidad='$cantidad', descripcion='$descripcion', 
@@ -39,32 +39,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     proveedor_nit='$proveedor' 
                   WHERE codigo1='$codigo'";
 
-if (mysqli_query($conexion, $actualizar)) {
-    echo "<script>alert('Producto actualizado correctamente');</script>";
-} else {
-    echo "<script>alert('Error al actualizar el producto: " . mysqli_error($conexion) . "');</script>";
-}
-}
-
-if (isset($_POST['eliminar'])) {
-    $codigo = $_POST['selectProducto'];
-    
-    if (!empty($codigo)) {
-        $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
-        if (mysqli_query($conexion, $eliminar)) {
-            echo "<script>alert('Producto eliminado correctamente'); window.location.href='actualizarproducto.php';</script>";
+        if (mysqli_query($conexion, $actualizar)) {
+            $mensaje = 'producto_actualizado';
         } else {
-            echo "<script>alert('Error al eliminar el producto: " . mysqli_error($conexion) . "');</script>";
+            $mensaje = 'error_actualizar';
         }
     }
-}
 
-mysqli_close($conexion);
-}
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+    if (isset($_POST['confirmar_eliminar'])) {
+        $codigo = $_POST['selectProducto'];
+        if (!empty($codigo)) {
+            $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
+            if (mysqli_query($conexion, $eliminar)) {
+                $mensaje = 'producto_eliminado';
+            } else {
+                $mensaje = 'error_eliminar';
+            }
+        }
+    }
 
+    mysqli_close($conexion);
+}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="es">
@@ -80,6 +76,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -117,7 +114,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                                 echo "<option value='" . $fila['codigo1'] . "' $selected>" . $fila['nombre'] . "</option>";
                             }
 
-                            mysqli_close($conexion);
+                           
                             ?>
                         </select>
                     </div>
@@ -260,13 +257,154 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                     <div class="button-container">
                         <div class="boton">
                             <button type="submit" name="guardar">Guardar</button>
-                            <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">Eliminar</button>
+                            <button type="submit" id="eliminar" name="eliminar">Eliminar</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    <script>
+    const mensaje = "<?php echo $mensaje; ?>";
+
+    if (mensaje === "producto_actualizado") {
+        Swal.fire({
+            title: '<span class="titulo-alerta confirmacion">Producto Actualizado</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/moto.png" alt="Advertencia" class="moto">
+                    </div>
+                    <p>El producto se actualizó correctamente.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } else if (mensaje === "error_actualizar") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al actualizar el producto.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } else if (mensaje === "producto_eliminado") {
+        Swal.fire({
+            title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
+                    </div>
+                    <p>El producto se eliminó correctamente.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#28a745',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    } else if (mensaje === "error_eliminar") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al eliminar el producto.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const btnEliminar = document.getElementById("eliminar");
+
+        if (btnEliminar) {
+            btnEliminar.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
+                    html: `
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                            </div>
+                            <p>Esta acción eliminará el producto.<br>¿Desea continuar?</p>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    background: '#ffffffdb',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        cancelButton: 'btn-cancelar',
+                        container: 'fondo-oscuro'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Crear un formulario oculto para enviar la eliminación
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '';
+
+                        const inputProducto = document.createElement('input');
+                        inputProducto.type = 'hidden';
+                        inputProducto.name = 'selectProducto';
+                        inputProducto.value = document.getElementById('selectProducto').value;
+
+                        const inputConfirm = document.createElement('input');
+                        inputConfirm.type = 'hidden';
+                        inputConfirm.name = 'confirmar_eliminar';
+                        inputConfirm.value = '1';
+
+                        form.appendChild(inputProducto);
+                        form.appendChild(inputConfirm);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+</script>
     
 </body>
 

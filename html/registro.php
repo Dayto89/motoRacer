@@ -53,7 +53,6 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 <div class="campo"><label for="correo">Correo: </label><input type="text" name="correo" id="correo" required></div>
                 <div class="campo"><label for="contrasena">Contraseña: </label><input type="password" name="contrasena" id="contrasena" required></div>
                 <div class="campo"><label for="confirmar">Confirmar Contraseña: </label><input type="password" name="confirmar" id="confirmar" required></div>
-
                 <?php
                 // Conectar a la base de datos
                 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -156,6 +155,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
                 ($identificacion, 'FACTURA', 'Venta', 0),
                 ($identificacion, 'FACTURA', 'Reporte', 0),
+                ($identificacion, 'FACTURA', 'Lista Clientes', 0),
 
                 ($identificacion, 'USUARIO', 'Información', 1),
 

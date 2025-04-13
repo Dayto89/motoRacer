@@ -1,7 +1,19 @@
 <?php
-session_start();
+
+
 include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/header.php';
 ?>
+
+<style>
+    .container {
+        margin-top: 100px;
+    }
+
+    p {
+        font-size: 30px;
+        color: white;
+    }
+</style>
 
 <div class="container">
     <h2>Acceso Denegado</h2>
@@ -9,4 +21,3 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/header.php';
     <a href="dashboard.php" class="btn btn-primary">Volver al Inicio</a>
 </div>
 
-<?php include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/footer.php'; ?>

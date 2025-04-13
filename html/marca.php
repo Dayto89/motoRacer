@@ -25,9 +25,58 @@ if ($_POST && isset($_POST['guardar'])) {
   $resultado = mysqli_query($conexion, $query);
   
   if ($resultado) {
-    echo "<script>alert('Marca agregada correctamente');</script>";
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
+            html: `
+                <div class=\"custom-alert\">
+                    <div class=\"contenedor-imagen\">
+                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                    </div>
+                    <p>Marca agregada correctamente.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    });
+</script>";
   } else {
-    echo "<script>alert('Error al agregar la marca: " . mysqli_error($conexion) . "');</script>";
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+
+$error = mysqli_error($conexion); // Captura el error fuera del script JS
+
+echo "<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: '<span class=\"titulo-alerta error\">Error</span>',
+        html: `
+            <div class=\"custom-alert\">
+                <div class=\"contenedor-imagen\">
+                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                </div>
+                <p>La marca no fue agregada.<br><small>$error</small></p>
+            </div>
+        `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-aceptar',
+            container: 'fondo-oscuro'
+        }
+    });
+});
+</script>";
   }
 }
 // Eliminar marca mediante boton
@@ -68,6 +117,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <title>Marca</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="/css/marca.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
@@ -92,7 +142,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               echo "<tr>";
               echo "<td>" . htmlspecialchars($fila['codigo']) . "</td>";
               echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
-              echo "<td class='options'>";
+              echo "<td class='td-options'>";
               echo "<button class='btn-list' data-id='" . htmlspecialchars($fila['codigo']) . "'>Lista de productos</button>";
               echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'><i class='fa-solid fa-trash'></i></button></td>";
               echo "</td>";

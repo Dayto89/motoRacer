@@ -170,6 +170,18 @@
   border: 1px solid #ffffff !important;
   background-color: #161616 !important;
 }
+.modo-alto-contraste tr:nth-child(odd),
+.modo-alto-contraste tr:nth-child(even) {
+    background-color: black !important;
+    color: yellow !important;
+}
+.modo-alto-contraste .category-table{
+  background-color: rgba(245, 245, 220, 0);
+}
+.modo-alto-contraste .td-options {
+  background-color: transparent !important;
+  border: none !important;
+}
 
 .modo-alto-contraste th {
   background-color: #000000 !important;
@@ -274,8 +286,9 @@ Modo claro lista de productos
   color: #000000 !important;
   border-color: #FFFF00 !important;
 }
-.modo-claro .campo label{
+.modo-claro #crearProveedor .campo label{
 color:black;
+text-shadow: 1.5px 0 #1c51a0;
 }
 .modo-claro .modal-content{
   background-color: #ffffffa6;
@@ -294,7 +307,16 @@ color:black;
 .modo-claro #barraReportes{
   border: 2px solid #000000 !important;;
 }
-
+.modo-claro .button-container .boton button {
+  background-color: #000;
+  
+}
+.modo-claro .button-container .boton button:hover{
+  background-color: #007BFF;
+}
+.modo-claro .button-container .boton button#eliminar {
+  background-color: #000;
+}
 .modo-claro animated-icons {
   filter: invert(1) brightness(1.5);
 }
@@ -443,6 +465,19 @@ color:black;
   color: rgb(0, 0, 0);
  border: 2px solid #000000;
 }
+.modo-alto-contraste .button-container .boton button {
+  background-color: #ffffff;
+  color: #000;
+  
+}
+
+.modo-alto-contraste .button-container .boton button:hover{
+  background-color: #007BFF;
+}
+.modo-alto-contraste .button-container .boton button#eliminar {
+  background-color: #ffffff;
+  color: #000;
+}
 
 .modo-alto-contraste .actions button:hover {
   background-color: #219b40;
@@ -540,3 +575,13 @@ body.modo-alto-contraste {
   height: 100vh;
 }
 
+/*
+=====================================================================================================================================================
+  Modo de contraste Marca
+=====================================================================================================================================================
+*/
+.modo-alto-contraste tr:nth-child(odd),
+.modo-alto-contraste tr:nth-child(even) {
+    background-color: black !important;
+    color: yellow !important;
+}

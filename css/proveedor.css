@@ -195,12 +195,12 @@ input[type='text'], input[type='number'] {
 .button-container {
     text-align: center;
     position: relative;
-    display: inline-block;
-    width: 372px;
-    margin-left: 195px;
+    width: 366px;
+    margin-left: 252px;
     margin-top: 60px;
 }
-.button-container button {
+
+.button-container .boton button {
     background-color: #007BFF;
     font-weight: bold;
     color: white;
@@ -210,9 +210,9 @@ input[type='text'], input[type='number'] {
     cursor: pointer;
     border-radius: 11px;
     transition: background-color 0.3sease;
-    margin-left: 146px;
-    margin-top: -15px;
-    margin-bottom: 26px;
+    margin-left: 80%;
+    margin-bottom: 4%;
+    width: 168px;
 }
 table {
     width: 100%;
@@ -432,3 +432,96 @@ input[type="checkbox"] {
 .button-container button:hover {
     background-color: #0056b3;
 }
+/*Alertas*/
+
+  
+  /* Estilos generales de los párrafos */
+  p {
+    font-size: 16px;
+    color: black;
+    font-family: arial;
+    padding: 10px;
+  }
+  
+
+  
+  /* Ajuste para el popup de SweetAlert */
+  div:where(.swal2-container).swal2-center>.swal2-popup {
+    width: 28%; /* Se ajusta automáticamente */
+    max-width: 350px; /* Define un límite de ancho */
+  }
+  
+  
+  /* Imágenes dentro del modal */
+  .custom-alert .moto, .custom-alert .llave, .custom-alert .tornillo {
+    width: 177px;
+    height: 130px;
+}
+  
+  
+  /* Contenedor de la imagen */
+  .contenedor-imagen {
+    position: relative;
+    display: inline-block;
+  }
+
+
+
+.titulo-alerta {
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+    font-family: 'Arial Black', sans-serif;
+    letter-spacing: 1px;
+}
+.titulo-alerta.confirmacion {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #9b9496;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+.titulo-alerta.error {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #af3b3b;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+.titulo-alerta.advertencia {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color:#e09804;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+
+.btn-aceptar {
+    background-color: #007bff !important;
+    color: white !important;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.swal2-border-radius {
+    border-radius: 5px !important;
+}
+
+
+
+.fondo-oscuro {
+    background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
+    backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
+}
+
+.swal2-popup {
+    border-radius: 20px;
+}
+ 

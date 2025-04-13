@@ -5,117 +5,46 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-$mensaje = null;  // Variable para almacenar el estado del mensaje
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-    
-    // Verificar la conexión
-    if (!$conexion) {
-        die("Error de conexión: " . mysqli_connect_error());
-    }
-    
-    if (isset($_POST['guardar'])) {
-        $codigo = $_POST['selectProducto'];
-        $codigo2 = $_POST['codigo2'];
-        $nombre = $_POST['nombre'];
-        $iva = $_POST['iva'];
-        $precio1 = $_POST['precio1'];
-        $precio2 = $_POST['precio2'];
-        $precio3 = $_POST['precio3'];
-        $cantidad = $_POST['cantidad'];
-        $descripcion = $_POST['descripcion'];
-        $categoria = $_POST['categoria'];
-        $marca = $_POST['marca'];
-        $unidadMedida = $_POST['unidadMedida'];
-        $ubicacion = $_POST['ubicacion'];
-        $proveedor = $_POST['proveedor'];
-        
-        $actualizar = "UPDATE producto SET 
-                    codigo2='$codigo2', nombre='$nombre', iva='$iva', precio1='$precio1', precio2='$precio2', precio3='$precio3', 
-                    cantidad='$cantidad', descripcion='$descripcion', 
-                    Categoria_codigo='$categoria', Marca_codigo='$marca', 
-                    UnidadMedida_codigo='$unidadMedida', Ubicacion_codigo='$ubicacion', 
-                    proveedor_nit='$proveedor' 
-                  WHERE codigo1='$codigo'";
-
-if (mysqli_query($conexion, $actualizar)) {
-    $mensaje = 'producto_actualizado';
-} else {
-    $mensaje = 'error_actualizar' . mysqli_error($conexion);
-}
-}
-
-if (isset($_POST['eliminar'])) {
-    $codigo = $_POST['selectProducto'];
-    
-    if (!empty($codigo)) {
-        $eliminar = "DELETE FROM producto WHERE codigo1='$codigo'";
-        if (mysqli_query($conexion, $eliminar)) {
-            $mensaje = 'producto_eliminar';
-        } else {
-            $mensaje = 'error_eliminar' . mysqli_error($conexion);
-        }
-    }
-}
-
-mysqli_close($conexion);
-}
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
-
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
-    
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actualizar Producto</title>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Proveedor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <link rel="stylesheet" href="../css/actualizarproducto.css">
-    <link rel="stylesheet" href="/componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-    </style>
 </head>
 
 <body>
-
-    <!-- Aquí se cargará el header -->
     <div id="menu"></div>
 
-    <!-- Sección para Actualizar Producto -->
-    <div id="actualizarProducto" class="form-section">
-        <h1>Actualizar Producto</h1>
+    <div id="actualizarProveedor" class="form-section">
+        <h1>Actualizar Proveedor</h1>
 
-        <!-- Contenedor principal -->
         <div class="container">
-
-            <form id="update-product-form" method="POST" action="">
+            <form id="update-provider-form" method="POST" action="">
                 <div class="form-grid">
-
                     <div class="campo">
-                        <label for="selectProducto">Seleccionar Producto:</label>
-                        <select id="selectProducto" name="selectProducto" onchange="this.form.submit()">
-                            <option value="">Selecciona un producto</option>
+                        <label for="selectProveedor">Seleccionar Proveedor:</label>
+                        <select id="selectProveedor" name="selectProveedor" onchange="this.form.submit()">
+                            <option value="">Selecciona un proveedor</option>
                             <?php
                             $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-                            $consulta = "SELECT codigo1, nombre FROM producto";
+                            $consulta = "SELECT nit, nombre FROM proveedor";
                             $resultado = mysqli_query($conexion, $consulta);
 
-                            // Retener el valor seleccionado
-                            $codigoSeleccionado = isset($_POST['selectProducto']) ? $_POST['selectProducto'] : '';
+                            $nitSeleccionado = isset($_POST['selectProveedor']) ? $_POST['selectProveedor'] : '';
 
                             while ($fila = mysqli_fetch_assoc($resultado)) {
-                                $selected = ($fila['codigo1'] == $codigoSeleccionado) ? 'selected' : '';
-                                echo "<option value='" . $fila['codigo1'] . "' $selected>" . $fila['nombre'] . "</option>";
+                                $selected = ($fila['nit'] == $nitSeleccionado) ? 'selected' : '';
+                                echo "<option value='" . $fila['nit'] . "' $selected>" . $fila['nombre'] . "</option>";
                             }
 
                             mysqli_close($conexion);
@@ -124,148 +53,55 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                     </div>
 
                     <?php
-                    if (!empty($codigoSeleccionado)) {
+                    if (!empty($nitSeleccionado)) {
                         $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-                        $consulta = "SELECT * FROM producto WHERE codigo1 = '$codigoSeleccionado'";
+                        $consulta = "SELECT * FROM proveedor WHERE nit = '$nitSeleccionado'";
                         $resultado = mysqli_query($conexion, $consulta);
 
                         if ($fila = mysqli_fetch_assoc($resultado)) {
-                            $codigo1 = $fila['codigo1'];
-                            $codigo2 = $fila['codigo2'];
                             $nombre = $fila['nombre'];
-                            $iva = $fila['iva'];
-                            $precio1 = $fila['precio1'];
-                            $precio2 = $fila['precio2'];
-                            $precio3 = $fila['precio3'];
-                            $cantidad = $fila['cantidad'];
-                            $descripcion = $fila['descripcion'];
+                            $telefono = $fila['telefono'];
+                            $direccion = $fila['direccion'];
+                            $correo = $fila['correo'];
+                            $estado = $fila['estado'];
                         }
-
-                        /* consulta datos de categoria, marca, unidad de medida, ubicacion y proveedor */
-                        $marcas = $conexion->query("SELECT codigo, nombre FROM marca");
-                        $categorias = $conexion->query("SELECT codigo, nombre FROM categoria");
-                        $proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
-                        $ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
-                        $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
+                        mysqli_close($conexion);
                     }
                     ?>
-                    <div class="campo">
-                        <label for="codigo1">Código 1:</label>
-                        <input type="text" id="codigo1" name="codigo1" value="<?php echo isset($codigo1) ? $codigo1 : ''; ?>" required><br>
-                    </div>
-                    <div class="campo">
-                        <label for="codigo2">Código 2:</label>
-                        <input type="text" id="codigo2" name="codigo2" value="<?php echo isset($codigo2) ? $codigo2 : ''; ?>" required><br>
-                    </div>
+
                     <div class="campo">
                         <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" value="<?php echo isset($nombre) ? $nombre : ''; ?>" required><br>
+                        <input type="text" id="nombre" name="nombre" value="<?php echo isset($nombre) ? $nombre : ''; ?>" required>
                     </div>
 
                     <div class="campo">
-                        <label for="iva">IVA:</label>
-                        <input type="number" id="iva" name="iva" value="<?php echo isset($iva) ? $iva : ''; ?>" required><br>
+                        <label for="telefono">Teléfono:</label>
+                        <input type="text" id="telefono" name="telefono" value="<?php echo isset($telefono) ? $telefono : ''; ?>" required>
                     </div>
 
                     <div class="campo">
-                        <label for="precio1">Precio 1:</label>
-                        <input type="number" id="precio1" name="precio1" value="<?php echo isset($precio1) ? $precio1 : ''; ?>" required><br>
+                        <label for="direccion">Dirección:</label>
+                        <input type="text" id="direccion" name="direccion" value="<?php echo isset($direccion) ? $direccion : ''; ?>" required>
                     </div>
 
                     <div class="campo">
-                        <label for="precio2">Precio 2:</label>
-                        <input type="number" id="precio2" name="precio2" value="<?php echo isset($precio2) ? $precio2 : ''; ?>"><br>
+                        <label for="correo">Correo:</label>
+                        <input type="email" id="correo" name="correo" value="<?php echo isset($correo) ? $correo : ''; ?>" required>
                     </div>
 
                     <div class="campo">
-                        <label for="precio3">Precio 3:</label>
-                        <input type="number" id="precio3" name="precio3" value="<?php echo isset($precio3) ? $precio3 : ''; ?>"><br>
+                        <label for="estado">Estado:</label>
+                        <input type="text" id="estado" name="estado" value="<?php echo isset($estado) ? $estado : ''; ?>" required>
                     </div>
-
-                    <div class="campo">
-                        <label for="cantidad">Cantidad:</label>
-                        <input type="number" id="cantidad" name="cantidad" value="<?php echo isset($cantidad) ? $cantidad : ''; ?>" required><br>
-                    </div>
-
-                    <div class="campo">
-                        <label for="descripcion">Descripción:</label>
-                        <input type="text" id="descripcion" name="descripcion" value="<?php echo isset($descripcion) ? $descripcion : ''; ?>"><br>
-                    </div>
-
-                    <div class="campo">
-                        <label for="categoria">Categoría:</label>
-                        <select name="categoria" id="categoria" required>
-                            <option value="">Seleccione una categoría</option>
-                            <?php while ($filaCategoria = $categorias->fetch_assoc()) {
-                                $selected = ($filaCategoria['codigo'] == $fila['Categoria_codigo']) ? 'selected' : ''; ?>
-                                <option value="<?php echo $filaCategoria['codigo']; ?>" <?php echo $selected; ?>>
-                                    <?php echo $filaCategoria['nombre']; ?>
-                                </option>
-                            <?php } ?>
-                        </select><br>
-                    </div>
-
-                    <div class="campo">
-                        <label for="marca">Marca:</label>
-                        <select name="marca" id="marca" required>
-                            <option value="">Seleccione una marca</option>
-                            <?php while ($filaMarca = $marcas->fetch_assoc()) {
-                                $selected = ($filaMarca['codigo'] == $fila['Marca_codigo']) ? 'selected' : ''; ?>
-                                <option value="<?php echo $filaMarca['codigo']; ?>" <?php echo $selected; ?>>
-                                    <?php echo $filaMarca['nombre']; ?>
-                                </option>
-                            <?php } ?>
-                        </select><br>
-                    </div>
-
-                    <div class="campo">
-                        <label for="unidadMedida">Unidad de Medida:</label>
-                        <select name="unidadMedida" id="unidadMedida" required>
-                            <option value="">Seleccione una unidad de medida</option>
-                            <?php while ($filaUnidad = $unidades->fetch_assoc()) {
-                                $selected = ($filaUnidad['codigo'] == $fila['UnidadMedida_codigo']) ? 'selected' : ''; ?>
-                                <option value="<?php echo $filaUnidad['codigo']; ?>" <?php echo $selected; ?>>
-                                    <?php echo $filaUnidad['nombre']; ?>
-                                </option>
-                            <?php } ?>
-                        </select><br>
-                    </div>
-
-                    <div class="campo">
-                        <label for="ubicacion">Ubicación:</label>
-                        <select name="ubicacion" id="ubicacion" required>
-                            <option value="">Seleccione una ubicación</option>
-                            <?php while ($filaUbicacion = $ubicaciones->fetch_assoc()) {
-                                $selected = ($filaUbicacion['codigo'] == $fila['Ubicacion_codigo']) ? 'selected' : ''; ?>
-                                <option value="<?php echo $filaUbicacion['codigo']; ?>" <?php echo $selected; ?>>
-                                    <?php echo $filaUbicacion['nombre']; ?>
-                                </option>
-                            <?php } ?>
-                        </select><br>
-                    </div>
-
-                    <div class="campo">
-                        <label for="proveedor">Proveedor:</label>
-                        <select name="proveedor" id="proveedor" required>
-                            <option value="">Seleccione un proveedor</option>
-                            <?php while ($filaProveedor = $proveedores->fetch_assoc()) {
-                                $selected = ($filaProveedor['nit'] == $fila['proveedor_nit']) ? 'selected' : ''; ?>
-                                <option value="<?php echo $filaProveedor['nit']; ?>" <?php echo $selected; ?>>
-                                    <?php echo $filaProveedor['nombre']; ?>
-                                </option>
-                            <?php } ?>
-                        </select><br>
-                    </div>
-
 
                     <div class="button-container">
                         <div class="boton">
-                            <button type="submit" name="guardar">Guardar</button>
-                            <form id="form-eliminar" action="actualizaproducts.php" method="POST">
-    <input type="hidden" name="id_producto" value="<?php echo $producto['id']; ?>">
-    <button type="button" id="eliminar" name="eliminar">Eliminar</button>
-</form>
-
+                            <?php if (!empty($nitSeleccionado)): ?>
+                                <button type="submit" id="guardar" name="guardar">Guardar</button>
+                                <button type="button" id="eliminar" onclick="confirmarEliminacion()">Eliminar</button>
+                            <?php else: ?>
+                                <p style="color:red; margin-top: 10px;">Selecciona un proveedor para editar o eliminar.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -273,112 +109,135 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         </div>
     </div>
 
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+
+        if (isset($_POST['guardar']) && !empty($_POST['selectProveedor'])) {
+            $nit = $_POST['selectProveedor'];
+            $nombre = $_POST['nombre'];
+            $telefono = $_POST['telefono'];
+            $direccion = $_POST['direccion'];
+            $correo = $_POST['correo'];
+            $estado = $_POST['estado'];
+
+            $actualizar = "UPDATE proveedor SET 
+                        nombre='$nombre', telefono='$telefono', direccion='$direccion', 
+                        correo='$correo', estado='$estado'
+                      WHERE nit='$nit'";
+
+            mysqli_query($conexion, $actualizar);
+            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                                </div>
+                                <p>Proveedor actualizado correctamente.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
+                });</script>";
+        }
+
+        if (isset($_POST['eliminar']) && !empty($_POST['selectProveedor'])) {
+            $nit = $_POST['selectProveedor'];
+
+            $eliminar = "DELETE FROM proveedor WHERE nit='$nit'";
+            mysqli_query($conexion, $eliminar);
+            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: '<span class=\"titulo-alerta confirmacion\">Proveedor Eliminado</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                                </div>
+                                <p>El proveedor se eliminó correctamente.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#28a745',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    }).then(() => {
+                        window.location.href = 'actualizarproveedor.php';
+                    });
+                });
+                </script>";
+        }
+
+        mysqli_close($conexion);
+    }
+    ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        //alertas 
-    const mensaje = "<?php echo $mensaje; ?>";
-
-    if (mensaje === "producto_actualizado") {
-        Swal.fire({
-            title: '<span class="titulo-alerta confirmacion">Producto Actualizado</span>',
-            html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/moto.png" alt="Advertencia" class="moto">
+        function confirmarEliminacion() {
+            Swal.fire({
+                title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
+                html: `
+                    <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                        </div>
+                        <p>Esta acción eliminará el proveedor.<br>¿Desea continuar?</p>
                     </div>
-                    <p>El producto se actualizo corrrectamente.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    } else if (mensaje === "error_actualizar") {
-        Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al actualizar el producto.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    }
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                background: '#ffffffdb',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    cancelButton: 'btn-cancelar',
+                    container: 'fondo-oscuro'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '';
 
-    //eliminar producto
+                    const inputNit = document.createElement('input');
+                    inputNit.type = 'hidden';
+                    inputNit.name = 'selectProveedor';
+                    inputNit.value = document.getElementById('selectProveedor').value;
 
-    document.getElementById("eliminar").addEventListener("click", function () {
-        Swal.fire({
-            title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
-            html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/trenillo.png" alt="Advertencia" class="trenillo">
-                    </div>
-                    <p>¿Estás seguro que deseas eliminar este producto?</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-            confirmButtonColor: '#007bff',
-            cancelButtonColor: '#d33',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                cancelButton: 'btn-cancelar',
-                container: 'fondo-oscuro'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById("form-eliminar").submit();
-            }
-        });
-    });
+                    const inputEliminar = document.createElement('input');
+                    inputEliminar.type = 'hidden';
+                    inputEliminar.name = 'eliminar';
+                    inputEliminar.value = '1';
 
-    // Mostrar mensaje después de eliminar
-    const mensaje = "<?php echo $mensaje ?? ''; ?>";
+                    form.appendChild(inputNit);
+                    form.appendChild(inputEliminar);
 
-    if (mensaje === "producto_eliminado") {
-        Swal.fire({
-            title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
-            html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
-                    </div>
-                    <p>El producto se eliminó correctamente.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    }
-
-
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
     </script>
-    
 </body>
-
 </html>

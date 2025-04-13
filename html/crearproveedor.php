@@ -18,6 +18,8 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="../css/actualizarproveedor.css">
   <link rel="stylesheet" href="../css/proveedor.css">
   <link rel="stylesheet" href="/componentes/header.php">
   <link rel="stylesheet" href="/componentes/header.css">
@@ -100,7 +102,10 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 </div>
 
   
-  <?php
+   
+<?php
+
+$mensaje = null;  // Variable para almacenar el estado del mensaje
 
   if ($_POST) {
     $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -117,8 +122,62 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo, estado) VALUES ('$codigoProveedor', '$nombreProveedor', '$telefonoProveedor', '$direccionProveedor', '$correoProveedor', '$estadoProveedor')";
 
     $resultado = mysqli_query($conexion, $query);
+
+    if ($resultado) {
+        $mensaje = 'proveedor_agregado';
+    } else {
+        $mensaje = 'error_al_agregar';
+    }
   }
   ?>
+<script>
+    
+   //llamar la variable mensaje y alertas
+const mensaje = "<?php echo $mensaje; ?>";
+
+if (mensaje === "proveedor_agregado") {
+Swal.fire({
+    title: '<span class="titulo-alerta confirmacion">Proveedor agregado</span>',
+    html: `
+        <div class="custom-alert">
+            <div class="contenedor-imagen">
+                <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+            </div>
+            <p>Proveedor agregado con éxito.</p>
+        </div>
+    `,
+    background: 'hsl(0deg 0% 100% / 76%)',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#007bff',
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+    }
+});
+} else if (mensaje === "error_al_agregar") {
+Swal.fire({
+    title: '<span class="titulo-alerta error">Error</span>',
+    html: `
+        <div class="custom-alert">
+            <div class="contenedor-imagen">
+                <img src="../imagenes/llave.png" alt="Error" class="llave">
+            </div>
+            <p>Error al agregar el proveedor.</p>
+        </div>
+    `,
+    background: 'hsl(0deg 0% 100% / 76%)',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#007bff',
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+    }
+});
+} 
+</script>
+
 </body>
 
 </html>

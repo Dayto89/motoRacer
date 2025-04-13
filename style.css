@@ -251,10 +251,10 @@ form {
   }
   
   
-  /* Imágenes dentro del modal */
-  .custom-alert .tornillo, .custom-alert .moto, .custom-alert .llave {
-    width: 214px;
-    height: 140px;
+
+.custom-alert .tornillo, .custom-alert .moto, .custom-alert .llave {
+    width: 201px;
+    height: 145px;
 }
 
   

@@ -1,33 +1,28 @@
 <?php
 session_start();
+date_default_timezone_set('America/Bogota');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Verificar autenticación
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: index.php');
     exit();
 }
 
-// Configuración de rutas
 $backup_dir = 'C:/xampp/htdocs/Proyecto SIMR/backups/';
 $search_term = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
 
-// Obtener y filtrar backups
 $backups = [];
 $files = scandir($backup_dir);
 foreach ($files as $file) {
     if ($file !== "." && $file !== ".." && preg_match('/\.(sql|zip)$/i', $file)) {
         $file_path = $backup_dir . $file;
         $file_info = pathinfo($file_path);
-
-        // Datos para búsqueda
         $creation_date = date("Y-m-d H:i:s", filemtime($file_path));
         $file_size = formatSizeUnits(filesize($file_path));
         $file_type = ($file_info['extension'] === 'sql') ? 'Base de datos' : 'Archivos';
         $searchable_date = date("d/m/Y H:i:s", filemtime($file_path));
 
-        // Coincidencias de búsqueda
         $match = empty($search_term) ||
             stripos($file, $search_term) !== false ||
             stripos($creation_date, $search_term) !== false ||
@@ -47,7 +42,6 @@ foreach ($files as $file) {
     }
 }
 
-// Función para formatear tamaños
 function formatSizeUnits($bytes)
 {
     if ($bytes >= 1073741824) return number_format($bytes / 1073741824, 2) . ' GB';
@@ -56,23 +50,31 @@ function formatSizeUnits($bytes)
     return $bytes . ' bytes';
 }
 
+// PAGINACIÓN
+$por_pagina = 6;
+$total_backups = count($backups);
+$total_paginas = ceil($total_backups / $por_pagina);
+$pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int) $_GET['pagina'] : 1;
+$pagina_actual = max(1, min($total_paginas, $pagina_actual));
+$inicio = ($pagina_actual - 1) * $por_pagina;
+$backups_pagina = array_slice($backups, $inicio, $por_pagina);
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestión de Backups</title>
+    <title>Gestión de Copias de Seguridad</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="../componentes/header.css">
-    <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+
         /* Estilos mejorados para backups */
         .main-content {
             padding: 2rem;
@@ -94,9 +96,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
-        .backup-table thead{
+        .backup-table thead {
             align-items: center;
-            justify-content:center ;
+            justify-content: center;
         }
 
         .backup-table th,
@@ -165,6 +167,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             color: #afb42b;
         }
 
+        .filter-bar {
+            display: flex;
+            align-items: center;
+        }
+
         .no-backups {
             text-align: center;
             padding: 2rem;
@@ -220,10 +227,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .search-button:hover {
             background-color: #0056b3;
+            color: rgb(193, 121, 207);
         }
 
         .boton-agregar {
-            
+
             background-color: #007bff;
             color: white;
             border: none;
@@ -232,21 +240,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             width: 200px;
             font-size: 15px;
             cursor: pointer;
-       
+            margin-left: 48%;
         }
 
         .boton-agregar:hover {
             background-color: #0056b3;
         }
+        /* ... (todo el CSS que ya tenías, sin cambios) ... */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            cursor: pointer;
+        }
     </style>
 </head>
-
 <body>
     <div id="menu"></div>
     <div class="main-content">
         <h1>Gestión de Copias de Seguridad</h1>
 
-        <!-- Barra de búsqueda mejorada -->
         <div class="filter-bar">
             <form method="GET" action="copiadeseguridad.php" class="search-form">
                 <div class="search-container">
@@ -263,7 +282,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <button class="boton boton-agregar" onclick="agregarBackup()">Nueva Copia de Seguridad</button>
         </div>
 
-        <?php if (!empty($backups)): ?>
+        <?php if (!empty($backups_pagina)): ?>
             <table class="backup-table">
                 <thead>
                     <tr>
@@ -275,7 +294,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($backups as $backup): ?>
+                    <?php foreach ($backups_pagina as $backup): ?>
                         <tr>
                             <td><?= htmlspecialchars($backup['name']) ?></td>
                             <td><?= $backup['date'] ?></td>
@@ -301,6 +320,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+            <!-- PAGINACIÓN -->
+            <div class="pagination">
+                <?php if ($pagina_actual > 1): ?>
+                    <a href="?busqueda=<?= urlencode($search_term) ?>&pagina=<?= $pagina_actual - 1 ?>">
+                        <button>&laquo; Anterior</button>
+                    </a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                    <a href="?busqueda=<?= urlencode($search_term) ?>&pagina=<?= $i ?>">
+                        <button <?= ($i === $pagina_actual) ? 'style="font-weight:bold;background-color:#007bff;color:white;"' : '' ?>>
+                            <?= $i ?>
+                        </button>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($pagina_actual < $total_paginas): ?>
+                    <a href="?busqueda=<?= urlencode($search_term) ?>&pagina=<?= $pagina_actual + 1 ?>">
+                        <button>Siguiente &raquo;</button>
+                    </a>
+                <?php endif; ?>
+            </div>
         <?php else: ?>
             <div class="no-backups">
                 <i class="fas fa-database fa-3x" style="color: #e0e0e0; margin-bottom: 1rem;"></i>
@@ -308,7 +350,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         <?php endif; ?>
     </div>
-
 
     <script>
         function agregarBackup() {
@@ -321,12 +362,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             try {
                 const response = await fetch('../includes/restore.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        file: filename
-                    }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: filename }),
                 });
                 const result = await response.text();
                 alert(result);
@@ -334,28 +371,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 alert("Error: " + error.message);
             }
         }
-        // Función para eliminar backups
+
         async function deleteBackup(filename) {
             if (!confirm(`¿Eliminar ${filename} permanentemente?`)) return;
 
             try {
                 const response = await fetch('../includes/delete_backup.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        file: filename
-                    }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: filename }),
                 });
                 const result = await response.text();
                 alert(result);
-                location.reload(); // Recarga la página para actualizar la lista
+                location.reload();
             } catch (error) {
                 alert("Error: " + error.message);
             }
         }
     </script>
 </body>
-
 </html>
+
