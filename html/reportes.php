@@ -46,7 +46,7 @@ if (!empty($busqueda)) {
                 SELECT 1 
                 FROM factura_metodo_pago tmp 
                 WHERE tmp.Factura_codigo = f.codigo 
-                AND tmp.metodoPago = '$valor'
+                AND tmp.metodoPago = '$busqueda'
                 )";
                 break;
         case 'Cliente_codigo':

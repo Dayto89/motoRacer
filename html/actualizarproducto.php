@@ -60,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_close($conexion);
 }
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>

@@ -59,27 +59,27 @@ body::before {
   background-color: #0056b3;
 }
 h3{
-  font-family: Arial, Helvetica, sans-serif;
   color: black;
-  background-color: #98bde9;
-  padding: 9px;
-  width: 193px;
-  border-radius: 8px;
-  margin-top: 8px;
-  font-size: 16px;
+  color: rgb(0, 0, 0);
+  margin-left: 401px;
+  margin-top: -12px;
+  padding: initial;
+  margin-bottom: 30px;
+  font-size: 23px;
+  text-shadow: 2.5px -1px 0 rgb(255, 255, 255);
 }
 /* Tabla de categorías */
 .category-table {
   width: 100%;
-  border-collapse: collapse; 
+   
   
 }
 
 .category-table td {
-  padding: 1px;
   text-align: center;
   font-family: Arial, sans-serif;
   width: 225px;
+  padding: 5px;
 }
 
 .category-table th {
@@ -98,7 +98,6 @@ h3{
 }
 
 .options {
-      display: flex;
       gap: 39px;
       margin-left: 260px;
 }

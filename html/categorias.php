@@ -134,9 +134,9 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     <h1>Categorías</h1>
     <div class="container">
       <div class="actions">
-        <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva categoría</button>
+        <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nueva categoría</button>
       </div>
-      <h3>Lista de categorías</h3>
+      <h3>LISTA DE CATEGORIAS</h3>
       <table class="category-table">
         <tbody id="tabla-categorias">
           <?php

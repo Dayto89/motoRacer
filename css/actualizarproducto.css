@@ -178,7 +178,7 @@ h1 {
 .campo select {
     width: 125%;
     padding: 8px;
-    font-size: 0.9rem; /* Hacer el texto un poco más pequeño */
+    font-size: 12px; /* Hacer el texto un poco más pequeño */
     border: 1px solid #ddd;
     border-radius: 5px;
     transition: all 0.3s ease;

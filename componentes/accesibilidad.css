@@ -147,7 +147,18 @@
   color: #FFFFFF !important;
   border-color: #FFFF00 !important;
 }
-
+.modo-alto-contraste .container h3 {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  margin-left: 413px;
+  margin-top: -12px;
+  padding: initial;
+  margin-bottom: 30px;
+  text-shadow: none;
+}
+.modo-alto-contraste .icon{
+  color: #000;
+}
 
 .modo-alto-contraste .sidebar-header .logo {
 
@@ -247,6 +258,9 @@
 .modo-alto-contraste button{
   border: 2px solid #ffffff;
   color: #ffffff;
+}
+.modo-alto-contraste .noti{
+  border:none
 }
 .modo-alto-contraste .recibo-button{
   background-color:#00000000 ;
@@ -386,6 +400,9 @@ text-shadow: 1.5px 0 #1c51a0;
   border: 2px solid #ffffff;
   color: #ffffff;
 }
+.modo-claro .noti{
+  border: none;
+}
 /* 2. Input de búsqueda */
 .modo-claro .form-control[type="text"] {
   background-color: #ffffff !important;
@@ -438,7 +455,22 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-claro #delete-selected:hover {
   color: #FF0000 !important;
 }
-
+.modo-claro #product-form .campo label{
+  text-shadow: none;
+  font-weight:bold;
+}
+.modo-claro .icon-button label{
+  color: #000;
+  margin-right: 5%;
+}
+.modo-claro #crearProducto i {
+  color: #000;
+}
+.modo-claro .campo label{
+  color: #000;
+  text-shadow: none;
+  font-weight: bold;
+}
 /*
 =====================================================================================================================================================Modo de contraste Gestion de Usuarios
 =====================================================================================================================================================
@@ -488,7 +520,6 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-alto-contraste .container h3 {
   background-color: #000000;
   color: white;
-  border: 2px solid #ffffff;
 }
 
 .modo-alto-contraste .user-table td {
@@ -550,7 +581,10 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-claro .container h3 {
   background-color: #ffffff;
   color: rgb(0, 0, 0);
-  border: 2px solid #000000;
+  margin-left: 413px;
+  margin-top: -12px;
+  padding: initial;
+  margin-bottom: 30px;
 }
 
 .modo-claro .user-table td {

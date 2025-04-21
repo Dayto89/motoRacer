@@ -4,8 +4,10 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
+
+// Si hay un proveedor guardado en sesión, úsalo como seleccionado
+$nitSeleccionado = isset($_SESSION['proveedor_guardado']) ? $_SESSION['proveedor_guardado'] : (isset($_POST['selectProveedor']) ? $_POST['selectProveedor'] : '');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,9 +18,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <title>Actualizar Proveedor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <link rel="stylesheet" href="../css/actualizarproducto.css"> <!-- MISMO CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../css/actualizarproducto.css">
     <link rel="stylesheet" href="../componentes/header.css">
-    <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
 </head>
@@ -30,8 +32,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div id="actualizarProveedor" class="form-section">
         <h1>Actualizar Proveedor</h1>
 
-        <div class="container"> <!-- Agregar el contenedor -->
-            <form id="update-provider-form" method="POST" action="">
+        <div class="container">
+            <form id="update-provider-form" method="POST" action="actualizarproveedor.php">
                 <div class="form-grid">
                     <div class="campo">
                         <label for="selectProveedor">Seleccionar Proveedor:</label>
@@ -41,8 +43,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             $conexion = mysqli_connect("localhost", "root", "", "inventariomotoracer");
                             $consulta = "SELECT nit, nombre FROM proveedor";
                             $resultado = mysqli_query($conexion, $consulta);
-
-                            $nitSeleccionado = isset($_POST['selectProveedor']) ? $_POST['selectProveedor'] : '';
 
                             while ($fila = mysqli_fetch_assoc($resultado)) {
                                 $selected = ($fila['nit'] == $nitSeleccionado) ? 'selected' : '';
@@ -95,12 +95,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <input type="text" id="estado" name="estado" value="<?php echo isset($estado) ? $estado : ''; ?>" required>
                     </div>
 
-
-
                     <div class="button-container">
                         <div class="boton">
                             <button type="submit" name="guardar">Guardar</button>
-                            <button type="submit" id="eliminar" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</button>
+                            <button type="button" id="eliminar" name="eliminar">Eliminar</button>
                         </div>
                     </div>
 
@@ -127,16 +125,92 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                       WHERE nit='$nit'";
 
             mysqli_query($conexion, $actualizar);
-            echo "<script>alert('Proveedor actualizado correctamente');</script>";
+
+            // Guardar proveedor seleccionado en la sesión
+            $_SESSION['proveedor_guardado'] = $nit;
+
+            echo "<script>
+Swal.fire({
+    title: '<span class=\"titulo-alerta exito\">Éxito</span>',
+    html: `
+        <div class=\"custom-alert\">
+            <div class=\"contenedor-imagen\">
+                <img src=\"../imagenes/llave.png\" alt=\"Éxito\" class=\"llave\">
+            </div>
+            <p>Proveedor actualizado correctamente.</p>
+        </div>
+    `,
+    background: '#ffffffdb',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#007bff',
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+    }
+}).then(() => {
+    window.location.href = 'actualizarproveedor.php';
+});
+</script>";
         }
 
         if (isset($_POST['eliminar'])) {
             $nit = $_POST['selectProveedor'];
 
             if (!empty($nit)) {
-                $eliminar = "DELETE FROM proveedor WHERE nit='$nit'";
-                mysqli_query($conexion, $eliminar);
-                echo "<script>alert('Proveedor eliminado correctamente'); window.location.href='actualizarproveedor.php';</script>";
+                try {
+                    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+                    $eliminar = "DELETE FROM proveedor WHERE nit='$nit'";
+                    mysqli_query($conexion, $eliminar);
+                    unset($_SESSION['proveedor_guardado']); // Limpiar proveedor seleccionado
+
+                    echo "<script>
+                    Swal.fire({
+                        title: '<span class=\"titulo-alerta exito\">Éxito</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/llave.png\" alt=\"Éxito\" class=\"llave\">
+                                </div>
+                                <p>Proveedor eliminado correctamente.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    }).then(() => {
+                        window.location.href = 'actualizarproveedor.php';
+                    });
+                    </script>";
+                } catch (mysqli_sql_exception $e) {
+                    echo "<script>
+                    Swal.fire({
+                        title: '<span class=\"titulo-alerta error\">Error</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/error.png\" alt=\"Error\" class=\"llave\">
+                                </div>
+                                <p>No se puede eliminar este proveedor porque tiene productos relacionados.</p>
+                            </div>
+                        `,
+                        icon: 'error',
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
+                    </script>";
+                }
             }
         }
 
@@ -144,6 +218,42 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
     ?>
 
-</body>
+    <script>
+        document.getElementById('eliminar').addEventListener('click', function () {
+            Swal.fire({
+                title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
+                html: `
+                    <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                            <img src="../imagenes/llave.png" alt="Advertencia" class="llave">
+                        </div>
+                        <p>¿Estás seguro de que deseas eliminar este proveedor?</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                background: '#ffffffdb',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    cancelButton: 'btn-cancelar',
+                    container: 'fondo-oscuro'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('update-provider-form');
+                    const eliminarInput = document.createElement('input');
+                    eliminarInput.type = 'hidden';
+                    eliminarInput.name = 'eliminar';
+                    form.appendChild(eliminarInput);
+                    form.submit();
+                }
+            });
+        });
+    </script>
 
+</body>
 </html>

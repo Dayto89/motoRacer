@@ -196,6 +196,7 @@ unset($_SESSION['total']);
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <style>
@@ -331,7 +332,25 @@ unset($_SESSION['total']);
             //Verificar si saldo pendiente es cero
             saldoPendiente = calcularSaldoRestante();
             if (saldoPendiente > 0) {
-                alert("Falta ingresar valores para pagar");
+                Swal.fire({
+                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+                    html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>Falta ingresar valores para pagar.</p>
+                </div>
+            `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
                 return;
 
             } else {
@@ -365,7 +384,25 @@ unset($_SESSION['total']);
                             if (tipoOtro) {
                                 tipo = tipoOtro; // Se usa el valor seleccionado, ej. "transferencia"
                             } else {
-                                alert("Selecciona un tipo de pago para 'otro'");
+                                Swal.fire({
+                                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+                                    html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>Selecciona un tipo de pago para 'otro'.</p>
+                </div>
+            `,
+                                    background: '#ffffffdb',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#007bff',
+                                    customClass: {
+                                        popup: 'swal2-border-radius',
+                                        confirmButton: 'btn-aceptar',
+                                        container: 'fondo-oscuro'
+                                    }
+                                });
                                 return;
                             }
                         }
@@ -396,12 +433,7 @@ unset($_SESSION['total']);
                     })
                     .then(response => response.json()) // Parsear la respuesta como JSON
                     .then(data => {
-                        if (data.success) {
-                            alert("Factura registrada correctamente con ID: " + data.factura_id);
-                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
-                        } else {
-                            alert("Error al registrar factura: " + (data.error || ""));
-                        }
+                                                                                               
                     })
                     .catch(error => {
                         console.error("Error al registrar:", error);
