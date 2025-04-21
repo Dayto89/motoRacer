@@ -144,7 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
 
     echo json_encode(['success' => true]);
     exit;
-
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'error' => 'Parámetros POST inválidos']);
@@ -298,48 +297,47 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
 
         function eliminarCliente(codigo) {
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: "Esta acción eliminará al cliente",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch('listaclientes.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `eliminar=true&codigo=${encodeURIComponent(codigo)}`
-            })
-            .then(async response => {
-                const text = await response.text();
-                try {
-                    const json = JSON.parse(text);
-                    if (json.success) {
-                        Swal.fire('Eliminado', 'El cliente ha sido eliminado correctamente.', 'success')
-                            .then(() => {
-                                location.reload(); // recarga la tabla
-                            });
-                    } else {
-                        Swal.fire('Error', json.error || 'No se pudo eliminar al cliente.', 'error');
-                    }
-                } catch (e) {
-                    // Si no es JSON válido, muestra el contenido HTML devuelto por PHP
-                    console.error("Respuesta no JSON:", text);
-                    Swal.fire('Error', 'Respuesta no válida del servidor. Ver consola para más detalles.', 'error');
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción eliminará al cliente",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('listaclientes.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `eliminar=true&codigo=${encodeURIComponent(codigo)}`
+                        })
+                        .then(async response => {
+                            const text = await response.text();
+                            try {
+                                const json = JSON.parse(text);
+                                if (json.success) {
+                                    Swal.fire('Eliminado', 'El cliente ha sido eliminado correctamente.', 'success')
+                                        .then(() => {
+                                            location.reload(); // recarga la tabla
+                                        });
+                                } else {
+                                    Swal.fire('Error', json.error || 'No se pudo eliminar al cliente.', 'error');
+                                }
+                            } catch (e) {
+                                // Si no es JSON válido, muestra el contenido HTML devuelto por PHP
+                                console.error("Respuesta no JSON:", text);
+                                Swal.fire('Error', 'Respuesta no válida del servidor. Ver consola para más detalles.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error de red o fetch:", error);
+                            Swal.fire('Error', 'Error de red al intentar eliminar el cliente.', 'error');
+                        });
                 }
-            })
-            .catch(error => {
-                console.error("Error de red o fetch:", error);
-                Swal.fire('Error', 'Error de red al intentar eliminar el cliente.', 'error');
             });
         }
-    });
-}
-
     </script>
 </body>
 

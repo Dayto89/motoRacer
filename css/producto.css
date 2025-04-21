@@ -385,6 +385,8 @@ input[type="checkbox"] {
     font-size: 9px;
     border-radius: 8px;
     margin-top: 14px;
+    border-width: 2px;
+    border-color: #000;
 }
 
 
