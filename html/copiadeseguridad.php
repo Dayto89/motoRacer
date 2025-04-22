@@ -63,6 +63,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -74,7 +75,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-
         /* Estilos mejorados para backups */
         .main-content {
             padding: 2rem;
@@ -194,21 +194,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             border-radius: 4px;
         }
 
-        /* Añadir estilos para la paginación */
-        .pagination {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .pagination button {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            background: #f5f5f5;
-            cursor: pointer;
-        }
-
         .search-container input {
             width: 300px;
             height: 40px;
@@ -246,21 +231,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .boton-agregar:hover {
             background-color: #0056b3;
         }
-        /* ... (todo el CSS que ya tenías, sin cambios) ... */
+
         .pagination {
-            margin-top: 20px;
             display: flex;
-            gap: 10px;
             justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
         }
-        .pagination button {
+
+        .pagination a {
             padding: 8px 12px;
-            border: 1px solid #ddd;
-            background: #f5f5f5;
-            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: rgb(158, 146, 209);
+        }
+
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            pointer-events: none;
+            border-color: #007bff;
         }
     </style>
 </head>
+
 <body>
     <div id="menu"></div>
     <div class="main-content">
@@ -362,8 +364,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             try {
                 const response = await fetch('../includes/restore.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ file: filename }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        file: filename
+                    }),
                 });
                 const result = await response.text();
                 alert(result);
@@ -378,8 +384,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             try {
                 const response = await fetch('../includes/delete_backup.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ file: filename }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        file: filename
+                    }),
                 });
                 const result = await response.text();
                 alert(result);
@@ -390,5 +400,5 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
     </script>
 </body>
-</html>
 
+</html>

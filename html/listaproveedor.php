@@ -85,20 +85,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
 
     .pagination {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        .pagination button {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            background: #f5f5f5;
-            cursor: pointer;
-        }
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 5px;
+    }
+
+    .pagination a {
+      padding: 8px 12px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      text-decoration: none;
+      color: #333;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .pagination a:hover {
+      background-color:rgb(158, 146, 209);
+    }
+
+    .pagination a.active {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      pointer-events: none;
+      border-color: #007bff;
+    }
   </style>
 </head>
-
 <body>
   <!-- Aquí se cargará el header -->
   <div class="sidebar">

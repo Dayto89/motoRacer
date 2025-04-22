@@ -16,159 +16,96 @@ if (!$conexion) {
 $filtros = [];
 
 // Manejar filtro de fechas
+
 if (!empty($_GET['fecha_desde']) && !empty($_GET['fecha_hasta'])) {
   $fecha_desde = mysqli_real_escape_string($conexion, $_GET['fecha_desde']) . " 00:00:00";
   $fecha_hasta = mysqli_real_escape_string($conexion, $_GET['fecha_hasta']) . " 23:59:59";
   $filtros[] = "f.fechaGeneracion BETWEEN '$fecha_desde' AND '$fecha_hasta'";
 }
 
-// Eliminar el manejo de 'valor' y usar solo 'busqueda'
+// Manejar búsqueda general y criterios
 $busqueda = isset($_GET['busqueda']) ? mysqli_real_escape_string($conexion, $_GET['busqueda']) : '';
-
-// Manejar búsqueda general
+$criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
 if (!empty($busqueda)) {
   $condiciones = [];
-  
-  if (isset($_GET['criterios']) && is_array($_GET['criterios'])) {
-    // Búsqueda por criterios seleccionados
-    foreach ($_GET['criterios'] as $criterio) {
+  if (!empty($criterios)) {
+    foreach ($criterios as $criterio) {
       $criterio = mysqli_real_escape_string($conexion, $criterio);
       switch ($criterio) {
-        case 'codigo':
-          $condiciones[] = "f.codigo = '$busqueda'";
-          break;
-          case 'fechaGeneracion':
-            $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'";
-            break;
-            case 'metodoPago':
-              // Busqueda exacta en tabla de métodos
-              $condicionesBusqueda[] = "EXISTS (
-                SELECT 1 
-                FROM factura_metodo_pago tmp 
-                WHERE tmp.Factura_codigo = f.codigo 
-                AND tmp.metodoPago = '$busqueda'
-                )";
-                break;
-        case 'Cliente_codigo':
-          $condiciones[] = "f.Cliente_codigo LIKE '%$busqueda%'";
-          break;
-        case 'vendedor':
-          $condiciones[] = "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')";
-          break;
-          case 'cliente':
-            $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')";
-            break;
-            case 'precioTotal':
-              $condiciones[] = "f.precioTotal = '$busqueda'";
-          break;
+        case 'codigo':         $condiciones[] = "f.codigo = '$busqueda'"; break;
+        case 'fechaGeneracion': $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'"; break;
+        case 'metodoPago':     $condiciones[] = "EXISTS (SELECT 1 FROM factura_metodo_pago tmp WHERE tmp.Factura_codigo = f.codigo AND tmp.metodoPago = '$busqueda')"; break;
+        case 'cliente':        $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')"; break;
+        case 'vendedor':       $condiciones[] = "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')"; break;
+        case 'precioTotal':    $condiciones[] = "f.precioTotal = '$busqueda'"; break;
       }
     }
+    $filtros[] = '(' . implode(' OR ', $condiciones) . ')';
   } else {
-    // Búsqueda general si no hay criterios seleccionados
-    $condicionesGenerales = [
+    $general = [
       "f.codigo = '$busqueda'",
       "f.Cliente_codigo = '$busqueda'",
       "f.precioTotal = '$busqueda'",
       "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')",
       "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')",
-      "EXISTS (
-        SELECT 1 
-        FROM factura_metodo_pago tmp 
-        WHERE tmp.Factura_codigo = f.codigo 
-        AND tmp.metodoPago = '$busqueda'
-        )"
+      "EXISTS (SELECT 1 FROM factura_metodo_pago tmp WHERE tmp.Factura_codigo = f.codigo AND tmp.metodoPago = '$busqueda')"
     ];
-
-    $filtros[] = "(" . implode(" OR ", $condicionesGenerales) . ")";
+    $filtros[] = '(' . implode(' OR ', $general) . ')';
   }
 }
 
-$consulta = "
-SELECT 
-f.codigo,
-f.fechaGeneracion,
-f.Usuario_identificacion,
-f.Cliente_codigo,
-f.precioTotal,
-c.nombre AS cliente_nombre,
-c.apellido AS cliente_apellido,
-n.nombre AS usuario_nombre,
-        n.apellido AS usuario_apellido,
-        GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
-        FROM 
-        factura f
-        LEFT JOIN factura_metodo_pago m 
-        ON m.Factura_codigo = f.codigo
-        LEFT JOIN cliente c 
-        ON c.codigo = f.Cliente_codigo
-        LEFT JOIN usuario n 
-        ON n.identificacion = f.Usuario_identificacion
-        ";
-        
-        // Añadir condiciones WHERE si hay filtros
-        if (!empty($filtros)) {
-          $consulta .= " WHERE " . implode(" AND ", $filtros);
-        }
-        
-        // Agregar GROUP BY una sola vez
-        $consulta .= " GROUP BY 
-        f.codigo, 
-        f.fechaGeneracion, 
-        f.Usuario_identificacion, 
-        f.Cliente_codigo, 
-        f.precioTotal, 
-        c.nombre, 
-        c.apellido, 
-        n.nombre, 
-        n.apellido";
-        
-        // Ejecutar la consulta
-        $resultado = mysqli_query($conexion, $consulta);
-        
-        if (!$resultado) {
-          die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-        }
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['codigos'])) {
-          header('Content-Type: application/json');
-          $response = ['success' => false, 'error' => ''];
-          
-          try {
-            $codigos = json_decode(file_get_contents('php://input'), true)['codigos'];
-            $conexion->autocommit(false);
-            
-            foreach ($codigos as $codigo) {
-              if (!ctype_digit($codigo)) {
-                throw new Exception("Código inválido: $codigo");
-              }
-              
-              // Eliminar métodos de pago
-              $stmt = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
-              $stmt->bind_param("i", $codigo);
-              if (!$stmt->execute()) throw new Exception("Error métodos pago: " . $stmt->error);
-              
-      // Eliminar productos de factura
-      $stmt = $conexion->prepare("DELETE FROM producto_factura WHERE Factura_codigo = ?");
-      $stmt->bind_param("i", $codigo);
-      if (!$stmt->execute()) throw new Exception("Error productos: " . $stmt->error);
-      
-      // Eliminar factura principal
-      $stmt = $conexion->prepare("DELETE FROM factura WHERE codigo = ?");
-      $stmt->bind_param("i", $codigo);
-      if (!$stmt->execute()) throw new Exception("Error factura: " . $stmt->error);
-    }
-    
-    $conexion->commit();
-    $response['success'] = true;
-  } catch (Exception $e) {
-    $conexion->rollback();
-    $response['error'] = $e->getMessage();
-  } finally {
-    $conexion->autocommit(true);
-  }
-  
-  echo json_encode($response);
-  exit;
+// PAGINACIÓN
+$registros_por_pagina = 10;
+$pagina_actual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($pagina_actual - 1) * $registros_por_pagina;
+
+// Consulta para contar total de resultados
+$sql_count = "SELECT COUNT(DISTINCT f.codigo) AS total
+FROM factura f
+LEFT JOIN factura_metodo_pago m ON m.Factura_codigo = f.codigo
+LEFT JOIN cliente c ON c.codigo = f.Cliente_codigo
+LEFT JOIN usuario n ON n.identificacion = f.Usuario_identificacion";
+if (!empty($filtros)) {
+  $sql_count .= " WHERE " . implode(' AND ', $filtros);
+}
+$result_count = mysqli_query($conexion, $sql_count);
+$total_filas = mysqli_fetch_assoc($result_count)['total'];
+$total_paginas = ceil($total_filas / $registros_por_pagina);
+
+// Consulta principal con filtros, agrupación y paginación
+$sql = "SELECT 
+  f.codigo,
+  f.fechaGeneracion,
+  f.Usuario_identificacion,
+  f.Cliente_codigo,
+  f.precioTotal,
+  c.nombre AS cliente_nombre,
+  c.apellido AS cliente_apellido,
+  n.nombre AS usuario_nombre,
+  n.apellido AS usuario_apellido,
+  GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
+FROM factura f
+LEFT JOIN factura_metodo_pago m ON m.Factura_codigo = f.codigo
+LEFT JOIN cliente c ON c.codigo = f.Cliente_codigo
+LEFT JOIN usuario n ON n.identificacion = f.Usuario_identificacion";
+if (!empty($filtros)) {
+  $sql .= " WHERE " . implode(' AND ', $filtros);
+}
+$sql .= " GROUP BY 
+  f.codigo,
+  f.fechaGeneracion,
+  f.Usuario_identificacion,
+  f.Cliente_codigo,
+  f.precioTotal,
+  c.nombre,
+  c.apellido,
+  n.nombre,
+  n.apellido
+LIMIT $registros_por_pagina OFFSET $offset";
+
+$resultado = mysqli_query($conexion, $sql);
+if (!$resultado) {
+  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
@@ -225,7 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
   header("Location: recibo.php");
   exit();
 }
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
@@ -243,13 +181,41 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
-
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <style>
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 5px;
+    }
 
+    .pagination a {
+      padding: 8px 12px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      text-decoration: none;
+      color: #333;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .pagination a:hover {
+      background-color:rgb(158, 146, 209);
+    }
+
+    .pagination a.active {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      pointer-events: none;
+      border-color: #007bff;
+    }
+  </style>
 </head>
 
 <body>
-  <script>
+<script>
     // Función para eliminar un producto
     function eliminarFactura(codigo) {
       if (!confirm(`¿Eliminar factura ${codigo} y todos sus datos asociados?`)) return;
@@ -279,7 +245,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         });
     }
   </script>
-  <div class="sidebar">
+<div class="sidebar">
     <div id="menu"></div>
   </div>
   <div class="main-content">
@@ -334,51 +300,61 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
     </div>
 
-    <?php if (mysqli_num_rows($resultado) > 0): ?>
-      <table>
-        <thead>
+  <?php if (mysqli_num_rows($resultado) > 0): ?>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Fecha</th>
+          <th>Método de Pago</th>
+          <th>Vendedor</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Acciones</th>
+          <th><input type="checkbox" id="select-all"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
           <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Método de Pago</th>
-            <th>Vendedor</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Acciones</th>
-            <th><input type="checkbox" id="select-all"></th>
+            <td><?php echo $fila['codigo']; ?></td>
+            <td><?php echo $fila['fechaGeneracion']; ?></td>
+            <td><?php echo $fila['metodoPago']; ?></td>
+            <td><?php echo $fila['usuario_nombre'] . " " . $fila['usuario_apellido']; ?></td>
+            <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
+            <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
+            <td class="acciones">
+              <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash" style='color:#fffbfb'></i></button>
+              <form method="POST">
+                <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
+                <button type="submit" class="recibo-button">
+                  <i class='bx bx-search-alt' style='color:#fffbfb'></i>
+                </button>
+              </form>
+            </td>
+            <td>
+              <input type="checkbox" class="select-product" value="<?= $fila['codigo'] ?>">
+            </td> <!-- Checkbox agregado -->
           </tr>
-        </thead>
-        <tbody>
-          <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
-            <tr>
-              <td><?php echo $fila['codigo']; ?></td>
-              <td><?php echo $fila['fechaGeneracion']; ?></td>
-              <td><?php echo $fila['metodoPago']; ?></td>
-              <td><?php echo $fila['usuario_nombre'] . " " . $fila['usuario_apellido']; ?></td>
-              <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
-              <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
-              <td class="acciones">
-                <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash" style='color:#fffbfb'></i></button>
-                <form method="POST">
-                  <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
-                  <button type="submit" class="recibo-button">
-                  <i class='bx bx-search-alt' style='color:#fffbfb' ></i>
-                  </button>
-                </form>
-              </td>
-              <td>
-                <input type="checkbox" class="select-product" value="<?= $fila['codigo'] ?>">
-              </td> <!-- Checkbox agregado -->
-            </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+  <?php else: ?>
+    <p>No se encontraron resultados con los criterios seleccionados.</p>
+  <?php endif; ?>
 
-    <?php else: ?>
-      <p>No se encontraron resultados con los criterios seleccionados.</p>
-    <?php endif; ?>
-  </div>
-
+  <?php if ($total_paginas > 1): ?>
+    <div class="pagination">
+      <?php
+      for ($i = 1; $i <= $total_paginas; $i++):
+        $params = $_GET;
+        $params['pagina'] = $i;
+        $link = '?' . http_build_query($params);
+      ?>
+        <a href="<?= $link ?>" class="<?= $i == $pagina_actual ? 'active' : '' ?>"><?= $i ?></a>
+      <?php endfor; ?>
+    </div>
+  <?php endif; ?>
   <script>
     // funcion de los checkboxes
     document.getElementById("select-all").addEventListener("change", function() {
