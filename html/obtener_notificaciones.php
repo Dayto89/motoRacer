@@ -18,7 +18,7 @@ $stmt = $conexion->prepare("
     SELECT id, mensaje, fecha, leida 
     FROM notificaciones 
     ORDER BY fecha DESC 
-    LIMIT 10
+    LIMIT 20
 ");
 $stmt->execute();
 $result = $stmt->get_result();

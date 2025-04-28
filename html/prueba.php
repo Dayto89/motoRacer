@@ -433,7 +433,12 @@ unset($_SESSION['total']);
                     })
                     .then(response => response.json()) // Parsear la respuesta como JSON
                     .then(data => {
-                                                                                               
+                        if (data.success) {
+                            alert("Factura registrada correctamente con ID: " + data.factura_id);
+                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                        } else {
+                            alert("Error al registrar factura: " + (data.error || ""));
+                        }                                                          
                     })
                     .catch(error => {
                         console.error("Error al registrar:", error);

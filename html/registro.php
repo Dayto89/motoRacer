@@ -156,6 +156,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 ($identificacion, 'FACTURA', 'Venta', 0),
                 ($identificacion, 'FACTURA', 'Reporte', 0),
                 ($identificacion, 'FACTURA', 'Lista Clientes', 0),
+                ($identificacion, 'FACTURA', 'Lista de Notificaciones', 0),
 
                 ($identificacion, 'USUARIO', 'Información', 1),
 

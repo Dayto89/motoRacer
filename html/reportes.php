@@ -32,12 +32,24 @@ if (!empty($busqueda)) {
     foreach ($criterios as $criterio) {
       $criterio = mysqli_real_escape_string($conexion, $criterio);
       switch ($criterio) {
-        case 'codigo':         $condiciones[] = "f.codigo = '$busqueda'"; break;
-        case 'fechaGeneracion': $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'"; break;
-        case 'metodoPago':     $condiciones[] = "EXISTS (SELECT 1 FROM factura_metodo_pago tmp WHERE tmp.Factura_codigo = f.codigo AND tmp.metodoPago = '$busqueda')"; break;
-        case 'cliente':        $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')"; break;
-        case 'vendedor':       $condiciones[] = "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')"; break;
-        case 'precioTotal':    $condiciones[] = "f.precioTotal = '$busqueda'"; break;
+        case 'codigo':
+          $condiciones[] = "f.codigo = '$busqueda'";
+          break;
+        case 'fechaGeneracion':
+          $condiciones[] = "f.fechaGeneracion LIKE '%$busqueda%'";
+          break;
+        case 'metodoPago':
+          $condiciones[] = "EXISTS (SELECT 1 FROM factura_metodo_pago tmp WHERE tmp.Factura_codigo = f.codigo AND tmp.metodoPago = '$busqueda')";
+          break;
+        case 'cliente':
+          $condiciones[] = "(c.nombre LIKE '%$busqueda%' OR c.apellido LIKE '%$busqueda%')";
+          break;
+        case 'vendedor':
+          $condiciones[] = "(n.nombre LIKE '%$busqueda%' OR n.apellido LIKE '%$busqueda%')";
+          break;
+        case 'precioTotal':
+          $condiciones[] = "f.precioTotal = '$busqueda'";
+          break;
       }
     }
     $filtros[] = '(' . implode(' OR ', $condiciones) . ')';
@@ -111,34 +123,34 @@ if (!$resultado) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
   $response = ['success' => false, 'error' => ''];
-  
+
   try {
     $codigo = $_POST['codigo'];
-    
+
     // Iniciar transacción
     mysqli_begin_transaction($conexion);
-    
+
     // 1. Eliminar método de pago
     $stmt1 = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
     $stmt1->bind_param("i", $codigo);
     if (!$stmt1->execute()) {
       throw new Exception("Error en metodo_pago: " . $stmt1->error);
     }
-    
+
     // 2. Eliminar productos de la factura
     $stmt2 = $conexion->prepare("DELETE FROM producto_factura WHERE Factura_codigo = ?");
     $stmt2->bind_param("i", $codigo);
     if (!$stmt2->execute()) {
       throw new Exception("Error en producto_factura: " . $stmt2->error);
     }
-    
+
     // 3. Eliminar la factura principal
     $stmt3 = $conexion->prepare("DELETE FROM factura WHERE codigo = ?");
     $stmt3->bind_param("i", $codigo);
     if (!$stmt3->execute()) {
       throw new Exception("Error en factura: " . $stmt3->error);
     }
-    
+
     // Confirmar cambios si todo fue bien
     mysqli_commit($conexion);
     $response['success'] = true;
@@ -152,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
     if (isset($stmt2)) $stmt2->close();
     if (isset($stmt3)) $stmt3->close();
   }
-  
+
   echo json_encode($response);
   exit;
 }
@@ -201,7 +213,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     .pagination a:hover {
-      background-color:rgb(158, 146, 209);
+      background-color: rgb(158, 146, 209);
     }
 
     .pagination a.active {
@@ -215,7 +227,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-<script>
+  <script>
     // Función para eliminar un producto
     function eliminarFactura(codigo) {
       if (!confirm(`¿Eliminar factura ${codigo} y todos sus datos asociados?`)) return;
@@ -245,7 +257,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
     }
   </script>
-<div class="sidebar">
+  <div class="sidebar">
     <div id="menu"></div>
   </div>
   <div class="main-content">
@@ -300,134 +312,189 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     </div>
 
-  <?php if (mysqli_num_rows($resultado) > 0): ?>
-    <table>
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Fecha</th>
-          <th>Método de Pago</th>
-          <th>Vendedor</th>
-          <th>Cliente</th>
-          <th>Total</th>
-          <th>Acciones</th>
-          <th><input type="checkbox" id="select-all"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
+    <?php if (mysqli_num_rows($resultado) > 0): ?>
+      <table>
+        <thead>
           <tr>
-            <td><?php echo $fila['codigo']; ?></td>
-            <td><?php echo $fila['fechaGeneracion']; ?></td>
-            <td><?php echo $fila['metodoPago']; ?></td>
-            <td><?php echo $fila['usuario_nombre'] . " " . $fila['usuario_apellido']; ?></td>
-            <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
-            <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
-            <td class="acciones">
-              <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash" style='color:#fffbfb'></i></button>
-              <form method="POST">
-                <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
-                <button type="submit" class="recibo-button">
-                  <i class='bx bx-search-alt' style='color:#fffbfb'></i>
-                </button>
-              </form>
-            </td>
-            <td>
-              <input type="checkbox" class="select-product" value="<?= $fila['codigo'] ?>">
-            </td> <!-- Checkbox agregado -->
+            <th>Código</th>
+            <th>Fecha</th>
+            <th>Método de Pago</th>
+            <th>Vendedor</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Acciones</th>
+            <th><input type="checkbox" id="select-all"></th>
           </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
-  <?php else: ?>
-    <p>No se encontraron resultados con los criterios seleccionados.</p>
-  <?php endif; ?>
+        </thead>
+        <tbody>
+          <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
+            <tr>
+              <td><?php echo $fila['codigo']; ?></td>
+              <td><?php echo $fila['fechaGeneracion']; ?></td>
+              <td><?php echo $fila['metodoPago']; ?></td>
+              <td><?php echo $fila['usuario_nombre'] . " " . $fila['usuario_apellido']; ?></td>
+              <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
+              <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
+              <td class="acciones">
+                <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash" style='color:#fffbfb'></i></button>
+                <form method="POST">
+                  <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
+                  <button type="submit" class="recibo-button">
+                    <i class='bx bx-search-alt' style='color:#fffbfb'></i>
+                  </button>
+                </form>
+              </td>
+              <td>
+                <input type="checkbox" class="select-product" value="<?= $fila['codigo'] ?>">
+              </td> <!-- Checkbox agregado -->
+            </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    <?php else: ?>
+      <p>No se encontraron resultados con los criterios seleccionados.</p>
+    <?php endif; ?>
 
-  <?php if ($total_paginas > 1): ?>
-    <div class="pagination">
-      <?php
-      for ($i = 1; $i <= $total_paginas; $i++):
-        $params = $_GET;
-        $params['pagina'] = $i;
-        $link = '?' . http_build_query($params);
-      ?>
-        <a href="<?= $link ?>" class="<?= $i == $pagina_actual ? 'active' : '' ?>"><?= $i ?></a>
-      <?php endfor; ?>
-    </div>
-  <?php endif; ?>
-  <script>
-    // funcion de los checkboxes
-    document.getElementById("select-all").addEventListener("change", function() {
-      let checkboxes = document.querySelectorAll(".select-product");
-      checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-      });
-    });
 
-    document.addEventListener("DOMContentLoaded", function() {
-      let selectAllCheckbox = document.getElementById("select-all");
-      let checkboxes = document.querySelectorAll(".select-product");
-      let deleteButton = document.getElementById("delete-selected");
+    <?php if ($total_paginas > 1): ?>
+      <div class="pagination">
+        <?php
+        // Construir query base conservando filtros
+        $base_params = $_GET;
+        ?>
+        <!-- Primera -->
+        <?php
+        $base_params['pagina'] = 1;
+        $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">« Primera</a>
 
-      function toggleDeleteButton() {
-        let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-        deleteButton.style.display = anyChecked ? "inline-block" : "none";
-      }
+        <!-- Anterior -->
+        <?php if ($pagina_actual > 1): ?>
+          <?php
+          $base_params['pagina'] = $pagina_actual - 1;
+          $url = '?' . http_build_query($base_params);
+          ?>
+          <a href="<?= $url ?>">‹ Anterior</a>
+        <?php endif; ?>
 
-      selectAllCheckbox.addEventListener("change", function() {
+        <?php
+        // Rango de páginas: dos antes y dos después
+        $start = max(1, $pagina_actual - 2);
+        $end   = min($total_paginas, $pagina_actual + 2);
+
+        // Si hay hueco antes, muestra ellipsis
+        if ($start > 1) {
+          echo '<span class="ellips" style="color:white">…</span>';
+        }
+
+        // Botones de páginas
+        for ($i = $start; $i <= $end; $i++):
+          $base_params['pagina'] = $i;
+          $url = '?' . http_build_query($base_params);
+        ?>
+          <a href="<?= $url ?>"
+            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+            <?= $i ?>
+          </a>
+        <?php endfor;
+
+        // Si hay hueco después, muestra ellipsis
+        if ($end < $total_paginas) {
+          echo '<span class="ellips" style="color:white">…</span>';
+        }
+        ?>
+
+        <!-- Siguiente -->
+        <?php if ($pagina_actual < $total_paginas): ?>
+          <?php
+          $base_params['pagina'] = $pagina_actual + 1;
+          $url = '?' . http_build_query($base_params);
+          ?>
+          <a href="<?= $url ?>">Siguiente ›</a>
+        <?php endif; ?>
+
+        <!-- Última -->
+        <?php
+        $base_params['pagina'] = $total_paginas;
+        $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">Última »</a>
+      </div>
+    <?php endif; ?>
+    <script>
+      // funcion de los checkboxes
+      document.getElementById("select-all").addEventListener("change", function() {
+        let checkboxes = document.querySelectorAll(".select-product");
         checkboxes.forEach(checkbox => {
           checkbox.checked = this.checked;
         });
-        toggleDeleteButton();
       });
 
-      checkboxes.forEach(checkbox => {
-        checkbox.addEventListener("change", toggleDeleteButton);
-      });
+      document.addEventListener("DOMContentLoaded", function() {
+        let selectAllCheckbox = document.getElementById("select-all");
+        let checkboxes = document.querySelectorAll(".select-product");
+        let deleteButton = document.getElementById("delete-selected");
 
-      deleteButton.addEventListener("click", function() {
-        let selectedCodes = Array.from(checkboxes)
-          .filter(checkbox => checkbox.checked)
-          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
-
-        if (selectedCodes.length === 0) {
-          alert("Selecciona al menos una factura para eliminar.");
-          return;
+        function toggleDeleteButton() {
+          let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+          deleteButton.style.display = anyChecked ? "inline-block" : "none";
         }
 
-        if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} factura?`)) {
-          return;
-        }
-
-        // Depuración: Ver datos antes de enviarlos
-        console.log("Enviando códigos a eliminar:", selectedCodes);
-
-        fetch("../html/eliminar_factura.php", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              codigos: selectedCodes
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log("Respuesta del servidor:", data); // Depuración
-            if (data.success) {
-              alert("factura eliminado correctamente.");
-              location.reload();
-            } else {
-              alert("Error al eliminar las facturas: " + data.error);
-            }
-          })
-          .catch(error => {
-            console.error("Error en la solicitud:", error);
-            alert("Error en la comunicación con el servidor.");
+        selectAllCheckbox.addEventListener("change", function() {
+          checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
           });
+          toggleDeleteButton();
+        });
+
+        checkboxes.forEach(checkbox => {
+          checkbox.addEventListener("change", toggleDeleteButton);
+        });
+
+        deleteButton.addEventListener("click", function() {
+          let selectedCodes = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
+
+          if (selectedCodes.length === 0) {
+            alert("Selecciona al menos una factura para eliminar.");
+            return;
+          }
+
+          if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} factura?`)) {
+            return;
+          }
+
+          // Depuración: Ver datos antes de enviarlos
+          console.log("Enviando códigos a eliminar:", selectedCodes);
+
+          fetch("../html/eliminar_factura.php", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                codigos: selectedCodes
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              console.log("Respuesta del servidor:", data); // Depuración
+              if (data.success) {
+                alert("factura eliminado correctamente.");
+                location.reload();
+              } else {
+                alert("Error al eliminar las facturas: " + data.error);
+              }
+            })
+            .catch(error => {
+              console.error("Error en la solicitud:", error);
+              alert("Error en la comunicación con el servidor.");
+            });
+        });
       });
-    });
-  </script>
+    </script>
 </body>
 
 </html>

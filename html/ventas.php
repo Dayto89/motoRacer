@@ -47,7 +47,7 @@ if (!$conexion) {
 if (isset($_POST['cobrar'])) {
     $productos = [];
     $total = 0;
-    
+
     // Recorrer los productos en el resumen y almacenarlos en un array
     foreach ($_POST['productos'] as $producto) {
         $productos[] = [
@@ -58,11 +58,11 @@ if (isset($_POST['cobrar'])) {
         ];
         $total += $producto['precio'] * $producto['cantidad'];
     }
-    
+
     // Guardar los productos y el total en la sesión
     $_SESSION['productos'] = $productos;
     $_SESSION['total'] = $total;
-    
+
     // Redirigir a prueba.php
     header("Location: prueba.php");
     exit();
@@ -73,16 +73,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 ?>
 <!DOCTYPE html>
 <html lang="es">
-    
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ventas</title>
-        <link rel="stylesheet" href="../css/factura.css">
-        <link rel="stylesheet" href="../componentes/header.php">
-        <link rel="stylesheet" href="../componentes/header.css">
-        <script src="../js/header.js"></script>
-        <script src="../js/index.js"></script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas</title>
+    <link rel="stylesheet" href="../css/factura.css">
+    <link rel="stylesheet" href="../componentes/header.php">
+    <link rel="stylesheet" href="../componentes/header.css">
+    <script src="../js/header.js"></script>
+    <script src="../js/index.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -166,7 +166,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>";
                 }
             } else {
-                echo "<script>alert('No se encontraron resultados')</script>";
+                echo "<script>
+                    Swal.fire({
+                        title: '<span class=\"titulo-alerta error\">Error</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                </div>
+                                <p>No se encontraron resultados.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+            }).then(() => {
+                        window.location.href = 'ventas.php';
+                    });
+                    </script>";
             }
 
             mysqli_close($conexion);
@@ -198,25 +220,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <script>
         let total = 0;
-// Funcion cobrar abre modal de metodo de pago
-function cobrar() {
+        // Funcion cobrar abre modal de metodo de pago
+        function cobrar() {
             if (document.querySelectorAll("#listaResumen li").length === 0) {
                 Swal.fire({
-                        title: `<span class="titulo">Error</span>`,
-                        html: `
-                            <div class="alerta">
+                    title: `<span class="titulo-alerta error">Error</span>`,
+                    html: `
+                            <div class="custom-alert">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/llave.png" class="llave">
                                 </div>
                                 <p>No hay productos en la orden de venta.</p>
                             </div>
                         `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
                         customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
                         }
                     });
+                    
             } else {
                 let productos = [];
                 let items = document.querySelectorAll("#listaResumen li");
@@ -321,7 +347,25 @@ function cobrar() {
 
         function agregarAlResumen(elemento) {
             if (elemento.classList.contains("disabled")) {
-                alert("Este producto está agotado.");
+               Swal.fire({
+                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+                    html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>Este producto está agotado.</p>
+                </div>
+            `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
                 return;
             }
 
@@ -333,7 +377,25 @@ function cobrar() {
             let cantidActual = parseInt(elemento.getAttribute('data-cantidad'));
 
             if (cantidActual <= 0) {
-                alert("No hay más stock disponible.");
+                Swal.fire({
+                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+                    html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>No hay más stock disponible.</p>
+                </div>
+            `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
                 return;
             }
 

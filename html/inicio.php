@@ -135,8 +135,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-    <!-- ... (el body existente se mantiene igual) ... -->
-    <!-- Aquí se cargará el header -->
     <div id="menu"></div>
     <div class="fondo"></div>
 

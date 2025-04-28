@@ -131,11 +131,11 @@ $nitSeleccionado = isset($_SESSION['proveedor_guardado']) ? $_SESSION['proveedor
 
             echo "<script>
 Swal.fire({
-    title: '<span class=\"titulo-alerta exito\">Éxito</span>',
+    title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
     html: `
         <div class=\"custom-alert\">
             <div class=\"contenedor-imagen\">
-                <img src=\"../imagenes/llave.png\" alt=\"Éxito\" class=\"llave\">
+                <img src=\"../imagenes/moto.png\" alt=\"Éxito\" class=\"moto\">
             </div>
             <p>Proveedor actualizado correctamente.</p>
         </div>
@@ -166,11 +166,11 @@ Swal.fire({
 
                     echo "<script>
                     Swal.fire({
-                        title: '<span class=\"titulo-alerta exito\">Éxito</span>',
+                        title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
                         html: `
                             <div class=\"custom-alert\">
                                 <div class=\"contenedor-imagen\">
-                                    <img src=\"../imagenes/llave.png\" alt=\"Éxito\" class=\"llave\">
+                                    <img src=\"../imagenes/moto.png\" alt=\"Éxito\" class=\"moto\">
                                 </div>
                                 <p>Proveedor eliminado correctamente.</p>
                             </div>
@@ -194,12 +194,11 @@ Swal.fire({
                         html: `
                             <div class=\"custom-alert\">
                                 <div class=\"contenedor-imagen\">
-                                    <img src=\"../imagenes/error.png\" alt=\"Error\" class=\"llave\">
+                                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                 </div>
                                 <p>No se puede eliminar este proveedor porque tiene productos relacionados.</p>
                             </div>
                         `,
-                        icon: 'error',
                         background: '#ffffffdb',
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#dc3545',
@@ -225,7 +224,7 @@ Swal.fire({
                 html: `
                     <div class="custom-alert">
                         <div class="contenedor-imagen">
-                            <img src="../imagenes/llave.png" alt="Advertencia" class="llave">
+                            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
                         </div>
                         <p>¿Estás seguro de que deseas eliminar este proveedor?</p>
                     </div>

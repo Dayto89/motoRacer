@@ -51,7 +51,7 @@ function formatSizeUnits($bytes)
 }
 
 // PAGINACIÓN
-$por_pagina = 6;
+$por_pagina = 8;
 $total_backups = count($backups);
 $total_paginas = ceil($total_backups / $por_pagina);
 $pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int) $_GET['pagina'] : 1;
@@ -324,26 +324,73 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </table>
 
             <!-- PAGINACIÓN -->
-            <div class="pagination">
-                <?php if ($pagina_actual > 1): ?>
-                    <a href="?busqueda=<?= urlencode($search_term) ?>&pagina=<?= $pagina_actual - 1 ?>">
-                        <button>&laquo; Anterior</button>
-                    </a>
-                <?php endif; ?>
 
-                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                    <a href="?busqueda=<?= urlencode($search_term) ?>&pagina=<?= $i ?>">
-                        <button <?= ($i === $pagina_actual) ? 'style="font-weight:bold;background-color:#007bff;color:white;"' : '' ?>>
-                            <?= $i ?>
-                        </button>
-                    </a>
-                <?php endfor; ?>
+            <?php if ($total_paginas > 1): ?>
+    <div class="pagination">
+      <?php
+        // Construir query base conservando filtros
+        $base_params = $_GET;
+      ?>
+      <!-- Primera -->
+      <?php
+        $base_params['pagina'] = 1;
+        $url = '?' . http_build_query($base_params);
+      ?>
+      <a href="<?= $url ?>">« Primera</a>
 
-                <?php if ($pagina_actual < $total_paginas): ?>
-                    <a href="?busqueda=<?= urlencode($search_term) ?>&pagina=<?= $pagina_actual + 1 ?>">
-                        <button>Siguiente &raquo;</button>
-                    </a>
-                <?php endif; ?>
+      <!-- Anterior -->
+      <?php if($pagina_actual > 1): ?>
+        <?php
+          $base_params['pagina'] = $pagina_actual - 1;
+          $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">‹ Anterior</a>
+      <?php endif; ?>
+
+      <?php
+        // Rango de páginas: dos antes y dos después
+        $start = max(1, $pagina_actual - 2);
+        $end   = min($total_paginas, $pagina_actual + 2);
+
+        // Si hay hueco antes, muestra ellipsis
+        if ($start > 1) {
+          echo '<span class="ellips">…</span>';
+        }
+
+        // Botones de páginas
+        for ($i = $start; $i <= $end; $i++):
+          $base_params['pagina'] = $i;
+          $url = '?' . http_build_query($base_params);
+      ?>
+          <a href="<?= $url ?>"
+             class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+            <?= $i ?>
+          </a>
+      <?php endfor;
+
+        // Si hay hueco después, muestra ellipsis
+        if ($end < $total_paginas) {
+          echo '<span class="ellips">…</span>';
+        }
+      ?>
+
+      <!-- Siguiente -->
+      <?php if($pagina_actual < $total_paginas): ?>
+        <?php
+          $base_params['pagina'] = $pagina_actual + 1;
+          $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">Siguiente ›</a>
+      <?php endif; ?>
+
+      <!-- Última -->
+      <?php
+        $base_params['pagina'] = $total_paginas;
+        $url = '?' . http_build_query($base_params);
+      ?>
+      <a href="<?= $url ?>">Última »</a>
+    </div>
+  <?php endif; ?>
             </div>
         <?php else: ?>
             <div class="no-backups">
