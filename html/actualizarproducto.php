@@ -274,7 +274,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
             html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
-                        <img src="../imagenes/moto.png" alt="Advertencia" class="moto">
+                        <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
                     </div>
                     <p>El producto se actualizó correctamente.</p>
                 </div>

@@ -18,7 +18,7 @@ $icono1 = '
 <animated-icons class= "icono-accion"
 src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
 trigger="click"
-attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"#FFFFFF"}}\'
+attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"var(--icon-bg)"}}\'
 height="50"
 width="50"
 
@@ -28,7 +28,7 @@ $icono2 = '
 <animated-icons class="icono-accion"
 src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
 trigger="click"
-attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
+attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"var(--icon-bg)"}}\'
 height="50"
 width="50"
 
@@ -87,8 +87,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        :root {
+            --icon-bg: #FFFFFF;
+            /* fondo por defecto (modo claro) */
+        }
 
+        body.modo-alto-contraste {
+            --icon-bg: #000000;
+            /* cambia a negro en alto contraste */
+        }
+
+        body.modo-claro {
+            --icon-bg: #FFFFFF;
+            /* opcional: reafirma blanco si lo necesitas */
+        }
     </style>
+    <script>
+        
+    </script>
 </head>
 
 <body>
@@ -233,16 +249,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>No hay productos en la orden de venta.</p>
                             </div>
                         `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                    });
-                    
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#dc3545',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
+
             } else {
                 let productos = [];
                 let items = document.querySelectorAll("#listaResumen li");
@@ -347,7 +363,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         function agregarAlResumen(elemento) {
             if (elemento.classList.contains("disabled")) {
-               Swal.fire({
+                Swal.fire({
                     title: '<span class="titulo-alerta advertencia">Advertencia</span>',
                     html: `
                 <div class="custom-alert">

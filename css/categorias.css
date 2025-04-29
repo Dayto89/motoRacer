@@ -53,6 +53,7 @@ body::before {
   border-radius: 11px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-bottom: -28px;
 }
 
 .btn-nueva-categoria:hover {
@@ -66,7 +67,7 @@ h3{
   padding: initial;
   margin-bottom: 30px;
   font-size: 23px;
-  text-shadow: 2.5px -1px 0 rgb(255, 255, 255);
+  text-shadow: 2.8px -1px 0 #0056b3
 }
 /* Tabla de categorías */
 .category-table {
@@ -103,7 +104,7 @@ h3{
 }
 
 .btn-list, .btn-delete { 
-  padding: 8px 15px; /* Reducir el padding para angostar */
+  padding: 4px 10px; /* Reducir el padding para angostar */
   border: none;
   border-radius: 15px;
   color: rgb(255, 255, 255);
@@ -116,6 +117,9 @@ h3{
 .btn-list {
   background-color: #0965c7;
   margin-left: 10px; /* Ajusta el margen entre los botones y el texto si es necesario */
+color: #000;
+border: 2px solid #0b111a;
+margin-right: 10px;
 }
 
 .btn-list:hover {
@@ -124,6 +128,8 @@ h3{
 
 .btn-delete {
   background-color: #fa163c;
+  margin-left: 10px; /* Ajusta el margen entre los botones y el texto si es necesario */
+  border: 2px solid #0b111a;
 }
 
 .btn-delete:hover {

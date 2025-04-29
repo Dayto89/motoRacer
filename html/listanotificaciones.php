@@ -64,8 +64,8 @@ $stmt = mysqli_prepare($conexion, $consulta);
 mysqli_stmt_bind_param($stmt, "sii", $busqueda_param, $por_pagina, $offset);
 mysqli_stmt_execute($stmt);
 $resultado = mysqli_stmt_get_result($stmt);
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -106,6 +106,7 @@ $resultado = mysqli_stmt_get_result($stmt);
       justify-content: center;
       margin-top: 20px;
       gap: 5px;
+      font-size: 11px;
     }
 
     .pagination a {
@@ -167,9 +168,9 @@ $resultado = mysqli_stmt_get_result($stmt);
   <div class="main-content">
     <div id="inventario" class="form-section">
       <h1>Notificaciones</h1>
-      <div style="margin-bottom: 20px;">
-  <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL">Exportar a Excel</a>
-  <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN">Exportar a PDF</a>
+      <div style="margin-bottom: 25px;margin-left: 74%;size: 50%;">
+  <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel"></i><label> Exportar a Excel</label></a>
+  <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf"></i><label> Exportar a PDF</label></a>
 </div>
 
       <table>

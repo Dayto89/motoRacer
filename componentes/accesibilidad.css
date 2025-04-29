@@ -150,14 +150,14 @@
 .modo-alto-contraste .container h3 {
   background-color: #ffffff;
   color: rgb(0, 0, 0);
-  margin-left: 413px;
+  margin-left: 384px;
   margin-top: -12px;
   padding: initial;
   margin-bottom: 30px;
   text-shadow: none;
 }
 .modo-alto-contraste .icon{
-  color: #000;
+  color: #ffffff;
 }
 
 .modo-alto-contraste .sidebar-header .logo {
@@ -169,8 +169,7 @@
   background-color: #000000c5 !important;
 }
 .modo-alto-contraste .main-content{
-  background-color: #dbdbdbc9 !important;
-  background: #222;
+  background-color: #dbdbdb00 !important;
   margin-right: 0px;
 }
 
@@ -184,19 +183,18 @@
 .modo-alto-contraste tr:nth-child(odd),
 .modo-alto-contraste tr:nth-child(even) {
     background-color: black !important;
-    color: yellow !important;
+    color: rgb(255, 255, 255) !important;
 }
 .modo-alto-contraste .category-table{
   background-color: rgba(245, 245, 220, 0);
 }
 .modo-alto-contraste .td-options {
-  background-color: transparent !important;
-  border: none !important;
+  background-color: #161616 !important;
 }
 
 .modo-alto-contraste th {
   background-color: #000000 !important;
-  color: #0796ff !important;
+  color: #ffffff !important;
 }
 
 /* 1. Dropdown de filtros */
@@ -258,6 +256,7 @@
 .modo-alto-contraste button{
   border: 2px solid #ffffff;
   color: #ffffff;
+  margin-right:10px;
 }
 .modo-alto-contraste .noti{
   border:none
@@ -397,8 +396,9 @@ text-shadow: 1.5px 0 #1c51a0;
 }
 
 .modo-claro button{
-  border: 2px solid #ffffff;
-  color: #ffffff;
+  border: 2px solid #000000;
+  color: #000000;
+  margin-right: 10px;
 }
 .modo-claro .noti{
   border: none;
@@ -470,6 +470,9 @@ text-shadow: 1.5px 0 #1c51a0;
   color: #000;
   text-shadow: none;
   font-weight: bold;
+}
+.modo-claro .bx-tada{
+  color: #ffffff;
 }
 /*
 =====================================================================================================================================================Modo de contraste Gestion de Usuarios
@@ -581,7 +584,7 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-claro .container h3 {
   background-color: #ffffff;
   color: rgb(0, 0, 0);
-  margin-left: 413px;
+  margin-left: 384px;
   margin-top: -12px;
   padding: initial;
   margin-bottom: 30px;
@@ -617,5 +620,27 @@ body.modo-alto-contraste {
 .modo-alto-contraste tr:nth-child(odd),
 .modo-alto-contraste tr:nth-child(even) {
     background-color: black !important;
-    color: yellow !important;
+    color: rgb(255, 255, 255) !important;
+}
+
+.modo-alto-contraste .bx-tada{
+  color: #000;
+}
+.modo-alto-contraste .sidebar-right{
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+.modo-alto-contraste .resumen-scroll{
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+.modo-alto-contraste .sidebar-right h3{
+  color: #ffffff !important;
+}
+.modo-alto-contraste #listaResumen li{
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+.modo-alto-contraste .total{
+  color: #ffffff !important;
 }

@@ -139,20 +139,23 @@ if (isset($_POST['codigo1'])) {
     echo "<script>
               document.addEventListener('DOMContentLoaded', function() {
                   Swal.fire({
-                      title: `<span class='titulo'>Datos Actualizados</span>`,
+                      title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
                       html: `
                           <div class='alerta'>
                               <div class='contenedor-imagen'>
-                                  <img src='../imagenes/moto.png' class='moto'>
+                                  <img src='../imagenes/moto.png' alt=\"Éxito\" class='moto'>
                               </div>
                               <p>Los datos se actualizaron con éxito.</p>
                           </div>
                       `,
-                      showConfirmButton: true,
-                      confirmButtonText: 'Aceptar',
-                      customClass: {
-                          confirmButton: 'btn-aceptar' // Clase personalizada para el botón de aceptar
-                      }
+                      background: '#ffffffdb',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#007bff',
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+    }
                   }).then(() => {
                       window.location.href = 'listproductos.php'; // Redirige después de cerrar el alert
                   });
@@ -163,23 +166,25 @@ if (isset($_POST['codigo1'])) {
     echo "<script>
                                 document.addEventListener('DOMContentLoaded', function() {
                                     Swal.fire({
-                              title: '<span class=\"titulo\">Error</span>',
-                                html: `
-                                    <div class='alerta'>
-                                        <div class='contenedor-imagen'>
-                                            <img src='../imagenes/llave.png' class='llave'>
-                                        </div>
-                                        <p>Error al actualizar los datos.</p>
-                                    </div>
-                                `,
-                                showConfirmButton: true,
-                                confirmButtonText: 'Aceptar',
-                                customClass: {
-                                    confirmButton: 'btn-aceptar'  // Clase personalizada para el botón de aceptar
-                                }
-                            } );
-                                        });
-                                        </script>";
+                        title: '<span class=\"titulo-alerta error\">Error</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                </div>
+                                <p>Error al actulizar los datos/p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
+                    </script>";
   }
 }
 
@@ -236,11 +241,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .pagination {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      gap: 5px;
-    }
+    display: flex;
+    justify-content: center;
+    margin-top: 23px;
+    gap: 12px;
+    font-family: arial;
+    font-size: 11px;
+}
 
     .pagination a {
       padding: 8px 12px;
@@ -610,12 +617,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     // Función para eliminar un producto con SweetAlert2
     function eliminarProducto(codigo) {
       Swal.fire({
-        title: "¿Estás seguro?",
+        title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
 
         html: `
-            <div class="alerta">
+            <div class="custom-alert">
                 <div class="contenedor-imagen">
-                    <img src="../imagenes/tornillo.png" class="tornillo">
+                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
                 </div>
                 <p>¿Quieres eliminar el producto <strong>${codigo}</strong>?</p>
             </div>
@@ -625,14 +632,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
         customClass: {
-          popup: "custom-alert",
-          confirmButton: "btn-eliminar",
-          cancelButton: "btn-cancelar"
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",  // Clase personalizada para el botón de confirmación
+            cancelButton: "btn-cancelar"  // Clase personalizada para el botón de cancelar
         }
       }).then((result) => {
         if (result.isConfirmed) {
           // Enviar la solicitud al servidor
-          fetch('../html/listaproductosPrueba.php', {
+          fetch('../html/listaproductos.php', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -649,38 +656,46 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               if (data.success) {
                 // Mostrar alerta de éxito
                 Swal.fire({
-                  title: "Producto eliminado",
+                  title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
                   html: `
-                            <div class="alerta">
+                            <div class="custom-alert">
                                 <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" class="moto">
+                                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
                                 </div>
                                  <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
                             </div>
                         `,
-                  confirmButtonText: "Aceptar",
-                  customClass: {
-                    confirmButton: "btn-aceptar"
-                  }
+                        background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
                 }).then(() => {
                   location.reload(); // Recargar página después de cerrar la alerta
                 });
               } else {
                 // Mostrar alerta de error
                 Swal.fire({
-                  title: "Error",
-                  html: `
-                            <div class="alerta">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" class="llave">
-                                </div>
-                                <p>Error al eliminar el producto.</p>
-                            </div>
-                        `,
-                  confirmButtonText: "Aceptar",
-                  customClass: {
-                    confirmButton: "btn-aceptar"
-                  }
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al eliminar el producto.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
                 });
               }
             })
@@ -734,22 +749,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         // Mostrar la alerta con SweetAlert
         Swal.fire({
-          title: "¿Estás seguro?",
+          title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
           html: `
-            <div class="alerta">
-                <img src="../imagenes/tornillo.png" class="tornillo">
+            <div class="custom-alert">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
                 <p>Los productos se eliminarán de forma permanente.</p>
             </div>
         `,
-          showCancelButton: true,
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-
-          customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
-            cancelButton: "btn-cancelar" // Clase personalizada para el botón de cancelar
-          }
+        background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
         }).then((result) => {
           if (result.isConfirmed) {
             // Depuración: Ver datos antes de enviarlos
@@ -770,20 +784,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 console.log("Respuesta del servidor:", data); // Depuración
                 if (data.success) {
                   Swal.fire({
-                      title: `<span class="titulo">Productos Eliminados</span>`,
+                    title: '<span class="titulo-alerta confirmacion">Exito</span>',
                       html: `
-                            <div class="alerta">
+                            <div class="custom-alert">
                                 <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" class="moto">
+                                    <img src="../imagenes/moto.png" alt="Exito" class="moto">
                                 </div>
                                 <p>Productos elimanados correctamente.</p>
                             </div>
                         `,
-                      showConfirmButton: true,
-                      confirmButtonText: "Aceptar",
-                      customClass: {
-                        confirmButton: "btn-aceptar" // Clase personalizada para el botón de aceptar
-                      }
+                        background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
                     })
                     .then(() => location.reload()); // Recargar página después de cerrar la alerta
                 } else {

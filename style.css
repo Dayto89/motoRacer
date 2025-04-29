@@ -40,16 +40,17 @@
 }
 
 h1 {
-   
+
     font-family: "Metal Mania", system-ui;
     position: absolute;
     z-index: 2;
     color: white;
-    text-shadow: 
-    -1px -1px 0 #000000,  
-    1px -1px 0 #000,  
-    -1px 1px 0 #000,  
-    3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
+    text-shadow:
+        -1px -1px 0 #000000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        3px 3px 0 #000;
+    /* Cambia el color y tamaño del contorno según necesites */
     font-size: 60px;
     margin-left: 44%;
     margin-bottom: 25%;
@@ -60,10 +61,12 @@ h1 {
     content: "\ec65";
     color: black;
 }
-.bx-lock-alt:before{
+
+.bx-lock-alt:before {
     content: "\eb4a";
     color: black;
 }
+
 .input-wrapper {
     position: relative;
     width: 400px;
@@ -136,8 +139,10 @@ input[type="submit"] {
     font-family: 'Times New Roman', Times, serif;
     margin-left: 24%;
 }
+
 .boton:last-child {
-    margin-right: 0; /* Evitar margen en el último botón */
+    margin-right: 0;
+    /* Evitar margen en el último botón */
 }
 
 
@@ -145,13 +150,15 @@ input[type="submit"]:hover {
     background-color: #0056b3;
 }
 
-.container_boton{
+.container_boton {
     margin-top: 60px;
     margin-left: -13%;
 }
+
 .boton:hover {
     background-color: #0056b3;
 }
+
 .olvidar {
     background-color: transparent;
     cursor: pointer;
@@ -164,66 +171,6 @@ input[type="submit"]:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-@media (min-width: 600px) and (max-width: 1024px) {
-    h1 {
-        font-size: 0px;
-    }
-
-    form {
-        margin-left: 50px;
-        margin-top: 300px;
-    }
-
-    .logo_inicio {
-        width: 60%;
-        height: 25%;
-        margin-right: 0;
-        margin-bottom: 500px;
-    }
-
-    .input-wrapper {
-        width: 100%;
-    }
-
-    .barra {
-        width: 0px;
-        height: 0px;
-    }
-}
-
-@media (max-width: 599px) {
-    h1 {
-        font-size: 0px;
-    }
-
-    form {
-        margin-left: 20px;
-        margin-top: 200px;
-    }
-
-    .logo_inicio {
-        width: 80%;
-        height: 30%;
-        margin-right: 0;
-        margin-bottom: 30px;
-    }
-
-    .input-wrapper {
-        width: 100%;
-    }
-
-    .logo_inicio {
-        height: 200px;
-        width: 300px;
-        margin-bottom: 500px;
-        margin-left: 20px;
-    }
-
-    .barra {
-        width: 0px;
-        height: 0px;
-    }
-}
 form {
     position: absolute;
     margin-top: 100px;
@@ -233,37 +180,41 @@ form {
 
 /*Alertas*/
 
-  
-  /* Estilos generales de los párrafos */
-  p {
+
+/* Estilos generales de los párrafos */
+p {
     font-size: 16px;
     color: black;
     font-family: arial;
     padding: 10px;
-  }
-  
+}
 
-  
-  /* Ajuste para el popup de SweetAlert */
-  div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%; /* Se ajusta automáticamente */
-    max-width: 350px; /* Define un límite de ancho */
-  }
-  
-  
 
-.custom-alert .tornillo, .custom-alert .moto, .custom-alert .llave {
+
+/* Ajuste para el popup de SweetAlert */
+div:where(.swal2-container).swal2-center>.swal2-popup {
+    width: 28%;
+    /* Se ajusta automáticamente */
+    max-width: 350px;
+    /* Define un límite de ancho */
+}
+
+
+
+.custom-alert .tornillo,
+.custom-alert .moto,
+.custom-alert .llave {
     width: 201px;
     height: 145px;
 }
 
-  
-  
-  /* Contenedor de la imagen */
-  .contenedor-imagen {
+
+
+/* Contenedor de la imagen */
+.contenedor-imagen {
     position: relative;
     display: inline-block;
-  }
+}
 
 
 
@@ -284,6 +235,7 @@ form {
     text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
     margin: auto;
 }
+
 .titulo-alerta.error {
     font-family: 'Metal Mania', system-ui;
     font-size: 1.01em;
@@ -292,11 +244,12 @@ form {
     text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
     margin: auto;
 }
+
 .titulo-alerta.advertencia {
     font-family: 'Metal Mania', system-ui;
     font-size: 1.01em;
     letter-spacing: 3px;
-    color:#e09804;
+    color: #e09804;
     text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
     margin: auto;
 }
@@ -317,16 +270,250 @@ form {
 
 
 .fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
-    backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    /* Fondo oscuro */
+    backdrop-filter: blur(2px);
+    /* Opcional: desenfoque sutil */
 }
 
 .swal2-popup {
     border-radius: 20px;
 }
 
-  
-  
-  
-  
-  
+
+
+
+/* TABLETS */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .logo_inicio {
+        width: 50%;
+        height: auto;
+        margin: 10px 0;
+        margin-right: 40%;
+    }
+
+    h1 {
+        font-size: 40px;
+        margin-bottom: 30%;
+    }
+
+    form {
+        margin-left: 450px;
+    }
+
+    .barra {
+        display: none;
+    }
+
+    .boton {
+        padding: 20px 40px;
+        font-size: 18px;
+        margin-left: 0;
+    }
+
+    .container_boton {
+        margin: 40px 0 0 0;
+        text-align: center;
+    }
+
+    .input-wrapper {
+        width: 90%;
+        margin: 0 auto 25px auto;
+    }
+
+    form input[type="text"],
+    form input[type="password"] {
+        margin-left: 0;
+    }
+
+    .input-wrapper i {
+        left: 15px;
+        margin-left: 0;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .logo_inicio {
+        width: 50%;
+        height: auto;
+        margin: 10px 0;
+        margin-bottom: 100%;
+    }
+
+    h1 {
+        font-size: 40px;
+        margin-bottom: 40%;
+        margin-left: 0;
+    }
+
+    form {
+        margin-left: 0px;
+        margin-top: 250px;
+    }
+
+    .barra {
+        display: none;
+    }
+
+    .boton {
+        padding: 20px 40px;
+        font-size: 18px;
+        margin-left: 0;
+    }
+
+    .container_boton {
+        margin: 40px 0 0 0;
+        text-align: center;
+    }
+
+    .input-wrapper {
+        width: 90%;
+        margin: 0 auto 25px auto;
+    }
+
+    form input[type="text"],
+    form input[type="password"] {
+        margin-left: 0;
+    }
+
+    .input-wrapper i {
+        left: 15px;
+        margin-left: 0;
+    }
+}
+
+
+/* MÓVILES */
+@media (max-width: 767px) and (orientation: landscape) {
+    .container {
+        flex-direction: column;
+        padding: 15px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .logo_inicio {
+        width: 38%;
+        height: auto;
+        margin-left: 500px;
+    }
+
+    .barra {
+        display: none;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-left: 45%;
+        margin-bottom: 35%;
+    }
+
+    form {
+        margin-left: 350px;
+        margin-top: 50px;
+    }
+
+    .boton {
+        padding: 18px 30px;
+        font-size: 16px;
+        margin-left: 0;
+    }
+
+    .container_boton {
+        margin: 30px 0 0 0;
+        text-align: center;
+    }
+
+    .input-wrapper {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    form input[type="text"],
+    form input[type="password"] {
+        height: 50px;
+        padding-left: 60px;
+        font-size: 16px;
+        margin-left: 0;
+    }
+
+    .input-wrapper i {
+        left: 15px;
+        font-size: 30px;
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .container {
+        flex-direction: column;
+        padding: 15px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .logo_inicio {
+        width: 70%;
+        height: auto;
+        margin: 10px 0 500px 0;
+    }
+
+    .barra {
+        display: none;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin: 10px 0;
+        margin-bottom: 40%;
+    }
+
+    form {
+        margin-left: 0px;
+        margin-top: 250px;
+    }
+
+    .boton {
+        padding: 18px 30px;
+        font-size: 16px;
+        margin-left: 0;
+    }
+
+    .container_boton {
+        margin: 30px 0 0 0;
+        text-align: center;
+    }
+
+    .input-wrapper {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    form input[type="text"],
+    form input[type="password"] {
+        height: 60px;
+        padding-left: 60px;
+        font-size: 16px;
+        margin-left: 0;
+    }
+
+    .input-wrapper i {
+        left: 15px;
+        font-size: 30px;
+        margin-left: 0;
+    }
+}

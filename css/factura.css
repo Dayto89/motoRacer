@@ -503,8 +503,7 @@ a.brand:after {
 .resumen-scroll {
     max-height: 70%; /* Ajusta la altura según necesidad */
     overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
+    border: 5px solid #ccc;
     background: #f9f9f9;
     border-radius: 5px;
 }
@@ -712,3 +711,4 @@ a.brand:after {
 .swal2-popup {
     border-radius: 20px;
 }
+

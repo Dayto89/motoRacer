@@ -194,6 +194,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     .pagination {
       display: flex;
@@ -227,12 +229,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-  <script>
-    // Función para eliminar un producto
-    function eliminarFactura(codigo) {
-      if (!confirm(`¿Eliminar factura ${codigo} y todos sus datos asociados?`)) return;
-
-      fetch('../html/reportes.php', {
+<script>
+  function eliminarFactura(codigo) {
+    Swal.fire({
+        title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+          </div>
+          <p>¿Quieres eliminar la factura <strong>${codigo}</strong> y todos sus datos asociados?</p>
+        </div>
+      `,
+      background: '#ffffffdb',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#dc3545', // Rojo para botón eliminar
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-eliminar',
+        cancelButton: 'btn-cancelar',
+        container: 'fondo-oscuro'
+    }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('../html/reportes.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -245,17 +267,41 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         })
         .then(data => {
           if (data.success) {
-            alert('Factura y registros relacionados eliminados');
-            location.reload();
+            Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Exito</span>',
+              html: `
+                <div class="custom-alert">
+                  <div class="contenedor-imagen">
+                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                  </div>
+                  <p>La factura <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
+                </div>
+              `,
+              background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+            }).then(() => {
+              location.reload();
+            });
           } else {
-            alert(`Error: ${data.error || 'No se pudo completar la eliminación'}`);
+            Swal.fire("Error", data.error || "No se pudo completar la eliminación", "error");
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('Error al conectar con el servidor');
+          Swal.fire("Error", "Error al conectar con el servidor", "error");
         });
-    }
+      }
+    });
+  }
+</script>
+
+
   </script>
   <div class="sidebar">
     <div id="menu"></div>
@@ -457,43 +503,96 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
-          if (selectedCodes.length === 0) {
-            alert("Selecciona al menos una factura para eliminar.");
-            return;
-          }
+            if (selectedCodes.length === 0) {
+  Swal.fire({
+    title: "Advertencia",
+    html: `
+      <div class="alerta">
+        <div class="contenedor-imagen">
+          <img src="../imagenes/advertencia.png" class="tornillo">
+        </div>
+        <p>Selecciona al menos una factura para eliminar.</p>
+      </div>
+    `,
+    confirmButtonText: "Aceptar",
+    customClass: {
+      confirmButton: "btn-aceptar",
+      popup: "custom-alert"
+    }
+  });
+  return;
+}
 
-          if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} factura?`)) {
-            return;
-          }
+Swal.fire({
+    title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+  html: `
+    <div class="custom-alert">
+      <div class="contenedor-imagen">
+        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+      </div>
+      <p>¿Quieres eliminar <strong>${selectedCodes.length}</strong> factura(s)?</p>
+    </div>
+  `,
+  background: '#ffffffdb',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#dc3545', // Rojo para botón eliminar
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-eliminar',
+        cancelButton: 'btn-cancelar',
+        container: 'fondo-oscuro'
+    }
+}).then((result) => {
+  if (result.isConfirmed) {
+    console.log("Enviando códigos a eliminar:", selectedCodes);
 
-          // Depuración: Ver datos antes de enviarlos
-          console.log("Enviando códigos a eliminar:", selectedCodes);
-
-          fetch("../html/eliminar_factura.php", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                codigos: selectedCodes
-              })
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log("Respuesta del servidor:", data); // Depuración
-              if (data.success) {
-                alert("factura eliminado correctamente.");
-                location.reload();
-              } else {
-                alert("Error al eliminar las facturas: " + data.error);
-              }
-            })
-            .catch(error => {
-              console.error("Error en la solicitud:", error);
-              alert("Error en la comunicación con el servidor.");
-            });
-        });
+    fetch("../html/eliminar_factura.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        codigos: selectedCodes
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Respuesta del servidor:", data);
+        if (data.success) {
+          Swal.fire({
+            title: '<span class="titulo-alerta confirmacion">FActuras Elimindas</span>',
+            html: `
+              <div class="custom-alert">
+                <div class="contenedor-imagen">
+                  <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                </div>
+                <p>Las facturas fueron eliminadas correctamente.</p>
+              </div>
+            `,
+            confirmButtonText: "Aceptar",
+            customClass: {
+              confirmButton: "btn-aceptar",
+              popup: "custom-alert"
+            }
+          }).then(() => {
+            location.reload();
+          });
+        } else {
+          Swal.fire("Error", data.error || "No se pudo completar la eliminación", "error");
+        }
+      })
+      .catch(error => {
+        console.error("Error en la solicitud:", error);
+        Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
       });
+  }
+});
+});
+});
+
+      
     </script>
 </body>
 

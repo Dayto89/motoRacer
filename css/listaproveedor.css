@@ -207,3 +207,13 @@ h1 {
   margin-left: 100px; /* Ajustado al tamaño inicial de la barra */
   margin-right: 50px;
 }
+.boton-accion.marcarL {
+  background-color: rgb(11, 128, 0);
+  color: #ffffff;
+  font-size: 18px;
+}
+.boton-accion.marcarN {
+  background-color: rgb(190, 46, 46);
+  color: #ffffff;
+  font-size: 18px;
+}

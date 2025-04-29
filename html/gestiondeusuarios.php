@@ -167,7 +167,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .then(data => {
           if (data.success) {
             Swal.fire({
-                        title: `<span class="titulo">Permisos Actualizados</span>`,
+              title: `<span class='titulo-alerta confirmacion'>Permisos actualizados</span>`,
                         html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
@@ -176,27 +176,33 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>Los permisos se han actualizado correctamente.</p>
                             </div>
                         `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                         background: '#ffffffdb',
+                         confirmButtonText: 'Aceptar',
+                         confirmButtonColor: '#007bff',
+                         customClass: {
+                           popup: 'swal2-border-radius',
+                           confirmButton: 'btn-aceptar',
+                           container: 'fondo-oscuro'
                         }
                     })
                   } else {
                     Swal.fire({
-                      title: `<span class="titulo">Error</span>`,
-                        html: `
-                            <div class="alerta">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" class="llave">
-                                </div>
-                                <p>Error al eliminar el usuario.</p>
+                      title: '<span class=\"titulo-alerta error\">Error</span>',
+                      html: `
+                              <div class=\"custom-alert\">
+                                  <div class='contenedor-imagen'>
+                                        <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                  </div>
+                                <p>Error al actualizar los permisos.</p>
                             </div>
                         `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
                         customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
                         }
                     } );
                 }
@@ -281,22 +287,27 @@ function cerrarModal() {
     });
 
     function eliminarUsuario(userId) {
-    Swal.fire({
-        title: "¿Estás seguro?",
-        html: `
-            <div class="alerta">
-                <img src="../imagenes/tornillo.png" class="tornillo">
-                <p>El usuario será eliminado permanentemente.</p>
+      Swal.fire({
+    title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
+    html: `
+        <div class="custom-alert">
+            <div class="contenedor-imagen">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
             </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-        customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar",  // Clase personalizada para el botón de confirmación
-            cancelButton: "btn-cancelar"  // Clase personalizada para el botón de cancelar
-        }
+            <p>El usuario será eliminado permanentemente.</p>
+        </div>
+    `,
+    background: '#ffffffdb',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#dc3545', // Rojo para botón eliminar
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-eliminar',
+        cancelButton: 'btn-cancelar',
+        container: 'fondo-oscuro'
+    }
     }).then((result) => {
         if (result.isConfirmed) {
             fetch('gestiondeusuarios.php', {

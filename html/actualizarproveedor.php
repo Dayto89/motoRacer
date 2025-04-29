@@ -218,7 +218,7 @@ Swal.fire({
     ?>
 
     <script>
-        document.getElementById('eliminar').addEventListener('click', function () {
+        document.getElementById('eliminar').addEventListener('click', function() {
             Swal.fire({
                 title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
                 html: `
@@ -255,4 +255,5 @@ Swal.fire({
     </script>
 
 </body>
+
 </html>

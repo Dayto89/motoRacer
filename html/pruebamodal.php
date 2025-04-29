@@ -1,191 +1,212 @@
 <?php
-// Conexión a la base de datos
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "inventariomotoracer";
-
-$conn = new mysqli($servername, $username, $password, $database);
-if ($conn->connect_error) {
-    ob_end_clean(); // Limpiar el buffer
-    header('Content-Type: application/json');
-    echo json_encode(["success" => false, "error" => "Conexión fallida: " . $conn->connect_error]);
-    exit;
+ini_set('display_errors',  1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+ini_set('error_log', 'C:\xampp\htdocs\php_errors.log');
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../index.php");
+    exit();
 }
 
-// Manejar solicitudes GET para autocompletar
-if (isset($_GET['codigo'])) {
-    $codigo = $_GET['codigo'] . "%";
-    $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo FROM cliente WHERE codigo LIKE ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $codigo);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $clientes = [];
-    while ($row = $result->fetch_assoc()) {
-        $clientes[] = $row;
-    }
-    ob_end_clean(); // Limpiar el buffer
-    header('Content-Type: application/json');
-    echo json_encode($clientes);
-    exit;
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+if (!$conexion) {
+    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-// Manejar solicitudes POST para guardar la factura
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    ob_end_clean(); // Limpiar el buffer
-    $data = json_decode(file_get_contents("php://input"), true);
-    if (!$data) {
-        header('Content-Type: application/json');
-        echo json_encode(["success" => false, "error" => "No se recibieron datos"]);
-        exit;
+// Inicializar el arreglo de filtros
+$filtros = [];
+$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
+
+if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios'])) {
+    $criterios = $_GET['criterios'];
+    foreach ($criterios as $criterio) {
+        $criterio = mysqli_real_escape_string($conexion, $criterio);
+        switch ($criterio) {
+            case 'codigo':
+                $filtros[] = "codigo LIKE '%$valor%'";
+                break;
+            case 'identificacion':
+                $filtros[] = "identificacion LIKE '%$valor%'";
+                break;
+            case 'nombre':
+                $filtros[] = "nombre LIKE '%$valor%'";
+                break;
+            case 'apellido':
+                $filtros[] = "apellido LIKE '%$valor%'";
+                break;
+            case 'telefono':
+                $filtros[] = "telefono LIKE '%$valor%'";
+                break;
+            case 'correo':
+                $filtros[] = "correo LIKE '%$valor%'";
+                break;
+        }
     }
+}
 
-    // Validar datos recibidos
-    if (!isset($data["codigo"], $data["tipoDoc"], $data["nombre"], $data["apellido"], $data["telefono"], $data["correo"], $data["productos"], $data["metodos_pago"], $data["total"])) {
-        header('Content-Type: application/json');
-        echo json_encode(["success" => false, "error" => "Datos incompletos"]);
-        exit;
-    }
+$por_pagina = 10;
+$pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina_actual - 1) * $por_pagina;
 
-    // Asignar valores
-    $codigo = $data["codigo"];
-    $tipoDoc = $data["tipoDoc"];
-    $nombre = $data["nombre"];
-    $apellido = $data["apellido"];
-    $telefono = $data["telefono"];
-    $correo = $data["correo"];
-    $productos = $data["productos"];
-    $metodos_pago = $data["metodos_pago"];
-    $total = $data["total"];
+$consulta_total = "SELECT COUNT(*) AS total FROM cliente WHERE 1=1";
+if (!empty($filtros)) {
+    $consulta_total .= " AND (" . implode(" OR ", $filtros) . ")";
+}
+$resultado_total = mysqli_query($conexion, $consulta_total);
+$total_filas = mysqli_fetch_assoc($resultado_total)['total'];
+$total_paginas = ceil($total_filas / $por_pagina);
 
-    // Verificar si el cliente existe
-    $sql = "SELECT codigo FROM cliente WHERE codigo = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $codigo);
-    $stmt->execute();
-    $result = $stmt->get_result();
+$consulta = "SELECT * FROM cliente WHERE 1=1";
+if (!empty($filtros)) {
+    $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
+}
+$consulta .= " LIMIT $por_pagina OFFSET $offset";
 
-    if ($result->num_rows === 0) {
-        // Registrar cliente si no existe
-        $sql = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
-        $stmt->execute();
-        $cliente_id = $stmt->insert_id;
+$resultado = mysqli_query($conexion, $consulta);
+if (!$resultado) {
+    die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
+}
+
+// Actualización de datos
+if (isset($_POST['id'])) {
+    $id = mysqli_real_escape_string($conexion, $_POST['id']);
+    $identificacion = mysqli_real_escape_string($conexion, $_POST['identificacion']);
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $apellido = mysqli_real_escape_string($conexion, $_POST['apellido']);
+    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+    $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+
+    $consulta_update = "UPDATE cliente SET 
+        identificacion = '$identificacion',
+        nombre = '$nombre',
+        apellido = '$apellido',
+        telefono = '$telefono',
+        correo = '$correo'
+        WHERE codigo = '$id'";
+
+    if (mysqli_query($conexion, $consulta_update)) {
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: `<span class='titulo'>Datos Actualizados</span>`,
+                        html: `
+                            <div class='alerta'>
+                                <div class='contenedor-imagen'>
+                                    <img src='../imagenes/moto.png' class='moto'>
+                                </div>
+                                <p>Los datos se actualizaron con éxito.</p>
+                            </div>
+                        `,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Aceptar',
+                        customClass: {
+                            confirmButton: 'btn-aceptar' // Clase personalizada para el botón de aceptar
+                        }
+                    }).then(() => {
+                        window.location.href = 'listaclientes.php'; // Redirige después de cerrar el alert
+                    });
+                });
+            </script>";
     } else {
-        $cliente = $result->fetch_assoc();
-        $cliente_id = $cliente["codigo"];
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+                                  document.addEventListener('DOMContentLoaded', function() {
+                                      Swal.fire({
+                                title: '<span class=\"titulo\">Error</span>',
+                                  html: `
+                                      <div class='alerta'>
+                                          <div class='contenedor-imagen'>
+                                              <img src='../imagenes/llave.png' class='llave'>
+                                          </div>
+                                          <p>Error al actualizar los datos.</p>
+                                      </div>
+                                  `,
+                                  showConfirmButton: true,
+                                  confirmButtonText: 'Aceptar',
+                                  customClass: {
+                                      confirmButton: 'btn-aceptar'  // Clase personalizada para el botón de aceptar
+                                  }
+                              } );
+                                          });
+                                          </script>";
     }
+}
 
-    // Registrar factura
-    $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, precioTotal) VALUES (NOW(), ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $usuario_id = $_SESSION["usuario_id"] ?? null;
-    $stmt->bind_param("ssd", $usuario_id, $cliente_id, $total);
-    $stmt->execute();
-    $factura_id = $stmt->insert_id;
-
-    // Registrar métodos de pago
-    foreach ($metodos_pago as $metodo) {
-        $sql = "INSERT INTO factura_metodo_pago (Factura_codigo, metodoPago, monto) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isd", $factura_id, $metodo["tipo"], $metodo["valor"]);
-        $stmt->execute();
-    }
-
-    // Registrar productos en la factura
-    foreach ($productos as $producto) {
-        $sql = "INSERT INTO producto_factura (Factura_codigo, Producto_codigo, cantidad, precioUnitario) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iiid", $factura_id, $producto["id"], $producto["cantidad"], $producto["precio"]);
-        $stmt->execute();
-
-        // Descontar stock del producto
-        $sql = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
-        $stmt->execute();
-    }
-
-    $min_quantity = 0;
-
-    // 1. Usar $conn en lugar de $conexion
-    $stmt = $conn->prepare("SELECT min_quantity FROM configuracion_stock ORDER BY id DESC LIMIT 1");
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            $min_quantity = (int)$row['min_quantity'];
-        }
-    }
-
-    // 2. Verificar solo si hay cantidad mínima configurada
-    if ($min_quantity > 0) {
-        $stmt = $conn->prepare("
-            SELECT codigo1, nombre, cantidad 
-            FROM producto 
-            WHERE cantidad < ?
-        ");
-        $stmt->bind_param("i", $min_quantity);
-
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            while ($producto = $result->fetch_assoc()) {
-                $mensaje = sprintf(
-                    "Producto %s bajo mínimo! Stock actual: %d",
-                    $producto['nombre'],
-                    $producto['cantidad']
-                );
-
-                // 3. Manejo seguro de errores
-                try {
-                    $insert = $conn->prepare("INSERT INTO notificaciones (mensaje, fecha) VALUES (?, NOW())");
-                    $insert->bind_param("s", $mensaje);
-                    $insert->execute();
-                } catch (Exception $e) {
-                    error_log("Error en notificación: " . $e->getMessage());
-                }
-            }
-        }
-    }
-    $_SESSION['factura_id'] = $factura_id;
-    // Respuesta JSON
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
     header('Content-Type: application/json');
-    echo json_encode(["success" => true, "factura_id" => $factura_id]);
+
+    $codigo = $_POST['codigo'];
+    $stmt = $conexion->prepare("DELETE FROM cliente WHERE codigo = ?");
+    $stmt->bind_param("s", $codigo);
+
+    if (!$stmt->execute()) {
+        echo json_encode(['success' => false, 'error' => $stmt->error]);
+        exit;
+    }
+
+    if ($stmt->affected_rows === 0) {
+        echo json_encode(['success' => false, 'error' => 'Cliente no encontrado']);
+        exit;
+    }
+
+    echo json_encode(['success' => true]);
+    exit;
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'error' => 'Parámetros POST inválidos']);
     exit;
 }
 
-// Si no es una solicitud POST o GET, continuar con la generación del HTML
-ob_end_clean(); // Limpiar el buffer antes de generar HTML
-// Recuperar datos para mostrar en pago.php
-$productos = $_SESSION['productos'] ?? [];
-$total = $_SESSION['total'] ?? 0;
-// Limpiar los datos de la sesión después de usarlos
-unset($_SESSION['productos']);
-unset($_SESSION['total']);
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventario</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-
-    <link rel="stylesheet" href="../componentes/header.css">
-    <link rel="stylesheet" href="../componentes/header.php">
-    <link rel="stylesheet" href="../css/pago.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../css/clientes.css" />
+    <link rel="stylesheet" href="../componentes/header.css">
+    <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: rgb(158, 146, 209);
+        }
+
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            pointer-events: none;
+            border-color: #007bff;
+        }
     </style>
 </head>
 
@@ -193,425 +214,236 @@ unset($_SESSION['total']);
     <div class="sidebar">
         <div id="menu"></div>
     </div>
-    <div class="container">
-        <div class="main-content">
-            <div class="content">
-                <div class="user-info">
-                    <h2>Información del Cliente</h2>
-                    <label for="tipo_doc">Tipo de Documento:</label>
-                    <select id="tipo_doc" name="tipo_doc">
-                        <option value="CC">Cédula de Ciudadanía</option>
-                        <option value="TI">Tarjeta de Identidad</option>
-                        <option value="NIT">NIT</option>
-                    </select>
-                    <div class="input-group">
-                        <input type="text" id="codigo" name="codigo" onfocus="buscarCodigo()" oninput="buscarCodigo()">
-                        <div id="suggestions" class="suggestions"></div>
-                    </div>
 
-                    <input type="text" id="nombre" name="nombre" placeholder="Nombre">
-                    <input type="text" id="apellido" name="apellido" placeholder="Apellido">
-                    <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
-                    <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
+    <div class="main-content">
+        <h1>Clientes</h1>
+        <div class="filter-bar">
+            <!-- Filtros adaptados -->
+            <details class="filter-dropdown">
+                <summary class="filter-button">Filtrar</summary>
+                <div class="filter-options">
+                    <form method="GET" action="../html/listaclientes.php" class="search-form">
+                        <div class="criteria-group">
+                            <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
+                            <label><input type="checkbox" name="criterios[]" value="identificacion"> Identificación</label>
+                            <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
+                            <label><input type="checkbox" name="criterios[]" value="apellido"> Apellido</label>
+                            <label><input type="checkbox" name="criterios[]" value="telefono"> Teléfono</label>
+                            <label><input type="checkbox" name="criterios[]" value="correo"> Correo</label>
+                        </div>
                 </div>
-                <div class="payment-box">
-                    <div class="payment-section">
-                        <h2>Registrar Pago</h2>
-                        <div class="payment-methods">
-                            <h3>Pagos en efectivo</h3>
-                            <div class="efectivo-row">
-                                <button onclick="llenarValor('efectivo', 30000)">$30,000</button>
-                                <button onclick="llenarValor('efectivo', 50000)">$50,000</button>
-                                <button onclick="llenarValor('efectivo', 100000)">$100,000</button>
-                                <input type="text" class="efectivo-input" name="valor_efectivo" placeholder="Valor" oninput="actualizarSaldoPendiente()">
-                            </div>
+            </details>
+            <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
+            <button class="search-button" type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <?php if (mysqli_num_rows($resultado) > 0): ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Identificación</th>
+                        <th>Tipo</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($fila['codigo']) ?></td>
+                            <td><?= htmlspecialchars($fila['identificacion']) ?></td>
+                            <td><?= htmlspecialchars($fila['nombre']) ?></td>
+                            <td><?= htmlspecialchars($fila['apellido']) ?></td>
+                            <td><?= htmlspecialchars($fila['telefono']) ?></td>
+                            <td><?= htmlspecialchars($fila['correo']) ?></td>
+                            <td class="acciones">
+                                <button class="edit-button" data-id="<?= $fila['codigo'] ?>">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+            <!-- Modal de edición -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">
+                        <i class="fa-solid fa-x"></i>
+                    </span>
+                    <h2>Editar Cliente</h2>
+                    <form id="editForm" method="post">
+                        <input type="hidden" id="editId" name="id">
+                        <div class="campo">
+                            <label for="editIdentificacion">Identificación:</label>
+                            <input type="text" id="editIdentificacion" name="identificacion">
                         </div>
-                        <div class="payment-box" id="tarjeta">
-                            <div class="plus-icon">
-                                <h3>Pagos con tarjeta</h3>
-                                <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
-                            </div>
-
-                            <div class="barra">
-                                <div class="tarjeta-content">
-                                    <select name="tipo_tarjeta">
-                                        <option value="">Opciones</option>
-                                        <option value="credito">Crédito</option>
-                                        <option value="debito">Débito</option>
-                                    </select>
-                                    <input type="text" name="voucher" placeholder="Nro. voucher">
-                                    <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
-
-                                </div>
-                            </div>
+                        <div class="campo">
+                            <label for="editNombre">Nombre:</label>
+                            <input type="text" id="editNombre" name="nombre">
                         </div>
-
-                        <div class="payment-box" id="otro">
-                            <div class="plus-icon">
-                                <h3>Otros pagos</h3>
-                                <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
-                            </div>
-                            <div class="barra">
-                                <div class="otro-content">
-                                    <select name="tipo_otro">
-                                        <option value="">Opciones</option>
-                                        <option value="transferencia">Transferencia</option>
-                                    </select>
-                                    <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
-
-                                </div>
-                            </div>
+                        <div class="campo">
+                            <label for="editApellido">Apellido:</label>
+                            <input type="text" id="editApellido" name="apellido">
                         </div>
-                        <div class="notes">
-                            <label for="observaciones">Observaciones:</label><br>
-                            <input type="text" id="observaciones" name="observaciones" placeholder="Ingrese observaciones...">
+                        <div class="campo">
+                            <label for="editTelefono">Teléfono:</label>
+                            <input type="text" id="editTelefono" name="telefono">
                         </div>
-
-
-                    </div>
-                </div>
-                <div class="summary-section">
-                    <h3>Información de pago</h3>
-                    <?php if (!empty($productos)): ?>
-                        <div class="summary-container">
-                            <h2>Productos:</h2>
-
-                            <ul>
-                                <?php foreach ($productos as $producto): ?>
-                                    <li data-id="<?php echo $producto['id']; ?>">
-                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-
-
-                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
-
-                            <h2>Total a pagar:</h2>
-
-                            <div class="contenedor-precio">
-                                <p>$<?php echo number_format($total, 2); ?></p>
-                            </div>
+                        <div class="campo">
+                            <label for="editCorreo">Correo:</label>
+                            <input type="email" id="editCorreo" name="correo">
                         </div>
-                        <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
-
-                    <?php else: ?>
-                        <p>No hay productos en el resumen.</p>
-                    <?php endif; ?>
+                        <div class="modal-boton">
+                            <button type="submit" id="modal-boton">Guardar Cambios</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
-    </div>
-    <style>
 
+            <?php if ($total_paginas > 1): ?>
+                <div class="pagination">
+                    <?php
+                    // Construir query base conservando filtros
+                    $base_params = $_GET;
+                    ?>
+                    <!-- Primera -->
+                    <?php
+                    $base_params['pagina'] = 1;
+                    $url = '?' . http_build_query($base_params);
+                    ?>
+                    <a href="<?= $url ?>">« Primera</a>
 
+                    <!-- Anterior -->
+                    <?php if ($pagina_actual > 1): ?>
+                        <?php
+                        $base_params['pagina'] = $pagina_actual - 1;
+                        $url = '?' . http_build_query($base_params);
+                        ?>
+                        <a href="<?= $url ?>">‹ Anterior</a>
+                    <?php endif; ?>
 
-    </style>
-    <script>
-        function guardarFactura() {
-            let codigo = document.getElementById("codigo").value;
-            let tipoDoc = document.getElementById("tipo_doc").value;
-            let nombre = document.getElementById("nombre").value;
-            let apellido = document.getElementById("apellido").value;
-            let telefono = document.getElementById("telefono").value;
-            let correo = document.getElementById("correo").value;
-            let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(",", ""));
+                    <?php
+                    // Rango de páginas: dos antes y dos después
+                    $start = max(1, $pagina_actual - 2);
+                    $end   = min($total_paginas, $pagina_actual + 2);
 
-            //Verificar si saldo pendiente es cero
-            saldoPendiente = calcularSaldoRestante();
-            if (saldoPendiente > 0) {
-                Swal.fire({
-                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
-                    html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                    <p>Por favor, llena todos los campos.</p>
+                    // Si hay hueco antes, muestra ellipsis
+                    if ($start > 1) {
+                        echo '<span class="ellips" style="color:white">…</span>';
+                    }
+
+                    // Botones de páginas
+                    for ($i = $start; $i <= $end; $i++):
+                        $base_params['pagina'] = $i;
+                        $url = '?' . http_build_query($base_params);
+                    ?>
+                        <a href="<?= $url ?>"
+                            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+                            <?= $i ?>
+                        </a>
+                    <?php endfor;
+
+                    // Si hay hueco después, muestra ellipsis
+                    if ($end < $total_paginas) {
+                        echo '<span class="ellips" style="color:white">…</span>';
+                    }
+                    ?>
+
+                    <!-- Siguiente -->
+                    <?php if ($pagina_actual < $total_paginas): ?>
+                        <?php
+                        $base_params['pagina'] = $pagina_actual + 1;
+                        $url = '?' . http_build_query($base_params);
+                        ?>
+                        <a href="<?= $url ?>">Siguiente ›</a>
+                    <?php endif; ?>
+
+                    <!-- Última -->
+                    <?php
+                    $base_params['pagina'] = $total_paginas;
+                    $url = '?' . http_build_query($base_params);
+                    ?>
+                    <a href="<?= $url ?>">Última »</a>
                 </div>
-            `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
-                });
-                return;
+            <?php endif; ?>
+    </div>
+<?php else: ?>
+    <p>No se encontraron resultados.</p>
+<?php endif; ?>
 
-            } else {
+<script>
+    // JavaScript adaptado
+    document.addEventListener('DOMContentLoaded', function() {
+        const editButtons = document.querySelectorAll('.edit-button');
+        const modal = document.getElementById('editModal');
+        const closeModal = modal.querySelector('.close');
 
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const row = this.closest('tr');
+                document.getElementById('editId').value = row.cells[0].innerText.trim();
+                document.getElementById('editIdentificacion').value = row.cells[1].innerText.trim();
+                document.getElementById('editNombre').value = row.cells[2].innerText.trim();
+                document.getElementById('editApellido').value = row.cells[3].innerText.trim();
+                document.getElementById('editTelefono').value = row.cells[4].innerText.trim();
+                document.getElementById('editCorreo').value = row.cells[5].innerText.trim();
+                modal.style.display = 'block';
+            });
+        });
 
-                // Obtener productos de la factura
-                let productos = [];
-                document.querySelectorAll(".summary-section ul li").forEach(li => {
-                    let partes = li.textContent.split(" x ");
-                    let cantidad = parseInt(partes[0].trim());
-                    let nombreProducto = partes[1].split(" - $")[0].trim();
-                    let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
-                    let id = li.getAttribute("data-id");
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    });
 
-                    productos.push({
-                        nombre: nombreProducto,
-                        cantidad,
-                        precio,
-                        id
-                    });
-                });
-
-                let metodos_pago = [];
-                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                    let valor = parseFloat(input.value);
-                    if (!isNaN(valor) && valor > 0) {
-                        let tipo = input.name.replace("valor_", "");
-                        if (tipo === "otro") {
-                            // Aquí se toma el valor del select correspondiente
-                            let tipoOtro = document.querySelector("select[name='tipo_otro']").value;
-                            if (tipoOtro) {
-                                tipo = tipoOtro; // Se usa el valor seleccionado, ej. "transferencia"
-                            } else {
-                                alert("Selecciona un tipo de pago para 'otro'");
-                                return;
-                            }
-                        }
-                        metodos_pago.push({
-                            tipo,
-                            valor
-                        });
-                    }
-                });
-
-
-                fetch("prueba.php", {
-                        method: "POST",
+    function eliminarCliente(codigo) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción eliminará al cliente",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('listaclientes.php', {
+                        method: 'POST',
                         headers: {
-                            "Content-Type": "application/json"
+                            'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: JSON.stringify({
-                            codigo,
-                            tipoDoc,
-                            nombre,
-                            apellido,
-                            telefono,
-                            correo,
-                            total,
-                            productos,
-                            metodos_pago
-                        })
+                        body: `eliminar=true&codigo=${encodeURIComponent(codigo)}`
                     })
-                    .then(response => response.json()) // Parsear la respuesta como JSON
-                    .then(data => {
-                        if (data.success) {
-                            alert("Factura registrada correctamente con ID: " + data.factura_id);
-                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
-                        } else {
-                            alert("Error al registrar factura: " + (data.error || ""));
+                    .then(async response => {
+                        const text = await response.text();
+                        try {
+                            const json = JSON.parse(text);
+                            if (json.success) {
+                                Swal.fire('Eliminado', 'El cliente ha sido eliminado correctamente.', 'success')
+                                    .then(() => {
+                                        location.reload(); // recarga la tabla
+                                    });
+                            } else {
+                                Swal.fire('Error', json.error || 'No se pudo eliminar al cliente.', 'error');
+                            }
+                        } catch (e) {
+                            // Si no es JSON válido, muestra el contenido HTML devuelto por PHP
+                            console.error("Respuesta no JSON:", text);
+                            Swal.fire('Error', 'Respuesta no válida del servidor. Ver consola para más detalles.', 'error');
                         }
                     })
                     .catch(error => {
-                        console.error("Error al registrar:", error);
-                        alert("Error al registrar factura. Por favor, inténtalo de nuevo.");
+                        console.error("Error de red o fetch:", error);
+                        Swal.fire('Error', 'Error de red al intentar eliminar el cliente.', 'error');
                     });
             }
-        }
-
-
-        function actualizarSaldoPendiente() {
-            let total = <?php echo $total; ?>; // Total desde PHP
-            let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
-            let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
-            let otros = document.querySelectorAll("input[name='valor_otro']");
-
-            let totalPagado = efectivo;
-
-            tarjetas.forEach(input => {
-                totalPagado += parseFloat(input.value) || 0;
-            });
-
-            otros.forEach(input => {
-                totalPagado += parseFloat(input.value) || 0;
-            });
-
-            let saldoPendiente = total - totalPagado;
-            document.getElementById("saldoPendiente").textContent = "Saldo pendiente: $" + saldoPendiente.toFixed(2);
-        }
-
-        function AgregarOtraTarjeta() {
-            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
-            let clone = tarjeta.cloneNode(true);
-
-            // Crear contenedor del icono
-            let contenedorIcono = document.createElement("div");
-            contenedorIcono.style.display = "flex";
-            contenedorIcono.style.alignItems = "center";
-            contenedorIcono.style.justifyContent = "center";
-            contenedorIcono.style.marginLeft = "10px";
-
-            let eliminar = document.createElement("i");
-            eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
-            eliminar.alt = "Eliminar";
-            eliminar.style.cursor = "pointer";
-            eliminar.onclick = function() {
-                clone.remove();
-            };
-
-            clone.appendChild(eliminar);
-            clone.appendChild(contenedorIcono);
-
-            tarjeta.insertAdjacentElement("afterend", clone);
-        }
-
-        function AgregarOtroPago() {
-            let otro = document.querySelector("#otro .otro-content");
-            let clone = otro.cloneNode(true);
-
-            // Crear botón de eliminar con el mismo estilo que tarjeta
-            let eliminar = document.createElement("i");
-            eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
-            eliminar.alt = "Eliminar";
-            eliminar.style.cursor = "pointer";
-            eliminar.onclick = function() {
-                clone.remove();
-            };
-
-            clone.appendChild(eliminar);
-            otro.insertAdjacentElement("afterend", clone);
-        }
-
-
-        function EliminarTarjeta() {
-            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
-            tarjeta.remove();
-        }
-
-        function EliminarOtroPago() {
-            let otro = document.querySelector("#otro .otro-content");
-            otro.remove();
-        }
-
-        function llenarValor(tipoPago, valor) {
-            let input = document.querySelector(`input[name='valor_${tipoPago}']`);
-            input.value = valor;
-            input.dispatchEvent(new Event("input", {
-                bubbles: true
-            })); // Para disparar el evento
-        }
-
-
-        function buscarCodigo() {
-            let input = document.getElementById("codigo").value;
-            let suggestionsBox = document.getElementById("suggestions");
-
-            fetch(`?codigo=${input}`)
-                .then(response => response.json())
-                .then(data => {
-                    suggestionsBox.innerHTML = "";
-                    if (data.length > 0) {
-                        suggestionsBox.style.display = "block";
-                        data.forEach(user => {
-                            let div = document.createElement("div");
-                            div.textContent = user.codigo + " - " + user.nombre;
-                            div.onclick = () => seleccionarCodigo(user);
-                            suggestionsBox.appendChild(div);
-                        });
-                    } else {
-                        suggestionsBox.style.display = "none";
-                    }
-                })
-                .catch(error => console.error("Error al obtener datos:", error));
-        }
-
-        function seleccionarCodigo(user) {
-            document.getElementById("codigo").value = user.codigo;
-            document.getElementById("suggestions").style.display = "none";
-            document.getElementById("tipo_doc").value = user.identificacion;
-            document.getElementById("nombre").value = user.nombre;
-            document.getElementById("apellido").value = user.apellido;
-            document.getElementById("telefono").value = user.telefono;
-            document.getElementById("correo").value = user.correo;
-        }
-
-        //Deshabilitar solo si el valor total de los productos se completo
-
-        document.addEventListener("DOMContentLoaded", function() {
-            function actualizarEstadoInputs() {
-                let totalPagar = <?php echo $total; ?>;
-                let sumaPagos = 0;
-
-                // Obtener valores de pago ingresados
-                let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
-                let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
-                let otros = document.querySelectorAll("input[name='valor_otro']");
-
-                sumaPagos += efectivo;
-
-                tarjetas.forEach(input => {
-                    let valor = parseFloat(input.value) || 0;
-                    sumaPagos += valor;
-                });
-
-                otros.forEach(input => {
-                    let valor = parseFloat(input.value) || 0;
-                    sumaPagos += valor;
-                });
-
-                // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
-                if (sumaPagos >= totalPagar) {
-                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                        if (input.value.trim() === "") {
-                            input.disabled = true;
-                        }
-                    });
-                } else {
-                    // Si la suma aún no llega al total, habilitar todos los inputs
-                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                        input.disabled = false;
-                    });
-                }
-            }
-
-            // Agregar eventos para verificar en tiempo real
-            document.addEventListener("input", actualizarEstadoInputs);
-            document.addEventListener("change", actualizarEstadoInputs);
         });
-        document.addEventListener("DOMContentLoaded", function() {
-            actualizarSaldoPendiente(); // Asegúrate de que esta función se ejecuta al cargar la página.
-
-            // Seleccionar solo los inputs con name específico
-            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                input.addEventListener("click", function() {
-                    if (this.value.trim() === "") { // Si el input está vacío
-                        let saldoRestante = calcularSaldoRestante(); // Calcula el saldo restante
-                        this.value = saldoRestante; // Autocompleta en los inputs específicos
-
-                        // Disparar manualmente el evento 'input' para que cualquier otra lógica lo detecte
-                        this.dispatchEvent(new Event("input", {
-                            bubbles: true
-                        }));
-                    }
-                });
-            });
-        });
-
-
-        function calcularSaldoRestante() {
-            let total = <?php echo $total; ?>; // Total desde PHP
-            let sumaInputs = 0;
-
-            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                let valor = parseFloat(input.value) || 0; // Convierte a número o usa 0 si está vacío
-                sumaInputs += valor;
-            });
-
-            return total - sumaInputs; // Retorna el saldo restante
-        }
-
-
-        document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
-    </script>
+    }
+</script>
 </body>
 
 </html>

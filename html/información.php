@@ -67,19 +67,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
-                    title: `<span class='titulo'>Datos Actualizados</span>`,
+                     title: `<span class='titulo-alerta confirmacion'>Datos actualizados</span>`,
                     html: `
                         <div class='alerta'>
-                            <div class='contenedor-imagen'>
-                                <img src='../imagenes/moto.png' class='moto'>
-                            </div>
+                           <div class=\"contenedor-imagen\">
+                              <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                          </div>
                             <p>Los datos se actualizaron con éxito.</p>
                         </div>
                     `,
-                    showConfirmButton: true,
+                    background: '#ffffffdb',
                     confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
                     customClass: {
-                        confirmButton: 'btn-aceptar' // Clase personalizada para el botón de aceptar
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
                     }
                 }).then(() => {
                     window.location.href = 'información.php'; // Redirige después de cerrar el alert
@@ -92,20 +95,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           echo "<script>
                           document.addEventListener('DOMContentLoaded', function() {
                               Swal.fire({
-                        title: '<span class=\"titulo\">Error</span>',
+                       title: '<span class=\"titulo-alerta error\">Error</span>',
                           html: `
-                              <div class='alerta'>
+                              <div class=\"custom-alert\">
                                   <div class='contenedor-imagen'>
-                                      <img src='../imagenes/llave.png' class='llave'>
+                                        <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                   </div>
                                   <p>Error al actualizar los datos.</p>
                               </div>
                           `,
-                          showConfirmButton: true,
-                          confirmButtonText: 'Aceptar',
-                          customClass: {
-                              confirmButton: 'btn-aceptar'  // Clase personalizada para el botón de aceptar
-                          }
+                          background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
                       } );
                                   });
                                   </script>";

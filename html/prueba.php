@@ -434,16 +434,72 @@ unset($_SESSION['total']);
                     .then(response => response.json()) // Parsear la respuesta como JSON
                     .then(data => {
                         if (data.success) {
-                            alert("Factura registrada correctamente con ID: " + data.factura_id);
-                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                            Swal.fire({
+                                title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                                html: `
+                <div class=\"custom-alert\">
+                    <div class=\"contenedor-imagen\">
+                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                    </div>
+                    <p>Factura registrada correctamente con ID: <strong>${data.factura_id}</strong>.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+                            }).then(() => {
+                                window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                            });
                         } else {
-                            alert("Error al registrar factura: " + (data.error || ""));
-                        }                                                          
+                            Swal.fire({
+                                title: '<span class="titulo-alerta error">Error</span>',
+                                html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al registrar factura.<br><small>${data.error || "Ocurrió un problema."}</small></p>
+                </div>
+            `,
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            });
+                        }
                     })
                     .catch(error => {
                         console.error("Error al registrar:", error);
-                        alert("Error al registrar factura. Por favor, inténtalo de nuevo.");
+                        Swal.fire({
+                            title: '<span class="titulo-alerta error">Error</span>',
+                            html: `
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                </div>
+                <p>Error al registrar factura. Intenta de nuevo.<br><small>${error.message}</small></p>
+            </div>
+        `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
                     });
+
             }
         }
 

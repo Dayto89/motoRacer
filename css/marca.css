@@ -28,7 +28,7 @@ body::before {
     margin-top: 92px;
     color: white;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 871px;
+    margin-left: 921px;
     letter-spacing: 5px;
     padding: 18px;
     letter-spacing: 5px;
@@ -54,34 +54,35 @@ body::before {
     border-radius: 11px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-bottom: -54px;
   }
   
   .btn-nueva-categoria:hover {
     background-color: #0056b3;
   }
   h3{
-    font-family: Arial, Helvetica, sans-serif;
     color: black;
-    background-color: #98bde9;
-    padding: 9px;
-    width: 193px;
-    border-radius: 8px;
-    margin-top: 8px;
-    font-size: 16px;
+    color: rgb(0, 0, 0);
+    margin-left: 389px;
+    margin-top: -12px;
+    padding: initial;
+    margin-bottom: 30px;
+    font-size: 32px;
+    text-shadow: 2.8px -1px 0 #0056b3;
   }
   /* Tabla de categorías */
   .category-table {
     width: 100%;
-    border-collapse: collapse; 
     
   }
   
   .category-table td {
-    padding: 1px;
     text-align: center;
     font-family: Arial, sans-serif;
     width: 225px;
+    padding: 5px;
 }
+
   
   .category-table th {
     background-color: #98bde9;
@@ -105,19 +106,22 @@ body::before {
   }
  
   .btn-list, .btn-delete { 
-    padding: 8px 15px; /* Reducir el padding para angostar */
+    padding: 4px 10px;
     border: none;
     border-radius: 15px;
     color: rgb(255, 255, 255);
     cursor: pointer;
-    font-size: 14px; /* Reducir ligeramente el tamaño del texto */
-    white-space: nowrap; /* Mantener el texto en una sola línea */
-    text-align: center; /* Centrar el texto dentro del botón */
-}
+    font-size: 14px;
+    white-space: nowrap;
+    text-align: center;
+  }
   
   .btn-list {
     background-color: #0965c7;
-    margin-left: 10px; /* Ajusta el margen entre los botones y el texto si es necesario */
+    margin-left: 10px;
+    color: #000;
+    border: 2px solid #0b111a;
+    margin-right: 10px;
   }
   
   .btn-list:hover {
@@ -126,6 +130,8 @@ body::before {
   
   .btn-delete {
     background-color: #fa163c;
+    margin-left: 10px;
+    order: 2px solid #0b111a;
   }
   
   .btn-delete:hover {
