@@ -1,4 +1,4 @@
-* {
+ * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -78,7 +78,6 @@ body::before {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s ease;
-
 }
 
 .dropdown:hover {
@@ -244,3 +243,146 @@ h2 {
     transition: margin-left 0.3s ease;
 }
 
+/* MÓVILES */
+/* Horizontal */
+@media only screen and (max-width: 870px) and (orientation: landscape) {
+    .inicio-img {
+        max-width: none;
+        width: 35%;
+        height: auto;
+        margin-top: 10%;
+        margin-right: 15%;
+    }
+
+    h2{
+        font-size: 30px;
+        margin-top: 0;
+        margin-right: 10%;
+    }
+
+    .accesibilidad-container {
+        margin-top: 5%;
+    }
+
+  /* Contenedor principal: barra en fila horizontal */
+  .sidebar {
+    display: flex;              /* flex container */
+    flex-direction: row;        /* fila */
+    align-items: center;        /* centrado vertical */
+    width: 100%;                /* ocupa todo el ancho */
+    height: 60px;               /* altura de la barra horizontal */
+    overflow: visible;          /* mostrar dropdowns si los hay */
+  }
+
+  .sidebar-header {
+    width: 6rem;
+  }
+
+  animated-icons div{
+    font-size: 5px;
+  }
+
+  .sidebar:hover .logo {
+    transform: none;
+    transition: none;
+    margin-top: 0;
+    margin-left: 0;
+}
+
+.sidebar:hover .menu li a span {
+    display: inline-block;
+    font-size: 0px;
+}
+
+.sidebar:hover {
+    width: 100%;
+}
+
+
+  /* Lista de navegación en horizontal */
+  .menu {
+    display: flex;              /* convierte <li> en flex items */
+    flex-direction: row;        /* fila */
+    gap: 20px;                  /* espacio entre ítems */
+    padding: 0 10px;            /* margen interno */
+  }
+
+  /* Ajuste de ítems */
+  .menu li {
+    margin: 0;                  /* eliminar márgenes verticales */
+  }
+
+  .menu li a {
+    padding: 8px 12px;     
+    color: white;     /* espacio cómodo en enlaces */
+    font-size: 1.2em;
+  }
+
+  /* Submenús: absolutos bajo la barra si se abren */
+  .dropdown {
+    position: absolute;
+    top: 100%;                  /* justo debajo de la barra */
+    left: 0;
+    background: #083972;
+  }
+
+  .menu li a i {
+    display: none;
+  }
+
+  .noti {
+    margin-top:  50px;
+    margin-right: 10px;
+  }
+
+  .notificaciones {
+    right: 60px;
+  }
+
+  .accesibilidad-container {
+    margin-right: 10px;
+  }
+}
+
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .inicio-img {
+        max-width: none;
+        width: 110%;
+        height: auto;
+    }
+
+    h2{
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .fondo {
+        height: 105%;
+        width: 105%;
+    }
+
+    .sidebar {
+        width: 80px;
+    }
+
+    .sidebar-header {
+        padding: 5px;
+    }
+
+    .menu {
+        padding: 5px;
+    }
+}
+
+/* TABLETS */
+/* Vertical */
+@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
+
+}
+
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}

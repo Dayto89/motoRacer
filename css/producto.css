@@ -299,6 +299,7 @@ input[type="checkbox"] {
     /* Quita rellenos */
     margin: auto;
     margin-top: 27px;
+    margin-bottom: 20px;
 }
 
 .left-side,
@@ -793,86 +794,44 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     border-radius: 20px;
 }
 
-/* ========================= */
-/* 1. MÓVIL (hasta 599px)   */
-/* ========================= */
-@media (max-width: 599px) {
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
 
-    /* Contenedor principal: una sola columna y padding reducido */
-
-    .form-section{
-        width: 150%;
+    #crearProducto h1 {
+        margin-left: 25%;
+        font-size: 2.5rem;
     }
+
     .container {
-        display: block;
-        /* desmonta el grid/flex */
         width: 100%;
-        /* ocupa todo el ancho */
-        margin: 1rem auto;
-        /* margen vertical compacto */
-        padding: 0 1rem;
-        /* padding lateral en móvil */
-        margin-left: 100px;
+        margin-bottom: 20px;
     }
 
-    /* Campos del formulario: ancho completo */
     .campo {
-        display: block;
-        width: 100%;
-        padding: 0.5rem 0;
+        margin-bottom: 0px;
     }
 
-    /* Inputs y selects: ancho total */
-    .campo input,
-    .campo select,
-    .campo textarea {
-        width: 100%;
-        box-sizing: border-box;
+    #product-form input{
+        margin-top: 5px;
     }
 
-    /* Ajustes generales de tipografía y botones */
-    body,
-    label,
-    input,
-    button {
-        font-size: 1rem;
-        /* texto legible en pantallas pequeñas */
-    }
+}
 
-    .icon-button {
-        width: auto;
-        margin: 1rem 0;
-    }
+/* Vertical */
+@media screen and (max-width: 870px) and (orientation: portrait) {
+
 }
 
 
-/* ========================= */
-/* 2. TABLET (600px–1023px) */
-/* ========================= */
-@media (min-width: 600px) and (max-width: 1023px) {
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
 
-    /* Contenedor: dos columnas */
-    .container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        width: 100%;
-        max-width: none;
-        /* quita restricciones fijas si las hubiera */
-        padding: 0 1.5rem;
-    }
-
-    /* Algunos campos clave pueden ocupar ambas columnas */
-    .campo.full-row {
-        grid-column: 1 / -1;
-    }
-
-    /* Refinamos fuentes y espaciados en tablet */
-    body,
-    label,
-    input,
-    button {
-        font-size: 1.1rem;
-        /* ligeramente mayor que en móvil */
-    }
 }
+
+/* Vertical */
+@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
+
+}
+

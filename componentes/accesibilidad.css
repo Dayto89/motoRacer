@@ -72,6 +72,9 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
+  flex-shrink: 0;
+  width:100%;
+  height: 100%;
 }
 
 .accesibilidad-panel button:hover {
@@ -143,19 +146,22 @@
 .modo-alto-contraste .sidebar-header,
 .modo-alto-contraste .menu,
 .modo-alto-contraste .modal-content {
-  background-color: #000000 !important;
   color: #FFFFFF !important;
   border-color: #FFFF00 !important;
 }
 .modo-alto-contraste .container h3 {
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  margin-left: 384px;
-  margin-top: -12px;
+  margin-top: 5%;
+  font-weight: normal;
+
+}
+.modo-alto-contraste .payment-methods h3 {
+  margin-left: 0px;
+  margin-top: 0px;
   padding: initial;
   margin-bottom: 30px;
   text-shadow: none;
 }
+
 .modo-alto-contraste .icon{
   color: #ffffff;
 }
@@ -336,7 +342,7 @@ text-shadow: 1.5px 0 #1c51a0;
 
 .modo-claro .main-content{
   background-color: #dbdbdbc9 !important;
-  background: #222;
+  background: #22222200;
   margin-right: 0px;
 }
 .modo-claro .sidebar{
@@ -521,8 +527,11 @@ text-shadow: 1.5px 0 #1c51a0;
 }
 
 .modo-alto-contraste .container h3 {
-  background-color: #000000;
+  background-color: #00000000;
   color: white;
+
+    margin-top: 10%
+  
 }
 
 .modo-alto-contraste .user-table td {
@@ -562,11 +571,27 @@ text-shadow: 1.5px 0 #1c51a0;
   background-color: #ffffff85;
   z-index: -1;
 }
-
+.modo-claro .main-content{
+  display: flex;
+    justify-content: space-evenly;
+    margin-left: -200px;
+    margin-top: 10%;
+}
 
 .modo-claro .container {
-  background-color: #ffffff !important;
   border: 2px solid #000000 ;
+}
+.modo-claro .content > div {
+  flex: 1;
+  margin-right: 40px;
+  padding: 43px;
+}
+.modo-claro .content {
+  display: flex
+;
+    justify-content: space-evenly;
+    margin-left: -200px;
+    margin-top: 10%;
 }
 
 .modo-claro .actions button {
@@ -582,12 +607,11 @@ text-shadow: 1.5px 0 #1c51a0;
 }
 
 .modo-claro .container h3 {
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
-  margin-left: 384px;
-  margin-top: -12px;
   padding: initial;
   margin-bottom: 30px;
+}
+.modo-claro .plus-icon img {
+  margin: 6%;
 }
 
 .modo-claro .user-table td {

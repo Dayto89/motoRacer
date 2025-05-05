@@ -3,7 +3,7 @@ $mensaje = null;  // Variable para almacenar el estado del mensaje
 
 if ($_POST) {
     // Código para restablecer la contraseña
-    $usuario = $_POST['usuario'];
+    $correo = $_POST['correo'];
     $nueva_contrasena = $_POST['nueva_contrasena'];
     $confirmar_contrasena = $_POST['confirmar_contrasena'];
 
@@ -14,7 +14,7 @@ if ($_POST) {
         $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 
         // Actualizar la contraseña en la base de datos
-        $sql = "UPDATE usuario SET contraseña='$nueva_contrasena_hashed' WHERE identificacion='$usuario'";
+        $sql = "UPDATE usuario SET contraseña='$nueva_contrasena_hashed', codigo_recuperacion=NULL WHERE correo='$correo'";
         if ($conexion->query($sql) === TRUE) {
             $mensaje = 'exito_restablecer_contrasena';
         } else {
@@ -60,7 +60,7 @@ if ($_POST) {
             <div class="campo"> <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
                 <input type="password" name="confirmar_contrasena" id="confirmar_contrasena" required>
             </div>
-            <input type="hidden" name="usuario" value='<?php echo $_GET["usuario"]; ?>'>
+            <input type="hidden" name="correo" value='<?php echo $_GET["correo"]; ?>'>
 
             <div class="button_container">
                 <button type="submit" name="restablecer" class="boton">Restablecer Contraseña</button>
@@ -141,4 +141,3 @@ if ($_POST) {
 </body>
 
 </html>
-

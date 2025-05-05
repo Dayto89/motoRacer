@@ -12,8 +12,6 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
-
 // Conexión a la base de datos
 $servername = "localhost";
 $username = "root";
@@ -179,6 +177,7 @@ $total = $_SESSION['total'] ?? 0;
 // Limpiar los datos de la sesión después de usarlos
 unset($_SESSION['productos']);
 unset($_SESSION['total']);
+include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 

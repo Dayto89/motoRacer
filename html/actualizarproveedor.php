@@ -4,6 +4,8 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 // Si hay un proveedor guardado en sesión, úsalo como seleccionado

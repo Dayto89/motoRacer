@@ -1,143 +1,33 @@
 <?php
-ini_set('display_errors',  1);
+ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
 ini_set('error_log', 'C:\xampp\htdocs\php_errors.log');
+
 session_start();
+
+
+// Verificación de sesión
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
 
+
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+
+// Conexión a la base de datos
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-// Inicializar el arreglo de filtros
-$filtros = [];
-$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
-
-if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios'])) {
-    $criterios = $_GET['criterios'];
-    foreach ($criterios as $criterio) {
-        $criterio = mysqli_real_escape_string($conexion, $criterio);
-        switch ($criterio) {
-            case 'codigo':
-                $filtros[] = "codigo LIKE '%$valor%'";
-                break;
-            case 'identificacion':
-                $filtros[] = "identificacion LIKE '%$valor%'";
-                break;
-            case 'nombre':
-                $filtros[] = "nombre LIKE '%$valor%'";
-                break;
-            case 'apellido':
-                $filtros[] = "apellido LIKE '%$valor%'";
-                break;
-            case 'telefono':
-                $filtros[] = "telefono LIKE '%$valor%'";
-                break;
-            case 'correo':
-                $filtros[] = "correo LIKE '%$valor%'";
-                break;
-        }
-    }
-}
-
-$por_pagina = 10;
-$pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-$offset = ($pagina_actual - 1) * $por_pagina;
-
-$consulta_total = "SELECT COUNT(*) AS total FROM cliente WHERE 1=1";
-if (!empty($filtros)) {
-    $consulta_total .= " AND (" . implode(" OR ", $filtros) . ")";
-}
-$resultado_total = mysqli_query($conexion, $consulta_total);
-$total_filas = mysqli_fetch_assoc($resultado_total)['total'];
-$total_paginas = ceil($total_filas / $por_pagina);
-
-$consulta = "SELECT * FROM cliente WHERE 1=1";
-if (!empty($filtros)) {
-    $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
-}
-$consulta .= " LIMIT $por_pagina OFFSET $offset";
-
-$resultado = mysqli_query($conexion, $consulta);
-if (!$resultado) {
-    die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
-
-// Actualización de datos
-if (isset($_POST['id'])) {
-    $id = mysqli_real_escape_string($conexion, $_POST['id']);
-    $identificacion = mysqli_real_escape_string($conexion, $_POST['identificacion']);
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $apellido = mysqli_real_escape_string($conexion, $_POST['apellido']);
-    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
-    $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
-
-    $consulta_update = "UPDATE cliente SET 
-        identificacion = '$identificacion',
-        nombre = '$nombre',
-        apellido = '$apellido',
-        telefono = '$telefono',
-        correo = '$correo'
-        WHERE codigo = '$id'";
-
-    if (mysqli_query($conexion, $consulta_update)) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Swal.fire({
-                        title: `<span class='titulo'>Datos Actualizados</span>`,
-                        html: `
-                            <div class='alerta'>
-                                <div class='contenedor-imagen'>
-                                    <img src='../imagenes/moto.png' class='moto'>
-                                </div>
-                                <p>Los datos se actualizaron con éxito.</p>
-                            </div>
-                        `,
-                        showConfirmButton: true,
-                        confirmButtonText: 'Aceptar',
-                        customClass: {
-                            confirmButton: 'btn-aceptar' // Clase personalizada para el botón de aceptar
-                        }
-                    }).then(() => {
-                        window.location.href = 'listaclientes.php'; // Redirige después de cerrar el alert
-                    });
-                });
-            </script>";
-    } else {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
-                                  document.addEventListener('DOMContentLoaded', function() {
-                                      Swal.fire({
-                                title: '<span class=\"titulo\">Error</span>',
-                                  html: `
-                                      <div class='alerta'>
-                                          <div class='contenedor-imagen'>
-                                              <img src='../imagenes/llave.png' class='llave'>
-                                          </div>
-                                          <p>Error al actualizar los datos.</p>
-                                      </div>
-                                  `,
-                                  showConfirmButton: true,
-                                  confirmButtonText: 'Aceptar',
-                                  customClass: {
-                                      confirmButton: 'btn-aceptar'  // Clase personalizada para el botón de aceptar
-                                  }
-                              } );
-                                          });
-                                          </script>";
-    }
-}
-
+// 1. Eliminación por AJAX (JSON)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
     header('Content-Type: application/json');
 
     $codigo = $_POST['codigo'];
+
     $stmt = $conexion->prepare("DELETE FROM cliente WHERE codigo = ?");
     $stmt->bind_param("s", $codigo);
 
@@ -153,12 +43,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
 
     echo json_encode(['success' => true]);
     exit;
-} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'error' => 'Parámetros POST inválidos']);
+}
+
+// 2. Actualización de datos (desde formulario)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+    $id = $_POST['id'];
+    $identificacion = $_POST['identificacion'];
+    $nombre = $_POST['nombre'];
+    $apellido = $_POST['apellido'];
+    $telefono = $_POST['telefono'];
+    $correo = $_POST['correo'];
+
+    // Usando sentencias preparadas para mayor seguridad
+    $stmt = $conexion->prepare("UPDATE cliente SET 
+        identificacion = ?,
+        nombre = ?,
+        apellido = ?,
+        telefono = ?,
+        correo = ?
+        WHERE codigo = ?");
+    $stmt->bind_param("ssssss", $identificacion, $nombre, $apellido, $telefono, $correo, $id);
+
+    if ($stmt->execute()) {
+        $_SESSION['alert'] = [
+            'type' => 'success',
+            'title' => 'Éxito',
+            'message' => 'Datos actualizados correctamente.',
+            'image' => 'moto.png',
+            'redirect' => 'listaclientes.php'
+        ];
+    } else {
+        $_SESSION['alert'] = [
+            'type' => 'error',
+            'title' => 'Error',
+            'message' => 'Error al actualizar los datos: ' . $stmt->error,
+            'image' => 'llave.png'
+        ];
+    }
+    header("Location: ".$_SERVER['PHP_SELF']);
     exit;
 }
 
+// 3. Filtros de búsqueda y paginación
+$filtros = [];
+$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
+
+if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios'])) {
+    foreach ($_GET['criterios'] as $criterio) {
+        $criterio = mysqli_real_escape_string($conexion, $criterio);
+        $filtros[] = "$criterio LIKE '%$valor%'";
+    }
+}
+
+$por_pagina = 10;
+$pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina_actual - 1) * $por_pagina;
+
+// Conteo total de registros
+$consulta_total = "SELECT COUNT(*) AS total FROM cliente WHERE 1=1";
+if (!empty($filtros)) {
+    $consulta_total .= " AND (" . implode(" OR ", $filtros) . ")";
+}
+$resultado_total = mysqli_query($conexion, $consulta_total);
+$total_filas = mysqli_fetch_assoc($resultado_total)['total'];
+$total_paginas = ceil($total_filas / $por_pagina);
+
+// Consulta principal con paginación
+$consulta = "SELECT * FROM cliente WHERE 1=1";
+if (!empty($filtros)) {
+    $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
+}
+$consulta .= " LIMIT $por_pagina OFFSET $offset";
+
+$resultado = mysqli_query($conexion, $consulta);
+if (!$resultado) {
+    die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
+}
+
+// 4. Widget de accesibilidad
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
@@ -172,12 +134,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
     <link rel="stylesheet" href="../css/clientes.css" />
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         .pagination {
             display: flex;
@@ -207,6 +170,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             pointer-events: none;
             border-color: #007bff;
         }
+
+       
     </style>
 </head>
 
@@ -242,8 +207,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <table>
                 <thead>
                     <tr>
+                        <th>Código</th>
                         <th>Identificación</th>
-                        <th>Tipo</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>Teléfono</th>
@@ -264,11 +229,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <button class="edit-button" data-id="<?= $fila['codigo'] ?>">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
+                                <button class="delete-button" onclick="eliminarCliente('<?= $fila['codigo'] ?>')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
+            
             <!-- Modal de edición -->
             <div id="editModal" class="modal">
                 <div class="modal-content">
@@ -308,67 +277,40 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php if ($total_paginas > 1): ?>
                 <div class="pagination">
                     <?php
-                    // Construir query base conservando filtros
                     $base_params = $_GET;
                     ?>
-                    <!-- Primera -->
-                    <?php
-                    $base_params['pagina'] = 1;
-                    $url = '?' . http_build_query($base_params);
-                    ?>
-                    <a href="<?= $url ?>">« Primera</a>
+                    <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => 1])) ?>">« Primera</a>
 
-                    <!-- Anterior -->
                     <?php if ($pagina_actual > 1): ?>
-                        <?php
-                        $base_params['pagina'] = $pagina_actual - 1;
-                        $url = '?' . http_build_query($base_params);
-                        ?>
-                        <a href="<?= $url ?>">‹ Anterior</a>
+                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $pagina_actual - 1])) ?>">‹ Anterior</a>
                     <?php endif; ?>
 
                     <?php
-                    // Rango de páginas: dos antes y dos después
                     $start = max(1, $pagina_actual - 2);
                     $end   = min($total_paginas, $pagina_actual + 2);
 
-                    // Si hay hueco antes, muestra ellipsis
                     if ($start > 1) {
                         echo '<span class="ellips" style="color:white">…</span>';
                     }
 
-                    // Botones de páginas
                     for ($i = $start; $i <= $end; $i++):
-                        $base_params['pagina'] = $i;
-                        $url = '?' . http_build_query($base_params);
                     ?>
-                        <a href="<?= $url ?>"
+                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $i])) ?>"
                             class="<?= $i == $pagina_actual ? 'active' : '' ?>">
                             <?= $i ?>
                         </a>
                     <?php endfor;
 
-                    // Si hay hueco después, muestra ellipsis
                     if ($end < $total_paginas) {
                         echo '<span class="ellips" style="color:white">…</span>';
                     }
                     ?>
 
-                    <!-- Siguiente -->
                     <?php if ($pagina_actual < $total_paginas): ?>
-                        <?php
-                        $base_params['pagina'] = $pagina_actual + 1;
-                        $url = '?' . http_build_query($base_params);
-                        ?>
-                        <a href="<?= $url ?>">Siguiente ›</a>
+                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $pagina_actual + 1])) ?>">Siguiente ›</a>
                     <?php endif; ?>
 
-                    <!-- Última -->
-                    <?php
-                    $base_params['pagina'] = $total_paginas;
-                    $url = '?' . http_build_query($base_params);
-                    ?>
-                    <a href="<?= $url ?>">Última »</a>
+                    <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $total_paginas])) ?>">Última »</a>
                 </div>
             <?php endif; ?>
     </div>
@@ -376,8 +318,40 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <p>No se encontraron resultados.</p>
 <?php endif; ?>
 
+<!-- Mostrar alertas desde sesión -->
+<?php if (isset($_SESSION['alert'])): ?>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: '<span class="titulo-alerta confirmacion <?= $_SESSION['alert']['type'] ?>"><?= $_SESSION['alert']['title'] ?></span>',
+        html: `
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img class="<?= $_SESSION['alert']['type'] ?>" src="../imagenes/<?= $_SESSION['alert']['image'] ?>" alt="<?= $_SESSION['alert']['title'] ?>">
+                </div>
+                <p><?= $_SESSION['alert']['message'] ?></p>
+            </div>
+        `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '<?= $_SESSION['alert']['type'] === 'success' ? '#007bff' : '#dc3545' ?>',
+        customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-aceptar',
+            container: 'fondo-oscuro'
+        }
+    }).then(() => {
+        <?php if (isset($_SESSION['alert']['redirect'])): ?>
+            window.location.href = '<?= $_SESSION['alert']['redirect'] ?>';
+        <?php endif; ?>
+    });
+    <?php unset($_SESSION['alert']); ?>
+});
+</script>
+<?php endif; ?>
+
 <script>
-    // JavaScript adaptado
+    // JavaScript para el modal de edición
     document.addEventListener('DOMContentLoaded', function() {
         const editButtons = document.querySelectorAll('.edit-button');
         const modal = document.getElementById('editModal');
@@ -399,51 +373,117 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         closeModal.addEventListener('click', function() {
             modal.style.display = 'none';
         });
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     });
 
+    // Función para eliminar cliente
     function eliminarCliente(codigo) {
         Swal.fire({
-            title: '¿Estás seguro?',
-            text: "Esta acción eliminará al cliente",
-            icon: 'warning',
+            title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>¿Quieres eliminar el cliente <strong>${codigo}</strong>?</p>
+                </div>
+            `,
+            background: '#ffffffdb',
             showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: '#dc3545',
+            customClass: {
+                popup: "custom-alert",
+                confirmButton: "btn-eliminar",
+                cancelButton: "btn-cancelar",
+                container: 'fondo-oscuro'
+            }
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('listaclientes.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: `eliminar=true&codigo=${encodeURIComponent(codigo)}`
-                    })
-                    .then(async response => {
-                        const text = await response.text();
-                        try {
-                            const json = JSON.parse(text);
-                            if (json.success) {
-                                Swal.fire('Eliminado', 'El cliente ha sido eliminado correctamente.', 'success')
-                                    .then(() => {
-                                        location.reload(); // recarga la tabla
-                                    });
-                            } else {
-                                Swal.fire('Error', json.error || 'No se pudo eliminar al cliente.', 'error');
+                fetch('../html/listaclientes.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta confirmacion"> Eliminado</span>',
+                            html: `
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                        <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                                    </div>
+                                    <p>El cliente <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
+                                </div>
+                            `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
                             }
-                        } catch (e) {
-                            // Si no es JSON válido, muestra el contenido HTML devuelto por PHP
-                            console.error("Respuesta no JSON:", text);
-                            Swal.fire('Error', 'Respuesta no válida del servidor. Ver consola para más detalles.', 'error');
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta error">Error</span>',
+                            html: `
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                    </div>
+                                    <p>${data.error || 'Error al eliminar el cliente'}</p>
+                                </div>
+                            `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#dc3545',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: '<span class="titulo-alerta error">Error</span>',
+                        html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                </div>
+                                <p>Error al eliminar el cliente, puede tener registros de ventas.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
                         }
-                    })
-                    .catch(error => {
-                        console.error("Error de red o fetch:", error);
-                        Swal.fire('Error', 'Error de red al intentar eliminar el cliente.', 'error');
                     });
+                });
             }
         });
     }
 </script>
 </body>
-
 </html>

@@ -1,140 +1,58 @@
 <?php
-// Habilitar la visualización de errores
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-$mensaje = null;  // Variable para almacenar el estado del mensaje
+$mensaje = null;
 
 if ($_POST) {
-    if (isset($_POST['verificar'])) {
-        // Conectar a la base de datos
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+    $correo = $_POST['correo'];
+    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 
-        if ($conexion->connect_error) {
-            die("Error de conexión: " . $conexion->connect_error);
-        }
+    $stmt = $conexion->prepare("SELECT * FROM usuario WHERE correo = ?");
+    $stmt->bind_param("s", $correo);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
 
-        // Datos del formulario
-        $usuario = $_POST['usuario'];
-        $preguntaSeguridad = $_POST['preguntaSeguridad'];
-        $respuestaSeguridad = $_POST['respuestaSeguridad'];
+    if ($resultado->num_rows === 1) {
+        $codigo = rand(100000, 999999);
 
-        // Verificar la respuesta de seguridad
-        $sql = "SELECT * FROM usuario WHERE identificacion='$usuario' AND preguntaSeguridad='$preguntaSeguridad' AND respuestaSeguridad='$respuestaSeguridad'";
-        $resultado = $conexion->query($sql);
+        $stmt = $conexion->prepare("UPDATE usuario SET codigo_recuperacion = ? WHERE correo = ?");
+        $stmt->bind_param("ss", $codigo, $correo);
+        $stmt->execute();
 
-        if ($resultado->num_rows > 0) {
-            header("Location: ../html/resetear.php?usuario=$usuario");
-            exit();
-        } else {
-            $mensaje = 'respuesta_incorrecta';
-        }
+        // Aquí integras tu API de Mailjet
+        require '../includes/enviar_correo_mailjet.php'; // Usa aquí tu código de envío
+        enviarCodigo($correo, $codigo); // Debes tener una función así en ese archivo
 
-        $conexion->close();
+        $mensaje = "codigo_enviado";
+    } else {
+        $mensaje = "correo_no_encontrado";
     }
+    $conexion->close();
 }
 ?>
 
+<!-- HTML para mostrar formulario -->
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificación</title>
-    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="/css/olvidar.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <title>Recuperar Contraseña</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-    </style>
 </head>
-
 <body>
-    <div class="container">
-        <img src="../imagenes/motoracer.png" alt="Fondo" class="fondo">
-        <img src="../imagenes/LOGO.png" alt="Logo" class="logo_inicio"
-            style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
-        <div class="barra"></div>
-
-        <h1>VERIFICACIÓN</h1>
-        <form name="formulario_recuperar" method="post" action="">
-
-            <div class="campo1"><label for="usuario">Usuario: </label><input type="text" name="usuario" id="usuario">
-            </div>
-            <?php
-            // Conectar a la base de datos
-            $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            if ($conexion->connect_error) {
-                die("Error de conexión: " . $conexion->connect_error);
-            }
-
-            // Obtener las opciones de preguntaSeguridad (ENUM)
-            $sql = "SHOW COLUMNS FROM usuario LIKE 'preguntaSeguridad'";
-            $resultado = $conexion->query($sql);
-
-            if ($resultado->num_rows > 0) {
-                $fila = $resultado->fetch_assoc();
-                // Extraer las opciones del ENUM
-                $opciones = explode("','", preg_replace("/(enum\('|'\))/", "", $fila['Type']));
-            }
-            ?>
-
-            <div class="campo1">
-                <label for="preguntaSeguridad">Pregunta de Seguridad:</label>
-                <select name="preguntaSeguridad" id="preguntaSeguridad" required>
-                    <option value="">Seleccione una pregunta de seguridad</option>
-                    <?php if (!empty($opciones)) { ?>
-                        <?php foreach ($opciones as $opcion) { ?>
-                            <option value="<?php echo $opcion; ?>">
-                                <?php echo $opcion; ?>
-                            </option>
-                        <?php } ?>
-                    <?php } ?>
-                </select><br>
-            </div>
-            <div class="campo1">
-                <label for="respuestaSeguridad">Respuesta:</label>
-                <input type="text" name="respuestaSeguridad" id="respuestaSeguridad" required>
-            </div>
-
-
-            <div class="button_container">
-                <button type="submit" name="verificar" class="boton">Verificar Respuesta</button>
-                <a href="../index.php" class="botonn">Inicio</a>
-            </div>
-
-        </form>
-    </div>
+    <form method="POST">
+        <label>Correo registrado:</label>
+        <input type="email" name="correo" required>
+        <button type="submit">Enviar código</button>
+    </form>
 
     <script>
-    const mensaje = "<?php echo $mensaje; ?>";
-
-    if (mensaje === "respuesta_incorrecta") {
-        Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Respuesta incorrecta.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    }
-</script>
+        const mensaje = "<?php echo $mensaje; ?>";
+        if (mensaje === "codigo_enviado") {
+            Swal.fire("Éxito", "Revisa tu correo electrónico", "success").then(() => {
+                window.location.href = "verificar_codigo.php?correo=<?php echo $_POST['correo']; ?>";
+            });
+        } else if (mensaje === "correo_no_encontrado") {
+            Swal.fire("Error", "Correo no registrado", "error");
+        }
+    </script>
 </body>
-
 </html>

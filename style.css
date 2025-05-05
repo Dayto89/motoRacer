@@ -284,7 +284,8 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 
 /* TABLETS */
-@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
     .container {
         flex-direction: column;
         padding: 20px;
@@ -339,7 +340,8 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     }
 }
 
-@media screen and (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+/* Vertical */
+@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
     .container {
         flex-direction: column;
         padding: 20px;
@@ -398,7 +400,8 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 
 /* MÓVILES */
-@media (max-width: 767px) and (orientation: landscape) {
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
     .container {
         flex-direction: column;
         padding: 15px;
@@ -410,6 +413,7 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
         width: 38%;
         height: auto;
         margin-left: 500px;
+        margin-top: 5%;
     }
 
     .barra {
@@ -417,9 +421,9 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     }
 
     h1 {
-        font-size: 28px;
-        margin-left: 45%;
-        margin-bottom: 35%;
+        font-size: 30px;
+        margin-left: 48%;
+        margin-bottom: 30%;
     }
 
     form {
@@ -428,7 +432,7 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     }
 
     .boton {
-        padding: 18px 30px;
+        padding: 10px 30px;
         font-size: 16px;
         margin-left: 0;
     }
@@ -445,10 +449,11 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
     form input[type="text"],
     form input[type="password"] {
-        height: 50px;
+        height: 35px;
         padding-left: 60px;
         font-size: 16px;
         margin-left: 0;
+        width: 250px;
     }
 
     .input-wrapper i {
@@ -458,7 +463,8 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     }
 }
 
-@media screen and (max-width: 767px) and (orientation: portrait) {
+/* Vertical */
+@media screen and (max-width: 870px) and (orientation: portrait) {
     .container {
         flex-direction: column;
         padding: 15px;

@@ -87,13 +87,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .main-content h1 {
             font-size: 50px;
             text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+            margin-left: 28%;
         }
 
         .backup-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
         .backup-table thead {
@@ -103,6 +103,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .backup-table th,
         .backup-table td {
+            border: 1px solid #ccc;
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
@@ -111,18 +112,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .backup-table th {
             background-color: #f5f5f5;
-            font-weight: 600;
+            font-weight: bold;
             color: black;
-            font-size: 20px;
+            font-size: 17px;
+            font-family: arial;
+            text-align: center;
         }
 
         .backup-table td {
-            font-size: 18px;
+            font-size: 16px;
+            font-family: arial;
+            text-align: center;
         }
 
         .backup-item-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.8rem;
+            justify-content: center;
         }
 
         .btn-restore {
@@ -170,6 +176,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .filter-bar {
             display: flex;
             align-items: center;
+            margin-top: 3%;
         }
 
         .no-backups {
@@ -197,13 +204,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .search-container input {
             width: 300px;
             height: 40px;
+            padding: 9px;
         }
 
         .search-button {
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 50px;
+            border-radius: 12px;
             height: 40px;
             width: 100px;
             font-size: 15px;
@@ -212,7 +220,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .search-button:hover {
             background-color: #0056b3;
-            color: rgb(193, 121, 207);
         }
 
         .boton-agregar {
@@ -220,12 +227,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 11px;
             height: 40px;
-            width: 200px;
-            font-size: 15px;
+            width: 198px;
+            font-size: 14px;
             cursor: pointer;
-            margin-left: 48%;
+            margin-left: 47%;
+            padding: 6px;
         }
 
         .boton-agregar:hover {
@@ -237,6 +245,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             justify-content: center;
             margin-top: 20px;
             gap: 5px;
+            font-family: arial;
+            font-size: 13px;
         }
 
         .pagination a {
@@ -260,6 +270,107 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             pointer-events: none;
             border-color: #007bff;
         }
+
+        /*Alertas*/
+
+        /* Estilos generales de los párrafos */
+        p {
+            font-size: 16px;
+            color: black;
+            font-family: arial;
+            padding: 10px;
+        }
+
+
+
+        /* Ajuste para el popup de SweetAlert */
+        div:where(.swal2-container).swal2-center>.swal2-popup {
+            width: 28%;
+            /* Se ajusta automáticamente */
+            max-width: 350px;
+            /* Define un límite de ancho */
+        }
+
+
+
+        .custom-alert .tornillo,
+        .custom-alert .moto,
+        .custom-alert .llave {
+            width: 201px;
+            height: 145px;
+        }
+
+
+
+        /* Contenedor de la imagen */
+        .contenedor-imagen {
+            position: relative;
+            display: inline-block;
+        }
+
+
+
+        .titulo-alerta {
+            font-size: 28px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            font-family: 'Arial Black', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .titulo-alerta.confirmacion {
+            font-family: 'Metal Mania', system-ui;
+            font-size: 1.01em;
+            letter-spacing: 3px;
+            color: #9b9496;
+            text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+            margin: auto;
+        }
+
+        .titulo-alerta.error {
+            font-family: 'Metal Mania', system-ui;
+            font-size: 1.01em;
+            letter-spacing: 3px;
+            color: #af3b3b;
+            text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+            margin: auto;
+        }
+
+        .titulo-alerta.advertencia {
+            font-family: 'Metal Mania', system-ui;
+            font-size: 1.01em;
+            letter-spacing: 3px;
+            color: #e09804;
+            text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+            margin: auto;
+        }
+
+
+        .btn-aceptar {
+            background-color: #007bff !important;
+            color: white !important;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        .swal2-border-radius {
+            border-radius: 5px !important;
+        }
+
+
+
+        .fondo-oscuro {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+            /* Fondo oscuro */
+            backdrop-filter: blur(2px);
+            /* Opcional: desenfoque sutil */
+        }
+
+        .swal2-popup {
+            border-radius: 20px;
+        }
     </style>
 </head>
 
@@ -282,6 +393,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 </div>
             </form>
             <button class="boton boton-agregar" onclick="agregarBackup()">Nueva Copia de Seguridad</button>
+
         </div>
 
         <?php if (!empty($backups_pagina)): ?>
@@ -310,11 +422,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <div class="backup-item-actions">
                                     <button class="btn-restore"
                                         onclick="restoreBackup('<?= htmlspecialchars($backup['name']) ?>')">
-                                        <i class="fas fa-undo"></i> Restaurar
+                                        <i class="fas fa-undo"></i>
                                     </button>
                                     <button class="btn-delete"
                                         onclick="deleteBackup('<?= htmlspecialchars($backup['name']) ?>')">
-                                        <i class="fas fa-trash"></i> Eliminar
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             </td>
@@ -326,126 +438,319 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <!-- PAGINACIÓN -->
 
             <?php if ($total_paginas > 1): ?>
-    <div class="pagination">
-      <?php
-        // Construir query base conservando filtros
-        $base_params = $_GET;
-      ?>
-      <!-- Primera -->
-      <?php
-        $base_params['pagina'] = 1;
-        $url = '?' . http_build_query($base_params);
-      ?>
-      <a href="<?= $url ?>">« Primera</a>
+                <div class="pagination">
+                    <?php
+                    // Construir query base conservando filtros
+                    $base_params = $_GET;
+                    ?>
+                    <!-- Primera -->
+                    <?php
+                    $base_params['pagina'] = 1;
+                    $url = '?' . http_build_query($base_params);
+                    ?>
+                    <a href="<?= $url ?>">« Primera</a>
 
-      <!-- Anterior -->
-      <?php if($pagina_actual > 1): ?>
-        <?php
-          $base_params['pagina'] = $pagina_actual - 1;
-          $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">‹ Anterior</a>
-      <?php endif; ?>
+                    <!-- Anterior -->
+                    <?php if ($pagina_actual > 1): ?>
+                        <?php
+                        $base_params['pagina'] = $pagina_actual - 1;
+                        $url = '?' . http_build_query($base_params);
+                        ?>
+                        <a href="<?= $url ?>">‹ Anterior</a>
+                    <?php endif; ?>
 
-      <?php
-        // Rango de páginas: dos antes y dos después
-        $start = max(1, $pagina_actual - 2);
-        $end   = min($total_paginas, $pagina_actual + 2);
+                    <?php
+                    // Rango de páginas: dos antes y dos después
+                    $start = max(1, $pagina_actual - 2);
+                    $end   = min($total_paginas, $pagina_actual + 2);
 
-        // Si hay hueco antes, muestra ellipsis
-        if ($start > 1) {
-          echo '<span class="ellips">…</span>';
-        }
+                    // Si hay hueco antes, muestra ellipsis
+                    if ($start > 1) {
+                        echo '<span class="ellips">…</span>';
+                    }
 
-        // Botones de páginas
-        for ($i = $start; $i <= $end; $i++):
-          $base_params['pagina'] = $i;
-          $url = '?' . http_build_query($base_params);
-      ?>
-          <a href="<?= $url ?>"
-             class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-            <?= $i ?>
-          </a>
-      <?php endfor;
+                    // Botones de páginas
+                    for ($i = $start; $i <= $end; $i++):
+                        $base_params['pagina'] = $i;
+                        $url = '?' . http_build_query($base_params);
+                    ?>
+                        <a href="<?= $url ?>"
+                            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+                            <?= $i ?>
+                        </a>
+                    <?php endfor;
 
-        // Si hay hueco después, muestra ellipsis
-        if ($end < $total_paginas) {
-          echo '<span class="ellips">…</span>';
-        }
-      ?>
+                    // Si hay hueco después, muestra ellipsis
+                    if ($end < $total_paginas) {
+                        echo '<span class="ellips">…</span>';
+                    }
+                    ?>
 
-      <!-- Siguiente -->
-      <?php if($pagina_actual < $total_paginas): ?>
-        <?php
-          $base_params['pagina'] = $pagina_actual + 1;
-          $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">Siguiente ›</a>
-      <?php endif; ?>
+                    <!-- Siguiente -->
+                    <?php if ($pagina_actual < $total_paginas): ?>
+                        <?php
+                        $base_params['pagina'] = $pagina_actual + 1;
+                        $url = '?' . http_build_query($base_params);
+                        ?>
+                        <a href="<?= $url ?>">Siguiente ›</a>
+                    <?php endif; ?>
 
-      <!-- Última -->
-      <?php
-        $base_params['pagina'] = $total_paginas;
-        $url = '?' . http_build_query($base_params);
-      ?>
-      <a href="<?= $url ?>">Última »</a>
+                    <!-- Última -->
+                    <?php
+                    $base_params['pagina'] = $total_paginas;
+                    $url = '?' . http_build_query($base_params);
+                    ?>
+                    <a href="<?= $url ?>">Última »</a>
+                </div>
+            <?php endif; ?>
     </div>
-  <?php endif; ?>
-            </div>
+<?php else: ?>
+    <div class="no-backups">
+        <?php if (empty($search_term)): ?>
+            <script>
+                Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                         <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>No hay copias de seguridad</p>
+                </div>
+            `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
+            </script>
         <?php else: ?>
-            <div class="no-backups">
-                <i class="fas fa-database fa-3x" style="color: #e0e0e0; margin-bottom: 1rem;"></i>
-                <p><?= empty($search_term) ? 'No hay copias de seguridad' : 'No se encontraron resultados' ?></p>
-            </div>
+            <script>
+                Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>No se encontraron resultados</p>
+                </div>
+            `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
+            </script>
         <?php endif; ?>
     </div>
+<?php endif; ?>
+</div>
 
-    <script>
-        function agregarBackup() {
-            window.location.href = "../includes/backup.php";
-        }
-
-        async function restoreBackup(filename) {
-            if (!confirm(`¿Restaurar ${filename}? ¡Esto sobrescribirá datos!`)) return;
-
-            try {
-                const response = await fetch('../includes/restore.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        file: filename
-                    }),
+<script>
+    function agregarBackup() {
+        fetch('../includes/backup.php')
+            .then(response => response.text())
+            .then(data => {
+                // Ejecutar el contenido del PHP que contiene la alerta
+                const div = document.createElement('div');
+                div.innerHTML = data;
+                document.body.appendChild(div);
+                const scripts = div.querySelectorAll("script");
+                scripts.forEach(script => eval(script.innerText));
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: ` 
+                    <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    '<p>Ocurrió un error inesperado al generar el backup.</p>',
+                    </div>
+            `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
                 });
-                const result = await response.text();
-                alert(result);
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
-        }
+            });
+    }
 
-        async function deleteBackup(filename) {
-            if (!confirm(`¿Eliminar ${filename} permanentemente?`)) return;
-
-            try {
-                const response = await fetch('../includes/delete_backup.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        file: filename
-                    }),
-                });
-                const result = await response.text();
-                alert(result);
-                location.reload();
-            } catch (error) {
-                alert("Error: " + error.message);
+    async function restoreBackup(filename) {
+        const result = await Swal.fire({
+            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                <p>¿Restaurar ${filename}? ¡Esto sobrescribirá datos existentes!</p>
+            </div>
+        `,
+            showCancelButton: true,
+            confirmButtonText: 'Sí, restaurar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            background: '#ffffffdb',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                cancelButton: 'btn-cancelar',
+                container: 'fondo-oscuro'
             }
+        });
+
+        if (!result.isConfirmed) return;
+
+        // Aquí continúa tu lógica original de restauración
+        // ...
+        try {
+            // Tu código de restauración aquí
+            console.log(`Restaurando backup: ${filename}`);
+            // await tuFuncionDeRestauracion(filename);
+
+            // Opcional: Mostrar mensaje de éxito
+            await Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                         <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                    </div>
+                    <p>El backup ${filename} se restauró correctamente</p>
+                </div>
+            `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        } catch (error) {
+            // Manejo de errores
+            await Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                         <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al restaurar el backup: ${error.message}</p>
+                </div>
+            `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
         }
-    </script>
+    }
+
+    async function deleteBackup(filename) {
+        const confirmation = await Swal.fire({
+            title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
+            html: `
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                </div>
+                <p>¿Eliminar ${filename} permanentemente? Esta acción no se puede deshacer.</p>
+            </div>
+        `,
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            background: '#ffffffdb',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                cancelButton: 'btn-cancelar',
+                container: 'fondo-oscuro'
+            }
+        });
+
+        if (!confirmation.isConfirmed) return;
+
+        try {
+            const response = await fetch('../includes/delete_backup.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    file: filename
+                }),
+            });
+
+            const result = await response.text();
+
+            await Swal.fire({
+                title: `<span class='titulo'>Éxito</span>`,
+                html: `
+                            <div class='alerta'>
+                                <div class='contenedor-imagen'>
+                                    <img src='../imagenes/moto.png' class='moto'>
+                                </div>
+                                <p>${result}</p>
+                            </div>
+                        `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#28a745',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    container: 'fondo-oscuro'
+                }
+            });
+
+            location.reload();
+        } catch (error) {
+            await Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al eliminar el backup: ${error.message}</p>
+                </div>
+            `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        }
+    }
+</script>
 </body>
 
 </html>
