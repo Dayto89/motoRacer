@@ -101,9 +101,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             --icon-bg: #FFFFFF;
             /* opcional: reafirma blanco si lo necesitas */
         }
-    </style>
-    <script>
         
+    </style>
+    
+    <script>
+
     </script>
 </head>
 
@@ -122,24 +124,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </form>
         </div>
 
-        <ul class="breadcrumb">
-            <?php
-            $stmt = $conexion->prepare("SELECT * FROM categoria");
-            $stmt->execute();
-            $resultado = $stmt->get_result();
+        <div style="position: relative; max-width: 1360px; margin-left: 40px; background-color: #ffffff; border-radius: 5px; height: 93px;">
 
-            if ($resultado->num_rows > 0) {
-                while ($fila = $resultado->fetch_assoc()) {
-                    // Al ser presionado alguna categoria se muestra los productos de esa categoria
-                    echo "<li><a class='brand' name='categoria' href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
+            <!-- Botón izquierda -->
+            <button id="btnLeft" onclick="scrollCategorias(-200)" style="position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; display: none; background: none; border: none;">
+                <animated-icons
+                    src="https://animatedicons.co/get-icon?name=Arrow%20Left&style=minimalistic&token=fa13e0db-49ee-4fc6-88d0-609496daffac"
+                    trigger="click"
+                    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#536DFEFF","group-2":"#536DFE","background":"#FFFFFF"}}'
+                    height="60"
+                    width="60"></animated-icons>
+            </button>
+
+            <!-- UL con scroll horizontal limitado -->
+            <ul id="categoriaScroll" class="breadcrumb" style="max-width: 1250px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; display: flex;">
+                <?php
+                $stmt = $conexion->prepare("SELECT * FROM categoria");
+                $stmt->execute();
+                $resultado = $stmt->get_result();
+
+                if ($resultado->num_rows > 0) {
+                    while ($fila = $resultado->fetch_assoc()) {
+                        echo "<li><a class='brand' name='categoria' href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
+                    }
+                } else {
+                    echo "<li>No hay categorías disponibles</li>";
                 }
-            } else {
-                echo "<li>No hay categorías disponibles</li>";
-            }
 
-            $stmt->close();
-            ?>
-        </ul>
+                $stmt->close();
+                ?>
+            </ul>
+
+            <!-- Botón derecha -->
+            <button id="btnRight" onclick="scrollCategorias(200)" style="position: absolute; right: -7px; top: 50%; transform: translateY(-50%); z-index: 10; display: none; background: none; border: none;">
+                <animated-icons
+                    src="https://animatedicons.co/get-icon?name=Arrow&style=minimalistic&token=70afdd31-5888-42d6-82ce-d112a7e2fa11"
+                    trigger="hover"
+                    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#536DFEFF","group-2":"#536DFE"}}'
+                    height="60"
+                    width="60">
+                </animated-icons>
+            </button>
+
+        </div>
 
         <div class="products">
             <?php
@@ -236,6 +263,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <script>
         let total = 0;
+        const scrollContainer = document.getElementById('categoriaScroll');
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+
+        function scrollCategorias(amount) {
+            scrollContainer.scrollLeft += amount;
+            updateButtonVisibility();
+        }
+
+        function updateButtonVisibility() {
+            const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+            btnLeft.style.display = scrollContainer.scrollLeft > 0 ? 'block' : 'none';
+            btnRight.style.display = scrollContainer.scrollLeft < maxScrollLeft ? 'block' : 'none';
+        }
+
+        window.addEventListener('resize', updateButtonVisibility);
+        scrollContainer.addEventListener('scroll', updateButtonVisibility);
+        window.addEventListener('load', updateButtonVisibility);
+
         // Funcion cobrar abre modal de metodo de pago
         function cobrar() {
             if (document.querySelectorAll("#listaResumen li").length === 0) {

@@ -1,144 +1,139 @@
 /* Reseteo y estilo global */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: "Metal Mania", system-ui;
-    background-image: url('fondoMotoRacer.png'); 
-    background-size: cover;
-    background-position: center;
-    
-}
-body::before {
-    
-    position: fixed;
-    width: 200%;
-    height: 200%;
-    z-index: -1;
-    background: black;
-    opacity: 0.6;
-}
-  
-  /* Título principal */
-  #categorias h1 {
-    font-size: 50px;
-    margin-top: 92px;
-    color: white;
-    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 921px;
-    letter-spacing: 5px;
-    padding: 18px;
-    letter-spacing: 5px;
-  }
-  
-  /* Contenedor principal */
-  .container {
-    background-color: rgb(174 174 174 / 59%);
-    padding: 44px;
-    border-radius: 15px;
-    max-width: 1079px;
-    margin-left: 482px;
-  }
-  
-  /* Botón para agregar categoría */
-  .btn-nueva-categoria {
-    background-color: #1167CC;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    padding: 13px 21px;
-    border: none;
-    border-radius: 11px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-bottom: -54px;
-  }
-  
-  .btn-nueva-categoria:hover {
-    background-color: #0056b3;
-  }
-  h3{
-    color: black;
-    color: rgb(0, 0, 0);
-    margin-left: 389px;
-    margin-top: -12px;
-    padding: initial;
-    margin-bottom: 30px;
-    font-size: 32px;
-    text-shadow: 2.8px -1px 0 #0056b3;
-  }
-  /* Tabla de categorías */
-  .category-table {
-    width: 100%;
-    
-  }
-  
-  .category-table td {
-    text-align: center;
-    font-family: Arial, sans-serif;
-    width: 225px;
-    padding: 5px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-  
-  .category-table th {
-    background-color: #98bde9;
-    color: #0b111a;
-  }
-  
-  .category-table tr:nth-child(even) {
-    background-color: #f9f9f9b7;
-    color: black;
-  }
-  
-  .category-table tr:nth-child(odd) {
-    background-color: rgb(33 32 32 / 59%);
-    color: white;
-  }
-  
-  .options {
-        display: flex;
-        gap: 39px;
-        margin-left: 260px;
-  }
- 
-  .btn-list, .btn-delete { 
-    padding: 4px 10px;
-    border: none;
-    border-radius: 15px;
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    font-size: 14px;
-    white-space: nowrap;
-    text-align: center;
-  }
-  
-  .btn-list {
-    background-color: #0965c7;
-    margin-left: 10px;
-    color: #000;
-    border: 2px solid #0b111a;
-    margin-right: 10px;
-  }
-  
-  .btn-list:hover {
-    background-color: #0056b3; /* Color de fondo al pasar el mouse sobre una fila */
-  }
-  
-  .btn-delete {
-    background-color: #fa163c;
-    margin-left: 10px;
-    order: 2px solid #0b111a;
-  }
-  
-  .btn-delete:hover {
-    background-color: #a71d2a;
-  }
-  
-  
+body {
+  font-family: "Metal Mania", system-ui;
+  background-image: url("fondoMotoRacer.png");
+  background-size: cover;
+  background-position: center;
+}
+body::before {
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  z-index: -1;
+  background: black;
+  opacity: 0.6;
+}
+
+/* Título principal */
+#categorias h1 {
+  font-size: 50px;
+  margin-top: 92px;
+  color: white;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
+  margin-left: 921px;
+  letter-spacing: 5px;
+  padding: 18px;
+  letter-spacing: 5px;
+}
+
+/* Contenedor principal */
+.container {
+  background-color: rgb(174 174 174 / 59%);
+  padding: 44px;
+  border-radius: 15px;
+  max-width: 1079px;
+  margin-left: 482px;
+}
+
+/* Botón para agregar categoría */
+.btn-nueva-categoria {
+  background-color: #1167cc;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 13px 21px;
+  border: none;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.btn-nueva-categoria:hover {
+  background-color: #0056b3;
+}
+h3 {
+  color: black;
+  color: rgb(0, 0, 0);
+  margin-left: 389px;
+  margin-top: -12px;
+  padding: initial;
+  margin-bottom: 30px;
+  font-size: 32px;
+  text-shadow: 2.8px -1px 0 #007bff;
+}
+/* Tabla de categorías */
+.category-table {
+  width: 100%;
+}
+
+.category-table td {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  width: 225px;
+  padding: 5px;
+}
+
+.category-table th {
+  background-color: #98bde9;
+  color: #0b111a;
+}
+
+.category-table tr:nth-child(even) {
+  background-color: #f9f9f9b7;
+  color: black;
+}
+
+.category-table tr:nth-child(odd) {
+  background-color: rgb(33 32 32 / 59%);
+  color: white;
+}
+
+.options {
+  display: flex;
+  gap: 39px;
+  margin-left: 260px;
+}
+
+.btn-list,
+.btn-delete {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 15px;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.btn-list {
+  background-color: #0965c7;
+  margin-left: 10px;
+  border: 2px solid #0b111a;
+  margin-right: 10px;
+}
+
+.btn-list:hover {
+  background-color: #0056b3; /* Color de fondo al pasar el mouse sobre una fila */
+}
+
+.btn-delete {
+  background-color: #fa163c;
+  margin-left: 10px;
+  order: 2px solid #0b111a;
+}
+
+.btn-delete:hover {
+  background-color: #a71d2a;
+}
 
 /* Ocultar el modal por defecto */
 .modal {
@@ -172,74 +167,78 @@ body::before {
 }
 /* Contenido del modal */
 .modal-content {
-background-color: rgba(200, 200, 200, 0.76);
-padding: 20px;
-border-radius: 10px;
-width: 400px;
-text-align: center;
-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-animation: slideIn 0.3s ease-out;
+  background-color:rgb(200 200 200 / 75%);
+  padding: 20px;
+  border-radius: 10px;
+  width: 700px;        /* Tamaño fijo */
+  height: 486px;       /* Tamaño fijo */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+  overflow: hidden;    /* Oculta scroll dentro del modal */
 }
 
+#lista-productos {
+    max-height: 361px;
+    overflow-y: auto;
+    padding-right: 20px;
+}
+.modal-content h2 {
+  font-size: 32px;
+  margin-top: -7px;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 28px;
+}
 
-  
-  .modal-content h2 {
+/* Botones del modal */
+.modal-buttons {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+}
 
-    font-size: 32px;
-    margin-top: -7px;
-    color: white;
-    text-shadow:4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0; 
-    margin-left: 13px;
-    letter-spacing: 5px;
-    padding: 28px;
-    
-  }
+#btnCancelar {
+  background-color: #df2f2f;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
 
-  /* Botones del modal */
-  .modal-buttons {
-    display: flex;
-    gap: 34px;
-    justify-content: center;
-    border-radius: 10px;
-    font-weight: bold;
-  }
-  
-  #btnCancelar {
-    background-color: #df2f2f;
-    color: white;
-    padding: 10px 15px;
-    cursor: pointer;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  #btnCancelar:hover {
-    background-color: #a71d2a;
-  }
-  
-  button[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    cursor: pointer;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  .form-group label{
-    font-family: Arial, Helvetica, sans-serif;
-    color: black;
-    size: 50px;
-    font-weight: bold;
-  }
-  /* Estilo para los inputs del formulario */
+#btnCancelar:hover {
+  background-color: #a71d2a;
+}
+
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+.form-group label {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  size: 50px;
+  font-weight: bold;
+}
+/* Estilo para los inputs del formulario */
 input[type="text"] {
   width: 89%;
   padding: 8px;
@@ -251,88 +250,82 @@ input[type="text"] {
   margin-bottom: 18px;
 }
 
-
 .bx-tada {
   color: #fdfcfc;
   transition: color 0.3s;
 }
 /*Alertas*/
 
-  
-  /* Estilos generales de los párrafos */
-  p {
-    font-size: 16px;
-    color: black;
-    font-family: arial;
-    padding: 10px;
-  }
-  
-
-  
-  /* Ajuste para el popup de SweetAlert */
-  div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%; /* Se ajusta automáticamente */
-    max-width: 350px; /* Define un límite de ancho */
-  }
-  
-  
-
-.custom-alert .tornillo, .custom-alert .moto, .custom-alert .llave {
-    width: 201px;
-    height: 145px;
+/* Estilos generales de los párrafos */
+p {
+  font-size: 16px;
+  color: black;
+  font-family: arial;
+  padding: 10px;
 }
 
-  
-  
-  /* Contenedor de la imagen */
-  .contenedor-imagen {
-    position: relative;
-    display: inline-block;
-  }
+/* Ajuste para el popup de SweetAlert */
+div:where(.swal2-container).swal2-center > .swal2-popup {
+  width: 28%; /* Se ajusta automáticamente */
+  max-width: 350px; /* Define un límite de ancho */
+}
 
+.custom-alert .tornillo,
+.custom-alert .moto,
+.custom-alert .llave {
+  width: 201px;
+  height: 145px;
+}
 
+/* Contenedor de la imagen */
+.contenedor-imagen {
+  position: relative;
+  display: inline-block;
+}
 
 .titulo-alerta {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 10px;
-    font-family: 'Arial Black', sans-serif;
-    letter-spacing: 1px;
+  font-size: 28px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+  font-family: "Arial Black", sans-serif;
+  letter-spacing: 1px;
 }
 
 .titulo-alerta.confirmacion {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #9b9496;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+  font-family: "Metal Mania", system-ui;
+  font-size: 1.01em;
+  letter-spacing: 3px;
+  color: #9b9496;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
+  margin: auto;
 }
 .titulo-alerta.error {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #af3b3b;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+  font-family: "Metal Mania", system-ui;
+  font-size: 1.01em;
+  letter-spacing: 3px;
+  color: #af3b3b;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
+  margin: auto;
 }
 .titulo-alerta.advertencia {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color:#e09804;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+  font-family: "Metal Mania", system-ui;
+  font-size: 1.01em;
+  letter-spacing: 3px;
+  color: #e09804;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
+  margin: auto;
 }
 
-
 .btn-aceptar {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
+  background-color: #007bff !important;
+  color: white !important;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
 }
 
 /* Botón de "Sí, eliminar" */
@@ -353,19 +346,90 @@ input[type="text"] {
   font-size: 1em;
 }
 
-
-
 .swal2-border-radius {
-    border-radius: 5px !important;
+  border-radius: 5px !important;
 }
 
-
-
 .fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
-    backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
+  backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
 }
 
 .swal2-popup {
-    border-radius: 20px;
+  border-radius: 20px;
 }
+
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+}
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+}
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+}
+
+/* Estilos específicos para la tabla de productos dentro del modal */
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+}
+
+.productos-table th,
+.productos-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.productos-table th {
+  background-color: #98bde9;
+  color: #0b111a;
+  font-weight: bold;
+}
+
+.productos-table tr:nth-child(even) {
+  background-color: #f9f9f9b7;
+  color: black;
+}
+
+.productos-table tr:nth-child(odd) {
+  background-color: rgb(33 32 32 / 59%);
+  color: white;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  color: white;
+  z-index: 10;
+}
+
+.close i {
+  font-size: 18px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  border: 2px solid #ffffff;
+  padding: 6px;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+.close i:hover {
+  background: #c00a0a;
+}
+

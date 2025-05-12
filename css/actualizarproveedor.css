@@ -343,6 +343,29 @@ h1 {
     border-radius: 20px;
 }
 
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+
+}
+
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+
+}
+
   
   
   

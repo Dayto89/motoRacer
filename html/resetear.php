@@ -1,9 +1,14 @@
 <?php
+session_start();
+if (!isset($_SESSION['correo'])) {
+    header("Location: ../index.php");
+    exit;
+}
 $mensaje = null;  // Variable para almacenar el estado del mensaje
 
 if ($_POST) {
     // Código para restablecer la contraseña
-    $correo = $_POST['correo'];
+    $correo = $_SESSION['correo'];
     $nueva_contrasena = $_POST['nueva_contrasena'];
     $confirmar_contrasena = $_POST['confirmar_contrasena'];
 
@@ -17,6 +22,8 @@ if ($_POST) {
         $sql = "UPDATE usuario SET contraseña='$nueva_contrasena_hashed', codigo_recuperacion=NULL WHERE correo='$correo'";
         if ($conexion->query($sql) === TRUE) {
             $mensaje = 'exito_restablecer_contrasena';
+            session_unset();
+            session_destroy();
         } else {
             $mensaje = 'error_restablecer_contrasena';
         }
@@ -38,7 +45,7 @@ if ($_POST) {
     <link rel="stylesheet" href="/css/resetear.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -60,16 +67,16 @@ if ($_POST) {
             <div class="campo"> <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
                 <input type="password" name="confirmar_contrasena" id="confirmar_contrasena" required>
             </div>
-            <input type="hidden" name="correo" value='<?php echo $_GET["correo"]; ?>'>
+
 
             <div class="button_container">
                 <button type="submit" name="restablecer" class="boton">Restablecer Contraseña</button>
-                <a href="../index.php" class="botonn">Inicio</a>
+                
 
 
         </form>
     </div>
-   
+
     <script>
         //llamar la variable mensaje y alertas
 
@@ -77,8 +84,8 @@ if ($_POST) {
 
         if (mensaje === "exito_restablecer_contrasena") {
             Swal.fire({
-                title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-                html: `
+                    title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                    html: `
             <div class="custom-alert">
                 <div class="contenedor-imagen">
                     <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
@@ -86,15 +93,18 @@ if ($_POST) {
                 <p>Contraseña actualizada exitosamente.</p>
             </div>
         `,
-                background: 'hsl(0deg 0% 100% / 76%)',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
+                    background: 'hsl(0deg 0% 100% / 76%)',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                })
+                .then(() => {
+                    window.location.href = '../index.php';
+                });
         } else if (mensaje === "error_restablecer_contrasena") {
             Swal.fire({
                 title: '<span class="titulo-alerta error">Error</span>',
@@ -137,7 +147,7 @@ if ($_POST) {
             });
         }
     </script>
-   
+
 </body>
 
 </html>

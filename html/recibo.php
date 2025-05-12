@@ -6,8 +6,6 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
-
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);

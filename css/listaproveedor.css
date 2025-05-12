@@ -217,3 +217,123 @@ h1 {
   color: #ffffff;
   font-size: 18px;
 }
+
+ /* Estilos básicos para el modal */
+ .modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(0 0 0 / 78%);
+}
+
+
+
+.close {
+  position: absolute;
+  right: 31%;
+  top: 14%;
+  cursor: pointer;
+  font-size: 44px;
+  color: white;
+  margin-left: 13px;
+}
+
+.close i {
+  font-size: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: color 0.3sease-in-out;
+  border: 2px solid #ffffff;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.close i:hover {
+  background: #c00a0a; /* Cambia a rojo cuando pasas el mouse */
+}
+
+
+
+form#editForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px; /* Ajusta el espacio entre columnas */
+  row-gap: 10px; /* Ajusta el espacio entre filas */
+  align-items: center; /* Alinea los elementos verticalmente */
+}
+
+#editForm label {
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+  text-align: left; /* Alinea el texto a la izquierda */
+  padding-right: 10px; /* Añade espacio a la derecha */
+  margin-bottom: 5px; /* Ajusta el margen inferior */
+}
+
+form input[type="text"], #editForm select {
+  background-color: #ffffff;
+  border-radius: 23px;
+  height: 31px;
+  width: calc(100% - 34px); /* Ajusta el ancho al tamaño del contenedor */
+  color: #000;
+  padding: 0 17px; /* Añade espacio a la izquierda del input */
+  border: none;
+  font-size: 14px;
+  margin-bottom: 5px; /* Ajusta el margen inferior */
+}
+
+.modal-content {
+  width: 35%;
+
+  text-align: center;
+  background-color: rgb(174 174 174 / 46%);
+  padding: 23px;
+  border-radius: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 7%;
+  margin-left: 35%;
+}
+.modal-content h2 {
+  font-size: 38px;
+  margin-top: -5%;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 16px;
+}
+
+.modal { display: none; }
+.modal.show { display: block; }
+.modal.hide { display: none; }
+
+
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+
+}
+
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+
+}

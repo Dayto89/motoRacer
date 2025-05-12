@@ -17,7 +17,30 @@ if (isset($_POST['importar'])) {
     $nombreArchivo = $_FILES['archivoExcel']['name'];
 
     if (empty($archivo)) {
-        echo "⚠️ No se ha seleccionado ningún archivo.";
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                     title: `<span class='titulo-alerta advertencia'>Advertencia</span>`,
+                    html: `
+                        <div class='alerta'>
+                           <div class=\"contenedor-imagen\">
+                              <img src=\"../imagenes/tornillo.png\" alt=\"advertencia\" class=\"tornillo\">
+                          </div>
+                            <p>No se ha seleccionado nungún archivo.</p>
+                        </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                })
+            });
+        </script>";
         exit;
     }
 
@@ -109,7 +132,32 @@ if (isset($_POST['importar'])) {
             }
         }
 
-        echo "<script>alert('✅ Archivo importado y datos actualizados correctamente.');</script>";
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                     title: `<span class='titulo-alerta confirmacion'>Exito</span>`,
+                    html: `
+                        <div class='alerta'>
+                           <div class=\"contenedor-imagen\">
+                              <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                          </div>
+                            <p>Archivo importado y datos actualizados correctamente.'.</p>
+                        </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                }).then(() => {
+                    window.location.href = 'información.php'; // Redirige después de cerrar el alert
+                });
+            });
+        </script>";
         echo "<script>location.href='../html/crearproducto.php';</script>";
         exit();
     } catch (Exception $e) {

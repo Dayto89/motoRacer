@@ -16,28 +16,30 @@
     --breadcrumb-active-hover: #397f3b;
 }
 
-/* Estilos para Breadcrumb */
 ul.breadcrumb {
     padding: 8px 16px;
-    list-style: none;
-    background-color: var(--breadcrumb-bg);
+    list-style: none;  
     border-radius: 5px;
-    margin: 15px 0 30px 40px;
+    margin: 0px 0px 0px 55px;
+    display: flex;
+    gap: 10px;
 }
 
 ul.breadcrumb li {
-    display: inline;
+    display: inline-flex;
+    align-items: center;
 }
 
-ul.breadcrumb li+li:before {
-    padding: 8px;
-    color: var(--breadcrumb-text);
+ul.breadcrumb li + li::before {
     content: "/\00a0";
+    padding: 0 8px;
+    color: var(--breadcrumb-text);
 }
 
 ul.breadcrumb a {
     text-decoration: none;
     color: var(--breadcrumb-text);
+    white-space: nowrap;
 }
 
 ul.breadcrumb a.active {
@@ -48,6 +50,7 @@ ul.breadcrumb a.active {
 ul.breadcrumb a.active:hover {
     color: var(--breadcrumb-active-hover);
 }
+
 
 /* Contenedor principal */
 body {
@@ -242,12 +245,12 @@ body::before {
 .product-id {
     font-weight: bold;
     font-size: 18px;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
 }
 
 .product-price {
     font-size: 17px;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
 }
 
 .favorite-btn {
@@ -261,7 +264,6 @@ body::before {
 .sidebar-right {
     font-family: Arial, sans-serif;
     width: 350px;
-    background: var(--secondary);
     padding: 10px;
     font-size: 20px;
     flex-direction: column;
@@ -712,3 +714,34 @@ a.brand:after {
     border-radius: 20px;
 }
 
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+
+}
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+
+}
+/* Ocultar scrollbar en navegadores modernos */
+.tu-clase-contenedora {
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* IE y Edge */
+  }
+  
+  .tu-clase-contenedora::-webkit-scrollbar {
+    display: none;               /* Chrome, Safari y Opera */
+  }
+  

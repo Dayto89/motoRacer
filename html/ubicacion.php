@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
   $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
   
-  $query = "SELECT * FROM producto WHERE Ubicacion_codigo = '$codigo'";
+  $query = "SELECT codigo1, nombre, FROM producto WHERE Ubicacion_codigo = '$codigo'";
   $resultado = mysqli_query($conexion, $query);
   
   $productos = [];
@@ -133,7 +133,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <div class="actions">
         <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva ubicación</button>
       </div>
-      <h3>Lista de ubicaciones</h3>
+      
       <table class="category-table">
         <tbody id="tabla-ubicaciones">
           <?php
@@ -172,5 +172,155 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </form>
     </div>
   </div>
+
+  <!-- Modal de productos - Mismo estilo que el modal principal -->
+    <!-- Modal de productos -->
+    <div id="modalProductos" class="modal">
+        <div class="modal-content">
+            <span class="close">
+                <i class="fa-solid fa-x"></i>
+            </span>
+            <h2>Productos de esta Ubicacion</h2>
+            <div id="lista-productos">
+                <!-- Aquí se insertará la tabla o lista de productos -->
+            </div>
+        </div>
+    </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const tablaUbicaciones = document.getElementById("tabla-ubicaciones");
+    const a
+
+    if (!tablaUbicaciones) {
+        console.error("No se encontró el elemento con id 'tabla-ubicaciones'");
+        return;
+    }
+
+    tablaUbicaciones.addEventListener("click", function (event) {
+        const target = event.target;
+
+        if (target.classList.contains("btn-list")) {
+            const ubicacion_id = target.getAttribute("data-id");
+
+            fetch("../html/ubicacion.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `lista=1&codigo=${ubicacion_id}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.length > 0 ? `Productos de la ubicación:\n${data.map(p => `- ${p.nombre}`).join("\n")}` : "No hay productos en esta ubicación.");
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        if (target.classList.contains("btn-delete")) {
+            const codigo = target.getAttribute("data-id");
+
+           
+            Swal.fire({
+                title: '<span class="titulo-alerta advertencia">¿Esta seguro?</span>',
+                html: `
+                    <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                        </div>
+                        <p>Esta acción eliminará la ubicación.<br>¿Desea continuar?</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                background: '#ffffffdb',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-eliminaar',
+                    cancelButton: 'btn-cancelar',
+                    container: 'fondo-oscuro'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("../html/ubicacion.php", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `eliminar=1&codigo=${codigo}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '<span class="titulo-alerta confrimacion">Eliminado</span>',
+                                html: `
+                                    <div class="custom-alert">
+                                        <div class="contenedor-imagen">
+                                            <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                                        </div>
+                                        <p>Ubicación eliminada correctamente.</p>
+                                    </div>
+                                `,
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                title: '<span class="titulo-alerta error">Error</span>',
+                                html: `
+                                    <div class="custom-alert">
+                                        <div class="contenedor-imagen">
+                                            <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                        </div>
+                                        <p>No se pudo eliminar la ubicación.</p>
+                                    </div>
+                                `,
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta error">Error</span>',
+                            html: `
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                    </div>
+                                    <p>No se pudo eliminar la ubicación. Puede tener productos asociados.</p>
+                                </div>
+                            `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    });
+                }
+            });
+            }
+    });
+        
+});
+
+
+
+  </script>
 </body>
 </html>

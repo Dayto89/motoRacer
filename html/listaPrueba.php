@@ -1,148 +1,87 @@
 <?php
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
 if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-$busqueda = "";
-$busqueda_param = "%";
+// Construcción de filtros
+$filtros = [];
+$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
+$criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
 
-if (isset($_GET['busqueda'])) {
-  $busqueda = $_GET['busqueda'];
-  $busqueda_param = "%" . $busqueda . "%";
-}
-
-// Calcular total de resultados
-$sql_total = "SELECT COUNT(*) AS total FROM proveedor WHERE 
-    nit LIKE ? OR 
-    nombre LIKE ? OR 
-    telefono LIKE ? OR 
-    direccion LIKE ? OR 
-    correo LIKE ? OR 
-    estado LIKE ?";
-$stmt_total = mysqli_prepare($conexion, $sql_total);
-mysqli_stmt_bind_param($stmt_total, "ssssss", $busqueda_param, $busqueda_param, $busqueda_param, $busqueda_param, $busqueda_param, $busqueda_param);
-mysqli_stmt_execute($stmt_total);
-$result_total = mysqli_stmt_get_result($stmt_total);
-$fila_total = mysqli_fetch_assoc($result_total);
-$total_resultados = $fila_total['total'];
-
-// Paginación
-$por_pagina = 15;
-$total_paginas = ceil($total_resultados / $por_pagina);
-
-$pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-$pagina_actual = max(1, min($total_paginas, $pagina_actual));
-$offset = ($pagina_actual - 1) * $por_pagina;
-
-
-$consulta = "SELECT * FROM proveedor WHERE 
-    nit LIKE ? OR 
-    nombre LIKE ? OR 
-    telefono LIKE ? OR 
-    direccion LIKE ? OR 
-    correo LIKE ? OR 
-    estado LIKE ?
-    LIMIT ? OFFSET ?";
-$stmt = mysqli_prepare($conexion, $consulta);
-mysqli_stmt_bind_param($stmt, "ssssssii", $busqueda_param, $busqueda_param, $busqueda_param, $busqueda_param, $busqueda_param, $busqueda_param, $por_pagina, $offset);
-mysqli_stmt_execute($stmt);
-$resultado = mysqli_stmt_get_result($stmt);
-if (!$resultado) {
-  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
-
-// Agregar proveedor
-if ($_POST && isset($_POST['guardar'])) {
-  if (!$conexion) {
-    die("<script>alert('No se pudo conectar a la base de datos');</script>");
-  };
-  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
-  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-  $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
-  $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
-  $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
-  $estado = mysqli_real_escape_string($conexion, $_POST['estado']);
-
-  $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo, estado) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo', '$estado')";
-
-  $resultado = mysqli_query($conexion, $query);
-
-  if ($resultado) {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-    echo "<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
-            html: `
-                <div class=\"custom-alert\">
-                    <div class=\"contenedor-imagen\">
-                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                    </div>
-                    <p>Categoría agregada correctamente.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    });
-</script>";
-  } else {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-
-    $error = mysqli_error($conexion); // Captura el error fuera del script JS
-
-    echo "<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        title: '<span class=\"titulo-alerta error\">Error</span>',
-        html: `
-            <div class=\"custom-alert\">
-                <div class=\"contenedor-imagen\">
-                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                </div>
-                <p>La categoría no fue agregada.<br><small>$error</small></p>
-            </div>
-        `,
-        background: '#ffffffdb',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#007bff',
-        customClass: {
-            popup: 'swal2-border-radius',
-            confirmButton: 'btn-aceptar',
-            container: 'fondo-oscuro'
-        }
-    });
-});
-</script>";
+if (!empty($valor) && !empty($criterios)) {
+  foreach ($criterios as $criterio) {
+    $c = mysqli_real_escape_string($conexion, $criterio);
+    switch ($c) {
+      case 'nit':
+        $filtros[] = "p.nit LIKE '%$valor%'";
+        break;
+      case 'nombre':
+        $filtros[] = "p.nombre LIKE '%$valor%'";
+        break;
+      case 'telefono':
+        $filtros[] = "p.telefono LIKE '%$valor%'";
+        break;
+      case 'direccion':
+        $filtros[] = "p.direccion LIKE '%$valor%'";
+        break;
+      case 'correo':
+        $filtros[] = "p.correo LIKE '%$valor%'";
+        break;
+      case 'estado':
+        $filtros[] = "p.estado LIKE '%$valor%'";
+        break;
+    }
   }
 }
-// --- BORRADO AJAX ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['nit'])) {
-  header('Content-Type: application/json');
-  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
-  $stmt = $conexion->prepare("DELETE FROM proveedor WHERE nit = ?");
-  $stmt->bind_param("s", $nit);
-  $success = $stmt->execute() && $stmt->affected_rows > 0;
-  echo json_encode(['success' => $success]);
-  exit;
-}
 
+// PAGINACIÓN
+$por_pagina = 15;
+$pagina_actual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($pagina_actual - 1) * $por_pagina;
+
+// Conteo total con filtros
+$sql_count = "SELECT COUNT(*) AS total FROM proveedor p
+ WHERE 1=1";
+if (!empty($filtros)) {
+  $sql_count .= " AND (" . implode(' OR ', $filtros) . ")";
+}
+$res_count = mysqli_query($conexion, $sql_count);
+$row_count = mysqli_fetch_assoc($res_count);
+$total_reg = $row_count['total'];
+$total_paginas = ceil($total_reg / $por_pagina);
+
+// Consulta principal con LIMIT
+$consulta = "SELECT 
+  p.nit,
+  p.nombre, 
+  p.telefono, 
+  p.direccion,
+  p.correo, 
+  p.estado
+FROM proveedor p
+WHERE 1=1";
+if (!empty($filtros)) {
+  $consulta .= " AND (" . implode(' OR ', $filtros) . ")";
+}
+$consulta .= " LIMIT $por_pagina OFFSET $offset";
+
+$resultado = mysqli_query($conexion, $consulta);
+if (!$resultado) {
+  die("Error en consulta: " . mysqli_error($conexion));
+}
 
 // Actualización de datos del modal
 if (isset($_POST['nit'])) {
@@ -160,7 +99,7 @@ if (isset($_POST['nit'])) {
         telefono = '$telefono', 
         direccion = '$direccion', 
         correo = '$correo', 
-        estado = '$estado' 
+        estado = '$estado'
         WHERE nit = '$nit'";
   if (mysqli_query($conexion, $consulta_update)) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
@@ -185,7 +124,7 @@ if (isset($_POST['nit'])) {
         container: 'fondo-oscuro'
     }
                   }).then(() => {
-                      window.location.href = 'listaproveedor.php'; // Redirige después de cerrar el alert
+                      window.location.href = 'listaPrueba.php'; // Redirige después de cerrar el alert
                   });
               });
           </script>";
@@ -216,9 +155,41 @@ if (isset($_POST['nit'])) {
   }
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['nit'])) {
+  header('Content-Type: application/json');
+
+  // Debug: Registrar el código recibido
+  error_log("Código recibido: " . $_POST['nit']);
+
+  if (!$conexion) {
+    echo json_encode(['success' => false, 'error' => 'Error de conexión']);
+    exit;
+  }
+
+  $nit = $_POST['nit'];
+  $stmt = $conexion->prepare("DELETE FROM proveedor WHERE nit = ?");
+  $stmt->bind_param("s", $nit);
+
+  if (!$stmt->execute()) {
+    error_log("Error SQL: " . $stmt->error); // Registrar el error
+    echo json_encode(['success' => false, 'error' => $stmt->error]);
+    exit;
+  }
+
+  if ($stmt->affected_rows === 0) {
+    echo json_encode(['success' => false, 'error' => 'Proveedor no encontrado']);
+    exit;
+  }
+
+  echo json_encode(['success' => true]);
+  exit;
+}
+
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -227,25 +198,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inventario</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-  <link rel="stylesheet" href="../css/listaproveedor.css" />
+  <link rel="stylesheet" href="../css/inventario.css" />
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
-  <script src="/js/proveedor.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
-
     .pagination {
       display: flex;
       justify-content: center;
-      margin-top: 20px;
-      gap: 5px;
+      margin-top: 23px;
+      gap: 12px;
+      font-family: arial;
+      font-size: 11px;
     }
 
     .pagination a {
@@ -256,7 +224,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       color: #333;
       border-radius: 4px;
       transition: background-color 0.3s;
-      text-shadow: none;
     }
 
     .pagination a:hover {
@@ -269,79 +236,90 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       font-weight: bold;
       pointer-events: none;
       border-color: #007bff;
-      text-shadow: none;
-
     }
   </style>
 </head>
 
 <body>
-  <!-- Aquí se cargará el header -->
   <div class="sidebar">
     <div id="menu"></div>
   </div>
-
-
-  <!--Barra de búsqueda fija con efecto deslizante -->
-  <div class="search-bar">
-    <form method="GET" action="listaproveedor.php">
-      <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
-        <i class="bx bx-search-alt-2 icon"></i>
-      </button>
-      <input class="form-control" type="text" name="busqueda" placeholder="Buscar">
-    </form>
-
-  </div>
-
-  <!-- Contenido principal -->
   <div class="main-content">
+    <h1>Proveedores</h1>
+    <div class="filter-bar">
+      <details class="filter-dropdown">
+        <summary class="filter-button">Filtrar</summary>
+        <div class="filter-options">
+          <form method="GET" action="../html/listaproductosPrueba.php" class="search-form">
+            <div class="criteria-group">
+              <label><input type="checkbox" name="criterios[]" value="nit"> Nit</label>
+              <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
+              <label><input type="checkbox" name="criterios[]" value="telefono"> Teléfono</label>
+              <label><input type="checkbox" name="criterios[]" value="direccion"> Dirección</label>
+              <label><input type="checkbox" name="criterios[]" value="correo"> Correo</label>
+              <label><input type="checkbox" name="criterios[]" value="estado"> Estado</label>
+            </div>
 
+        </div>
+      </details>
+      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
+      <button class="search-button" type="submit">Buscar</button>
+      </form>
+      <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nuevo Proveedor</button>
+      <div class="export-button">
+        <form action="exportar_excel.php" method="post">
+          <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
+            <i class="fas fa-file-excel"></i>
+            <label> Exportar a Excel</label>
+          </button>
+        </form>
 
-    <!-- Sección del Inventario -->
-
-    <div id="inventario" class="form-section">
-      <h1>Proveedores</h1>
-      <div class="actions">
-        <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nuevo Proveedor</button>
-        <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
       </div>
+
+      <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
+
+
+    </div>
+
+    <?php if (mysqli_num_rows($resultado) > 0): ?>
       <table>
         <thead>
           <tr>
-            <th>Nit</th>
+            <th>Nir</th>
             <th>Nombre</th>
-            <th>Telefono</th>
-            <th>Dirección</th>  
+            <th>Teléfono</th>
+            <th>Dirección</th>
             <th>Correo</th>
             <th>Estado</th>
             <th>Acciones</th>
             <th><input type="checkbox" id="select-all"></th>
+
           </tr>
         </thead>
-        <tbody id="tabla-proveedores">
-          <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
+        <tbody>
+          <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
             <tr>
-              <td><?= $fila["nit"] ?? 'N/A'; ?></td>
-              <td><?= $fila["nombre"] ?? 'N/A'; ?></td>
-              <td><?= $fila["telefono"] ?? 'N/A'; ?></td>
-              <td><?= $fila["direccion"] ?? 'N/A'; ?></td>
-              <td><?= $fila["correo"] ?? 'N/A'; ?></td>
-              <td><?= $fila["estado"] ?? 'N/A'; ?></td>
+              <td><?= htmlspecialchars($fila['nit']) ?></td>
+              <td><?= htmlspecialchars($fila['nombre']) ?></td>
+              <td><?= htmlspecialchars($fila['telefono']) ?></td>
+              <td><?= htmlspecialchars($fila['direccion']) ?></td>
+              <td><?= htmlspecialchars($fila['correo']) ?></td>
+              <td><?= htmlspecialchars($fila['estado']) ?></td>
               <td class="acciones">
                 <button class="edit-button" data-id="<?= $fila['nit'] ?>">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button class="delete-button" data-id="<?= $fila['nit']  ?>" onclick="eliminarProducto('<?= $fila['nit'] ?>')"><i class="fa-solid fa-trash"></i></button>
+                <button class="delete-button" onclick="eliminarProducto('<?= $fila['nit'] ?>')"><i class="fa-solid fa-trash"></i></button>
               </td>
               <td>
                 <input type="checkbox" class="select-product" value="<?= $fila['nit'] ?>">
               </td>
             </tr>
-          <?php } ?>
+          <?php endwhile; ?>
         </tbody>
-
       </table>
-      <!-- Enlaces de paginación -->
+
+      <!-- Paginación -->
 
       <?php if ($total_paginas > 1): ?>
         <div class="pagination">
@@ -409,10 +387,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <a href="<?= $url ?>">Última »</a>
         </div>
       <?php endif; ?>
-    </div>
-  </div>
 
-  <!-- Modal -->
+    <?php else: ?>
+      <p>No se encontraron resultados.</p>
+    <?php endif; ?>
+
+      <!-- Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <h2>Nuevo Proveedor</h2>
@@ -439,38 +419,100 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
   </div>
 
-  <!-- Modal de edición -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <span class="close">
-        <i class="fa-solid fa-x"></i>
-      </span>
+    <!-- Modal de edición -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <span class="close">
+          <i class="fa-solid fa-x"></i>
+        </span>
 
-      <h2>Editar Producto</h2>
-      <form id="editForm" method="post">
-        <!-- Campo oculto para enviar el código 1 -->
-        <input type="hidden" id="editNit" name="nit">
-        <div class="campo"><label for="editNombre">Nombre:</label>
-          <input type="text" id="editNombre" name="nombre">
-        </div>
-        <div class="campo"> <label for="editTelefono">Teléfono:</label>
-          <input type="text" id="editTelefono" name="telefono">
-        </div>
-        <div class="campo"><label for="editDireccion">Dirección:</label>
-          <input type="text" id="editDireccion" name="direccion">
-        </div>
-        <div class="campo"> <label for="editCorreo">Correo:</label>
-          <input type="text" id="editCorreo" name="correo">
-        </div>
-        <div class="campo"><label for="editEstado">Estado:</label>
-          <input type="text" id="editEstado" name="estado">
-        </div>
-        <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
+        <h2>Editar Proveedor</h2>
+        <form id="editForm" method="post">
+          <!-- Campo oculto para enviar el código 1 -->
+          <input type="hidden" id="editNit" name="nit">
+          <div class="campo"><label for="editNitVisible">Nit:</label>
+            <input type="text" id="editNitVisible" readonly>
+          </div>
+          <div class="campo"><label for="editNombre">Nombre:</label>
+            <input type="text" id="editNombre" name="nombre">
+          </div>
+          <div class="campo"> <label for="editTelefono">Teléfono:</label>
+            <input type="text" id="editTelefono" name="telefono">
+          </div>
+          <div class="campo"><label for="editDireccion">Dirección:</label>
+            <input type="text" id="editDireccion" name="direccion">
+          </div>
+          <div class="campo"> <label for="editCorreo">Correo:</label>
+            <input type="text" id="editCorreo" name="correo">
+          </div>
+          <div class="campo"><label for="editEstado">Estado:</label>
+            <input type="text" id="editEstado" name="estado">
+          </div>
+          <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
 
-      </form>
+        </form>
+      </div>
     </div>
   </div>
   <script>
+        document.addEventListener("DOMContentLoaded", () => {
+      // 1) Abrir/Cerrar modal "Nuevo Proveedor"
+      const modal = document.getElementById("modal");
+      const openBtn = document.getElementById("btnAbrirModal");
+      const cancelBtn = document.getElementById("btnCancelar");
+
+      if (openBtn && modal && cancelBtn) {
+        // Asegúrate de que el modal tenga class="modal hide" inicialmente
+        openBtn.addEventListener("click", () => {
+          modal.classList.replace("hide", "show");
+          modal.style.display = "block";
+        });
+        cancelBtn.addEventListener("click", () => {
+          modal.classList.replace("show", "hide");
+          setTimeout(() => modal.style.display = "none", 300);
+        });
+        window.addEventListener("click", e => {
+          if (e.target === modal) {
+            modal.classList.replace("show", "hide");
+            setTimeout(() => modal.style.display = "none", 300);
+          }
+        });
+      }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+      // Seleccionamos todos los botones de edición
+      const editButtons = document.querySelectorAll('.edit-button');
+      // Modal y botón de cierre
+      const modal = document.getElementById('editModal');
+      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
+      const closeModal = modal.querySelector('.close');
+      // Listener para cada botón de edición
+      editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const row = this.closest('tr');
+          // Se asume que las columnas están en el siguiente orden:
+          // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
+          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
+          const nit = row.cells[0].innerText.trim();
+          document.getElementById('editNit').value = nit;
+          document.getElementById('editNitVisible').value = nit;
+          document.getElementById('editNombre').value = row.cells[1].innerText.trim();
+          document.getElementById('editTelefono').value = row.cells[2].innerText.trim();
+          document.getElementById('editDireccion').value = row.cells[3].innerText.trim();
+          document.getElementById('editCorreo').value = row.cells[4].innerText.trim();
+          document.getElementById('editEstado').value = row.cells[5].innerText.trim();
+          modal.style.display = 'block';
+        });
+      });
+
+
+
+      // Listener para cerrar el modal
+      closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+    });
+
     // Función para eliminar un producto con SweetAlert2
     function eliminarProducto(nit) {
       Swal.fire({
@@ -496,7 +538,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       }).then((result) => {
         if (result.isConfirmed) {
           // Enviar la solicitud al servidor
-          fetch('../html/listaproveedor.php', {
+          fetch('../html/listaPrueba.php', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -542,7 +584,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
                     </div>
-                    <p>Error al eliminar el producto.</p>
+                    <p>Error al eliminar el proveedor.</p>
                 </div>
             `,
                   background: '#ffffffdb',
@@ -563,65 +605,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
       });
     }
-    document.addEventListener("DOMContentLoaded", () => {
-      // 1) Abrir/Cerrar modal "Nuevo Proveedor"
-      const modal = document.getElementById("modal");
-      const openBtn = document.getElementById("btnAbrirModal");
-      const cancelBtn = document.getElementById("btnCancelar");
 
-      if (openBtn && modal && cancelBtn) {
-        // Asegúrate de que el modal tenga class="modal hide" inicialmente
-        openBtn.addEventListener("click", () => {
-          modal.classList.replace("hide", "show");
-          modal.style.display = "block";
-        });
-        cancelBtn.addEventListener("click", () => {
-          modal.classList.replace("show", "hide");
-          setTimeout(() => modal.style.display = "none", 300);
-        });
-        window.addEventListener("click", e => {
-          if (e.target === modal) {
-            modal.classList.replace("show", "hide");
-            setTimeout(() => modal.style.display = "none", 300);
-          }
-        });
-      }
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionamos todos los botones de edición
-      const editButtons = document.querySelectorAll('.edit-button');
-      // Modal y botón de cierre
-      const modal = document.getElementById('editModal');
-      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
-      const closeModal = modal.querySelector('.close');
-      // Listener para cada botón de edición
-      editButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const row = this.closest('tr');
-          // Se asume que las columnas están en el siguiente orden:
-          // 0: Nit, 1: Nombre, 2: Teléfono, 3: Dirección, 4: Correo, 5: Estado
-          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
-          const nit = row.cells[0].innerText.trim();
-          document.getElementById('editNit').value = nit;
-          document.getElementById('editNombre').value = row.cells[1].innerText.trim();
-          document.getElementById('editTelefono').value = row.cells[2].innerText.trim();
-          // Asumimos que Precio1 está en la columna 4 (ajusta si es necesario)
-          document.getElementById('editDireccion').value = row.cells[3].innerText.trim();
-          document.getElementById('editCorreo').value = row.cells[4].innerText.trim();
-          document.getElementById('editEstado').value = row.cells[5].innerText.trim();
-          // Para select de Categoría: usamos el data attribute de la celda correspondiente
-
-          modal.style.display = 'block';
-        });
-      });
-
-
-
-      // Listener para cerrar el modal
-      closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-      });
-    });
 
     // funcion de los checkboxes
     document.getElementById("select-all").addEventListener("change", function() {
@@ -658,7 +642,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
         if (selectedCodes.length === 0) {
-          alert("Selecciona al menos un producto para eliminar.");
+          alert("Selecciona al menos un proveedor para eliminar.");
           return;
         }
 
@@ -668,7 +652,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           html: `
             <div class="custom-alert">
                 <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                <p>Los productos se eliminarán de forma permanente.</p>
+                <p>Los proveedores se eliminarán de forma permanente.</p>
             </div>
         `,
           background: '#ffffffdb',
@@ -691,7 +675,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                   "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                  nits: selectedCodes
+                  codigos: selectedCodes
                 })
               })
               .then(response => response.json())

@@ -76,3 +76,26 @@ button {
     3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
         
  }
+
+ /* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+
+}
+
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+
+}

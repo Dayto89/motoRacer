@@ -7,7 +7,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {
@@ -29,11 +29,11 @@ if ($_POST && isset($_POST['permisos'])) {
   $id = $conexion->real_escape_string($_POST['id']);
   $query = "SELECT seccion, sub_seccion, permitido FROM accesos WHERE id_usuario = ?";
   $stmt = $conexion->prepare($query);
-  $stmt->bind_param("i", $id); 
+  $stmt->bind_param("i", $id);
   $stmt->execute();
   $result = $stmt->get_result();
   $permisos = [];
-  
+
   while ($row = $result->fetch_assoc()) {
     $permisos[$row['seccion']][] = [
       'sub_seccion' => $row['sub_seccion'],
@@ -73,26 +73,26 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
   <div id="menu"></div>
   <div class="fondo-opaco"></div>
-    
-    <h1>Gestión de Usuarios</h1>
-    <div class="container">
-      <div class="actions">
-        <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
-      </div>
-      <h3>Lista de Usuarios</h3>
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Rol</th>
-            <th>Permisos</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
+
+  <h1>Gestión de Usuarios</h1>
+  <div class="container">
+    <div class="actions">
+      <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
+    </div>
+    <h3>Lista de Usuarios</h3>
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Rol</th>
+          <th>Permisos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
         $sql = "SELECT * FROM usuario";
         $result = $conexion->query($sql);
         while ($row = $result->fetch_assoc()) {
@@ -101,62 +101,62 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           echo "<td>" . $row['nombre'] . "</td>";
           echo "<td>" . $row['apellido'] . "</td>";
           echo "<td>" . $row['rol'] . "</td>";
-          
+
           if ($row['rol'] == 'gerente') {
             echo "<td><button class='btn-permisos' onclick='abrirModal(" . $row['identificacion'] . ")' data-id='" . $row['identificacion'] . "'>  <i class='bx bxs-key'></i></button></td>";
           } else {
             echo "<td></td>";
           }
-          
+
           echo "<td><button class='btn-delete' data-id='" . $row['identificacion'] . "'>
           <i class='fa-solid fa-trash'></i>
           </button></td>";
-          
+
           echo "</tr>";
         }
         ?>
 
-</tbody>
-</table>
-</div>
+      </tbody>
+    </table>
+  </div>
 
 
 
-<!-- Modal -->
-<div id="modalPermisos" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="cerrarModal()">&times;</span>
-    <h2>Configurar Permisos</h2>
-    <form id="formPermisos" method="POST">
-      <input type="hidden" id="identificacion" name="identificacion">
-      
-      <?php $permisos = $permisos ?? []; ?>
-      <?php foreach ($permisos as $seccion => $subsecciones): ?>
-        
-        <div>
-          <label>
-            <strong><?php echo ucfirst($seccion); ?></strong>
-          </label><br>
-          <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
-            <?php foreach ($subsecciones as $subseccion): ?>
-              <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
-              <label>
-                <?php echo $subseccion['sub_seccion']; ?>
-              </label><br>
+  <!-- Modal -->
+  <div id="modalPermisos" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h2>Configurar Permisos</h2>
+      <form id="formPermisos" method="POST">
+        <input type="hidden" id="identificacion" name="identificacion">
+
+        <?php $permisos = $permisos ?? []; ?>
+        <?php foreach ($permisos as $seccion => $subsecciones): ?>
+
+          <div>
+            <label>
+              <strong><?php echo ucfirst($seccion); ?></strong>
+            </label><br>
+            <div id="<?php echo $seccion; ?>_subsecciones" style="display: none; margin-left: 20px;">
+              <?php foreach ($subsecciones as $subseccion): ?>
+                <input type="hidden" name="permisos[<?php echo $seccion . '_' . str_replace(' ', '_', strtolower($subseccion['sub_seccion'])); ?>]" value="0">
+                <label>
+                  <?php echo $subseccion['sub_seccion']; ?>
+                </label><br>
               <?php endforeach; ?>
             </div>
           </div>
-          <?php endforeach; ?>
-          
-          <button type="button" id="btnGuardar" onclick="guardarPermisos()">Guardar Permisos</button>
-          
-        </form>
-      </div>
+        <?php endforeach; ?>
+
+        <button type="button" id="btnGuardar" onclick="guardarPermisos()">Guardar Permisos</button>
+
+      </form>
     </div>
-      
-    
-    <script>
-     function guardarPermisos() {
+  </div>
+
+
+  <script>
+    function guardarPermisos() {
       var formData = new FormData(document.getElementById("formPermisos"));
 
       fetch("../html/guardar_permisos.php", {
@@ -168,7 +168,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           if (data.success) {
             Swal.fire({
               title: `<span class='titulo-alerta confirmacion'>Permisos actualizados</span>`,
-                        html: `
+              html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" class="moto">
@@ -176,19 +176,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>Los permisos se han actualizado correctamente.</p>
                             </div>
                         `,
-                         background: '#ffffffdb',
-                         confirmButtonText: 'Aceptar',
-                         confirmButtonColor: '#007bff',
-                         customClass: {
-                           popup: 'swal2-border-radius',
-                           confirmButton: 'btn-aceptar',
-                           container: 'fondo-oscuro'
-                        }
-                    })
-                  } else {
-                    Swal.fire({
-                      title: '<span class=\"titulo-alerta error\">Error</span>',
-                      html: `
+              background: '#ffffffdb',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#007bff',
+              customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+              }
+            })
+          } else {
+            Swal.fire({
+              title: '<span class=\"titulo-alerta error\">Error</span>',
+              html: `
                               <div class=\"custom-alert\">
                                   <div class='contenedor-imagen'>
                                         <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
@@ -196,49 +196,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>Error al actualizar los permisos.</p>
                             </div>
                         `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                    } );
-                }
-            })
+              background: '#ffffffdb',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#dc3545',
+              customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+              }
+            });
+          }
+        })
         .catch(error => console.error("Error:", error));
     }
 
 
     function abrirModal(id) {
-  let modal = document.getElementById("modalPermisos");
-  let modalContent = modal.querySelector(".modal-content");
+      let modal = document.getElementById("modalPermisos");
+      let modalContent = modal.querySelector(".modal-content");
 
-  document.getElementById("identificacion").value = id;
-  modal.style.display = "block";
-  modal.classList.add("mostrar");
-  modal.classList.remove("ocultar");
+      document.getElementById("identificacion").value = id;
+      modal.style.display = "block";
+      modal.classList.add("mostrar");
+      modal.classList.remove("ocultar");
 
-  let boton = modal.querySelector("button");
-  if (boton) {
-    boton.class = "btnGuardar";
-  } else {
-    console.error("No se encontró el botón dentro del modal.");
-  }
-}
+      let boton = modal.querySelector("button");
+      if (boton) {
+        boton.class = "btnGuardar";
+      } else {
+        console.error("No se encontró el botón dentro del modal.");
+      }
+    }
 
-function cerrarModal() {
-  let modal = document.getElementById("modalPermisos");
+    function cerrarModal() {
+      let modal = document.getElementById("modalPermisos");
 
-  modal.classList.add("ocultar");
-  modal.classList.remove("mostrar");
+      modal.classList.add("ocultar");
+      modal.classList.remove("mostrar");
 
-  // Esperamos a que termine la animación para ocultarlo
-  setTimeout(() => {
-    modal.style.display = "none";
-  }, 300);
-}
+      // Esperamos a que termine la animación para ocultarlo
+      setTimeout(() => {
+        modal.style.display = "none";
+      }, 300);
+    }
 
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -278,18 +278,18 @@ function cerrarModal() {
     })
 
     document.addEventListener('DOMContentLoaded', function() {
-    var btnDelete = document.querySelectorAll('.btn-delete');
-    btnDelete.forEach(function(btn) {
+      var btnDelete = document.querySelectorAll('.btn-delete');
+      btnDelete.forEach(function(btn) {
         btn.addEventListener('click', function() {
-            var userId = this.getAttribute('data-id');
-            eliminarUsuario(userId);
+          var userId = this.getAttribute('data-id');
+          eliminarUsuario(userId);
         });
-    });
+      });
 
-    function eliminarUsuario(userId) {
-      Swal.fire({
-    title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
-    html: `
+      function eliminarUsuario(userId) {
+        Swal.fire({
+          title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
+          html: `
         <div class="custom-alert">
             <div class="contenedor-imagen">
                 <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
@@ -297,32 +297,32 @@ function cerrarModal() {
             <p>El usuario será eliminado permanentemente.</p>
         </div>
     `,
-    background: '#ffffffdb',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#dc3545', // Rojo para botón eliminar
-    customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-eliminar',
-        cancelButton: 'btn-cancelar',
-        container: 'fondo-oscuro'
-    }
-    }).then((result) => {
-        if (result.isConfirmed) {
+          background: '#ffffffdb',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#dc3545', // Rojo para botón eliminar
+          customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-eliminar',
+            cancelButton: 'btn-cancelar',
+            container: 'fondo-oscuro'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
             fetch('gestiondeusuarios.php', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                  'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: 'eliminar=true&id=' + userId
-            })
-            .then(response => response.json())
-            .then(data => {
+              })
+              .then(response => response.json())
+              .then(data => {
                 if (data.success) {
-                    Swal.fire({
-                        title: `<span class="titulo">Usuario Eliminado</span>`,
-                        html: `
+                  Swal.fire({
+                    title: `<span class="titulo-alerta confirmacion">Usuario Eliminado</span>`,
+                    html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" class="moto">
@@ -330,18 +330,21 @@ function cerrarModal() {
                                 <p>Usuario eliminado correctamente.</p>
                             </div>
                         `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
-                        }
-                    }).then(() => {
-                        location.reload();
-                    });
+                    sbackground: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  }).then(() => {
+                    location.reload();
+                  });
                 } else {
-                    Swal.fire({
-                      title: `<span class="titulo">Error</span>`,
-                        html: `
+                  Swal.fire({
+                    title: `<span class="titulo">Error</span>`,
+                    html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/llave.png" class="llave">
@@ -349,22 +352,22 @@ function cerrarModal() {
                                 <p>Error al eliminar el usuario.</p>
                             </div>
                         `,
-                        showConfirmButton: true,
-                        confirmButtonText: "Aceptar",
-                        customClass: {
-                            confirmButton: "btn-aceptar"  // Clase personalizada para el botón de aceptar
-                        }
-                    } );
+                    showConfirmButton: true,
+                    confirmButtonText: "Aceptar",
+                    customClass: {
+                      confirmButton: "btn-aceptar" // Clase personalizada para el botón de aceptar
+                    }
+                  });
                 }
-            })
-            .catch(error => {
+              })
+              .catch(error => {
                 console.error("Error:", error);
-            });
-        }
-    });
-}
+              });
+          }
+        });
+      }
 
-});
+    });
 
 
 

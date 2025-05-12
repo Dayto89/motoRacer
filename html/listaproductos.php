@@ -81,10 +81,30 @@ $total_paginas = ceil($total_reg / $por_pagina);
 
 // Consulta principal con LIMIT
 $consulta = "SELECT 
-  p.codigo1, p.codigo2, p.nombre, p.iva,
-  p.precio1, p.precio2, p.precio3, p.cantidad, p.descripcion,
-  c.nombre AS categoria, m.nombre AS marca, u.nombre AS unidadmedida,
-  ub.nombre AS ubicacion, pr.nombre AS proveedor
+  p.codigo1,
+  p.codigo2, 
+  p.nombre, 
+  p.iva,
+  p.precio1, 
+  p.precio2, 
+  p.precio3, 
+  p.cantidad, 
+  p.descripcion,
+  p.Categoria_codigo    AS categoria_id,
+  c.nombre              AS categoria,
+  p.Marca_codigo        AS marca_id,
+  m.nombre              AS marca,
+  p.UnidadMedida_codigo AS unidad_id,
+  u.nombre              AS unidadmedida,
+  p.Ubicacion_codigo    AS ubicacion_id,
+  ub.nombre             AS ubicacion,
+  p.proveedor_nit       AS proveedor_id,
+  pr.nombre             AS proveedor,
+  c.nombre AS categoria, 
+  m.nombre AS marca, 
+  u.nombre AS unidadmedida,
+  ub.nombre AS ubicacion, 
+  pr.nombre AS proveedor
 FROM producto p
 LEFT JOIN categoria c ON p.Categoria_codigo = c.codigo
 LEFT JOIN marca m ON p.Marca_codigo = m.codigo
@@ -157,7 +177,7 @@ if (isset($_POST['codigo1'])) {
         container: 'fondo-oscuro'
     }
                   }).then(() => {
-                      window.location.href = 'listproductos.php'; // Redirige después de cerrar el alert
+                      window.location.href = 'listaproductos.php'; // Redirige después de cerrar el alert
                   });
               });
           </script>";
@@ -241,13 +261,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 23px;
-    gap: 12px;
-    font-family: arial;
-    font-size: 11px;
-}
+      display: flex;
+      justify-content: center;
+      margin-top: 23px;
+      gap: 12px;
+      font-family: arial;
+      font-size: 11px;
+    }
 
     .pagination a {
       padding: 8px 12px;
@@ -352,19 +372,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <td><?= htmlspecialchars($fila['precio3']) ?></td>
               <td><?= htmlspecialchars($fila['cantidad']) ?></td>
               <td><?= htmlspecialchars($fila['descripcion']) ?></td>
-              <td data-categoria-id="<?= htmlspecialchars($fila['Categoria_codigo']) ?>">
+              <td data-categoria-id="<?= htmlspecialchars($fila['categoria_id']) ?>">
                 <?= htmlspecialchars($fila['categoria']) ?>
               </td>
-              <td data-marca-id="<?= htmlspecialchars($fila['Marca_codigo']) ?>">
+              <td data-marca-id="<?= htmlspecialchars($fila['marca_id']) ?>">
                 <?= htmlspecialchars($fila['marca']) ?>
               </td>
-              <td data-unidadmedida-id="<?= htmlspecialchars($fila['UnidadMedida_codigo']) ?>">
+              <td data-unidadmedida-id="<?= htmlspecialchars($fila['unidad_id']) ?>">
                 <?= htmlspecialchars($fila['unidadmedida']) ?>
               </td>
-              <td data-ubicacion-id="<?= htmlspecialchars($fila['Ubicacion_codigo']) ?>">
+              <td data-ubicacion-id="<?= htmlspecialchars($fila['ubicacion_id']) ?>">
                 <?= htmlspecialchars($fila['ubicacion']) ?>
               </td>
-              <td data-proveedor-id="<?= htmlspecialchars($fila['proveedor_nit']) ?>">
+              <td data-proveedor-id="<?= htmlspecialchars($fila['proveedor_id']) ?>">
                 <?= htmlspecialchars($fila['proveedor']) ?>
               </td>
               <td class="acciones">
@@ -632,9 +652,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
         customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar",  // Clase personalizada para el botón de confirmación
-            cancelButton: "btn-cancelar"  // Clase personalizada para el botón de cancelar
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
+          cancelButton: "btn-cancelar" // Clase personalizada para el botón de cancelar
         }
       }).then((result) => {
         if (result.isConfirmed) {
@@ -665,22 +685,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                  <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
                             </div>
                         `,
-                        background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
                 }).then(() => {
                   location.reload(); // Recargar página después de cerrar la alerta
                 });
               } else {
                 // Mostrar alerta de error
                 Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
+                  title: '<span class="titulo-alerta error">Error</span>',
+                  html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -688,14 +708,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <p>Error al eliminar el producto.</p>
                 </div>
             `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
                 });
               }
             })
@@ -756,14 +776,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <p>Los productos se eliminarán de forma permanente.</p>
             </div>
         `,
-        background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
+          background: '#ffffffdb',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#007bff',
+          customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-aceptar',
+            container: 'fondo-oscuro'
+          }
         }).then((result) => {
           if (result.isConfirmed) {
             // Depuración: Ver datos antes de enviarlos
@@ -784,7 +804,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 console.log("Respuesta del servidor:", data); // Depuración
                 if (data.success) {
                   Swal.fire({
-                    title: '<span class="titulo-alerta confirmacion">Exito</span>',
+                      title: '<span class="titulo-alerta confirmacion">Exito</span>',
                       html: `
                             <div class="custom-alert">
                                 <div class="contenedor-imagen">
@@ -793,14 +813,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>Productos elimanados correctamente.</p>
                             </div>
                         `,
-                        background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
+                      background: '#ffffffdb',
+                      confirmButtonText: 'Aceptar',
+                      confirmButtonColor: '#007bff',
+                      customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                      }
                     })
                     .then(() => location.reload()); // Recargar página después de cerrar la alerta
                 } else {

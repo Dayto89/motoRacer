@@ -565,3 +565,35 @@ button {
 .swal2-popup {
     border-radius: 20px;
 }
+
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (max-width: 870px) and (orientation: portrait) {
+
+}
+
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
+
+}
+.modo-alto-contraste .container {
+  background-color: #faebd700;
+  border: none;
+
+}
+.modo-claro .container {
+  background-color: rgba(0, 0, 0, 0) !important;
+  border: none;
+}

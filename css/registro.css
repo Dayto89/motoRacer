@@ -265,3 +265,104 @@ input[type="submit"] {
     font-size: 14px;
     margin-bottom: 12px;
 }
+
+/*Alertas*/
+
+
+/* Estilos generales de los párrafos */
+p {
+    font-size: 16px;
+    color: black;
+    font-family: arial;
+    padding: 10px;
+}
+
+
+
+/* Ajuste para el popup de SweetAlert */
+div:where(.swal2-container).swal2-center>.swal2-popup {
+    width: 28%;
+    /* Se ajusta automáticamente */
+    max-width: 350px;
+    /* Define un límite de ancho */
+}
+
+
+/* Imágenes dentro del modal */
+.custom-alert .tornillo,
+.custom-alert .moto,
+.custom-alert .llave {
+    width: 175px;
+    height: 152px;
+}
+
+
+/* Contenedor de la imagen */
+.contenedor-imagen {
+    position: relative;
+    display: inline-block;
+}
+
+
+
+.titulo-alerta {
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+    font-family: 'Arial Black', sans-serif;
+    letter-spacing: 1px;
+}
+
+.titulo-alerta.confirmacion {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #9b9496;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+.titulo-alerta.error {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #af3b3b;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+.titulo-alerta.advertencia {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #e09804;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+
+.btn-aceptar {
+    background-color: #007bff !important;
+    color: white !important;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.swal2-border-radius {
+    border-radius: 5px !important;
+}
+
+
+
+.fondo-oscuro {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    /* Fondo oscuro */
+    backdrop-filter: blur(2px);
+    /* Opcional: desenfoque sutil */
+}
+
+.swal2-popup {
+    border-radius: 20px;
+}

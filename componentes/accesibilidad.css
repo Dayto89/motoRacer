@@ -149,17 +149,22 @@
   color: #FFFFFF !important;
   border-color: #FFFF00 !important;
 }
+.modo-alto-contraste .sidebar-header {
+  background-color: #000000;
+}
+.modo-alto-contraste .sidebar-header .logo {
+  filter: drop-shadow(0px 0px 5px #ffffff);
+}
+.modo-alto-contraste .menu{
+  background-color: #000000;
+}
 .modo-alto-contraste .container h3 {
-  margin-top: 5%;
   font-weight: normal;
 
 }
 .modo-alto-contraste .payment-methods h3 {
   margin-left: 0px;
-  margin-top: 0px;
   padding: initial;
-  margin-bottom: 30px;
-  text-shadow: none;
 }
 
 .modo-alto-contraste .icon{
@@ -176,7 +181,6 @@
 }
 .modo-alto-contraste .main-content{
   background-color: #dbdbdb00 !important;
-  margin-right: 0px;
 }
 
 /* Tablas */
@@ -188,8 +192,8 @@
 }
 .modo-alto-contraste tr:nth-child(odd),
 .modo-alto-contraste tr:nth-child(even) {
-    background-color: black !important;
-    color: rgb(255, 255, 255) !important;
+    background-color: black ;
+    color: rgb(255, 255, 255);
 }
 .modo-alto-contraste .category-table{
   background-color: rgba(245, 245, 220, 0);
@@ -222,7 +226,6 @@
 
 /* 2. Input de búsqueda */
 .modo-alto-contraste .form-control[type="text"] {
-  background-color: #000 !important;
   color: #FFF !important;
   border: 2px solid #ffffff !important;
 }
@@ -262,7 +265,11 @@
 .modo-alto-contraste button{
   border: 2px solid #ffffff;
   color: #ffffff;
-  margin-right:10px;
+  background-color: #000;
+}
+.modo-alto-contraste button:hover{
+  background-color: #5496c3;
+  color: #000;
 }
 .modo-alto-contraste .noti{
   border:none
@@ -302,7 +309,7 @@ Modo claro lista de productos
 .modo-claro .menu,
 .modo-claro .modal-content {
   background-color: white;
-  color: #000000 !important;
+  color: #000000;
   border-color: #FFFF00 !important;
 }
 .modo-claro #crearProveedor .campo label{
@@ -339,11 +346,13 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-claro animated-icons {
   filter: invert(1) brightness(1.5);
 }
+.modo-claro .noti animated-icons {
+  filter: none !important;
+}
 
 .modo-claro .main-content{
-  background-color: #dbdbdbc9 !important;
+
   background: #22222200;
-  margin-right: 0px;
 }
 .modo-claro .sidebar{
   background-color: #dbdbdbc9 !important;
@@ -376,7 +385,16 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-claro .acciones i{
   color: #000000 !important;
 }
-
+.modo-claro .content > div {
+  flex: 1;
+  margin-right: 40px;
+  padding: 43px;
+}
+.modo-claro .user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
 /* 1. Dropdown de filtros */
 .modo-claro .filter-button {
   background-color: #ffffff !important;
@@ -403,8 +421,8 @@ text-shadow: 1.5px 0 #1c51a0;
 
 .modo-claro button{
   border: 2px solid #000000;
-  color: #000000;
-  margin-right: 10px;
+  color: #ffffff;
+  font-weight: 600;
 }
 .modo-claro .noti{
   border: none;
@@ -467,14 +485,13 @@ text-shadow: 1.5px 0 #1c51a0;
 }
 .modo-claro .icon-button label{
   color: #000;
-  margin-right: 5%;
 }
 .modo-claro #crearProducto i {
   color: #000;
 }
 .modo-claro .campo label{
   color: #000;
-  text-shadow: none;
+  text-shadow: 2px 0 #608bcd;
   font-weight: bold;
 }
 .modo-claro .bx-tada{
@@ -495,12 +512,6 @@ text-shadow: 1.5px 0 #1c51a0;
   z-index: -1;
 }
 
-
-.modo-alto-contraste .container {
-  background-color: #000000 !important;
-  border: 2px solid #ffffff;
-}
-
 .modo-alto-contraste .actions button {
   background-color: #ffffff;
   color: rgb(0, 0, 0);
@@ -511,7 +522,13 @@ text-shadow: 1.5px 0 #1c51a0;
   color: #000;
   
 }
-
+.modo-alto-contraste .modo-claro .content {
+  display: flex
+;
+  justify-content: space-evenly;
+  margin-left: -200px;
+  margin-top: 10%; 
+}
 .modo-alto-contraste .button-container .boton button:hover{
   background-color: #007BFF;
 }
@@ -529,9 +546,6 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-alto-contraste .container h3 {
   background-color: #00000000;
   color: white;
-
-    margin-top: 10%
-  
 }
 
 .modo-alto-contraste .user-table td {
@@ -571,21 +585,6 @@ text-shadow: 1.5px 0 #1c51a0;
   background-color: #ffffff85;
   z-index: -1;
 }
-.modo-claro .main-content{
-  display: flex;
-    justify-content: space-evenly;
-    margin-left: -200px;
-    margin-top: 10%;
-}
-
-.modo-claro .container {
-  border: 2px solid #000000 ;
-}
-.modo-claro .content > div {
-  flex: 1;
-  margin-right: 40px;
-  padding: 43px;
-}
 .modo-claro .content {
   display: flex
 ;
@@ -606,18 +605,11 @@ text-shadow: 1.5px 0 #1c51a0;
   border: 2px solid #000000;
 }
 
-.modo-claro .container h3 {
-  padding: initial;
-  margin-bottom: 30px;
-}
-.modo-claro .plus-icon img {
-  margin: 6%;
-}
-
 .modo-claro .user-table td {
   background-color: #ffffff !important;
   color: rgb(0, 0, 0) !important;
 }
+
 
 /*
 =====================================================================================================================================================
@@ -627,12 +619,10 @@ text-shadow: 1.5px 0 #1c51a0;
 
 .modo-alto-contraste main {
   background-color: #000000c5;
-  border: 2px solid #ffffff;
-  margin-right: 0px;
+  border: 2px solid #ffffff; 
 }
 body.modo-alto-contraste {
   background-color: rgba(0, 0, 0, 0.7) !important;
-  width: 100%;
   height: 100vh;
 }
 
@@ -651,7 +641,6 @@ body.modo-alto-contraste {
   color: #000;
 }
 .modo-alto-contraste .sidebar-right{
-  background-color: #000000 !important;
   color: #ffffff !important;
 }
 .modo-alto-contraste .resumen-scroll{
@@ -662,9 +651,186 @@ body.modo-alto-contraste {
   color: #ffffff !important;
 }
 .modo-alto-contraste #listaResumen li{
-  background-color: #000000 !important;
-  color: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 .modo-alto-contraste .total{
   color: #ffffff !important;
 }
+.modo-alto-contraste .factura-header h2{
+  color: #000000 !important;
+}
+.modo-alto-contraste .factura {
+  color: #000000 !important;
+}
+
+.modo-alto-contraste .container {
+  background-color: #000000;
+  border: white 2px solid;
+}
+
+.modo-claro .container {
+  background-color: #ffffff;
+  border: black 2px solid;
+}
+.modo-alto-contraste .fondo{
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1), rgba(74, 174, 231, 0.8));
+}
+.modo-claro .fondo{
+  background: linear-gradient(0deg, rgba(255, 255, 255, 1), rgba(74, 174, 231, 0.8));
+}
+.modo-alto-contraste .notificaciones {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+.modo-alto-contraste #listaNotificaciones li{
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-top: 2px solid #ffffff !important;
+  border-bottom: 2px solid #ffffff !important;
+  border-right: 2px solid #ffffff !important;
+}
+.modo-claro #listaNotificaciones li{
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-top: 2px solid #000000 !important;
+  border-bottom: 2px solid #000000 !important;
+  border-right: 2px solid #000000 !important;
+}
+.modo-claro .notificaciones {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+.modo-alto-contraste .noti animated-icons {
+  filter: invert(1) brightness(1.5);
+}
+.modo-claro .campo select {
+  border: 2px solid #000000 !important;
+}
+.modo-claro .campo input {
+  border: 2px solid #000000 !important;
+}
+.modo-claro h3  {
+text-shadow: none;
+}
+.modo-claro .filter-options {
+  background-color: rgb(255, 255, 255);
+}
+.modo-alto-contraste .filter-options {
+  background-color: rgb(0, 0, 0);
+}
+.modo-claro .user-info
+ {
+  background-color: rgb(255, 255, 255);
+  border: #ffffff 2px solid;
+}
+.modo-claro .payment-box{
+  background-color: rgb(255, 255, 255);
+  border: #000000 2px solid;
+}
+.modo-claro .summary-section{
+  background-color: rgb(255, 255, 255);
+  border: #000000 2px solid;
+}
+.modo-claro #tarjeta{
+  border: none;
+}
+.modo-claro #otro.payment-box{
+  border: none;
+}
+
+
+.modo-alto-contraste .user-info
+ {
+  background-color: rgb(0, 0, 0);
+  border: #ffffff 2px solid;
+}
+.modo-alto-contraste .payment-box{
+  background-color: rgb(0, 0, 0);
+  border: #ffffff 2px solid !important;
+}
+.modo-alto-contraste .summary-section{
+  background-color: rgb(0, 0, 0);
+  border: #ffffff 2px solid;
+}
+.modo-alto-contraste#tarjeta{
+  border: none;
+}
+.modo-alto-contraste#otro.payment-box{
+  border: none;
+}
+.modo-alto-contraste .btn-cobrar{
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+.modo-alto-contraste .btn-cobrar:hover{
+  background-color: #007BFF;
+  color: #ffffff;
+  border: 2px solid #000000;
+}
+.modo-claro .btn-cobrar{
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+.modo-claro .btn-cobrar:hover{
+  background-color: #007BFF;
+  color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.modo-claro #listaResumen li{
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+.modo-alto-contraste #tarjeta{
+  border: none !important;
+}
+.modo-alto-contraste #otro.payment-box{
+  border: none !important;
+}
+.modo-claro h2{
+  color: #000000 !important;
+}
+.modo-claro .summary-section h3{
+  color: #000000 !important;
+}
+.modo-claro button{
+  background-color: #ffffff;
+  color: #000000;
+}
+.modo-claro p{
+  color: #ffffff;
+  border: #1f1f1f 2px solid;
+  background-color: #1f1f1f;
+}
+.modo-claro .summary-container{
+  background-color: #000000;
+}
+.modo-claro .summary-section h2{
+  color: white !important;
+} 
+.modo-claro .modo-claro .content > div{
+  border: 2px solid #000000;
+}
+.modo-claro #tipo_doc {
+  border: 2px solid #000000;
+}
+.modo-claro .tarjeta-content select {
+  border: 2px solid #000000;
+}
+.modo-claro .tarjeta-content input {
+  border: 2px solid #000000;
+}
+.modo-claro .otro-content select {
+  border: 2px solid #000000;
+  }
+  .modo-claro .otro-content input {
+    border: 2px solid #000000;
+  }
+  .modo-alto-contraste p{
+    color: #ffffff;
+    border: #1f1f1f 2px solid;
+    background-color: #000000;
+  }

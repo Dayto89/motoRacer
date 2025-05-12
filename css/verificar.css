@@ -65,6 +65,7 @@
     font-family: Arial, Helvetica, sans-serif;
     text-shadow: 2px 0 #1c51a0;
     white-space: nowrap;
+    margin-left: -23px;
   }
   
   form input {

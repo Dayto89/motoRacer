@@ -52,7 +52,7 @@ h1 {
 form {
     position: absolute;
     margin-top: 103px;
-    margin-left: 54%;
+    margin-left: 49%;
     z-index: 2;
 }
 
@@ -85,7 +85,7 @@ form input {
     display: flex;
     gap: 19px;
     margin-top: 16%;
-    margin-left: -14%;
+    margin-left: 5%;
 }
 
 .button_container .boton, .botonn {

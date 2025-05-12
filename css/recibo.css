@@ -132,6 +132,15 @@
             border-bottom: none;
         }
         
+        .modo-alto-contraste tr:nth-child(odd), .modo-alto-contraste tr:nth-child(even) {
+            background-color: rgb(255, 255, 255)!important;
+            color: #000 !important;
+        }
+
+        .modo-alto-contraste table, .modo-alto-contraste th, .modo-alto-contraste td {
+            background-color: white !important;
+            color: #000 !important;
+        }
         
         
       

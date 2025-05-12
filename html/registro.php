@@ -78,7 +78,30 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         }
 
         if ($contrasena !== $confirmar) {
-            echo "<script>alert('Las contraseñas no coinciden');</script>";
+            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+            echo "<script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire({
+                         title: '<span class=\"titulo-alerta error\">Error</span>',
+                            html: `
+                                <div class=\"custom-alert\">
+                                    <div class='contenedor-imagen'>
+                                          <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                    </div>
+                                    <p>Las contraseñas no coinciden.</p>
+                                </div>
+                            `,
+                            background: '#ffffffdb',
+                          confirmButtonText: 'Aceptar',
+                          confirmButtonColor: '#dc3545',
+                          customClass: {
+                              popup: 'swal2-border-radius',
+                              confirmButton: 'btn-aceptar',
+                              container: 'fondo-oscuro'
+                          }
+                        } );
+                                    });
+                                    </script>";
             exit;
         }
 
@@ -95,7 +118,6 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         $stmt->bind_param("ssssssssss", $identificacion, $tipoDocumento, $rol, $nombre, $apellido, $telefono, $direccion, $correo, $contrasenaHashed, $estado);
 
         if ($stmt->execute()) {
-            echo "<script>alert('Registro exitoso');</script>";
             $resultado = $conexion->query("INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES
                 ($identificacion, 'PRODUCTO', 'Crear Producto', 0),
                 ($identificacion, 'PRODUCTO', 'Actualizar Producto', 0),
@@ -114,14 +136,39 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
                 ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
                 ($identificacion, 'CONFIGURACIÓN', 'Copia de Seguridad', 0)");
+        
             if ($resultado) {
-                echo "<script>alert('Permisos guardados');</script>";
+                echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: '<span class=\"titulo-alerta confirmacion\">¡Registro exitoso!</span>',
+                            html: `
+                                <div class=\"custom-alert\">
+                                    <div class=\"contenedor-imagen\">
+                                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                                    </div>
+                                    <p>El usuario fue registrado y los permisos fueron guardados correctamente.</p>
+                                </div>
+                            `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    });
+                </script>";
             } else {
-                echo "<script>alert('Error al guardar permisos');</script>";
+                echo "<script>alert('Registro exitoso, pero error al guardar permisos');</script>";
             }
         } else {
-            echo "<script>alert('Error al guardar');</script>";
+            echo "<script>alert('Error al guardar el usuario');</script>";
         }
+        
 
         $stmt->close();
         $conexion->close();

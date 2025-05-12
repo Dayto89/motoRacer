@@ -133,7 +133,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <div class="actions">
         <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva marca</button>
       </div>
-      <h3>Lista de Marcas</h3>
+ 
       <table class="category-table">
         <tbody id="tabla-marcas">
           <?php

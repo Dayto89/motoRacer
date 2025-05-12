@@ -519,3 +519,26 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   background-color: #537c5a;
   border-radius: 10px;
 }
+
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+
+}
+
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+
+}
