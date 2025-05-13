@@ -25,7 +25,7 @@ $stmtRol->close();
 if ($rol === 'administrador') {
   $permisos = [
     'PRODUCTO' => ['Crear Producto', 'Categorias', 'Ubicacion', 'Marca'],
-    'PROVEEDOR' => ['Crear Proveedor', 'Actualizar Proveedor', 'Lista Proveedor'],
+    'PROVEEDOR' => ['Lista Proveedor'],
     'INVENTARIO' => ['Lista productos'],
     'FACTURA' => ['Ventas', 'Reportes', 'Lista Clientes', 'Lista Notificaciones'],
     'USUARIO' => ['Información'],

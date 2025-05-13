@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
     $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
 
     // En tu archivo PHP (marca.php), verifica que la consulta incluya el código:
-    $query = "SELECT codigo1, nombre, FROM producto WHERE Marca_codigo = '$codigo'";
+    $query = "SELECT codigo1, nombre FROM producto WHERE Marca_codigo = '$codigo'";
     $resultado = mysqli_query($conexion, $query);
 
     $productos = [];
@@ -192,87 +192,85 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const tablaMarcas = document.getElementById("tabla-marcas");
-            const modalProductos = document.getElementById("modalProductos");
-            const closeModal = modalProductos.querySelector('.close'); // Corrección aquí
+   <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const tablaMarcas = document.getElementById("tabla-marcas");
+    const modalProductos = document.getElementById("modalProductos");
+    const closeModal = modalProductos.querySelector('.close');
 
-            // Mostrar modal con animación
-            function mostrarModal() {
-                modalProductos.classList.remove("hide");
-                modalProductos.classList.add("show");
-            }
+    // Mostrar modal con animación
+    function mostrarModal() {
+        modalProductos.classList.remove("hide");
+        modalProductos.classList.add("show");
+    }
 
-            // Ocultar modal con animación
-            function ocultarModal() {
-                modalProductos.classList.remove("show");
-                modalProductos.classList.add("hide");
-                setTimeout(() => {
-                    modalProductos.classList.remove("hide");
-                }, 300); // Tiempo igual a la duración de la animación
-            }
+    // Ocultar modal con animación
+    function ocultarModal() {
+        modalProductos.classList.remove("show");
+        modalProductos.classList.add("hide");
+        setTimeout(() => {
+            modalProductos.classList.remove("hide");
+        }, 300); // Duración de la animación
+    }
 
-            // Cerrar al hacer clic fuera del contenido
-            modalProductos.addEventListener("click", function(event) {
-                if (event.target === modalProductos) {
-                    ocultarModal();
-                }
-            });
+    // Cerrar modal al hacer clic fuera del contenido
+    modalProductos.addEventListener("click", function(event) {
+        if (event.target === modalProductos) {
+            ocultarModal();
+        }
+    });
 
-            // Cerrar al hacer clic en la "X"
-            closeModal.addEventListener("click", function() {
-                ocultarModal();
-            });
+    // Cerrar modal al hacer clic en la "X"
+    closeModal.addEventListener("click", function() {
+        ocultarModal();
+    });
 
-            if (!tablaMarcas) {
-                console.error("No se encontró el elemento con id 'tabla-marcas'");
-                return;
-            }
+    if (!tablaMarcas) {
+        console.error("No se encontró el elemento con id 'tabla-marcas'");
+        return;
+    }
 
-            tablaMarcas.addEventListener("click", function(event) {
-                const target = event.target;
+    // Delegación de eventos para tabla de marcas
+    tablaMarcas.addEventListener("click", function(event) {
+        const target = event.target;
 
-                // BOTÓN: Lista de productos
-                if (target.classList.contains("btn-list")) {
-                    const marca_id = target.getAttribute("data-id");
+        // BOTÓN: Lista de productos
+        if (target.classList.contains("btn-list")) {
+            const marca_id = target.getAttribute("data-id");
 
-                    fetch("../html/marca.php", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/x-www-form-urlencoded"
-                            },
-                            body: `lista=1&codigo=${marca_id}`
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.length > 0) {
-                                const listaHTML = `
-            <table class="productos-table" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">Código</th>
-                        <th style="width: 70%;">Nombre</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${data.map(p => `
-                        <tr>
-                            <td>${p.codigo1 || 'N/A'}</td> <!-- ← Muestra 'N/A' si codigo es undefined -->
-                            <td>${p.nombre || 'N/A'}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-            
-            </div>
-        `;
-                                document.getElementById("lista-productos").innerHTML = listaHTML;
-                                mostrarModal();
-                            } else {
-                                Swal.fire({
-                                    title: '<span class="titulo-alerta advertencia">Sin productos</span>',
-                                    html: `
+            fetch("../html/marca.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `lista=1&codigo=${marca_id}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const listaHTML = `
+                        <table class="productos-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">Código</th>
+                                    <th style="width: 70%;">Nombre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.map(p => `
+                                    <tr>
+                                        <td>${p.codigo1 || 'N/A'}</td>
+                                        <td>${p.nombre || 'N/A'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>`;
+                    document.getElementById("lista-productos").innerHTML = listaHTML;
+                    mostrarModal();
+                } else {
+                    Swal.fire({
+                        title: '<span class="titulo-alerta advertencia">Sin productos</span>',
+                        html: `
                             <div class="custom-alert">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
@@ -280,34 +278,39 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>No hay productos en esta marca.</p>
                             </div>
                         `,
-                                    background: '#ffffffdb',
-                                    confirmButtonText: 'Aceptar',
-                                    confirmButtonColor: '#007bff',
-                                    customClass: {
-                                        popup: 'swal2-border-radius',
-                                        confirmButton: 'btn-aceptar',
-                                        container: 'fondo-oscuro'
-                                    }
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error al obtener productos:", error);
-                        });
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
                 }
+            })
+            .catch(error => {
+                console.error("Error al obtener productos:", error);
+            });
+        }
+    });
 
+    // EVENTO: Eliminar marca (fuera de la tabla, delegación global)
+    document.addEventListener("click", function (e) {
+        let target = e.target;
 
+        // Si se hace clic en el ícono dentro del botón, subir al botón
+        if (target.tagName === "I" && target.parentElement.classList.contains("btn-delete")) {
+            target = target.parentElement;
+        }
 
+        // BOTÓN: Eliminar marca
+        if (target.classList.contains("btn-delete")) {
+            const codigo = target.getAttribute("data-id");
 
-
-
-                // BOTÓN: Eliminar marca
-                if (target.classList.contains("btn-delete")) {
-                    const codigo = target.getAttribute("data-id");
-
-                    Swal.fire({
-                        title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
-                        html: `
+            Swal.fire({
+                title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
+                html: `
                     <div class="custom-alert">
                         <div class="contenedor-imagen">
                             <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
@@ -315,31 +318,31 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <p>Esta acción eliminará la marca.<br>¿Desea continuar?</p>
                     </div>
                 `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar',
-                        background: '#ffffffdb',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-eliminaar',
-                            cancelButton: 'btn-cancelar',
-                            container: 'fondo-oscuro'
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            fetch("../html/marca.php", {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/x-www-form-urlencoded"
-                                    },
-                                    body: `eliminar=1&codigo=${codigo}`
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        Swal.fire({
-                                            title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
-                                            html: `
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                background: '#ffffffdb',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-eliminaar',
+                    cancelButton: 'btn-cancelar',
+                    container: 'fondo-oscuro'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("../html/marca.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: `eliminar=1&codigo=${codigo}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                                html: `
                                     <div class="custom-alert">
                                         <div class="contenedor-imagen">
                                             <img src="../imagenes/moto.png" alt="Éxito" class="moto">
@@ -347,19 +350,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                         <p>Marca eliminada correctamente.</p>
                                     </div>
                                 `,
-                                            background: '#ffffffdb',
-                                            confirmButtonText: 'Aceptar',
-                                            confirmButtonColor: '#007bff',
-                                            customClass: {
-                                                popup: 'swal2-border-radius',
-                                                confirmButton: 'btn-aceptar',
-                                                container: 'fondo-oscuro'
-                                            }
-                                        }).then(() => location.reload());
-                                    } else {
-                                        Swal.fire({
-                                            title: '<span class="titulo-alerta error">Error</span>',
-                                            html: `
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                title: '<span class="titulo-alerta error">Error</span>',
+                                html: `
                                     <div class="custom-alert">
                                         <div class="contenedor-imagen">
                                             <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -367,21 +370,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                         <p>No se pudo eliminar la marca.</p>
                                     </div>
                                 `,
-                                            background: '#ffffffdb',
-                                            confirmButtonText: 'Aceptar',
-                                            confirmButtonColor: '#007bff',
-                                            customClass: {
-                                                popup: 'swal2-border-radius',
-                                                confirmButton: 'btn-aceptar',
-                                                container: 'fondo-oscuro'
-                                            }
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    Swal.fire({
-                                        title: '<span class="titulo-alerta error">Error</span>',
-                                        html: `
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta error">Error</span>',
+                            html: `
                                 <div class="custom-alert">
                                     <div class="contenedor-imagen">
                                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -389,22 +392,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                     <p>No se pudo eliminar la marca. Puede tener productos asociados.</p>
                                 </div>
                             `,
-                                        background: '#ffffffdb',
-                                        confirmButtonText: 'Aceptar',
-                                        confirmButtonColor: '#007bff',
-                                        customClass: {
-                                            popup: 'swal2-border-radius',
-                                            confirmButton: 'btn-aceptar',
-                                            container: 'fondo-oscuro'
-                                        }
-                                    });
-                                });
-                        }
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
                     });
                 }
             });
-        });
-    </script>
+        }
+    });
+
+}); // ← Fin del DOMContentLoaded
+</script>
+
 
 
 

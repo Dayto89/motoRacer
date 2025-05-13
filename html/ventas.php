@@ -15,25 +15,20 @@ if (!$conexion) {
 
 
 $icono1 = '
-<animated-icons class= "icono-accion"
+<animated-icons class="icono-accion"
 src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
 trigger="click"
-attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"var(--icon-bg)"}}\'
+attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#158E05FF","background":"#FFFFFF"}}\'
 height="50"
-width="50"
-
-></animated-icons>';
+width="50"></animated-icons>';
 
 $icono2 = ' 
 <animated-icons class="icono-accion"
 src="https://animatedicons.co/get-icon?name=minus&style=minimalistic&token=8e4bd16d-969c-4151-b056-fee12950fb23"
 trigger="click"
-attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"var(--icon-bg)"}}\'
+attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}\'
 height="50"
-width="50"
-
-></animated-icons>';
-
+width="50"></animated-icons>';
 
 // Guardar informacion de cliente en la base de datos
 
@@ -101,9 +96,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             --icon-bg: #FFFFFF;
             /* opcional: reafirma blanco si lo necesitas */
         }
-        
     </style>
-    
+
     <script>
 
     </script>
@@ -124,11 +118,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </form>
         </div>
 
-        <div style="position: relative; max-width: 1360px; margin-left: 40px; background-color: #ffffff; border-radius: 5px; height: 93px;">
+        <div style="position: relative; max-width: 1360px; margin-left: 40px; background-color: #ffffff; border-radius: 5px; height: 93px; display: flex; align-items: center;">
 
             <!-- Botón izquierda -->
             <button id="btnLeft" onclick="scrollCategorias(-200)" style="position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; display: none; background: none; border: none;">
                 <animated-icons
+                    id="icono-flecha-izquierda"
                     src="https://animatedicons.co/get-icon?name=Arrow%20Left&style=minimalistic&token=fa13e0db-49ee-4fc6-88d0-609496daffac"
                     trigger="click"
                     attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#536DFEFF","group-2":"#536DFE","background":"#FFFFFF"}}'
@@ -575,6 +570,50 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     if (contador === 0) contadorElemento.style.display = "none";
                 }
             }
+            // En tu archivo JavaScript (dentro del <script>)
+            function actualizarIconosPorModo() {
+                const modoOscuro = document.body.classList.contains('modo-alto-contraste');
+                document.querySelectorAll('animated-icons').forEach(icono => {
+                    const nuevoIcono = icono.cloneNode(true);
+                    const attrs = JSON.parse(nuevoIcono.getAttribute('attributes'));
+
+                    // Configura colores según el modo
+                    if (modoOscuro) {
+                        attrs.defaultColours = {
+                            "group-1": "#FFFFFF",
+                            "group-2": icono.src.includes('plus') ? "#158E05FF" : "#FF0000FF",
+                            "background": "#000000"
+                        };
+                    } else {
+                        attrs.defaultColours = {
+                            "group-1": "#000000",
+                            "group-2": icono.src.includes('plus') ? "#158E05FF" : "#FF0000FF",
+                            "background": "#FFFFFF"
+                        };
+                    }   
+
+                    nuevoIcono.setAttribute('attributes', JSON.stringify(attrs));
+                    icono.parentNode.replaceChild(nuevoIcono, icono);
+                });
+            }
+
+            // Observador para detectar cambios en las clases del body
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        actualizarIconosPorModo();
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                attributes: true
+            });
+
+            // Ejecutar al cargar la página
+            document.addEventListener('DOMContentLoaded', function() {
+                actualizarIconosPorModo();
+            });
         }
     </script>
 

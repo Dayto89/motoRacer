@@ -21,6 +21,10 @@ $filtros = [];
 $valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
 $criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
 
+if (!empty($valor) && empty($criterios)) {
+  $criterios = ['nit', 'nombre', 'telefono', 'direccion', 'correo', 'estado'];
+}
+
 if (!empty($valor) && !empty($criterios)) {
   foreach ($criterios as $criterio) {
     $c = mysqli_real_escape_string($conexion, $criterio);
@@ -229,20 +233,20 @@ if (isset($_POST['nit'])) {
 
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['nit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
 
   // Debug: Registrar el código recibido
-  error_log("Código recibido: " . $_POST['nit']);
+  error_log("Código recibido: " . $_POST['codigo']);
 
   if (!$conexion) {
     echo json_encode(['success' => false, 'error' => 'Error de conexión']);
     exit;
   }
 
-  $nit = $_POST['nit'];
+  $codigo = $_POST['codigo'];
   $stmt = $conexion->prepare("DELETE FROM proveedor WHERE nit = ?");
-  $stmt->bind_param("s", $nit);
+  $stmt->bind_param("s", $codigo);
 
   if (!$stmt->execute()) {
     error_log("Error SQL: " . $stmt->error); // Registrar el error
@@ -322,7 +326,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <details class="filter-dropdown">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
-          <form method="GET" action="../html/listaproductosPrueba.php" class="search-form">
+          <form method="GET" action="../html/listaPrueba.php" class="search-form">
             <div class="criteria-group">
               <label><input type="checkbox" name="criterios[]" value="nit"> Nit</label>
               <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
@@ -337,15 +341,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
       <button class="search-button" type="submit">Buscar</button>
       </form>
-      <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nuevo Proveedor</button>
+      <button id="btnAbrirModal" class="btn-nuevo-proveedor">Nuevo Proveedor</button>
       <div class="export-button">
-        <form action="exportar_excel.php" method="post">
-          <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
-            <i class="fas fa-file-excel"></i>
-            <label> Exportar a Excel</label>
+        <form action="exportar_excel_proveedores.php" method="get">
+          <!-- Pasa filtros actuales si los hay -->
+          <?php foreach ($_GET as $k => $v): ?>
+            <?php if (is_array($v)): ?>
+              <?php foreach ($v as $val): ?>
+                <input type="hidden" name="<?= htmlspecialchars($k) ?>[]" value="<?= htmlspecialchars($val) ?>">
+              <?php endforeach; ?>
+            <?php else: ?>
+              <input type="hidden" name="<?= htmlspecialchars($k) ?>" value="<?= htmlspecialchars($v) ?>">
+            <?php endif; ?>
+          <?php endforeach; ?>
+          <button type="submit" class="icon-button" title="Exportar proveedores a Excel">
+            <i class="fas fa-file-excel"></i> Exportar a Excel
           </button>
         </form>
-
       </div>
 
       <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
@@ -464,32 +476,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <p>No se encontraron resultados.</p>
     <?php endif; ?>
 
-      <!-- Modal -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <h2>Nuevo Proveedor</h2>
-      <form method="POST" action="">
-        <div class="form-group">
-          <label>Ingrese el nit:</label>
-          <input type="text" id="nit" name="nit" required />
-          <label>Ingrese el nombre del proveedor:</label>
-          <input type="text" id="nombre" name="nombre" required />
-          <label for="telefono">Ingrese el telefono:</label>
-          <input type="text" id="telefono" name="telefono" required />
-          <label for="direccion">Ingrese la dirección:</label>
-          <input type="text" id="direccion" name="direccion" required />
-          <label for="correo">Ingrese el correo:</label>
-          <input type="text" id="correo" name="correo" required />
-          <label for="estado">Ingrese el estado:</label>
-          <input type="text" id="estado" name="estado" required />
-        </div>
-        <div class="modal-buttons">
-          <button type="button" id="btnCancelar">Cancelar</button>
-          <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
-        </div>
-      </form>
+    <!-- Modal -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <h2>Nuevo Proveedor</h2>
+        <form method="POST" action="">
+          <div class="form-group">
+            <label>Ingrese el nit:</label>
+            <input type="text" id="nit" name="nit" required />
+            <label>Ingrese el nombre del proveedor:</label>
+            <input type="text" id="nombre" name="nombre" required />
+            <label for="telefono">Ingrese el telefono:</label>
+            <input type="text" id="telefono" name="telefono" required />
+            <label for="direccion">Ingrese la dirección:</label>
+            <input type="text" id="direccion" name="direccion" required />
+            <label for="correo">Ingrese el correo:</label>
+            <input type="text" id="correo" name="correo" required />
+            <label for="estado">Ingrese el estado:</label>
+            <input type="text" id="estado" name="estado" required />
+          </div>
+          <div class="modal-buttons">
+            <button type="button" id="btnCancelar">Cancelar</button>
+            <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
     <!-- Modal de edición -->
     <div id="editModal" class="modal">
@@ -527,7 +539,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
   </div>
   <script>
-        document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
       // 1) Abrir/Cerrar modal "Nuevo Proveedor"
       const modal = document.getElementById("modal");
       const openBtn = document.getElementById("btnAbrirModal");
@@ -615,7 +627,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
               },
-              body: `eliminar=1&nit=${encodeURIComponent(nit)}`
+              body: `eliminar=1&codigo=${encodeURIComponent(nit)}`
             })
             .then(response => {
               if (!response.ok) {
@@ -633,7 +645,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
                                 </div>
-                                 <p>El producto <strong>${nit}</strong> ha sido eliminado correctamente.</p>
+                                 <p>El proveedor <strong>${nit}</strong> ha sido eliminado correctamente.</p>
                             </div>
                         `,
                   background: '#ffffffdb',
@@ -672,7 +684,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             })
             .catch(error => {
               console.error("Error:", error);
-              Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
+              Swal.fire("Error", "No se pudo eliminar. El proveedor tiene productos asociados.", "error");
             });
         }
       });
@@ -780,7 +792,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               })
               .catch(error => {
                 console.error("Error en la solicitud:", error);
-                Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
+                Swal.fire("Error", "Error uno o mas de los proveedores seleccionados tienen productos asociados.", "error");
               });
           }
         });

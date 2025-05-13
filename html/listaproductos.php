@@ -648,13 +648,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         `,
 
+        background: '#ffffffdb',
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
         customClass: {
           popup: "custom-alert",
           confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
-          cancelButton: "btn-cancelar" // Clase personalizada para el botón de cancelar
+          cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
+          container: 'fondo-oscuro'
         }
       }).then((result) => {
         if (result.isConfirmed) {
@@ -777,13 +779,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         `,
           background: '#ffffffdb',
-          confirmButtonText: 'Aceptar',
-          confirmButtonColor: '#007bff',
-          customClass: {
-            popup: 'swal2-border-radius',
-            confirmButton: 'btn-aceptar',
-            container: 'fondo-oscuro'
-          }
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
+          cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
+          container: 'fondo-oscuro'
+        }
         }).then((result) => {
           if (result.isConfirmed) {
             // Depuración: Ver datos antes de enviarlos

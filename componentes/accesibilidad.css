@@ -834,3 +834,7 @@ text-shadow: none;
     border: #1f1f1f 2px solid;
     background-color: #000000;
   }
+  .modo-alto-contraste .mi-icono-izquierdo{
+    background-color: #000000 !important;
+  }
+  

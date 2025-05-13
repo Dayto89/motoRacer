@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
   $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
 
-  $query = "SELECT * FROM producto WHERE Categoria_codigo = '$codigo'";
+  $query = "SELECT codigo1, nombre FROM producto WHERE Categoria_codigo = '$codigo'";
   $resultado = mysqli_query($conexion, $query);
 
   $productos = [];
@@ -127,7 +127,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
-  <script src="/js/categorias.js"></script>
+
 </head>
 
 <body>
@@ -160,8 +160,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
 
   <!-- Modal -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
+  <div id="modal" class="modal_nueva_categoria">
+    <div class="modal-content-nueva">
       <h2>Nueva categoría</h2>
       <form method="POST" action="">
         <div class="form-group">
@@ -178,17 +178,223 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
   </div>
   <!-- Modal para Lista de Productos -->
-  <div id="modal-productos" class="modal">
+  <div id="modalProductos" class="modal">
     <div class="modal-content">
+      <span class="close">
+        <i class="fa-solid fa-x"></i>
+      </span>
       <h2>Productos de la categoría</h2>
-      <div id="contenido-productos" class="productos-container">
+      <div id="lista-productos" class="productos-container">
         <!-- Los productos se cargarán aquí dinámicamente -->
-      </div>
-      <div class="modal-buttons">
-        <button type="button" id="btnCerrarProductos">Cerrar</button>
       </div>
     </div>
   </div>
+ <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tablaCategorias = document.getElementById("tabla-categorias");
+    const modalProductos = document.getElementById("modalProductos");
+    const closeModal = modalProductos.querySelector('.close');
+
+    function mostrarModal() {
+      modalProductos.classList.remove("hide");
+      modalProductos.classList.add("show");
+    }
+
+    function ocultarModal() {
+      modalProductos.classList.remove("show");
+      modalProductos.classList.add("hide");
+      setTimeout(() => {
+        modalProductos.classList.remove("hide");
+      }, 300);
+    }
+
+    modalProductos.addEventListener("click", function (event) {
+      if (event.target === modalProductos) {
+        ocultarModal();
+      }
+    });
+
+    closeModal.addEventListener("click", function () {
+      ocultarModal();
+    });
+
+    if (!tablaCategorias) {
+      console.error("No se encontró el elemento con id 'tabla-categorias'");
+      return;
+    }
+
+    tablaCategorias.addEventListener("click", function (event) {
+      let target = event.target;
+
+      // Si se hace clic en el ícono dentro del botón, subimos al botón
+      if (target.tagName === "I" && target.parentElement.classList.contains("btn-delete")) {
+        target = target.parentElement;
+      }
+
+      // BOTÓN: Lista de productos
+      if (target.classList.contains("btn-list")) {
+        const categorias_id = target.getAttribute("data-id");
+
+        fetch("../html/categorias.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `lista=1&codigo=${categorias_id}`
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.length > 0) {
+              const listaHTML = `
+              <table class="productos-table" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th style="width: 30%;">Código</th>
+                    <th style="width: 70%;">Nombre</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.map(p => `
+                    <tr>
+                      <td>${p.codigo1 || 'N/A'}</td>
+                      <td>${p.nombre || 'N/A'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>`;
+              document.getElementById("lista-productos").innerHTML = listaHTML;
+              mostrarModal();
+            } else {
+              Swal.fire({
+                title: '<span class="titulo-alerta advertencia">Sin productos</span>',
+                html: `
+                  <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                      <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
+                    </div>
+                    <p>No hay productos en esta categoria.</p>
+                  </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                  popup: 'swal2-border-radius',
+                  confirmButton: 'btn-aceptar',
+                  container: 'fondo-oscuro'
+                }
+              });
+            }
+          })
+          .catch(error => {
+            console.error("Error al obtener productos:", error);
+          });
+      }
+
+      // BOTÓN: Eliminar categoría
+      if (target.classList.contains("btn-delete")) {
+        const codigo = target.getAttribute("data-id");
+
+        Swal.fire({
+          title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
+          html: `
+            <div class="custom-alert">
+              <div class="contenedor-imagen">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+              </div>
+              <p>Esta acción eliminará la categoría.<br>¿Desea continuar?</p>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+          background: '#ffffffdb',
+          customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-eliminaar',
+            cancelButton: 'btn-cancelar',
+            container: 'fondo-oscuro'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch("../html/categorias.php", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: `eliminar=1&codigo=${codigo}`
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  Swal.fire({
+                    title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                    html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                        </div>
+                        <p>Categoría eliminada correctamente.</p>
+                      </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  }).then(() => location.reload());
+                } else {
+                  Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/llave.png" alt="Error" class="llave">
+                        </div>
+                        <p>No se pudo eliminar la categoría.</p>
+                      </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  });
+                }
+              })
+              .catch(error => {
+                Swal.fire({
+                  title: '<span class="titulo-alerta error">Error</span>',
+                  html: `
+                    <div class="custom-alert">
+                      <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                      </div>
+                      <p>No se pudo eliminar la categoría.</p>
+                    </div>
+                  `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+                });
+              });
+          }
+        });
+      }
+    });
+  });
+</script>
 
 </body>
 

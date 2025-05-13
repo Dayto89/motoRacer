@@ -55,7 +55,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   color: white;
-  margin-left: 20%;
+  margin-left: 23%;
   font-family: Arial;
 }
 
@@ -283,7 +283,13 @@ input.form-control {
 }
 
 
-
+form#nuevoForm{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px; /* Ajusta el espacio entre columnas */
+  row-gap: 10px; /* Ajusta el espacio entre filas */
+  align-items: center; /* Alinea los elementos verticalmente */
+}
 form#editForm {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -292,7 +298,8 @@ form#editForm {
   align-items: center; /* Alinea los elementos verticalmente */
 }
 
-#editForm label {
+.form-group label,
+#editForm  label {
   color: white;
   font-size: 19px;
   font-family: Arial, Helvetica, sans-serif;
@@ -304,20 +311,18 @@ form#editForm {
 }
 
 form input[type="text"], #editForm select {
-  background-color: #ffffff;
-  border-radius: 23px;
-  height: 31px;
-  width: calc(100% - 34px); /* Ajusta el ancho al tamaño del contenedor */
-  color: #000;
-  padding: 0 17px; /* Añade espacio a la izquierda del input */
-  border: none;
-  font-size: 14px;
-  margin-bottom: 5px; /* Ajusta el margen inferior */
+    background-color: #ffffff;
+    border-radius: 23px;
+    height: 35px;
+    width: calc(100% - 34px);
+    color: #000;
+    padding: 4px 17px;
+    border: none;
+    font-size: 14px;
+    margin-bottom: 13px;
 }
-
 .modal-content {
   width: 35%;
-
   text-align: center;
   background-color: rgb(174 174 174 / 46%);
   padding: 23px;
@@ -326,7 +331,18 @@ form input[type="text"], #editForm select {
   margin-top: 7%;
   margin-left: 35%;
 }
-.modal-content h2 {
+.modal-content-nuevo {
+    width: 35%;
+    text-align: center;
+    background-color: rgb(174 174 174 / 61%);
+    padding: 23px;
+    border-radius: 18px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 9%;
+    margin-left: 35%;
+    height: 60%;
+}
+.modal-content h2, .modal-content-nuevo h2 {
   font-size: 38px;
   margin-top: -5%;
   color: white;
@@ -637,9 +653,36 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   border-radius: 20px;
 }
 
+.btn-nuevo-proveedor{
+  background-color: #007BFF;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 9px;
+}
+
+.btn-nuevo-proveedor:hover{
+  background-color: #0056b3;
+}
+
+
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
+
+  .sidebar:hover ~ .main-content {
+    margin-left: 240px;
+    transition: margin-left 0.3s ease;
+    margin-right: 0px;
+  }
+
+  table {
+    margin-left: 0%;
+  }
 
 }
 
