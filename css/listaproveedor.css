@@ -3,33 +3,48 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: "Metal Mania", system-ui;
-  background-image: url("fondoMotoRacer.png");
+  background-image: url('fondoMotoRacer.png');
   background-size: cover;
   background-position: center;
 }
+
 body::before {
   position: fixed;
   width: 200%;
   height: 200%;
-  z-index: -1;
+  z-index: -1;  
   background: black;
   opacity: 0.6;
 }
-
+… 
 .main-content {
   padding: 20px;
-  transition: margin-left 0.3s ease;
+
   height: 100vh;
-  margin-right: 50px;
+  margin-right: 100px;
 }
+
+.main-content table {
+  filter: drop-shadow(0px 0px 10px #bebfc5);
+  margin-bottom: 20px;
+}
+
 
 .main-content h1 {
   color: white;
   text-align: center;
   margin-top: 40px;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
+  font-family: "Metal Mania", system-ui;
+  font-size: 70px;
+  text-shadow: 
+      7px -1px 0 #1c51a0,  
+      1px -1px 0 #1c51a0,  
+      -1px 1px 0 #1c51a0,  
+      3px 5px 0 #1c51a0;
 }
 
 .form-section {
@@ -40,11 +55,11 @@ table {
   width: 100%;
   border-collapse: collapse;
   color: white;
-  filter: drop-shadow(0px 0px 10px #bebfc5);
+  margin-left: 20%;
+  font-family: Arial;
 }
 
-th,
-td {
+th, td {
   border: 1px solid #666;
   padding: 10px;
   text-align: left;
@@ -74,152 +89,163 @@ td {
   padding: 5px;
 }
 
+#eliminar {
+  color: rgb(255, 72, 72);
+}
+
 input[type="checkbox"] {
-  transform: scale(1.5); /* Ajusta el número para cambiar el tamaño */
+  transform: scale(1.5);
   margin: 5px;
+  accent-color: rgb(31, 138, 226);
 }
 
 #inventario {
   font-family: Arial, Helvetica, sans-serif;
   color: #ffffff;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-
+  text-shadow: 
+      -1px -1px 0 #000,  
+      1px -1px 0 #000,  
+      -1px 1px 0 #000,  
+      3px 3px 0 #000;
 }
 
-h1 {
+/* Ajustes para el título */
+.main-content h1 {
+  color: white;
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
   font-family: "Metal Mania", system-ui;
   font-size: 70px;
-  color: #ffffff; /* Color del texto */
-  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
-    3px 5px 0 #1c51a0; /* Cambia el color y tamaño del contorno según necesites */
+  text-shadow: 
+      7px -1px 0 #1c51a0,  
+      1px -1px 0 #1c51a0,  
+      -1px 1px 0 #1c51a0,  
+      3px 5px 0 #1c51a0;
+      
 }
-.search-bar {
-  position: fixed;
-  top: 9px;
-  right: 141px;
-  z-index: 1000;
+
+/* Ajustes para el filter-bar */
+.filter-bar {
   display: flex;
   align-items: center;
-  transition: width 1s ease; /* Animación de deslizamiento */
-  width: 55px; /* Tamaño reducido por defecto */
-  overflow: hidden;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-width: 74%;
+  margin-left: 15%;
+  padding: 10px;
+  border-radius: 8px;
 }
 
-.search-bar:hover {
-  width: 400px; /* Tamaño al hacer hover */
+/* Ajustes para los elementos dentro del filter-bar */
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-.search-bar form {
-  margin-right: 90px;
-  margin-top: 90px;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  background: transparent;
+.filter-button {
+  padding: 8px 16px;
+  background-color: #1aa906;
+  color: white;
   border: none;
   cursor: pointer;
-  padding: 0;
-  margin-right: 8px;
-  font-size: 3em;
-  text-shadow: 3px 1px 0 #1c51a0, 2px 3px 0 #1c51a0;
+  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
 }
 
-.search-bar input {
-  border: none;
-  outline: none;
-  padding: 5px;
-  border-radius: 5px;
-  font-size: 1.7em;
+.filter-button:hover {
+  background-color: #155e33;
 }
 
-.search-bar:hover input {
-  width: 400px; /* Anchura al hacer hover */
-  padding: 5px 10px; /* Añadir espaciado */
+.filter-options {
+  position: absolute;
+  background-color: #ffffffd4;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
 }
-
-.search-bar input::placeholder {
-  color: #aaa;
-  font-size: 18px;
-}
-
-/*filtrar por*/
-.filter-bar {
-  position: fixed;
-  top: 150px;
-  right: 200px;
-  z-index: 1000;
+.search-form {
   display: flex;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 5px 10px;
-  border-radius: 5px;
+  flex-grow: 1;
 }
-
-.filter-bar label {
-  color: aliceblue;
-  margin-right: 10px;
-}
-
-.filter-bar .form-control {
-  font-size: 1.2em;
-  padding: 5px;
-  border-radius: 5px;
+input.form-control {
+  color: #0b111a;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 34px;
+  border-radius: 12px;
+  width: 50%;
+  text-align: center;
   border: none;
-  outline: none;
-  font-family: Georgia, "Times New Roman", Times, serif;
-}
-/* Barra lateral (Menú) */
-.sidebar {
-  width: 100px;
-  height: 100vh;
-  background: linear-gradient(180deg, #1167cc, #083972, #000000);
-  transition: width 0.3s ease;
-  overflow: hidden;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 999 !important;
 }
 
-.sidebar:hover {
-  width: 270px;
+.search-button {
+
+  background-color: #007BFF;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 9px;
 }
 
-/* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main {
-  margin-left: 270px;
+.search-button:hover {
+  background-color: #0056b3;
 }
 
-/* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main-content {
-  margin-left: 270px;
-  transition: margin-left 0.3s ease;
+.export-button {
+  margin-left: 1%;
 }
 
-/* Contenido principal */
-.main-content {
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  height: 100vh;
-  margin-left: 100px; /* Ajustado al tamaño inicial de la barra */
-  margin-right: 50px;
-}
-.boton-accion.marcarL {
-  background-color: rgb(11, 128, 0);
-  color: #ffffff;
-  font-size: 18px;
-}
-.boton-accion.marcarN {
-  background-color: rgb(190, 46, 46);
-  color: #ffffff;
-  font-size: 18px;
+.icon-button {
+  display: flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
- /* Estilos básicos para el modal */
- .modal {
+.icon-button label:hover{
+  cursor: pointer;
+}
+
+.icon-button i {
+  margin-right: 10px; /* Ajusta según necesites */
+}
+
+.icon-button:hover {
+  background-color: #218838;
+}
+
+.criteria-group {
+  display: flex;
+  flex-direction: column; /* Alinea los elementos en columna */
+  gap: 5px; /* Espacio entre los elementos */
+}
+
+.criteria-group label {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Espacio entre el checkbox y el texto */
+}
+
+
+
+/* Estilos básicos para el modal */
+.modal {
   display: none;
   position: fixed;
   z-index: 1000;
@@ -309,11 +335,307 @@ form input[type="text"], #editForm select {
   letter-spacing: 5px;
   padding: 16px;
 }
+.campo {
+  display: flex;
+  flex-direction: column;
+  width: 316px;
+  max-width: 101%;
+  padding: 10px;
+  margin-bottom: 1.5px;
+}
 
-.modal { display: none; }
-.modal.show { display: block; }
-.modal.hide { display: none; }
+.campo label {
+  margin-bottom: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+}
 
+
+.modal-boton {
+  margin-left: 19%;
+  margin-top: 4%;
+}
+
+#modal-boton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #007BFF;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 3px 4px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 18px;
+  transition: background-color 0.3sease;
+  margin-right: 6%;
+  width: 157px;
+  height: 47px;
+  display: flex;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
+#modal-boton:hover {
+  background-color: #0056b3;
+}
+
+
+/* Barra lateral (Menú) */
+.sidebar {
+  width: 100px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1167CC, #083972, #000000);
+  transition: width 0.3s ease;
+  overflow: hidden;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.sidebar:hover {
+  width: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main {
+  margin-left: 270px;
+}
+
+/* Ajuste de contenido cuando el menú se expande */
+.sidebar:hover ~ .main-content {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+  margin-right: 0px;
+}
+
+/* Contenido principal */
+.main-content {
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  height: 100vh;
+  margin-left: 85px; /* Ajustado al tamaño inicial de la barra */
+  margin-right: 0px;
+}
+
+.main-content table {
+  width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
+  max-width: 100%; /* Evita que se desborde */
+  table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
+}
+
+.main-content table th,
+.main-content table td {
+  overflow-wrap: break-word; /* Hace que el texto largo se divida en varias líneas */
+  word-break: break-word;
+}
+.main-content table {
+  width: auto;
+  max-width: 100%;
+  table-layout: fixed; /* Fija el ancho de las columnas según lo especificado */
+}
+
+.main-content table th:nth-child(1), 
+.main-content table td:nth-child(1) { 
+  width: 10%; 
+}
+
+.main-content table th:nth-child(2), 
+.main-content table td:nth-child(2) { 
+  width: 10%;
+}
+
+.main-content table th:nth-child(3), 
+.main-content table td:nth-child(3) { 
+  width: 10%; 
+}
+
+.main-content table th:nth-child(4), 
+.main-content table td:nth-child(4) { 
+  width: 20%; 
+}
+
+.main-content table th:nth-child(5), 
+.main-content table td:nth-child(5) { 
+  width: 25%; 
+}
+
+.main-content table th:nth-child(6), 
+.main-content table td:nth-child(6) { 
+  width: 10%;
+}
+
+.main-content table th:nth-child(7), 
+.main-content table td:nth-child(7) { 
+  width: 10%;
+}
+
+.main-content table th:nth-child(8), 
+.main-content table td:nth-child(8) { 
+  width: 0%;
+}
+
+
+
+.edit-button,
+.delete-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-button i,
+.delete-button i {
+  font-size: 20px; /* Tamaño del ícono */
+  color: #ffffff;  /* Color del ícono */
+  border: 2px solid transparent; /* Inicialmente sin borde */
+  padding: 5px; /* Espacio interno */
+  border-radius: 50%; /* Hace el borde circular */
+  transition: all 0.3s ease-in-out; /* Animación suave */
+}
+
+.edit-button i:hover {
+  color: #ffffff;  /* Mantiene el color del ícono */
+  background-color: #0c68a5; /* Fondo azul al hacer hover */
+  border: 2px solid #ffffff; /* Borde blanco */
+}
+
+.delete-button i:hover {
+  color: #ffffff;  /* Mantiene el color del ícono */
+  background-color: #d11212; /* Fondo rojo al hacer hover */
+  border: 2px solid #ffffff; /* Borde blanco */
+}
+
+#delete-selected{
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#delete-selected i {
+  font-size: 20px; /* Tamaño del ícono */
+  color: #ffffff;  /* Color del ícono */
+  border: 2px solid transparent; /* Inicialmente sin borde */
+  padding: 5px; /* Espacio interno */
+  border-radius: 50%; /* Hace el borde circular */
+  transition: all 0.3s ease-in-out; /* Animación suave */
+}
+#delete-selected i:hover {
+  color: #ffffff;  /* Mantiene el color del ícono */
+  background-color: #d11212; /* Fondo rojo al hacer hover */
+  border: 2px solid #ffffff; /* Borde blanco */
+}
+
+/*Alertas*/
+
+
+/* Estilos generales de los párrafos */
+p {
+  font-size: 16px;
+  color: black;
+  font-family: arial;
+  padding: 10px;
+}
+
+
+
+/* Ajuste para el popup de SweetAlert */
+div:where(.swal2-container).swal2-center>.swal2-popup {
+  width: 28%;
+  /* Se ajusta automáticamente */
+  max-width: 350px;
+  /* Define un límite de ancho */
+}
+
+
+/* Imágenes dentro del modal */
+.custom-alert .moto,
+.custom-alert .llave,
+.custom-alert .tornillo {
+  width: 177px;
+  height: 130px;
+}
+
+
+/* Contenedor de la imagen */
+.contenedor-imagen {
+  position: relative;
+  display: inline-block;
+}
+
+
+
+.titulo-alerta {
+  font-size: 28px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: 1px;
+}
+
+.titulo-alerta.confirmacion {
+  font-family: 'Metal Mania', system-ui;
+  font-size: 1.01em;
+  letter-spacing: 3px;
+  color: #9b9496;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+  margin: auto;
+}
+
+.titulo-alerta.error {
+  font-family: 'Metal Mania', system-ui;
+  font-size: 1.01em;
+  letter-spacing: 3px;
+  color: #af3b3b;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+  margin: auto;
+}
+
+.titulo-alerta.advertencia {
+  font-family: 'Metal Mania', system-ui;
+  font-size: 1.01em;
+  letter-spacing: 3px;
+  color: #e09804;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+  margin: auto;
+}
+
+
+.btn-aceptar {
+  background-color: #007bff !important;
+  color: white !important;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.swal2-border-radius {
+  border-radius: 5px !important;
+}
+
+
+
+.fondo-oscuro {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
+}
+
+.swal2-popup {
+  border-radius: 20px;
+}
 
 /* MÓVILES */
 /* Horizontal */

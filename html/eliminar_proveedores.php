@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json; charset=UTF-8');
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
@@ -16,16 +17,6 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
   die(json_encode(["success" => false, "error" => "No se pudo conectar a la base de datos: " . mysqli_connect_error()]));
 }
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['nit'])) {
-    header('Content-Type: application/json');
-    $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
-    $stmt = $conexion->prepare("DELETE FROM proveedor WHERE nit = ?");
-    $stmt->bind_param("s", $nit);
-    $success = $stmt->execute() && $stmt->affected_rows > 0;
-    echo json_encode(['success' => $success]);
-    exit;
-  }
 
 // Leer datos enviados desde JavaScript
 $data = json_decode(file_get_contents("php://input"), true);
@@ -45,7 +36,7 @@ if (isset($data['nits']) && is_array($data['nits'])) {
         echo json_encode(["success" => false, "error" => mysqli_error($conexion)]);
     }
 } else {
-    echo json_encode(["success" => false, "error" => "No se recibieron códigos válidos."]);
+    echo json_encode(["success" => false, "error" => "No se recibieron códigos válidos. $nits"]);
 }
 
 // Cerrar la conexión

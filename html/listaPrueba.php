@@ -83,6 +83,78 @@ if (!$resultado) {
   die("Error en consulta: " . mysqli_error($conexion));
 }
 
+// Agregar proveedor
+if ($_POST && isset($_POST['guardar'])) {
+  if (!$conexion) {
+    die("<script>alert('No se pudo conectar a la base de datos');</script>");
+  };
+  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+  $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
+  $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+  $estado = mysqli_real_escape_string($conexion, $_POST['estado']);
+
+  $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo, estado) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo', '$estado')";
+
+  $resultado = mysqli_query($conexion, $query);
+
+  if ($resultado) {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
+            html: `
+                <div class=\"custom-alert\">
+                    <div class=\"contenedor-imagen\">
+                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                    </div>
+                    <p>Categoría agregada correctamente.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    });
+</script>";
+  } else {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+
+    $error = mysqli_error($conexion); // Captura el error fuera del script JS
+
+    echo "<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: '<span class=\"titulo-alerta error\">Error</span>',
+        html: `
+            <div class=\"custom-alert\">
+                <div class=\"contenedor-imagen\">
+                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                </div>
+                <p>La categoría no fue agregada.<br><small>$error</small></p>
+            </div>
+        `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+            popup: 'swal2-border-radius',
+            confirmButton: 'btn-aceptar',
+            container: 'fondo-oscuro'
+        }
+    });
+});
+</script>";
+  }
+}
+
 // Actualización de datos del modal
 if (isset($_POST['nit'])) {
   // Se reciben y se escapan las variables
@@ -200,7 +272,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-  <link rel="stylesheet" href="../css/inventario.css" />
+  <link rel="stylesheet" href="../css/listaproveedor.css" />
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
@@ -285,7 +357,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <table>
         <thead>
           <tr>
-            <th>Nir</th>
+            <th>Nit</th>
             <th>Nombre</th>
             <th>Teléfono</th>
             <th>Dirección</th>
@@ -669,13 +741,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             console.log("Enviando códigos a eliminar:", selectedCodes);
 
             // Enviar datos al servidor
-            fetch("eliminar_productos.php", {
+            fetch("eliminar_proveedores.php", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                  codigos: selectedCodes
+                  nits: selectedCodes
                 })
               })
               .then(response => response.json())
