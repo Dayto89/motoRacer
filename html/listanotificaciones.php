@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -75,6 +75,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <title>Notificaciones</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="../css/listaproveedor.css" />
+  <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>

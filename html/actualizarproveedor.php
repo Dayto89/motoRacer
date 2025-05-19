@@ -21,7 +21,8 @@ $nitSeleccionado = isset($_SESSION['proveedor_guardado']) ? $_SESSION['proveedor
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="../css/actualizarproducto.css">
+    <link rel="stylesheet" href="../css/actualizarproveedor.css">
+    <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>

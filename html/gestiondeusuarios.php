@@ -59,6 +59,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Usuarios</title>
   <link rel="stylesheet" href="/css/gestionusuario.css">
+  <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

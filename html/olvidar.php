@@ -47,6 +47,7 @@ if ($_POST) {
     <title> Recuperar contraseña</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="/css/olvidar.css">
+    <link rel="stylesheet" href="../css/alertas.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    

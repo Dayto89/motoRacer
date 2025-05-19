@@ -131,6 +131,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
+    <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>

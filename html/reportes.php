@@ -189,6 +189,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="preload" as="image" href="https://animatedicons.co/get-icon?name=delete&style=minimalistic&token=c1352b7b-2e14-4124-b8fd-a064d7e44225">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../css/reporte.css" />
+  <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>

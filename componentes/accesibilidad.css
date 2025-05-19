@@ -267,12 +267,10 @@
   color: #ffffff;
   background-color: #000;
 }
-.modo-alto-contraste button:hover{
-  background-color: #5496c3;
-  color: #000;
-}
+
 .modo-alto-contraste .noti{
-  border:none
+  border:none;
+  background-color: #00000000;
 }
 .modo-alto-contraste .recibo-button{
   background-color:#00000000 ;
@@ -426,6 +424,7 @@ text-shadow: 1.5px 0 #1c51a0;
 }
 .modo-claro .noti{
   border: none;
+  background-color: #00000000;
 }
 /* 2. Input de búsqueda */
 .modo-claro .form-control[type="text"] {
@@ -495,7 +494,7 @@ text-shadow: 1.5px 0 #1c51a0;
   font-weight: bold;
 }
 .modo-claro .bx-tada{
-  color: #ffffff;
+  color: #000000;
 }
 /*
 =====================================================================================================================================================Modo de contraste Gestion de Usuarios
@@ -546,6 +545,7 @@ text-shadow: 1.5px 0 #1c51a0;
 .modo-alto-contraste .container h3 {
   background-color: #00000000;
   color: white;
+  border-color: white 2px solid;
 }
 
 .modo-alto-contraste .user-table td {
@@ -638,7 +638,7 @@ body.modo-alto-contraste {
 }
 
 .modo-alto-contraste .bx-tada{
-  color: #000;
+  color: #ffffff;
 }
 .modo-alto-contraste .sidebar-right{
   color: #ffffff !important;
@@ -793,6 +793,10 @@ text-shadow: none;
 .modo-claro h2{
   color: #000000 !important;
 }
+
+.modo-claro .texto-debajo h2{
+color: white !important;
+}
 .modo-claro .summary-section h3{
   color: #000000 !important;
 }
@@ -837,4 +841,54 @@ text-shadow: none;
   .modo-alto-contraste .mi-icono-izquierdo{
     background-color: #000000 !important;
   }
-  
+  .modo-claro .btn-descargar{
+    background-color: #00000000;
+    color: #ffffff00;
+    border: 2px solid #ffffff00;
+  }
+ .modo-alto-contraste .btn-descargar{
+    background-color: #00000000;
+    color: #ffffff00;
+    border: 2px solid #ffffff00;   
+ }
+ .modo-alto-contraste .btn-descargar:hover{
+   background-color: #007bff00;
+   color: #ffffff;
+   border: 2px solid #00000000;
+ }
+ .modo-claro .recibo-button{
+   background-color:#00000000 ;
+   border: none;
+ }
+ .modo-alto-contraste .modal-content{
+   background-color: #000000;
+ }
+ .modo-alto-contraste #modal-boton{
+   background-color: #000000;
+   color: white;
+   border: white 2px solid;
+ }
+ .modo-claro .modal-content{
+   background-color: #ffffff;
+ }
+ .modo-claro #modal-boton{
+   background-color: #ffffff;
+   color: #000000;
+   border: 2px solid #000000;
+   padding: none;
+ }
+ .modo-claro .close i{
+  color: #000000;
+  border: 2px solid #000000;
+ }
+ .modo-alto-contraste .bx bx-plus bx-tada{
+  color: white  !important;
+ }
+
+ .modo-alto-contraste .sidebar {
+      background: linear-gradient(180deg, #000000, #000000, #000000);
+ }
+
+ .modo-claro .sidebar {
+      background: linear-gradient(180deg, #ffffff, #ffffff, #ffffff);
+ }

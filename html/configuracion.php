@@ -23,6 +23,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     <link rel="stylesheet" href="../css/configuracion.css" />
     <link rel="stylesheet" href="/componentes/header.php" />
     <link rel="stylesheet" href="/componentes/header.css" />
+    <link rel="stylesheet" href="../css/alertas.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
     <style>

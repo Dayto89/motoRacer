@@ -670,13 +670,37 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 
 
+
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
 
+  /* Contenedor general (sin scroll por defecto) */
+.table-wrapper {
+  overflow-x: auto;        /* Scroll horizontal siempre que la tabla desborde */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  overflow: visible;
+}
+
+.table-wrapper table {
+  width: 100%;             /* Que la tabla mida lo que necesite */
+  min-width: 100%;        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+  table-layout: auto;      /* Que las columnas tomen el ancho de su contenido */
+}
+
+.table-wrapper th,
+.table-wrapper td {
+  white-space: nowrap;     /* Evita que el texto salte líneas */
+}
+
+  .main-content {
+    margin-left: 0%;
+  }
+
   .sidebar:hover ~ .main-content {
-    margin-left: 240px;
-    transition: margin-left 0.3s ease;
+    margin-left: 0%;
+    transition: none;
     margin-right: 0px;
   }
 
@@ -687,7 +711,78 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 }
 
 /* Vertical */
-@media screen and (max-width: 767px) and (orientation: portrait) {
+@media screen and (max-width: 870px) and (orientation: portrait) {
+
+  /* Contenedor general (sin scroll por defecto) */
+.table-wrapper {
+  overflow-x: auto;        /* Scroll horizontal siempre que la tabla desborde */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  overflow: visible;
+}
+
+.table-wrapper table {
+  width: 100%;             /* Que la tabla mida lo que necesite */
+  min-width: 100%;        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+  table-layout: auto;      /* Que las columnas tomen el ancho de su contenido */
+}
+
+.table-wrapper th,
+.table-wrapper td {
+  white-space: nowrap;     /* Evita que el texto salte líneas */
+}
+
+    .main-content {
+    margin-left: 15%;
+    padding: 50px 0px 0px 15px;
+  }
+
+    .sidebar:hover ~ .main-content {
+    margin-left: 15%;
+    transition: none;
+    margin-right: 0px;
+  }
+
+  table {
+    margin-left: 0%;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  .table-wrapper table {
+    min-width: 500px;  /* o el ancho necesario para mostrar TODAS las columnas sin romper */
+  }
+
+    .filter-bar {
+    flex-direction: column;
+    align-items: stretch;   /* para que ocupen todo el ancho disponible */
+    gap: 8px;               /* espacio entre filas */
+    padding: 10px 5%;
+  }
+
+  .filter-bar > * {
+    width: 100%;            /* cada elemento ocupa ancho completo */
+    text-align: center;     /* opcional: centrar texto/botones */
+  }
+
+  /* Ajustes específicos si quieres distancias distintas */
+  .filter-bar .search-form {
+    display: flex;
+    gap: 5px;
+  }
+  .filter-bar input.form-control {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .export-button {
+    width: 100%;
+  }
+
+  .icon-button {
+    width: 100%;
+    justify-content: center;
+  }
 
 }
 

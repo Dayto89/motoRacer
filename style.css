@@ -318,7 +318,32 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
         font-size: 18px;
         margin-left: 0;
     }
+.container {
+        flex-direction: column;
+        padding: 20px;
+        align-items: center;
+        text-align: center;
+    }
 
+    .logo_inicio {
+        width: 50%;
+        height: auto;
+        margin: 10px 0;
+        margin-right: 40%;
+    }
+
+    h1 {
+        font-size: 40px;
+        margin-bottom: 30%;
+    }
+
+    form {
+        margin-left: 450px;
+    }
+
+    .barra {
+        display: none;
+    }
     .container_boton {
         margin: 40px 0 0 0;
         text-align: center;

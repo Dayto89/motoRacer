@@ -114,7 +114,7 @@ if ($_POST && isset($_POST['guardar'])) {
                     <div class=\"contenedor-imagen\">
                         <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
                     </div>
-                    <p>Categoría agregada correctamente.</p>
+                    <p>Proveedor agregado correctamente.</p>
                 </div>
             `,
             background: '#ffffffdb',
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class=\"contenedor-imagen\">
                     <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                 </div>
-                <p>La categoría no fue agregada.<br><small>$error</small></p>
+                <p>El proveedor no fue agregado.<br><small>$error</small></p>
             </div>
         `,
         background: '#ffffffdb',
@@ -271,12 +271,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
   <title>Inventario</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
   <link rel="stylesheet" href="../css/listaproveedor.css" />
+  <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
@@ -364,7 +366,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
     </div>
-
+<div class="table-wrapper">
     <?php if (mysqli_num_rows($resultado) > 0): ?>
       <table>
         <thead>
@@ -402,6 +404,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <?php endwhile; ?>
         </tbody>
       </table>
+
+      </div>
 
       <!-- Paginación -->
 
@@ -613,7 +617,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <div class="contenedor-imagen">
                     <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
                 </div>
-                <p>¿Quieres eliminar el producto <strong>${nit}</strong>?</p>
+                <p>¿Quieres eliminar el proveedor <strong>${nit}</strong>?</p>
             </div>
         `,
         background: '#ffffffdb',

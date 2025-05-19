@@ -121,6 +121,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/ubicacion.css">
+    <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
@@ -145,7 +146,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         echo "<tr>";
                         echo "<td>" . htmlspecialchars($fila['codigo']) . "</td>";
                         echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
-                        echo "<td class='options'>";
+                        echo "<td class='td-options'>";
                         echo "<button class='btn-list' data-id='" . htmlspecialchars($fila['codigo']) . "'>Lista de productos</button>";
                         echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'><i class='fa-solid fa-trash'></i></button></td>";
                         echo "</td>";
@@ -311,6 +312,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar',
                 background: '#ffffffdb',
+                confirmButtonColor: '#dc3545',
                 customClass: {
                     popup: 'swal2-border-radius',
                     confirmButton: 'btn-eliminaar',

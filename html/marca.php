@@ -121,6 +121,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/css/marca.css">
+    <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
@@ -322,6 +323,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar',
                 background: '#ffffffdb',
+                confirmButtonColor: '#dc3545',
                 customClass: {
                     popup: 'swal2-border-radius',
                     confirmButton: 'btn-eliminaar',

@@ -465,6 +465,7 @@ form input[type="text"], #editForm select {
 .main-content table th:nth-child(7), 
 .main-content table td:nth-child(7) { 
     width: 100px;
+    height: 57px;
 }
 
 .main-content table th:nth-child(8), 
@@ -528,7 +529,6 @@ form input[type="text"], #editForm select {
     border: 2px solid transparent; /* Inicialmente sin borde */
     padding: 3px; /* Espacio interno */
     border-radius: 50%; /* Hace el borde circular */
-    transition: all 0.3s ease-in-out; /* Animación suave */
 }
 
 .edit-button i:hover {
@@ -606,7 +606,6 @@ form input[type="text"], #editForm select {
     border: 2px solid transparent;
     padding: 5px;
     border-radius: 50%;
-    transition: all 0.3s ease-in-out;
 }
 
 .recibo-button:hover {

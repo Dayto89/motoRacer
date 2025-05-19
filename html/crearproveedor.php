@@ -21,6 +21,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="../css/actualizarproveedor.css">
   <link rel="stylesheet" href="../css/proveedor.css">
+  <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="/componentes/header.php">
   <link rel="stylesheet" href="/componentes/header.css">
   <script src="../js/header.js"></script>

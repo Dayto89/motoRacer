@@ -11,6 +11,7 @@ body {
   background-size: cover;
   background-position: center;
 }
+
 body::before {
   position: fixed;
   width: 200%;
@@ -59,6 +60,7 @@ body::before {
 .btn-nueva-categoria:hover {
   background-color: #0056b3;
 }
+
 h3 {
   color: black;
   color: rgb(0, 0, 0);
@@ -69,6 +71,7 @@ h3 {
   font-size: 32px;
   text-shadow: 2.8px -1px 0 #007bff;
 }
+
 /* Tabla de categorías */
 .category-table {
   width: 100%;
@@ -122,7 +125,8 @@ h3 {
 }
 
 .btn-list:hover {
-  background-color: #0056b3; /* Color de fondo al pasar el mouse sobre una fila */
+  background-color: #0056b3;
+  /* Color de fondo al pasar el mouse sobre una fila */
 }
 
 .btn-delete {
@@ -134,6 +138,7 @@ h3 {
 .btn-delete:hover {
   background-color: #a71d2a;
 }
+
 /* Modal nueva ubicacion */
 .modal_nueva_ubicacion {
   display: none;
@@ -146,24 +151,30 @@ h3 {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  opacity: 0; /* Inicialmente oculto */
-  transform: translateY(-50px); /* Inicia desplazado hacia arriba */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
+  opacity: 0;
+  /* Inicialmente oculto */
+  transform: translateY(-50px);
+  /* Inicia desplazado hacia arriba */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  /* Transiciones suaves */
 }
 
 /* Mostrar el modal con animación */
 .modal_nueva_ubicacion.show {
   display: flex;
   opacity: 1;
-  transform: translateY(0); /* Se desliza a su posición */
+  transform: translateY(0);
+  /* Se desliza a su posición */
 }
 
 /* Ocultar el modal con animación */
 .modal_nueva_ubicacion.hide {
   opacity: 0;
-  transform: translateY(-50px); /* Se desliza hacia arriba */
+  transform: translateY(-50px);
+  /* Se desliza hacia arriba */
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 /* Contenido del modal */
 .modal-content-nueva {
   background-color: rgba(200, 200, 200, 0.76);
@@ -198,35 +209,44 @@ h3 {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  opacity: 0; /* Inicialmente oculto */
-  transform: translateY(-50px); /* Inicia desplazado hacia arriba */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
+  opacity: 0;
+  /* Inicialmente oculto */
+  transform: translateY(-50px);
+  /* Inicia desplazado hacia arriba */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  /* Transiciones suaves */
 }
 
 /* Mostrar el modal con animación */
 .modal.show {
   display: flex;
   opacity: 1;
-  transform: translateY(0); /* Se desliza a su posición */
+  transform: translateY(0);
+  /* Se desliza a su posición */
 }
 
 /* Ocultar el modal con animación */
 .modal.hide {
   opacity: 0;
-  transform: translateY(-50px); /* Se desliza hacia arriba */
+  transform: translateY(-50px);
+  /* Se desliza hacia arriba */
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 /* Contenido del modal */
 .modal-content {
   background-color: rgb(200 200 200 / 75%);
   padding: 20px;
   border-radius: 10px;
-  width: 700px; /* Tamaño fijo */
-  height: 486px; /* Tamaño fijo */
+  width: 700px;
+  /* Tamaño fijo */
+  height: 486px;
+  /* Tamaño fijo */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   text-align: center;
-  overflow: hidden; /* Oculta scroll dentro del modal */
+  overflow: hidden;
+  /* Oculta scroll dentro del modal */
 }
 
 #lista-productos {
@@ -234,6 +254,7 @@ h3 {
   overflow-y: auto;
   padding-right: 20px;
 }
+
 .modal-content h2 {
   font-size: 32px;
   margin-top: -7px;
@@ -283,20 +304,26 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #0056b3;
 }
+
 .form-group label {
   font-family: Arial, Helvetica, sans-serif;
   color: black;
   size: 50px;
   font-weight: bold;
 }
+
 /* Estilo para los inputs del formulario */
 input[type="text"] {
   width: 89%;
   padding: 8px;
-  font-size: 16px; /* Tamaño del texto */
-  border: 1px solid #ccc; /* Borde del input */
-  border-radius: 5px; /* Bordes redondeados */
-  box-sizing: border-box; /* Asegura que padding no afecte el ancho total */
+  font-size: 16px;
+  /* Tamaño del texto */
+  border: 1px solid #ccc;
+  /* Borde del input */
+  border-radius: 5px;
+  /* Bordes redondeados */
+  box-sizing: border-box;
+  /* Asegura que padding no afecte el ancho total */
   margin-top: 26px;
   margin-bottom: 18px;
 }
@@ -305,6 +332,7 @@ input[type="text"] {
   color: #fdfcfc;
   transition: color 0.3s;
 }
+
 /*Alertas*/
 
 /* Estilos generales de los párrafos */
@@ -316,9 +344,11 @@ p {
 }
 
 /* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center > .swal2-popup {
-  width: 28%; /* Se ajusta automáticamente */
-  max-width: 350px; /* Define un límite de ancho */
+div:where(.swal2-container).swal2-center>.swal2-popup {
+  width: 28%;
+  /* Se ajusta automáticamente */
+  max-width: 350px;
+  /* Define un límite de ancho */
 }
 
 .custom-alert .tornillo,
@@ -352,6 +382,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     3px 3px 0 #000;
   margin: auto;
 }
+
 .titulo-alerta.error {
   font-family: "Metal Mania", system-ui;
   font-size: 1.01em;
@@ -361,6 +392,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     3px 3px 0 #000;
   margin: auto;
 }
+
 .titulo-alerta.advertencia {
   font-family: "Metal Mania", system-ui;
   font-size: 1.01em;
@@ -383,7 +415,8 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 .btn-eliminar {
   border: 0;
   border-radius: 1em;
-  background-color: #a10505; /* Rojo */
+  background-color: #a10505;
+  /* Rojo */
   color: #fff;
   font-size: 1em;
 }
@@ -392,7 +425,8 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 .btn-cancelar {
   border: 0;
   border-radius: 1em;
-  background-color: #54728d; /* Azul */
+  background-color: #54728d;
+  /* Azul */
   color: #fff;
   font-size: 1em;
 }
@@ -402,8 +436,10 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 }
 
 .fondo-oscuro {
-  background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
-  backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
 }
 
 .swal2-popup {
@@ -486,7 +522,26 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   }
 
   #categorias h1 {
-    margin-left: 30%;
+    margin-left: 40%;
+  }
+
+  .modal-content-nueva {
+    height: 100%;
+  }
+
+  .modal-content-nueva h2 {
+    padding: 15px;
+  }
+
+
+  input[type="text"] {
+    margin-top: 10px;
+  }
+
+  .modal-content {
+    width: 70%;
+    height: 80%;
+    margin-top: 0;
   }
 
 }
@@ -500,6 +555,15 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 
   .options {
     margin-left: 2%;
+  }
+
+  #categorias h1 {
+    margin-left: 35%;
+    margin-top: 5%;
+  }
+
+  .btn-delete {
+    margin-top: 10px;
   }
 
 }

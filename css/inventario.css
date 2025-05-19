@@ -409,7 +409,6 @@ form input[type="text"],
 .sidebar {
     width: 100px;
     height: 100vh;
-    background: linear-gradient(180deg, #1167CC, #083972, #000000);
     transition: width 0.3s ease;
     overflow: hidden;
     position: fixed;
@@ -721,111 +720,145 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     border-radius: 20px;
 }
 
+.table-wrapper {
+  display: block;           /* forzar bloque para overflow */
+  width: 100%;              /* ocupar ancho completo del contenedor padre */
+  overflow-x: auto;         /* scroll horizontal cuando haga falta */
+  -webkit-overflow-scrolling: touch; /* suavizar en iOS */
+}
+
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
-    
 
-    .sidebar:hover~.main-content {
-        margin-left: 240px;
-        transition: margin-left 0.3s ease;
-        margin-right: 0px;
+    /* Contenedor general (sin scroll por defecto) */
+    .table-wrapper {
+        overflow-x: auto;
+        /* Scroll horizontal siempre que la tabla desborde */
+        -webkit-overflow-scrolling: touch;
+        /* Scroll suave en iOS */
+    }
+
+    .table-wrapper table {
+        width: 100%;
+        /* Que la tabla mida lo que necesite */
+        min-width: 100%;
+        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+        table-layout: auto;
+        /* Que las columnas tomen el ancho de su contenido */
+    }
+
+    .table-wrapper th,
+    .table-wrapper td {
+        white-space: nowrap;
+        /* Evita que el texto salte líneas */
     }
 
     .main-content {
         margin-left: 0%;
     }
 
+    .sidebar:hover~.main-content {
+        margin-left: 0%;
+        transition: none;
+        margin-right: 0px;
+    }
+
     table {
         margin-left: 0%;
-        font-size: 10px;
     }
-
-    .main-content table th:nth-child(1),
-    .main-content table td:nth-child(1) {
-        width: 80px;
-    }
-
-    .main-content table th:nth-child(2),
-    .main-content table td:nth-child(2) {
-        width: 77px;
-    }
-
-    .main-content table th:nth-child(3),
-    .main-content table td:nth-child(3) {
-        width: 82px;
-    }
-
-    .main-content table th:nth-child(4),
-    .main-content table td:nth-child(4) {
-        width: 44px;
-    }
-
-    .main-content table th:nth-child(5),
-    .main-content table td:nth-child(5) {
-        width: 100px;
-    }
-
-    .main-content table th:nth-child(6),
-    .main-content table td:nth-child(6) {
-        width: 100px;
-    }
-
-    .main-content table th:nth-child(7),
-    .main-content table td:nth-child(7) {
-        width: 100px;
-    }
-
-    .main-content table th:nth-child(8),
-    .main-content table td:nth-child(8) {
-        width: 90px;
-    }
-
-    .main-content table th:nth-child(9),
-    .main-content table td:nth-child(9) {
-        width: 150px;
-    }
-
-    .main-content table th:nth-child(10),
-    .main-content table td:nth-child(10) {
-        width: 95px;
-    }
-
-    .main-content table th:nth-child(11),
-    .main-content table td:nth-child(11) {
-        width: 80px;
-    }
-
-    .main-content table th:nth-child(12),
-    .main-content table td:nth-child(12) {
-        width: 85px;
-    }
-
-    .main-content table th:nth-child(13),
-    .main-content table td:nth-child(13) {
-        width: 100px;
-    }
-
-    .main-content table th:nth-child(14),
-    .main-content table td:nth-child(14) {
-        width: 110px;
-    }
-
-    .main-content table th:nth-child(15),
-    .main-content table td:nth-child(15) {
-        width: 50px;
-    }
-
-    .main-content table th:nth-child(16),
-    .main-content table td:nth-child(16) {
-        width: 0px;
-    }
-
 
 }
 
 /* Vertical */
-@media screen and (max-width: 767px) and (orientation: portrait) {}
+@media screen and (max-width: 870px) and (orientation: portrait) {
+
+    /* Contenedor general (sin scroll por defecto) */
+    .table-wrapper {
+        overflow-x: auto;
+        /* Scroll horizontal siempre que la tabla desborde */
+        -webkit-overflow-scrolling: touch;
+        /* Scroll suave en iOS */
+        overflow: visible;
+    }
+
+    .table-wrapper table {
+        width: 100%;
+        /* Que la tabla mida lo que necesite */
+        min-width: 100%;
+        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+        table-layout: auto;
+        /* Que las columnas tomen el ancho de su contenido */
+    }
+
+    .table-wrapper th,
+    .table-wrapper td {
+        white-space: nowrap;
+        /* Evita que el texto salte líneas */
+    }
+
+    .main-content {
+        margin-left: 15%;
+        padding: 50px 0px 0px 15px;
+    }
+
+    .sidebar:hover~.main-content {
+        margin-left: 15%;
+        transition: none;
+        margin-right: 0px;
+    }
+
+    table {
+        margin-left: 0%;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .table-wrapper table {
+        min-width: 500px;
+        /* o el ancho necesario para mostrar TODAS las columnas sin romper */
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        /* para que ocupen todo el ancho disponible */
+        gap: 8px;
+        /* espacio entre filas */
+        padding: 10px 5%;
+    }
+
+    .filter-bar>* {
+        width: 100%;
+        /* cada elemento ocupa ancho completo */
+        text-align: center;
+        /* opcional: centrar texto/botones */
+    }
+
+    /* Ajustes específicos si quieres distancias distintas */
+    .filter-bar .search-form {
+        display: flex;
+        gap: 5px;
+    }
+
+    .filter-bar input.form-control {
+        flex-grow: 1;
+        width: 100%;
+    }
+
+    .export-button {
+        width: 100%;
+    }
+
+    .icon-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+}
 
 
 /* TABLETS */

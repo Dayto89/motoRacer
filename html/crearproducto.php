@@ -36,6 +36,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <link rel="stylesheet" href="../css/producto.css">
+    <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="/componentes/header.php">
     <link rel="stylesheet" href="/componentes/header.css">
     <script src="../js/header.js"></script>
