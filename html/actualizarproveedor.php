@@ -133,28 +133,27 @@ $nitSeleccionado = isset($_SESSION['proveedor_guardado']) ? $_SESSION['proveedor
             $_SESSION['proveedor_guardado'] = $nit;
 
             echo "<script>
-Swal.fire({
-    title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
-    html: `
-        <div class=\"custom-alert\">
-            <div class=\"contenedor-imagen\">
-                <img src=\"../imagenes/moto.png\" alt=\"Éxito\" class=\"moto\">
-            </div>
-            <p>Proveedor actualizado correctamente.</p>
-        </div>
-    `,
-    background: '#ffffffdb',
-    confirmButtonText: 'Aceptar',
-    confirmButtonColor: '#007bff',
-    customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-    }
-}).then(() => {
-    window.location.href = 'actualizarproveedor.php';
-});
-</script>";
+                    Swal.fire({
+                        title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/moto.png\" alt=\"Éxito\" class=\"moto\">
+                                </div>
+                                <p>Proveedor actualizado correctamente.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    }).then(() => {
+                        window.location.href = 'actualizarproveedor.php';
+                    });
+                    </script>";
         }
 
         if (isset($_POST['eliminar'])) {
@@ -180,7 +179,6 @@ Swal.fire({
                         `,
                         background: '#ffffffdb',
                         confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#007bff',
                         customClass: {
                             popup: 'swal2-border-radius',
                             confirmButton: 'btn-aceptar',
@@ -199,19 +197,18 @@ Swal.fire({
                                 <div class=\"contenedor-imagen\">
                                     <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                 </div>
-                                <p>No se puede eliminar este proveedor porque tiene productos relacionados.</p>
+                                <p class= 'mensaje-error'>No se puede eliminar este proveedor porque tiene productos relacionados.</p>
                             </div>
-                        `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                    });
-                    </script>";
+                                 `,
+                                     background: '#ffffffdb',
+                                     confirmButtonText: 'Aceptar',
+                                     customClass: {
+                                     popup: 'swal2-border-radius',
+                                     confirmButton: 'btn-aceptar',
+                                     container: 'fondo-oscuro'
+                                }
+                            });
+                            </script>";
                 }
             }
         }
@@ -235,12 +232,10 @@ Swal.fire({
                 showCancelButton: true,
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
                 background: '#ffffffdb',
                 customClass: {
                     popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
+                    confirmButton: 'btn-eliminar',
                     cancelButton: 'btn-cancelar',
                     container: 'fondo-oscuro'
                 }

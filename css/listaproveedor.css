@@ -282,14 +282,6 @@ input.form-control {
   background: #c00a0a; /* Cambia a rojo cuando pasas el mouse */
 }
 
-
-form#nuevoForm{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 20px; /* Ajusta el espacio entre columnas */
-  row-gap: 10px; /* Ajusta el espacio entre filas */
-  align-items: center; /* Alinea los elementos verticalmente */
-}
 form#editForm {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -297,8 +289,79 @@ form#editForm {
   row-gap: 10px; /* Ajusta el espacio entre filas */
   align-items: center; /* Alinea los elementos verticalmente */
 }
+/* MODAL DE NUEVO PROVEEDOR */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Ajusta según el número de columnas necesarias */
+    row-gap: 19px; /* Espacio entre filas */
+    column-gap: 10px; /* Ajusta el espacio entre columnas según lo necesites */
+    margin-left: 32px;
+    margin-top: 27px;
+    padding: 10px;
+}
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+    }
 
-.form-group label,
+    h1 {
+        font-size: 2rem;
+    }
+}
+.button-container {
+    grid-column: 1 / -1; /* Hace que el contenedor de botones ocupe todo el ancho de la fila */
+    display: flex; /* Coloca los botones en una fila */
+    justify-content: flex-start; /* Alinea los botones al inicio, puedes cambiarlo a 'center' o 'flex-end' según prefieras */
+    gap: 10px; /* Ajusta el espacio entre botones */
+}
+.boton {
+    display: flex; /* Coloca los botones en una fila */
+    justify-content: center; /* Alinea los botones al centro */
+    gap: 10px; /* Ajusta el espacio entre botones */
+}
+/* Botones del modal */
+.modal-buttons {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+#btnCancelar {
+  background-color: #df2f2f;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#btnCancelar:hover {
+  background-color: #a71d2a;
+}
+
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#exportar-boton{
+  background-color: #0f6103;
+}
+#exportar-boton:hover{
+  background-color: #0d3f06;
+}
+
+.form-grid label,
 #editForm  label {
   color: white;
   font-size: 19px;
@@ -309,6 +372,8 @@ form#editForm {
   padding-right: 10px; /* Añade espacio a la derecha */
   margin-bottom: 5px; /* Ajusta el margen inferior */
 }
+
+/*-----------------------------------------------------------------------------*/
 
 form input[type="text"], #editForm select {
     background-color: #ffffff;
@@ -340,11 +405,11 @@ form input[type="text"], #editForm select {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 9%;
     margin-left: 35%;
-    height: 60%;
+    height: 54%;
 }
 .modal-content h2, .modal-content-nuevo h2 {
   font-size: 38px;
-  margin-top: -5%;
+  margin-top: -4%;
   color: white;
   text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
   margin-left: 13px;
@@ -354,7 +419,7 @@ form input[type="text"], #editForm select {
 .campo {
   display: flex;
   flex-direction: column;
-  width: 316px;
+  width: 100%;
   max-width: 101%;
   padding: 10px;
   margin-bottom: 1.5px;
@@ -777,11 +842,13 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
   .export-button {
     width: 100%;
+   
   }
 
   .icon-button {
     width: 100%;
     justify-content: center;
+     background-color: #155e33;
   }
 
 }

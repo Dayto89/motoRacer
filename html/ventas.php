@@ -81,6 +81,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="../js/index.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 
     <style>
         :root {
@@ -119,17 +120,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </form>
         </div>
 
-        <div style="position: relative; max-width: 1360px; margin-left: 40px; background-color: #ffffff; border-radius: 5px; height: 93px; display: flex; align-items: center;">
+        <div style="position: relative; max-width: 1360px; margin-left: 40px; background-color:rgb(255, 255, 255); border-radius: 5px; height: 93px; display: flex; align-items: center; border-color:aqua 2px solid;">
 
             <!-- Botón izquierda -->
-            <button id="btnLeft" onclick="scrollCategorias(-200)" style="position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; display: none; background: none; border: none;">
-                <animated-icons
-                    id="icono-flecha-izquierda"
-                    src="https://animatedicons.co/get-icon?name=Arrow%20Left&style=minimalistic&token=fa13e0db-49ee-4fc6-88d0-609496daffac"
-                    trigger="click"
-                    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#536DFEFF","group-2":"#536DFE","background":"#FFFFFF"}}'
-                    height="60"
-                    width="60"></animated-icons>
+            <button id="btnLeft" onclick="scrollCategorias(-200)"">
+                <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda" id="icono-flecha-izquierda">
             </button>
 
             <!-- UL con scroll horizontal limitado -->
@@ -152,14 +147,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </ul>
 
             <!-- Botón derecha -->
-            <button id="btnRight" onclick="scrollCategorias(200)" style="position: absolute; right: -7px; top: 50%; transform: translateY(-50%); z-index: 10; display: none; background: none; border: none;">
-                <animated-icons
-                    src="https://animatedicons.co/get-icon?name=Arrow&style=minimalistic&token=70afdd31-5888-42d6-82ce-d112a7e2fa11"
-                    trigger="hover"
-                    attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#536DFEFF","group-2":"#536DFE"}}'
-                    height="60"
-                    width="60">
-                </animated-icons>
+            <button id="btnRight" onclick="scrollCategorias(200)"">
+                <img src="../imagenes/material-symbols--east-rounded.svg" alt="Botón derecha" id="icono-flecha-derecha">
             </button>
 
         </div>
@@ -196,10 +185,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>
                 <div class='iconos-container'>
                     <div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'>
-                        $icono1
+                        <img class='plus' src='../imagenes/material-symbols--add-2.svg' alt='Agregar al resumen'>
                     </div>
                     <div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'>
-                        $icono2
+                        <img class='minus' src='../imagenes/material-symbols--check-indeterminate-small-rounded.svg' alt='Quitar del resumen'>
                     </div>
                 </div>
             </div>";

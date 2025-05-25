@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'].'../html/verificar_permisos.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 //Almacenar informacion producto en la base de datos
 
@@ -22,7 +22,7 @@ $ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
 $unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 ?>
 <!DOCTYPE html>
@@ -65,13 +65,20 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         <div id="modalConfirm" class="modal hidden">
             <div class="modal-content">
                 <!-- Formulario para subir el archivo -->
-                <a href="../componentes/formato_productos.xlsx" download>📥 Descargar formato de Excel</a>
-
                 <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
                     <label>Selecciona el archivo Excel:</label>
-                    <input type="file" name="archivoExcel" accept=".xlsx, .xls" required>
+                    <label for="archivoExcel" class="custom-file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i><br>
+                        <span>Haz clic para seleccionar un archivo</span>
+                    </label>
+                    <input id="archivoExcel" type="file" name="archivoExcel" accept=".xlsx, .xls" required />
+                    <input id="archivoExcel" type="file" name="archivoExcel" accept=".xlsx, .xls" required hidden>
+
                     <button type="submit" name="importar" onclick="closeModal()">Importar</button>
                     <button type="button" onclick="closeModal()">Cancelar</button>
+                      <a href="../componentes/formato_productos.xlsx" download class="download-link">
+                    <i class="fas fa-file-download"></i> Descargar formato de Excel
+                </a>
                 </form>
 
             </div>
@@ -213,7 +220,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
     <?php
 
-$mensaje = null;  // Variable para almacenar el estado del mensaje
+    $mensaje = null;  // Variable para almacenar el estado del mensaje
 
     if ($_POST) {
         if (!$conexion) {
@@ -271,10 +278,10 @@ $mensaje = null;  // Variable para almacenar el estado del mensaje
 
         const mensaje = "<?php echo $mensaje; ?>";
 
-    if (mensaje === "producto_agregado") {
-        Swal.fire({
-            title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
-            html: `
+        if (mensaje === "producto_agregado") {
+            Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
+                html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
@@ -282,19 +289,19 @@ $mensaje = null;  // Variable para almacenar el estado del mensaje
                     <p>Producto agregado con éxito al inventario.</p>
                 </div>
             `,
-            background: 'hsl(0deg 0% 100% / 76%)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    } else if (mensaje === "error_al_agregar") {
-        Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
+                background: 'hsl(0deg 0% 100% / 76%)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        } else if (mensaje === "error_al_agregar") {
+            Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -302,18 +309,16 @@ $mensaje = null;  // Variable para almacenar el estado del mensaje
                     <p>Error al agregar el producto.</p>
                 </div>
             `,
-            background: 'hsl(0deg 0% 100% / 76%)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    } 
-
-
+                background: 'hsl(0deg 0% 100% / 76%)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        }
     </script>
 
 </body>

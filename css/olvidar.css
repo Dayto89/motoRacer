@@ -146,16 +146,51 @@
 
     h1 {
         font-size: 35px;
-        margin-bottom: 20%;
+        margin-bottom: 18%;
     }
 
     form {
-        margin-left: 450px;
+        margin-left: 390px;
     }
 
     .barra {
         display: none;
     }
+
+    form input {
+    height: 27px;
+    width: 200px;
+    font-size: 11px;
+    margin-bottom: 24px;
+  }
+  
+  .button_container .boton, .botonn {
+    padding: -4px 2px;
+    font-size: 1rem;
+    width: 125px;
+    height: 35px; 
+    line-height: 50px;
+  }
+
+  form label {
+    margin-bottom: 15px;
+    font-size: 15px;
+    margin-left: -35%;
+}
+
+.button_container {
+      text-align: center;
+      display: flex;
+      gap: 19px;
+      margin-top: 13%;
+      margin-left: -13%;
+  }
+
+}
+ 
+/* Vertical Responsive */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  
 
 
 }

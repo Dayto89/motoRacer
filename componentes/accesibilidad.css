@@ -267,6 +267,10 @@
   color: #ffffff;
   background-color: #000;
 }
+.modo-alto-contraste .search-icon{
+  background-color: #ffffff00;
+
+}
 
 .modo-alto-contraste .noti{
   border:none;
@@ -373,6 +377,7 @@ text-shadow: 1.5px 0 #1c51a0;
 }
 .modo-claro .search-icon{
   border: none;
+  background-color: #00000000;
 }
 .modo-claro table {
   background-color: #ffffff !important;

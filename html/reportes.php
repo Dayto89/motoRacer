@@ -358,7 +358,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </div>
 
     </div>
-
+  <div class="table-wrapper">
     <?php if (mysqli_num_rows($resultado) > 0): ?>
       <table>
         <thead>
@@ -401,6 +401,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <?php else: ?>
       <p>No se encontraron resultados con los criterios seleccionados.</p>
     <?php endif; ?>
+    </div>
 
 
     <?php if ($total_paginas > 1): ?>

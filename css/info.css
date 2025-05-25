@@ -452,7 +452,33 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 }
 
 /* Vertical */
-@media screen and (max-width: 767px) and (orientation: portrait) {}
+@media screen and (max-width: 767px) and (orientation: portrait) {
+        .container {
+        max-width: 75%;
+        margin-left: 26%;
+        height: 90%;
+        
+    }
+
+    .form-container {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        margin-right: 0%;
+    }
+
+    .info-group {
+        margin-top: 2vh;
+        margin-left: 4.5vh;
+    }
+
+    h1{
+        margin-left: 25%;
+    }
+
+    .btn-abrir {
+        margin-left: 35%;
+    }
+}
 
 
 /* TABLETS */

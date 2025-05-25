@@ -71,13 +71,16 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 .btn-aceptar {
   background-color: #007bff !important;
   color: white !important;
-  border-radius: 5px;
+  border-radius: 10px;
   padding: 10px 20px;
   font-size: 16px;
 }
+.btn-aceptar:hover {
+  background-color: #074180;
+}
 
 .swal2-border-radius {
-  border-radius: 5px !important;
+  border-radius: 20px !important;
 }
 
 .fondo-oscuro {
@@ -95,44 +98,58 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   background-color: #bd2d3b;
   border-radius: 10px;
 }
+.btn-eliminar:hover {
+  background-color: #a01a1f;
+}
 .btn-cancelar {
-  background-color: #537c5a;
+  background-color: rgb(84, 125, 91);
   border-radius: 10px;
 }
-
-
-
+.btn-cancelar:hover {
+  background-color: #3c5e4d;
+}
 
 /* MÓVILES - VISTA HORIZONTAL */
 @media screen and (max-width: 870px) and (orientation: landscape) {
   /* Estilo general para párrafos */
   p {
-    font-size: 11px; /* Leve aumento para legibilidad */
+    font-size: 14px;
     color: black;
     font-family: Arial, sans-serif;
-    padding: 8px;
+    padding: 1px;
     margin: 0 5px;
   }
 
-/* Ajuste para popup de SweetAlert más angosto */
-div:where(.swal2-container).swal2-center > .swal2-popup {
-  width: 40vw;           /* Más angosto que 50vw */
-  max-width: 300px;      /* También se reduce un poco el máximo */
-  height: auto;          /* Altura adaptable */
-  max-height: 85vh;      /* Previene desbordamiento vertical */
-  padding: 15px;
-  box-sizing: border-box;
-}
-
+  /* Ajuste para popup de SweetAlert más angosto */
+  div:where(.swal2-container).swal2-center > .swal2-popup {
+    width: 32vw;
+    max-width: 85vh;
+    height: 32vw;
+    max-height: 85vh;
+    box-sizing: border-box;
+  }
+  div:where(.swal2-container) h2:where(.swal2-title) {
+    position: relative;
+    max-width: 100%;
+    margin: 0;
+    padding: 9px;
+    color: inherit;
+    font-size: 1.875em;
+    font-weight: 600;
+    text-align: center;
+    text-transform: none;
+    word-wrap: break-word;
+    cursor: initial;
+  }
 
   /* Iconos personalizados dentro del popup */
   .custom-alert .tornillo,
   .custom-alert .moto,
   .custom-alert .llave {
-    width: 60px;
-    height: auto;
-    max-height: 50px;
-    object-fit: contain;
+    width: 14vw;
+    height: 8vw;
+    max-width: 70px;
+    max-height: 70px;
   }
 
   /* Contenedor para imagen */
@@ -156,8 +173,8 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   /* Título tipo confirmación */
   .titulo-alerta.confirmacion {
     font-family: "Metal Mania", system-ui;
-    font-size: 15px;
-    letter-spacing: 2px;
+    font-size: 22px;
+    letter-spacing: 1px;
     color: #9b9496;
     text-shadow: 2px 2px 0 #000;
     text-align: center;
@@ -166,17 +183,20 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   /* Título tipo error */
   .titulo-alerta.error {
     font-family: "Metal Mania", system-ui;
-    font-size: 15px;
+    font-size: 22px;
     letter-spacing: 2px;
     color: #af3b3b;
     text-shadow: 2px 2px 0 #000;
     text-align: center;
   }
+  .llave p {
+    font-size: 12px;
+  }
 
   /* Título tipo advertencia */
   .titulo-alerta.advertencia {
     font-family: "Metal Mania", system-ui;
-    font-size: 14px;
+    font-size: 24px;
     letter-spacing: 2px;
     color: #e09804;
     text-shadow: 2px 2px 0 #000;
@@ -189,17 +209,18 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
- 
-    margin-top: 3vw;
   }
 
   /* Botón aceptar */
   .btn-aceptar {
     background-color: #007bff !important;
     color: #fff !important;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-size: 14px;
+    border-radius: 10px;
+    padding: 8px 20px;
+    font-size: 15px;
+  }
+  .btn-aceptar:hover {
+    background-color: #074180;
   }
 
   /* Botón eliminar */
@@ -211,6 +232,10 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     font-size: 14px;
   }
 
+  .btn-eliminar:hover {
+    background-color: #a01a1f;
+  }
+
   /* Botón cancelar */
   .btn-cancelar {
     background-color: #537c5a !important;
@@ -218,6 +243,9 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     border-radius: 10px;
     padding: 8px 16px;
     font-size: 14px;
+  }
+  .btn-cancelar:hover {
+    background-color: #3c5e4d;
   }
 
   /* Fondo oscuro del popup */
@@ -231,27 +259,21 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     border-radius: 20px !important;
   }
 
-  /* Bordes adicionales si fuera necesario */
-  .swal2-border-radius {
-    border-radius: 5px !important;
-  }
 }
-
 
 /* Vertical Responsive */
 @media screen and (max-width: 767px) and (orientation: portrait) {
-  
   /* Párrafos */
   p {
-    font-size: 4vw; /* Se adapta al ancho de la pantalla */
+    font-size: 3.5vw; /* Se adapta al ancho de la pantalla */
     color: black;
     font-family: Arial, sans-serif;
-    padding: 3vw;
+    padding: 1vw;
   }
 
   /* Popup de SweetAlert */
   div:where(.swal2-container).swal2-center > .swal2-popup {
-    width: 90vw;          /* Usamos unidades relativas para responsividad */
+    width: 90vw; /* Usamos unidades relativas para responsividad */
     max-width: 250px;
     height: auto;
   }
@@ -260,8 +282,8 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   .custom-alert .tornillo,
   .custom-alert .moto,
   .custom-alert .llave {
-    width: 14vw;
-    height: 13vw;
+    width: 19vw;
+    height: 17vw;
     max-width: 70px;
     max-height: 70px;
   }
@@ -289,26 +311,35 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   .titulo-alerta.error,
   .titulo-alerta.advertencia {
     font-family: "Metal Mania", system-ui;
-    font-size: 4.5vw;
+    font-size: 22px;
     letter-spacing: 2px;
     margin: auto;
     text-align: center;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+      1px 1px 0 #000;
   }
 
-  .titulo-alerta.confirmacion { color: #9b9496; }
-  .titulo-alerta.error { color: #af3b3b; }
-  .titulo-alerta.advertencia { color: #e09804; }
+  .titulo-alerta.confirmacion {
+    color: #9b9496;
+  }
+  .titulo-alerta.error {
+    color: #af3b3b;
+  }
+  .titulo-alerta.advertencia {
+    color: #e09804;
+  }
 
   /* Botón aceptar */
   .btn-aceptar {
     background-color: #007bff !important;
     color: white !important;
-    border-radius: 5px;
-    padding: 3vw 5vw;
+    border-radius: 10px;
+    padding: 2vw 5vw;
     font-size: 4vw;
   }
-
+  .btn-aceptar:hover {
+    background-color: #074180;
+  }
   /* Redondeo general */
   .swal2-border-radius,
   .swal2-popup {
@@ -331,7 +362,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 
   .btn-eliminar,
   .btn-cancelar {
-    padding: 2.5vw 5vw;
+    padding: 2.5vw 2vw;
     font-size: 4vw;
     border-radius: 10px;
     color: white;
@@ -340,12 +371,16 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   .btn-eliminar {
     background-color: #bd2d3b;
   }
-
+  .btn-eliminar:hover {
+    background-color: #a01a1f;
+  }
   .btn-cancelar {
     background-color: #537c5a;
   }
+  .btn-cancelar:hover {
+    background-color: #3c5e4d;
+  }
 }
-
 
 /* TABLETS */
 /* Horizontal */
@@ -356,7 +391,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 @media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
   /* Párrafos */
   p {
-   font-size: 2vw;
+    font-size: 2vw;
     color: black;
     font-family: Arial, sans-serif;
     padding: 3vw;
@@ -373,8 +408,8 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   .custom-alert .tornillo,
   .custom-alert .moto,
   .custom-alert .llave {
-    width: 14vw;
-    height: 12vw;
+    width: 11vw;
+    height: 10vw;
     max-width: 200px;
     max-height: 200px;
   }
@@ -402,16 +437,23 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   .titulo-alerta.error,
   .titulo-alerta.advertencia {
     font-family: "Metal Mania", system-ui;
-    font-size: 3.5vw;
+    font-size: 22px;
     letter-spacing: 2px;
     margin: auto;
     text-align: center;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+      1px 1px 0 #000;
   }
 
-  .titulo-alerta.confirmacion { color: #9b9496; }
-  .titulo-alerta.error { color: #af3b3b; }
-  .titulo-alerta.advertencia { color: #e09804; }
+  .titulo-alerta.confirmacion {
+    color: #9b9496;
+  }
+  .titulo-alerta.error {
+    color: #af3b3b;
+  }
+  .titulo-alerta.advertencia {
+    color: #e09804;
+  }
 
   /* Botón aceptar */
   .btn-aceptar {
@@ -421,7 +463,9 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     padding: 1vw 3vw;
     font-size: 2vw;
   }
-
+  .btn-aceptar:hover {
+    background-color: #074180;
+  }
   /* Redondeo general */
   .swal2-border-radius,
   .swal2-popup {
@@ -454,7 +498,13 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     background-color: #bd2d3b;
   }
 
+  .btn-eliminar:hover {
+    background-color: #a01a1f;
+  }
   .btn-cancelar {
     background-color: #537c5a;
+  }
+  .btn-cancelar:hover {
+    background-color: #3c5e4d;
   }
 }

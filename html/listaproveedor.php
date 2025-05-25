@@ -271,7 +271,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <head>
   <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
   <title>Inventario</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
@@ -356,7 +356,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <input type="hidden" name="<?= htmlspecialchars($k) ?>" value="<?= htmlspecialchars($v) ?>">
             <?php endif; ?>
           <?php endforeach; ?>
-          <button type="submit" class="icon-button" title="Exportar proveedores a Excel">
+          <button type="submit" id="exportar-boton" class="icon-button" title="Exportar proveedores a Excel">
             <i class="fas fa-file-excel"></i> Exportar a Excel
           </button>
         </form>
@@ -366,72 +366,72 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
     </div>
-<div class="table-wrapper">
-    <?php if (mysqli_num_rows($resultado) > 0): ?>
-      <table>
-        <thead>
-          <tr>
-            <th>Nit</th>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Correo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-            <th><input type="checkbox" id="select-all"></th>
-
-          </tr>
-        </thead>
-        <tbody>
-          <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+    <div class="table-wrapper">
+      <?php if (mysqli_num_rows($resultado) > 0): ?>
+        <table>
+          <thead>
             <tr>
-              <td><?= htmlspecialchars($fila['nit']) ?></td>
-              <td><?= htmlspecialchars($fila['nombre']) ?></td>
-              <td><?= htmlspecialchars($fila['telefono']) ?></td>
-              <td><?= htmlspecialchars($fila['direccion']) ?></td>
-              <td><?= htmlspecialchars($fila['correo']) ?></td>
-              <td><?= htmlspecialchars($fila['estado']) ?></td>
-              <td class="acciones">
-                <button class="edit-button" data-id="<?= $fila['nit'] ?>">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button class="delete-button" onclick="eliminarProducto('<?= $fila['nit'] ?>')"><i class="fa-solid fa-trash"></i></button>
-              </td>
-              <td>
-                <input type="checkbox" class="select-product" value="<?= $fila['nit'] ?>">
-              </td>
+              <th>Nit</th>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Correo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+              <th><input type="checkbox" id="select-all"></th>
+
             </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+              <tr>
+                <td><?= htmlspecialchars($fila['nit']) ?></td>
+                <td><?= htmlspecialchars($fila['nombre']) ?></td>
+                <td><?= htmlspecialchars($fila['telefono']) ?></td>
+                <td><?= htmlspecialchars($fila['direccion']) ?></td>
+                <td><?= htmlspecialchars($fila['correo']) ?></td>
+                <td><?= htmlspecialchars($fila['estado']) ?></td>
+                <td class="acciones">
+                  <button class="edit-button" data-id="<?= $fila['nit'] ?>">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="delete-button" onclick="eliminarProducto('<?= $fila['nit'] ?>')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+                <td>
+                  <input type="checkbox" class="select-product" value="<?= $fila['nit'] ?>">
+                </td>
+              </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
 
-      </div>
+    </div>
 
-      <!-- Paginación -->
+    <!-- Paginación -->
 
-      <?php if ($total_paginas > 1): ?>
-        <div class="pagination">
-          <?php
+    <?php if ($total_paginas > 1): ?>
+      <div class="pagination">
+        <?php
           // Construir query base conservando filtros
           $base_params = $_GET;
-          ?>
-          <!-- Primera -->
-          <?php
+        ?>
+        <!-- Primera -->
+        <?php
           $base_params['pagina'] = 1;
           $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">« Primera</a>
+        ?>
+        <a href="<?= $url ?>">« Primera</a>
 
-          <!-- Anterior -->
-          <?php if ($pagina_actual > 1): ?>
-            <?php
+        <!-- Anterior -->
+        <?php if ($pagina_actual > 1): ?>
+          <?php
             $base_params['pagina'] = $pagina_actual - 1;
             $url = '?' . http_build_query($base_params);
-            ?>
-            <a href="<?= $url ?>">‹ Anterior</a>
-          <?php endif; ?>
+          ?>
+          <a href="<?= $url ?>">‹ Anterior</a>
+        <?php endif; ?>
 
-          <?php
+        <?php
           // Rango de páginas: dos antes y dos después
           $start = max(1, $pagina_actual - 2);
           $end   = min($total_paginas, $pagina_actual + 2);
@@ -445,108 +445,121 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           for ($i = $start; $i <= $end; $i++):
             $base_params['pagina'] = $i;
             $url = '?' . http_build_query($base_params);
-          ?>
-            <a href="<?= $url ?>"
-              class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-              <?= $i ?>
-            </a>
-          <?php endfor;
+        ?>
+          <a href="<?= $url ?>"
+            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+            <?= $i ?>
+          </a>
+        <?php endfor;
 
           // Si hay hueco después, muestra ellipsis
           if ($end < $total_paginas) {
             echo '<span class="ellips">…</span>';
           }
-          ?>
+        ?>
 
-          <!-- Siguiente -->
-          <?php if ($pagina_actual < $total_paginas): ?>
-            <?php
+        <!-- Siguiente -->
+        <?php if ($pagina_actual < $total_paginas): ?>
+          <?php
             $base_params['pagina'] = $pagina_actual + 1;
             $url = '?' . http_build_query($base_params);
-            ?>
-            <a href="<?= $url ?>">Siguiente ›</a>
-          <?php endif; ?>
+          ?>
+          <a href="<?= $url ?>">Siguiente ›</a>
+        <?php endif; ?>
 
-          <!-- Última -->
-          <?php
+        <!-- Última -->
+        <?php
           $base_params['pagina'] = $total_paginas;
           $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">Última »</a>
-        </div>
-      <?php endif; ?>
-
-    <?php else: ?>
-      <p>No se encontraron resultados.</p>
+        ?>
+        <a href="<?= $url ?>">Última »</a>
+      </div>
     <?php endif; ?>
 
-    <!-- Modal de nuevo proveedor -->
-    <div id="nuevoModal" class="modal">
-      <div class="modal-content-nuevo">
-        <h2>Nuevo Proveedor</h2>
-        <form id="nuevoForm" method="POST" action="">
-          <div class="form-group">
-            <div class="campo"><label>Ingrese el nit:</label>
-              <input type="text" id="nit" name="nit" required />
-            </div>
-            <div class="campo"><label>Ingrese el nombre del proveedor:</label>
-              <input type="text" id="nombre" name="nombre" required />
-            </div>
-            <div class="campo"><label for="telefono">Ingrese el telefono:</label>
-              <input type="text" id="telefono" name="telefono" required />
-            </div>
-            <div class="campo"><label for="direccion">Ingrese la dirección:</label>
-              <input type="text" id="direccion" name="direccion" required />
-            </div>
-            <div class="campo"><label for="correo">Ingrese el correo:</label>
-              <input type="text" id="correo" name="correo" required />
-            </div>
-            <div class="campo"><label for="estado">Ingrese el estado:</label>
-              <input type="text" id="estado" name="estado" required />
-            </div>
-            <div class="modal-buttons">
-              <button type="button" id="btnCancelar">Cancelar</button>
-              <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
-            </div>
+  <?php else: ?>
+    <p>No se encontraron resultados.</p>
+  <?php endif; ?>
+
+  <!-- Modal de nuevo proveedor -->
+  <div id="nuevoModal" class="modal">
+    <div class="modal-content-nuevo">
+      <h2>Nuevo Proveedor</h2>
+      <form id="nuevoForm" method="POST" action="">
+        <div class="form-grid">
+
+          <div class="campo">
+            <label>Nit:</label>
+            <input type="text" id="nit" name="nit" required />
           </div>
-        </form>
-      </div>
+
+          <div class="campo">
+            <label>Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required />
+          </div>
+
+          <div class="campo">
+            <label for="telefono">Telefono:</label>
+            <input type="text" id="telefono" name="telefono" required />
+          </div>
+
+          <div class="campo">
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" required />
+          </div>
+          <div class="campo">
+            <label for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" required />
+          </div>
+
+          <div class="campo">
+            <label for="estado">Estado:</label>
+            <input type="text" id="estado" name="estado" required />
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" id="btnCancelar">Cancelar</button>
+          <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
+        </div>
+
     </div>
+    </form>
+  </div>
+  </div>
 
-    <!-- Modal de edición -->
-    <div id="editModal" class="modal">
-      <div class="modal-content">
-        <span class="close">
-          <i class="fa-solid fa-x"></i>
-        </span>
+  <!-- Modal de edición -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">
+        <i class="fa-solid fa-x"></i>
+      </span>
 
-        <h2>Editar Proveedor</h2>
-        <form id="editForm" method="post">
-          <!-- Campo oculto para enviar el código 1 -->
-          <input type="hidden" id="editNit" name="nit">
-          <div class="campo"><label for="editNitVisible">Nit:</label>
-            <input type="text" id="editNitVisible" readonly>
-          </div>
-          <div class="campo"><label for="editNombre">Nombre:</label>
-            <input type="text" id="editNombre" name="nombre">
-          </div>
-          <div class="campo"> <label for="editTelefono">Teléfono:</label>
-            <input type="text" id="editTelefono" name="telefono">
-          </div>
-          <div class="campo"><label for="editDireccion">Dirección:</label>
-            <input type="text" id="editDireccion" name="direccion">
-          </div>
-          <div class="campo"> <label for="editCorreo">Correo:</label>
-            <input type="text" id="editCorreo" name="correo">
-          </div>
-          <div class="campo"><label for="editEstado">Estado:</label>
-            <input type="text" id="editEstado" name="estado">
-          </div>
-          <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
+      <h2>Editar Proveedor</h2>
+      <form id="editForm" method="post">
+        <!-- Campo oculto para enviar el código 1 -->
+        <input type="hidden" id="editNit" name="nit">
+        <div class="campo"><label for="editNitVisible">Nit:</label>
+          <input type="text" id="editNitVisible" readonly>
+        </div>
+        <div class="campo"><label for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" name="nombre">
+        </div>
+        <div class="campo"> <label for="editTelefono">Teléfono:</label>
+          <input type="text" id="editTelefono" name="telefono">
+        </div>
+        <div class="campo"><label for="editDireccion">Dirección:</label>
+          <input type="text" id="editDireccion" name="direccion">
+        </div>
+        <div class="campo"> <label for="editCorreo">Correo:</label>
+          <input type="text" id="editCorreo" name="correo">
+        </div>
+        <div class="campo"><label for="editEstado">Estado:</label>
+          <input type="text" id="editEstado" name="estado">
+        </div>
+        <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
 
-        </form>
-      </div>
+      </form>
     </div>
+  </div>
   </div>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
