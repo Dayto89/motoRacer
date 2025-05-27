@@ -854,6 +854,8 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   font-weight: 500;
   color: black; /* asegura que la activa también se vea bien */
 }
-
+.barraModulos{
+    background-color:rgb(255, 255, 255);
+}
 
 

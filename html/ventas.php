@@ -120,7 +120,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </form>
         </div>
 
-        <div style="position: relative; max-width: 1360px; margin-left: 40px; background-color:rgb(255, 255, 255); border-radius: 5px; height: 93px; display: flex; align-items: center; border-color:aqua 2px solid;">
+        <div class="barraModulos" style="position: relative; max-width: 1360px; margin-left: 40px;  border-radius: 5px; height: 93px; display: flex; align-items: center; border-color:aqua 2px solid;">
 
             <!-- Botón izquierda -->
             <button id="btnLeft" onclick="scrollCategorias(-200)"">

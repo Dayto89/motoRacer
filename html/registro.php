@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -105,6 +105,42 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                                     </script>";
             exit;
         }
+        // Verificar si el correo ya existe
+        $verificarCorreo = $conexion->prepare("SELECT identificacion FROM usuario WHERE correo = ?");
+        $verificarCorreo->bind_param("s", $correo);
+        $verificarCorreo->execute();
+        $verificarCorreo->store_result();
+
+        if ($verificarCorreo->num_rows > 0) {
+            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+            echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '<span class=\"titulo-alerta error\">Error</span>',
+                html: `
+                    <div class=\"custom-alert\">
+                        <div class='contenedor-imagen'>
+                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                        </div>
+                        <p>El correo ya está registrado. Intenta con otro.</p>
+                    </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#dc3545',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        });
+    </script>";
+            $verificarCorreo->close();
+            $conexion->close();
+            exit;
+        }
+        $verificarCorreo->close();
 
         $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
         $estado = 'activo';
@@ -137,7 +173,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
                 ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
                 ($identificacion, 'CONFIGURACIÓN', 'Copia de Seguridad', 0)");
-        
+
             if ($resultado) {
                 echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
                 echo "<script>
@@ -169,7 +205,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         } else {
             echo "<script>alert('Error al guardar el usuario');</script>";
         }
-        
+
 
         $stmt->close();
         $conexion->close();

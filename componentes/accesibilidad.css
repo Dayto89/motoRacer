@@ -775,8 +775,8 @@ text-shadow: none;
   border: 2px solid #000000;
 }
 .modo-claro .btn-cobrar{
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #000000;
   border: 2px solid #ffffff;
 }
 .modo-claro .btn-cobrar:hover{
@@ -786,8 +786,8 @@ text-shadow: none;
 }
 
 .modo-claro #listaResumen li{
-  background-color: #000000 !important;
-  color: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 .modo-alto-contraste #tarjeta{
   border: none !important;
@@ -810,9 +810,7 @@ color: white !important;
   color: #000000;
 }
 .modo-claro p{
-  color: #ffffff;
-  border: #1f1f1f 2px solid;
-  background-color: #1f1f1f;
+  color: #000000;
 }
 .modo-claro .summary-container{
   background-color: #000000;
@@ -840,8 +838,6 @@ color: white !important;
   }
   .modo-alto-contraste p{
     color: #ffffff;
-    border: #1f1f1f 2px solid;
-    background-color: #000000;
   }
   .modo-alto-contraste .mi-icono-izquierdo{
     background-color: #000000 !important;
@@ -897,3 +893,16 @@ color: white !important;
  .modo-claro .sidebar {
       background: linear-gradient(180deg, #ffffff, #ffffff, #ffffff);
  }
+ .modo-claro .card {
+  background-color :#ffffff ;
+ }
+ .modo-alto-contraste .barraModulos{
+    background-color:rgb(0, 0, 0);
+}
+
+.modo-alto-contraste .breadcrumb .brand {
+  color: white;
+}
+.modo-claro .barraModulos{
+    background-color:rgb(255, 255, 255);
+}
