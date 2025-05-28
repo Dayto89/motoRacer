@@ -248,7 +248,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <head>
   <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
   <title>Inventario</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
@@ -402,246 +402,246 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endwhile; ?>
           </tbody>
         </table>
-        </div>
-        <!-- Paginación -->
+    </div>
+    <!-- Paginación -->
 
-        <?php if ($total_paginas > 1): ?>
-          <div class="pagination">
-            <?php
-            // Construir query base conservando filtros
-            $base_params = $_GET;
-            ?>
-            <!-- Primera -->
-            <?php
-            $base_params['pagina'] = 1;
+    <?php if ($total_paginas > 1): ?>
+      <div class="pagination">
+        <?php
+          // Construir query base conservando filtros
+          $base_params = $_GET;
+        ?>
+        <!-- Primera -->
+        <?php
+          $base_params['pagina'] = 1;
+          $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">« Primera</a>
+
+        <!-- Anterior -->
+        <?php if ($pagina_actual > 1): ?>
+          <?php
+            $base_params['pagina'] = $pagina_actual - 1;
             $url = '?' . http_build_query($base_params);
-            ?>
-            <a href="<?= $url ?>">« Primera</a>
-
-            <!-- Anterior -->
-            <?php if ($pagina_actual > 1): ?>
-              <?php
-              $base_params['pagina'] = $pagina_actual - 1;
-              $url = '?' . http_build_query($base_params);
-              ?>
-              <a href="<?= $url ?>">‹ Anterior</a>
-            <?php endif; ?>
-
-            <?php
-            // Rango de páginas: dos antes y dos después
-            $start = max(1, $pagina_actual - 2);
-            $end   = min($total_paginas, $pagina_actual + 2);
-
-            // Si hay hueco antes, muestra ellipsis
-            if ($start > 1) {
-              echo '<span class="ellips">…</span>';
-            }
-
-            // Botones de páginas
-            for ($i = $start; $i <= $end; $i++):
-              $base_params['pagina'] = $i;
-              $url = '?' . http_build_query($base_params);
-            ?>
-              <a href="<?= $url ?>"
-                class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-                <?= $i ?>
-              </a>
-            <?php endfor;
-
-            // Si hay hueco después, muestra ellipsis
-            if ($end < $total_paginas) {
-              echo '<span class="ellips">…</span>';
-            }
-            ?>
-
-            <!-- Siguiente -->
-            <?php if ($pagina_actual < $total_paginas): ?>
-              <?php
-              $base_params['pagina'] = $pagina_actual + 1;
-              $url = '?' . http_build_query($base_params);
-              ?>
-              <a href="<?= $url ?>">Siguiente ›</a>
-            <?php endif; ?>
-
-            <!-- Última -->
-            <?php
-            $base_params['pagina'] = $total_paginas;
-            $url = '?' . http_build_query($base_params);
-            ?>
-            <a href="<?= $url ?>">Última »</a>
-          </div>
+          ?>
+          <a href="<?= $url ?>">‹ Anterior</a>
         <?php endif; ?>
 
-      <?php else: ?>
-        <p>No se encontraron resultados.</p>
-      <?php endif; ?>
+        <?php
+          // Rango de páginas: dos antes y dos después
+          $start = max(1, $pagina_actual - 2);
+          $end   = min($total_paginas, $pagina_actual + 2);
 
-      <!-- Modal de edición -->
-      <div id="editModal" class="modal">
-        <div class="modal-content">
-          <span class="close">
-            <i class="fa-solid fa-x"></i>
-          </span>
+          // Si hay hueco antes, muestra ellipsis
+          if ($start > 1) {
+            echo '<span class="ellips">…</span>';
+          }
 
-          <h2>Editar Producto</h2>
-          <form id="editForm" method="post">
-            <!-- Campo oculto para enviar el código 1 -->
-            <input type="hidden" id="editCodigo1" name="codigo1">
-            <div class="campo"><label for="editCodigo1Visible">Código:</label>
-              <input type="text" id="editCodigo1Visible" readonly>
-            </div>
-            <div class="campo"><label for="editCodigo2">Código 2:</label>
-              <input type="text" id="editCodigo2" name="codigo2">
-            </div>
-            <div class="campo"><label for="editNombre">Nombre:</label>
-              <input type="text" id="editNombre" name="nombre">
-            </div>
-            <div class="campo"> <label for="editPrecio1">Precio 1:</label>
-              <input type="text" id="editPrecio1" name="precio1">
-            </div>
-            <div class="campo"><label for="editPrecio2">Precio 2:</label>
-              <input type="text" id="editPrecio2" name="precio2">
-            </div>
-            <div class="campo"> <label for="editPrecio3">Precio 3:</label>
-              <input type="text" id="editPrecio3" name="precio3">
-            </div>
-            <div class="campo"><label for="editCantidad">Cantidad:</label>
-              <input type="text" id="editCantidad" name="cantidad">
-            </div>
-            <div class="campo"> <label for="editDescripcion">Descripción:</label>
-              <input type="text" id="editDescripcion" name="descripcion">
-            </div>
-            <div class="campo"><label for="editCategoria">Categoría:</label>
-              <select name="categoria-id" id="editCategoria" required>
-                <option value="">Seleccione una categoría</option>
-                <?php
-                $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-                if (!$conexion2) {
-                  die("Error de conexión: " . mysqli_connect_error());
-                }
-                $consultaCategorias = "SELECT codigo, nombre FROM categoria";
-                $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
-                while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
-                  echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editMarca">Marca:</label>
-              <select name="marca-id" id="editMarca" required>
-                <option value="">Seleccione una marca</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaMarcas = "SELECT codigo, nombre FROM marca";
-                $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
-                while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
-                  echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editUnidadMedida">Unidad Medida:</label>
-              <select name="unidadmedida-id" id="editUnidadMedida" required>
-                <option value="">Seleccione una medida</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
-                $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
-                while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
-                  echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editUbicacion">Ubicación:</label>
-              <select name="ubicacion-id" id="editUbicacion" required>
-                <option value="">Seleccione una ubicación</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
-                $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
-                while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
-                  echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editProveedor">Proveedor:</label>
-              <select name="proveedor-id" id="editProveedor" required>
-                <option value="">Seleccione un proveedor</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaProveedores = "SELECT nit, nombre FROM proveedor";
-                $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
-                while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
-                  echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
+          // Botones de páginas
+          for ($i = $start; $i <= $end; $i++):
+            $base_params['pagina'] = $i;
+            $url = '?' . http_build_query($base_params);
+        ?>
+          <a href="<?= $url ?>"
+            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+            <?= $i ?>
+          </a>
+        <?php endfor;
 
-          </form>
-        </div>
+          // Si hay hueco después, muestra ellipsis
+          if ($end < $total_paginas) {
+            echo '<span class="ellips">…</span>';
+          }
+        ?>
+
+        <!-- Siguiente -->
+        <?php if ($pagina_actual < $total_paginas): ?>
+          <?php
+            $base_params['pagina'] = $pagina_actual + 1;
+            $url = '?' . http_build_query($base_params);
+          ?>
+          <a href="<?= $url ?>">Siguiente ›</a>
+        <?php endif; ?>
+
+        <!-- Última -->
+        <?php
+          $base_params['pagina'] = $total_paginas;
+          $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">Última »</a>
       </div>
+    <?php endif; ?>
+
+  <?php else: ?>
+    <p>No se encontraron resultados.</p>
+  <?php endif; ?>
+
+  <!-- Modal de edición -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">
+        <i class="fa-solid fa-x"></i>
+      </span>
+
+      <h2>Editar Producto</h2>
+      <form id="editForm" method="post">
+        <!-- Campo oculto para enviar el código 1 -->
+        <input type="hidden" id="editCodigo1" name="codigo1">
+        <div class="campo"><label for="editCodigo1Visible">Código:</label>
+          <input type="text" id="editCodigo1Visible" readonly>
+        </div>
+        <div class="campo"><label for="editCodigo2">Código 2:</label>
+          <input type="text" id="editCodigo2" name="codigo2">
+        </div>
+        <div class="campo"><label for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" name="nombre">
+        </div>
+        <div class="campo"> <label for="editPrecio1">Precio 1:</label>
+          <input type="text" id="editPrecio1" name="precio1">
+        </div>
+        <div class="campo"><label for="editPrecio2">Precio 2:</label>
+          <input type="text" id="editPrecio2" name="precio2">
+        </div>
+        <div class="campo"> <label for="editPrecio3">Precio 3:</label>
+          <input type="text" id="editPrecio3" name="precio3">
+        </div>
+        <div class="campo"><label for="editCantidad">Cantidad:</label>
+          <input type="text" id="editCantidad" name="cantidad">
+        </div>
+        <div class="campo"> <label for="editDescripcion">Descripción:</label>
+          <input type="text" id="editDescripcion" name="descripcion">
+        </div>
+        <div class="campo"><label for="editCategoria">Categoría:</label>
+          <select name="categoria-id" id="editCategoria" required>
+            <option value="">Seleccione una categoría</option>
+            <?php
+            $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+            if (!$conexion2) {
+              die("Error de conexión: " . mysqli_connect_error());
+            }
+            $consultaCategorias = "SELECT codigo, nombre FROM categoria";
+            $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
+            while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
+              echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo"><label for="editMarca">Marca:</label>
+          <select name="marca-id" id="editMarca" required>
+            <option value="">Seleccione una marca</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaMarcas = "SELECT codigo, nombre FROM marca";
+            $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
+            while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
+              echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo"><label for="editUnidadMedida">Unidad Medida:</label>
+          <select name="unidadmedida-id" id="editUnidadMedida" required>
+            <option value="">Seleccione una medida</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
+            $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
+            while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
+              echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo"><label for="editUbicacion">Ubicación:</label>
+          <select name="ubicacion-id" id="editUbicacion" required>
+            <option value="">Seleccione una ubicación</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
+            $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
+            while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
+              echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo"><label for="editProveedor">Proveedor:</label>
+          <select name="proveedor-id" id="editProveedor" required>
+            <option value="">Seleccione un proveedor</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaProveedores = "SELECT nit, nombre FROM proveedor";
+            $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
+            while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
+              echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
+
+      </form>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Seleccionamos todos los botones de edición
-        const editButtons = document.querySelectorAll('.edit-button');
-        // Modal y botón de cierre
-        const modal = document.getElementById('editModal');
-        // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
-        const closeModal = modal.querySelector('.close');
-        // Listener para cada botón de edición
-        editButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const row = this.closest('tr');
-            // Se asume que las columnas están en el siguiente orden:
-            // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
-            // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
-            const codigo1 = row.cells[0].innerText.trim();
-            document.getElementById('editCodigo1').value = codigo1;
-            document.getElementById('editCodigo1Visible').value = codigo1;
-            document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
-            document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-            // Asumimos que Precio1 está en la columna 4 (ajusta si es necesario)
-            document.getElementById('editPrecio1').value = row.cells[4].innerText.trim();
-            document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
-            document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
-            document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
-            document.getElementById('editDescripcion').value = row.cells[8].innerText.trim();
-            // Para select de Categoría: usamos el data attribute de la celda correspondiente
-            document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
-            // Para los inputs de Marca, UnidadMedida, Ubicación y Proveedor, se usan los data attributes:
-            document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
-            document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
-            document.getElementById('editUbicacion').value = row.cells[12].getAttribute('data-ubicacion-id');
-            document.getElementById('editProveedor').value = row.cells[13].getAttribute('data-proveedor-id');
+  </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Seleccionamos todos los botones de edición
+      const editButtons = document.querySelectorAll('.edit-button');
+      // Modal y botón de cierre
+      const modal = document.getElementById('editModal');
+      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
+      const closeModal = modal.querySelector('.close');
+      // Listener para cada botón de edición
+      editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const row = this.closest('tr');
+          // Se asume que las columnas están en el siguiente orden:
+          // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
+          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
+          const codigo1 = row.cells[0].innerText.trim();
+          document.getElementById('editCodigo1').value = codigo1;
+          document.getElementById('editCodigo1Visible').value = codigo1;
+          document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
+          document.getElementById('editNombre').value = row.cells[2].innerText.trim();
+          // Asumimos que Precio1 está en la columna 4 (ajusta si es necesario)
+          document.getElementById('editPrecio1').value = row.cells[4].innerText.trim();
+          document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
+          document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
+          document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
+          document.getElementById('editDescripcion').value = row.cells[8].innerText.trim();
+          // Para select de Categoría: usamos el data attribute de la celda correspondiente
+          document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
+          // Para los inputs de Marca, UnidadMedida, Ubicación y Proveedor, se usan los data attributes:
+          document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
+          document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
+          document.getElementById('editUbicacion').value = row.cells[12].getAttribute('data-ubicacion-id');
+          document.getElementById('editProveedor').value = row.cells[13].getAttribute('data-proveedor-id');
 
-            modal.style.display = 'block';
-          });
-        });
-
-
-
-        // Listener para cerrar el modal
-        closeModal.addEventListener('click', function() {
-          modal.style.display = 'none';
+          modal.style.display = 'block';
         });
       });
 
-      // Función para eliminar un producto con SweetAlert2
-      function eliminarProducto(codigo) {
-        Swal.fire({
-          title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
 
-          html: `
+
+      // Listener para cerrar el modal
+      closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+    });
+
+    // Función para eliminar un producto con SweetAlert2
+    function eliminarProducto(codigo) {
+      Swal.fire({
+        title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+
+        html: `
             <div class="custom-alert">
                 <div class="contenedor-imagen">
                     <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
@@ -650,6 +650,136 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         `,
 
+        background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
+          cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
+          container: 'fondo-oscuro'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Enviar la solicitud al servidor
+          fetch('../html/listaproductos.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data.success) {
+                // Mostrar alerta de éxito
+                Swal.fire({
+                  title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
+                  html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                                </div>
+                                 <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
+                            </div>
+                        `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+                }).then(() => {
+                  location.reload(); // Recargar página después de cerrar la alerta
+                });
+              } else {
+                // Mostrar alerta de error
+                Swal.fire({
+                  title: '<span class="titulo-alerta error">Error</span>',
+                  html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al eliminar el producto.</p>
+                </div>
+            `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+                });
+              }
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
+            });
+        }
+      });
+    }
+
+
+    // funcion de los checkboxes
+    document.getElementById("select-all").addEventListener("change", function() {
+      let checkboxes = document.querySelectorAll(".select-product");
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      let selectAllCheckbox = document.getElementById("select-all");
+      let checkboxes = document.querySelectorAll(".select-product");
+      let deleteButton = document.getElementById("delete-selected");
+
+      function toggleDeleteButton() {
+        let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        deleteButton.style.display = anyChecked ? "inline-block" : "none";
+      }
+
+      selectAllCheckbox.addEventListener("change", function() {
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+        toggleDeleteButton();
+      });
+
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", toggleDeleteButton);
+      });
+
+      deleteButton.addEventListener("click", function() {
+        let selectedCodes = Array.from(checkboxes)
+          .filter(checkbox => checkbox.checked)
+          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
+
+        if (selectedCodes.length === 0) {
+          alert("Selecciona al menos un producto para eliminar.");
+          return;
+        }
+
+        // Mostrar la alerta con SweetAlert
+        Swal.fire({
+          title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+          html: `
+            <div class="custom-alert">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                <p>Los productos se eliminarán de forma permanente.</p>
+            </div>
+        `,
           background: '#ffffffdb',
           showCancelButton: true,
           confirmButtonText: "Sí, eliminar",
@@ -662,156 +792,26 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            // Enviar la solicitud al servidor
-            fetch('../html/listaproductos.php', {
-                method: 'POST',
+            // Depuración: Ver datos antes de enviarlos
+            console.log("Enviando códigos a eliminar:", selectedCodes);
+
+            // Enviar datos al servidor
+            fetch("eliminar_productos.php", {
+                method: "POST",
                 headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
+                  "Content-Type": "application/json"
                 },
-                body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-              })
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-              })
-              .then(data => {
-                if (data.success) {
-                  // Mostrar alerta de éxito
-                  Swal.fire({
-                    title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
-                    html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
-                                </div>
-                                 <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
-                            </div>
-                        `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                      popup: 'swal2-border-radius',
-                      confirmButton: 'btn-aceptar',
-                      container: 'fondo-oscuro'
-                    }
-                  }).then(() => {
-                    location.reload(); // Recargar página después de cerrar la alerta
-                  });
-                } else {
-                  // Mostrar alerta de error
-                  Swal.fire({
-                    title: '<span class="titulo-alerta error">Error</span>',
-                    html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al eliminar el producto.</p>
-                </div>
-            `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                      popup: 'swal2-border-radius',
-                      confirmButton: 'btn-aceptar',
-                      container: 'fondo-oscuro'
-                    }
-                  });
-                }
-              })
-              .catch(error => {
-                console.error("Error:", error);
-                Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
-              });
-          }
-        });
-      }
-
-
-      // funcion de los checkboxes
-      document.getElementById("select-all").addEventListener("change", function() {
-        let checkboxes = document.querySelectorAll(".select-product");
-        checkboxes.forEach(checkbox => {
-          checkbox.checked = this.checked;
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function() {
-        let selectAllCheckbox = document.getElementById("select-all");
-        let checkboxes = document.querySelectorAll(".select-product");
-        let deleteButton = document.getElementById("delete-selected");
-
-        function toggleDeleteButton() {
-          let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-          deleteButton.style.display = anyChecked ? "inline-block" : "none";
-        }
-
-        selectAllCheckbox.addEventListener("change", function() {
-          checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-          });
-          toggleDeleteButton();
-        });
-
-        checkboxes.forEach(checkbox => {
-          checkbox.addEventListener("change", toggleDeleteButton);
-        });
-
-        deleteButton.addEventListener("click", function() {
-          let selectedCodes = Array.from(checkboxes)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
-
-          if (selectedCodes.length === 0) {
-            alert("Selecciona al menos un producto para eliminar.");
-            return;
-          }
-
-          // Mostrar la alerta con SweetAlert
-          Swal.fire({
-            title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
-            html: `
-            <div class="custom-alert">
-                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                <p>Los productos se eliminarán de forma permanente.</p>
-            </div>
-        `,
-            background: '#ffffffdb',
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-            customClass: {
-              popup: "custom-alert",
-              confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
-              cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
-              container: 'fondo-oscuro'
-            }
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // Depuración: Ver datos antes de enviarlos
-              console.log("Enviando códigos a eliminar:", selectedCodes);
-
-              // Enviar datos al servidor
-              fetch("eliminar_productos.php", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({
-                    codigos: selectedCodes
-                  })
+                body: JSON.stringify({
+                  codigos: selectedCodes
                 })
-                .then(response => response.json())
-                .then(data => {
-                  console.log("Respuesta del servidor:", data); // Depuración
-                  if (data.success) {
-                    Swal.fire({
-                        title: '<span class="titulo-alerta confirmacion">Exito</span>',
-                        html: `
+              })
+              .then(response => response.json())
+              .then(data => {
+                console.log("Respuesta del servidor:", data); // Depuración
+                if (data.success) {
+                  Swal.fire({
+                      title: '<span class="titulo-alerta confirmacion">Exito</span>',
+                      html: `
                             <div class="custom-alert">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" alt="Exito" class="moto">
@@ -819,29 +819,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>Productos elimanados correctamente.</p>
                             </div>
                         `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#007bff',
-                        customClass: {
-                          popup: 'swal2-border-radius',
-                          confirmButton: 'btn-aceptar',
-                          container: 'fondo-oscuro'
-                        }
-                      })
-                      .then(() => location.reload()); // Recargar página después de cerrar la alerta
-                  } else {
-                    Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
-                  }
-                })
-                .catch(error => {
-                  console.error("Error en la solicitud:", error);
-                  Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
-                });
-            }
-          });
+                      background: '#ffffffdb',
+                      confirmButtonText: 'Aceptar',
+                      confirmButtonColor: '#007bff',
+                      customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                      }
+                    })
+                    .then(() => location.reload()); // Recargar página después de cerrar la alerta
+                } else {
+                  Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
+                }
+              })
+              .catch(error => {
+                console.error("Error en la solicitud:", error);
+                Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
+              });
+          }
         });
       });
-    </script>
+    });
+  </script>
 </body>
 
 </html>

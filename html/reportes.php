@@ -310,10 +310,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <div class="main-content">
     <h1>Reportes</h1>
     <div class="filter-bar">
-      <form method="GET" action="../html/reportes.php" class="search-form"> <!-- Form único que envía todo -->
-        <details class="filter-dropdown">
-          <summary class="filter-button">Filtrar</summary>
-          <div class="filter-options">
+      <details class="filter-dropdown">
+        <summary class="filter-button">Filtrar</summary>
+        <div class="filter-options">
+            <form method="GET" action="../html/reportes.php" class="search-form"> <!-- Form único que envía todo -->
             <div class="criteria-group">
               <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
               <label><input type="checkbox" name="criterios[]" value="fechaGeneracion"> Fecha</label>
@@ -330,15 +330,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </details>
 
         <!-- Barra de búsqueda principal -->
-        <div class="search-container">
-          <input style="width: 650px" id="barraReportes" type="text"
+
+          <input id="barraReportes" type="text"
             name="busqueda"
             placeholder="Buscar..."
             value="<?= htmlspecialchars($_GET['busqueda'] ?? '') ?>">
           <button type="submit" class="search-button">
             <i class="fas fa-search"></i>
           </button>
-        </div>
       </form>
       <div class="export-button">
         <form action="excel_reporte.php" method="post">

@@ -74,7 +74,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Notificaciones</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-  <link rel="stylesheet" href="../css/listaproveedor.css" />
+  <link rel="stylesheet" href="../css/listanotificaciones.css">
   <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <link rel="stylesheet" href="../componentes/header.php">
@@ -134,20 +134,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       text-shadow: none;
     }
 
-    .marcarN{
-      background-color:rgb(128, 0, 0);
+    .marcarN {
+      background-color: rgb(128, 0, 0);
     }
 
-    .marcarN:hover{
-      background-color:rgb(255, 0, 0);
+    .marcarN:hover {
+      background-color: rgb(255, 0, 0);
     }
 
-    .marcarL{
+    .marcarL {
       background-color: rgb(11, 128, 0);
     }
 
-    .marcarL:hover{
-      background-color:rgb(15, 184, 0);
+    .marcarL:hover {
+      background-color: rgb(15, 184, 0);
     }
   </style>
 </head>
@@ -157,22 +157,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div id="menu"></div>
   </div>
 
-  <div class="search-bar">
-    <form method="GET" action="listanotificaciones.php">
-      <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
-        <i class="bx bx-search-alt-2 icon"></i>
-      </button>
-      <input class="form-control" type="text" name="busqueda" placeholder="Buscar notificaciones">
-    </form>
-  </div>
+
 
   <div class="main-content">
-    <div id="inventario" class="form-section">
+
       <h1>Notificaciones</h1>
-      <div style="margin-bottom: 25px;margin-left: 74%;size: 50%;">
-  <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel"></i><label> Exportar a Excel</label></a>
-  <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf"></i><label> Exportar a PDF</label></a>
-</div>
+      <div class="filter-bar">
+            <!-- Filtros adaptados -->
+            <details class="filter-dropdown">
+                <summary class="filter-button">Filtrar</summary>
+                <div class="filter-options">
+                    <form method="GET" action="../html/listanotificaciones.php" class="search-form">
+                        <div class="criteria-group">
+                            <label><input type="checkbox" name="criterios[]" value="codigo"> Fecha</label>
+                            <label><input type="checkbox" name="criterios[]" value="identificacion">Nombre</label>
+                            <label><input type="checkbox" name="criterios[]" value="nombre">Estado</label>
+                            <label><input type="checkbox" name="criterios[]" value="apellido">Stock</label>
+                </div>
+            </details>
+            <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
+            <button class="search-button" type="submit">Buscar</button>
+            </form>
+        </div>
+      <div style="margin-bottom: 25px;margin-left: 74%;size: 50%;font-family:Arial;">
+        <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel"></i><label> Exportar a Excel</label></a>
+        <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf"></i><label> Exportar a PDF</label></a>
+      </div>
 
       <table>
         <thead>
@@ -268,7 +278,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
       <?php endif; ?>
 
-    </div>
+   
   </div>
 
 </body>

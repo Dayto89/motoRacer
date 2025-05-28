@@ -894,6 +894,10 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
         justify-content: center;
     }
 
+    .filter-dropdown {
+        width: 100%;
+    }
+
 }
 
 
