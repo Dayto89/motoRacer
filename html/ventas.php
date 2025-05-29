@@ -111,14 +111,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <div class="main">
-        <div class="search-bar">
-            <form method="GET" action="ventas.php">
-                <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
-                    <i class="bx bx-search-alt-2 icon"></i>
-                </button>
-                <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
-            </form>
-        </div>
+            <h1 class="titulo">Ventas</h1>
+            <div class="search-bar">
+                <form method="GET" action="ventas.php">
+                    <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
+                        <i class="bx bx-search-alt-2 icon"></i>
+                    </button>
+                    <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
+                </form>
+                
+            </div>
 
         <div class="barraModulos" style="position: relative; max-width: 1360px; margin-left: 40px;  border-radius: 5px; height: 93px; display: flex; align-items: center; border-color:aqua 2px solid;">
 

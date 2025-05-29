@@ -50,14 +50,14 @@ if ($_POST) {
     <link rel="stylesheet" href="../css/alertas.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
 
 <body>
-<div class="container">
+    <div class="container">
         <img src="../imagenes/motoracer.png" alt="Fondo" class="fondo">
         <img src="../imagenes/LOGO.png" alt="Logo" class="logo_inicio"
             style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
@@ -65,24 +65,25 @@ if ($_POST) {
 
         <h1>ENVIAR CORREO</h1>
 
-    <form method="POST">
-        <label>Correo registrado:</label>
-        <input type="email" name="correo" required>
-        <div class="button_container">
+        <form method="POST">
+            <label>Correo registrado:</label>
+            <input type="email" name="correo" required>
+            <div class="button_container">
                 <button type="submit" name="restablecer" class="boton">Enviar Codigo</button>
-
+                <button class="boton" onclick="location.href='/index.php'">Volver</button>
+            </div>
 
         </form>
     </div>
-   
+
     </form>
 
     <script>
         const mensaje = "<?php echo $mensaje; ?>";
         if (mensaje === "codigo_enviado") {
             Swal.fire({
-            title: '<span class="titulo-alerta confirmacion">Correo Enviado</span>',
-            html: `
+                    title: '<span class="titulo-alerta confirmacion">Correo Enviado</span>',
+                    html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
@@ -90,22 +91,22 @@ if ($_POST) {
                     <p>Revisa tu correo electrónico para recuperar tu contraseña.</p>
                 </div>
             `,
-            background: 'hsl(0deg 0% 100% / 76%)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        })
-        .then(() => {
-                window.location.href = "verificar_codigo.php?correo=<?php echo $_POST['correo']; ?>";
-            });
+                    background: 'hsl(0deg 0% 100% / 76%)',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                })
+                .then(() => {
+                    window.location.href = "verificar_codigo.php?correo=<?php echo $_POST['correo']; ?>";
+                });
         } else if (mensaje === "error_envio") {
             Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -113,19 +114,19 @@ if ($_POST) {
                     <p>No se pudo enviar el correo, intenta nuevamente</p>
                 </div>
             `,
-            background: 'hsl(0deg 0% 100% / 76%)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
+                background: 'hsl(0deg 0% 100% / 76%)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
         } else if (mensaje === "correo_no_encontrado") {
             Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -133,15 +134,15 @@ if ($_POST) {
                     <p>Correo no registrado.</p>
                 </div>
             `,
-            background: 'hsl(0deg 0% 100% / 76%)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
+                background: 'hsl(0deg 0% 100% / 76%)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
         }
     </script>
 

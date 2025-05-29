@@ -139,6 +139,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
 
             <table class="category-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
                 <tbody id="tabla-ubicaciones">
                     <?php
                     $ubicaciones = $conexion->query("SELECT * FROM ubicacion ORDER BY codigo ASC");
@@ -191,63 +198,63 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-<script>
-   document.addEventListener("DOMContentLoaded", function () {
-    const tablaUbicaciones = document.getElementById("tabla-ubicaciones");
-    const modalProductos = document.getElementById("modalProductos");
-    const closeModal = modalProductos.querySelector('.close');
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const tablaUbicaciones = document.getElementById("tabla-ubicaciones");
+            const modalProductos = document.getElementById("modalProductos");
+            const closeModal = modalProductos.querySelector('.close');
 
-    function mostrarModal() {
-        modalProductos.classList.remove("hide");
-        modalProductos.classList.add("show");
-    }
+            function mostrarModal() {
+                modalProductos.classList.remove("hide");
+                modalProductos.classList.add("show");
+            }
 
-    function ocultarModal() {
-        modalProductos.classList.remove("show");
-        modalProductos.classList.add("hide");
-        setTimeout(() => {
-            modalProductos.classList.remove("hide");
-        }, 300);
-    }
+            function ocultarModal() {
+                modalProductos.classList.remove("show");
+                modalProductos.classList.add("hide");
+                setTimeout(() => {
+                    modalProductos.classList.remove("hide");
+                }, 300);
+            }
 
-    modalProductos.addEventListener("click", function (event) {
-        if (event.target === modalProductos) {
-            ocultarModal();
-        }
-    });
+            modalProductos.addEventListener("click", function(event) {
+                if (event.target === modalProductos) {
+                    ocultarModal();
+                }
+            });
 
-    closeModal.addEventListener("click", function () {
-        ocultarModal();
-    });
+            closeModal.addEventListener("click", function() {
+                ocultarModal();
+            });
 
-    if (!tablaUbicaciones) {
-        console.error("No se encontró el elemento con id 'tabla-ubicaciones'");
-        return;
-    }
+            if (!tablaUbicaciones) {
+                console.error("No se encontró el elemento con id 'tabla-ubicaciones'");
+                return;
+            }
 
-    tablaUbicaciones.addEventListener("click", function (event) {
-        let target = event.target;
+            tablaUbicaciones.addEventListener("click", function(event) {
+                let target = event.target;
 
-        // Si se hace clic en un <i> dentro del botón, subimos al botón
-        if (target.tagName === "I") {
-            target = target.parentElement;
-        }
+                // Si se hace clic en un <i> dentro del botón, subimos al botón
+                if (target.tagName === "I") {
+                    target = target.parentElement;
+                }
 
-        // Botón de ver productos
-        if (target.classList.contains("btn-list")) {
-            const ubicacion_id = target.getAttribute("data-id");
+                // Botón de ver productos
+                if (target.classList.contains("btn-list")) {
+                    const ubicacion_id = target.getAttribute("data-id");
 
-            fetch("../html/ubicacion.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `lista=1&codigo=${ubicacion_id}`
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const listaHTML = `
+                    fetch("../html/ubicacion.php", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded"
+                            },
+                            body: `lista=1&codigo=${ubicacion_id}`
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length > 0) {
+                                const listaHTML = `
                             <table class="productos-table" style="width: 100%;">
                                 <thead>
                                     <tr>
@@ -265,12 +272,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 </tbody>
                             </table>
                         `;
-                        document.getElementById("lista-productos").innerHTML = listaHTML;
-                        mostrarModal();
-                    } else {
-                        Swal.fire({
-                            title: '<span class="titulo-alerta advertencia">Sin productos</span>',
-                            html: `
+                                document.getElementById("lista-productos").innerHTML = listaHTML;
+                                mostrarModal();
+                            } else {
+                                Swal.fire({
+                                    title: '<span class="titulo-alerta advertencia">Sin productos</span>',
+                                    html: `
                                 <div class="custom-alert">
                                     <div class="contenedor-imagen">
                                         <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
@@ -278,89 +285,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                     <p>No hay productos en esta marca.</p>
                                 </div>
                             `,
-                            background: '#ffffffdb',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#007bff',
-                            customClass: {
-                                popup: 'swal2-border-radius',
-                                confirmButton: 'btn-aceptar',
-                                container: 'fondo-oscuro'
-                            }
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al obtener productos:", error);
-                });
-        }
-
-        // Botón de eliminar ubicación
-        if (target.classList.contains("btn-delete")) {
-            const codigo = target.getAttribute("data-id");
-
-            Swal.fire({
-                title: '<span class="titulo-alerta advertencia">¿Esta seguro?</span>',
-                html: `
-                    <div class="custom-alert">
-                        <div class="contenedor-imagen">
-                            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                        </div>
-                        <p>Esta acción eliminará la ubicación.<br>¿Desea continuar?</p>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                background: '#ffffffdb',
-                confirmButtonColor: '#dc3545',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-eliminaar',
-                    cancelButton: 'btn-cancelar',
-                    container: 'fondo-oscuro'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch("../html/ubicacion.php", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: `eliminar=1&codigo=${codigo}`
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    title: '<span class="titulo-alerta confrimacion">Eliminado</span>',
-                                    html: `
-                                        <div class="custom-alert">
-                                            <div class="contenedor-imagen">
-                                                <img src="../imagenes/moto.png" alt="Éxito" class="moto">
-                                            </div>
-                                            <p>Ubicación eliminada correctamente.</p>
-                                        </div>
-                                    `,
-                                    background: '#ffffffdb',
-                                    confirmButtonText: 'Aceptar',
-                                    confirmButtonColor: '#007bff',
-                                    customClass: {
-                                        popup: 'swal2-border-radius',
-                                        confirmButton: 'btn-aceptar',
-                                        container: 'fondo-oscuro'
-                                    }
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire({
-                                    title: '<span class="titulo-alerta error">Error</span>',
-                                    html: `
-                                        <div class="custom-alert">
-                                            <div class="contenedor-imagen">
-                                                <img src="../imagenes/llave.png" alt="Error" class="llave">
-                                            </div>
-                                            <p>No se pudo eliminar la ubicación.</p>
-                                        </div>
-                                    `,
                                     background: '#ffffffdb',
                                     confirmButtonText: 'Aceptar',
                                     confirmButtonColor: '#007bff',
@@ -373,9 +297,92 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             }
                         })
                         .catch(error => {
-                            Swal.fire({
-                                title: '<span class="titulo-alerta error">Error</span>',
-                                html: `
+                            console.error("Error al obtener productos:", error);
+                        });
+                }
+
+                // Botón de eliminar ubicación
+                if (target.classList.contains("btn-delete")) {
+                    const codigo = target.getAttribute("data-id");
+
+                    Swal.fire({
+                        title: '<span class="titulo-alerta advertencia">¿Esta seguro?</span>',
+                        html: `
+                    <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                        </div>
+                        <p>Esta acción eliminará la ubicación.<br>¿Desea continuar?</p>
+                    </div>
+                `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, eliminar',
+                        cancelButtonText: 'Cancelar',
+                        background: '#ffffffdb',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-eliminaar',
+                            cancelButton: 'btn-cancelar',
+                            container: 'fondo-oscuro'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch("../html/ubicacion.php", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded"
+                                    },
+                                    body: `eliminar=1&codigo=${codigo}`
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: '<span class="titulo-alerta confrimacion">Eliminado</span>',
+                                            html: `
+                                        <div class="custom-alert">
+                                            <div class="contenedor-imagen">
+                                                <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                                            </div>
+                                            <p>Ubicación eliminada correctamente.</p>
+                                        </div>
+                                    `,
+                                            background: '#ffffffdb',
+                                            confirmButtonText: 'Aceptar',
+                                            confirmButtonColor: '#007bff',
+                                            customClass: {
+                                                popup: 'swal2-border-radius',
+                                                confirmButton: 'btn-aceptar',
+                                                container: 'fondo-oscuro'
+                                            }
+                                        }).then(() => location.reload());
+                                    } else {
+                                        Swal.fire({
+                                            title: '<span class="titulo-alerta error">Error</span>',
+                                            html: `
+                                        <div class="custom-alert">
+                                            <div class="contenedor-imagen">
+                                                <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                            </div>
+                                            <p>No se pudo eliminar la ubicación.</p>
+                                        </div>
+                                    `,
+                                            background: '#ffffffdb',
+                                            confirmButtonText: 'Aceptar',
+                                            confirmButtonColor: '#007bff',
+                                            customClass: {
+                                                popup: 'swal2-border-radius',
+                                                confirmButton: 'btn-aceptar',
+                                                container: 'fondo-oscuro'
+                                            }
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.fire({
+                                        title: '<span class="titulo-alerta error">Error</span>',
+                                        html: `
                                     <div class="custom-alert">
                                         <div class="contenedor-imagen">
                                             <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -383,22 +390,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                         <p>No se pudo eliminar la ubicación. Puede tener productos asociados.</p>
                                     </div>
                                 `,
-                                background: '#ffffffdb',
-                                confirmButtonText: 'Aceptar',
-                                confirmButtonColor: '#007bff',
-                                customClass: {
-                                    popup: 'swal2-border-radius',
-                                    confirmButton: 'btn-aceptar',
-                                    container: 'fondo-oscuro'
-                                }
-                            });
-                        });
+                                        background: '#ffffffdb',
+                                        confirmButtonText: 'Aceptar',
+                                        confirmButtonColor: '#007bff',
+                                        customClass: {
+                                            popup: 'swal2-border-radius',
+                                            confirmButton: 'btn-aceptar',
+                                            container: 'fondo-oscuro'
+                                        }
+                                    });
+                                });
+                        }
+                    });
                 }
             });
-        }
-    });
-});
-
+        });
     </script>
 </body>
 

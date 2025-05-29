@@ -141,6 +141,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </div>
 
       <table class="category-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
         <tbody id="tabla-categorias">
           <?php
           $categorias = $conexion->query("SELECT * FROM categoria ORDER BY codigo ASC");

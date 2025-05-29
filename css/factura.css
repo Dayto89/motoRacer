@@ -16,6 +16,16 @@
     --breadcrumb-active-hover: #397f3b;
 }
 
+.titulo {
+    font-family: "Metal Mania", system-ui;
+    font-size: 50px;
+    margin-top: 20px;
+    color: white;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+    margin-left: 50%;
+    letter-spacing: 5px;
+}
+
 ul.breadcrumb {
     list-style: none;
     border-radius: 5px;
@@ -199,7 +209,7 @@ body::before {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 40px;
+    padding: 0px 0px 20px 40px;
     margin-right: 8px;
     font-size: 3em;
     text-shadow: 3px 1px 0 #1c51a0, 2px 3px 0 #1c51a0;
@@ -211,6 +221,7 @@ body::before {
     padding: 5px;
     border-radius: 5px;
     font-size: 1.7em;
+    margin-bottom: 10px;
 }
 
 .search-bar:hover input {

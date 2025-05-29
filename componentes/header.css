@@ -243,6 +243,17 @@ h2 {
     transition: margin-left 0.3s ease;
 }
 
+.nombre {
+    font-size: 15px;
+    color: white;
+    margin-top: 5px;
+}
+
+.rol {
+    font-size: 13px;
+    color: white;
+}
+
 /* MÓVILES */
 /* Horizontal */
 @media only screen and (max-width: 870px) and (orientation: landscape) {

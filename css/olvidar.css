@@ -65,6 +65,7 @@
     font-family: Arial, Helvetica, sans-serif;
     text-shadow: 2px 0 #1c51a0;
     white-space: nowrap;
+    margin-left: 12%;
   }
   
   form input {
@@ -78,7 +79,7 @@
       border: none;
       font-size: 13px;
       margin-bottom: 24px;
-      margin-left: -55px;
+      margin-left: 10%;
   
   }
   

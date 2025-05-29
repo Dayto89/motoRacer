@@ -289,6 +289,10 @@ h3 {
   font-size: 16px;
 }
 
+thead {
+  font-size: 20px;
+}
+
 #btnCancelar:hover {
   background-color: #a71d2a;
 }
