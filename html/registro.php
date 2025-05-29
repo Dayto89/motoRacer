@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   <form name="formulario" method="post" action="">
     <div class="container">
       <div class="form-grid">
-        <div class="campo"><label for="identificacion">Identificación: </label><input type="text" name="identificacion" id="identificacion" required></div>
+        <div class="campo"><label for="identificacion">Identificación: </label><input type="number" name="identificacion" id="identificacion" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
         <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol" required>
             <option value="gerente" selected>Gerente </option>
           </select></div>
@@ -190,6 +190,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                     </script>";
       exit;
     }
+    // Validar seguridad de la contraseña
+    if (
+      strlen($contrasena) < 8 ||
+      !preg_match('/[A-Z]/', $contrasena) ||      // Al menos una mayúscula
+      !preg_match('/[a-z]/', $contrasena) ||      // Al menos una minúscula
+      !preg_match('/[\d\W]/', $contrasena)
+    ) {     // Al menos un número o símbolo
+
+      echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+      echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '<span class=\"titulo-alerta error\">Contraseña inválida</span>',
+                html: `
+                    <div class=\"custom-alert\">
+                        <div class='contenedor-imagen'>
+                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                        </div>
+                        <p>La contraseña debe tener mínimo 8 caracteres, una letra mayúscula, una minúscula y un número o símbolo.</p>
+                    </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#dc3545',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        });
+    </script>";
+      exit;
+    }
+
     // Verificar si el correo ya existe
     $verificarCorreo = $conexion->prepare("SELECT identificacion FROM usuario WHERE correo = ?");
     $verificarCorreo->bind_param("s", $correo);
@@ -227,6 +262,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
     $verificarCorreo->close();
 
+    // Verificar si el teléfono ya está registrado
+    $verificarTelefono = $conexion->prepare("SELECT identificacion FROM usuario WHERE telefono = ?");
+    $verificarTelefono->bind_param("s", $telefono);
+    $verificarTelefono->execute();
+    $resultadoTelefono = $verificarTelefono->get_result(); // ✅ Obtener correctamente el resultado
+
+    if ($resultadoTelefono->num_rows > 0) {
+      echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+      echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '<span class=\"titulo-alerta error\">Error</span>',
+                html: `
+                    <div class=\"custom-alert\">
+                        <div class='contenedor-imagen'>
+                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                        </div>
+                        <p>El número de teléfono ya está registrado. Intenta con otro.</p>
+                    </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#dc3545',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        });
+    </script>";
+
+      $verificarTelefono->close();
+      $conexion->close();
+      exit;
+    }
+
+    $verificarTelefono->close();
+
+
+
+
     $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
     $estado = 'activo';
     $tipoDocumento = 'cedula de ciudadania';
@@ -247,8 +324,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 ($identificacion, 'PRODUCTO', 'Categorías', 0),
                 ($identificacion, 'PRODUCTO', 'Ubicación', 0),
                 ($identificacion, 'PRODUCTO', 'Marca', 0),
-                ($identificacion, 'PROVEEDOR', 'Crear Proveedor', 0),
-                ($identificacion, 'PROVEEDOR', 'Actualizar Proveedor', 0),
                 ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
                 ($identificacion, 'INVENTARIO', 'Lista de Productos', 0),
                 ($identificacion, 'FACTURA', 'Venta', 0),
@@ -298,10 +373,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   }
   ?>
 
-  <!-- Modal -->
-  <div id="modalVerificacion" class="hidden">
+  <!-- Modal Verificacion-->
+  <div id="modalVerificacion" class="modal hidden">
     <div class="modal-content">
-      <button id="btnCerrarModal">X</button>
+      <h2>Verificar Correo</h2>
+      <span class="close" onclick="cerrarModal()">×</span>
       <p id="mensajeModal"></p>
       <input type="email" id="inputCorreo" placeholder="Correo electrónico">
       <button id="btnEnviarCodigo">Enviar código</button>
@@ -314,22 +390,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   </div>
 
   <script>
+    //cerrar modal
+    function cerrarModal() {
+      const modal = document.getElementById('modalVerificacion');
+      const modalContent = modal.querySelector('.modal-content');
+
+      // Agrega clase para animación de salida
+      modalContent.classList.remove('show');
+      modalContent.classList.add('hide');
+
+      // Espera la duración de la animación antes de ocultar el modal completo
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 400); // 400ms debe coincidir con el tiempo en el CSS
+    }
+
+
     document.addEventListener('DOMContentLoaded', function() {
       const modal = document.getElementById('modalVerificacion');
       const btnAbrirModal = document.getElementById('btnAbrirModalCorreo');
-      const btnCerrarModal = document.getElementById('btnCerrarModal');
       const btnEnviarCodigo = document.getElementById('btnEnviarCodigo');
       const btnVerificarCodigo = document.getElementById('btnVerificarCodigo');
       const inputCorreo = document.getElementById('inputCorreo');
       const inputCodigo = document.getElementById('inputCodigo');
       const codigoSection = document.getElementById('codigoSection');
       const mensajeModal = document.getElementById('mensajeModal');
-
       // Mostrar modal al hacer clic en botón "Verificar correo"
       btnAbrirModal.addEventListener('click', () => {
         modal.classList.remove('hidden');
-        mensajeModal.textContent = '';
-        mensajeModal.style.color = '';
+
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.classList.remove('hide'); // Por si viene de cerrarse
+        modalContent.classList.add('show');
+
+        // Reiniciar estado del modal
+        mensajeModal.textContent = 'El correo debe verificarse para continuar con el registro.';
+        mensajeModal.style.color = 'black';
         inputCorreo.value = '';
         inputCodigo.value = '';
         codigoSection.classList.add('hidden');
@@ -337,10 +433,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         btnEnviarCodigo.disabled = false;
       });
 
-      // Cerrar modal
-      btnCerrarModal.addEventListener('click', () => {
-        modal.classList.add('hidden');
-      });
 
       // Enviar código al correo
       btnEnviarCodigo.addEventListener('click', () => {
@@ -447,57 +539,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       });
     });
   </script>
-  <style>
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+  <div class="userInfo">
+    <!-- Nombre y apellido del usuario y rol -->
+    <!-- Consultar datos del usuario -->
+    <?php
+    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+    $id_usuario = $_SESSION['usuario_id'];
+    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+    $stmtUsuario = $conexion->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_usuario);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $rowUsuario = $resultUsuario->fetch_assoc();
+    $nombreUsuario = $rowUsuario['nombre'];
+    $apellidoUsuario = $rowUsuario['apellido'];
+    $rol = $rowUsuario['rol'];
+    $foto = $rowUsuario['foto'];
+    $stmtUsuario->close();
+    ?>
+    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+    <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 320px;
-      text-align: center;
-      margin-left: 50%
-    }
+  </div>
+  <div class="profilePic">
+    <?php if (!empty($rowUsuario['foto'])): ?>
+      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+    <?php else: ?>
+      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+    <?php endif; ?>
+  </div>
 
-    .hidden {
-      display: none;
-    }
-
-    .modal-content input {
-      width: 90%;
-      padding: 8px;
-      margin: 10px 0;
-    }
-
-    .modal-content button {
-      margin: 5px;
-      padding: 8px 16px;
-      cursor: pointer;
-    }
-    button#btnAbrirModalCorreo{
-    border-radius: 24px;     
-    height: 40px;
-    width: 277px;
-    border: none;
-    font-size: 14px;
-    text-align: left;
-    padding: 0px 0px 0px 10px;
-    }
-    button#btnAbrirModalCorreo:hover{
-      background-color: #6e91c5;
-    }
-  </style>
 
 </body>
 

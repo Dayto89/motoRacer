@@ -106,27 +106,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                 <div class="campo">
                     <label for="iva">IVA:</label>
-                    <input type="number" id="iva" name="iva" required><br>
+                    <input type="text" id="iva" name="iva" required
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
                 <div class="campo">
                     <label for="precio1">Precio 1:</label>
-                    <input type="number" id="precio1" name="precio1" required><br>
+                    <input type="text" id="precio1" name="precio1" required
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
                 <div class="campo">
                     <label for="precio2">Precio 2:</label>
-                    <input type="number" id="precio2" name="precio2"><br>
+                    <input type="text" id="precio2" name="precio2"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
                 <div class="campo">
                     <label for="precio3">Precio 3:</label>
-                    <input type="number" id="precio3" name="precio3"><br>
+                    <input type="text" id="precio3" name="precio3"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
                 <div class="campo">
                     <label for="cantidad">Cantidad:</label>
-                    <input type="number" id="cantidad" name="cantidad" required><br>
+                    <input type="text" id="cantidad" name="cantidad" required
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
 
@@ -320,6 +325,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             });
         }
     </script>
+      <div class="userInfo">
+    <!-- Nombre y apellido del usuario y rol -->
+    <!-- Consultar datos del usuario -->
+    <?php
+    $id_usuario = $_SESSION['usuario_id'];
+    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+    $stmtUsuario = $conexion->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_usuario);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $rowUsuario = $resultUsuario->fetch_assoc();
+    $nombreUsuario = $rowUsuario['nombre'];
+    $apellidoUsuario = $rowUsuario['apellido'];
+    $rol = $rowUsuario['rol'];
+    $foto = $rowUsuario['foto'];
+    $stmtUsuario->close();
+    ?>
+    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+    <p class="rol">Rol: <?php echo $rol; ?></p>
+
+  </div>
+  <div class="profilePic">
+    <?php if (!empty($rowUsuario['foto'])): ?>
+      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+    <?php else: ?>
+      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+    <?php endif; ?>
+  </div>
 
 </body>
 

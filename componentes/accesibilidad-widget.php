@@ -24,6 +24,44 @@
 </div>
 
 <link rel="stylesheet" href="/componentes/accesibilidad.css">
-<script src="/js/accesibilidad.js"></script>
+
+<script>
+const Accesibilidad = {
+    tamañoMin: 12,
+    tamañoMax: 24,
+    tamañoPaso: 2,
+
+    cambiarFuente: function(accion) {
+        const elementosTexto = document.querySelectorAll('body, body *');
+
+        elementosTexto.forEach(el => {
+            const estilo = window.getComputedStyle(el);
+            const fontSize = parseFloat(estilo.fontSize);
+
+            // Ignorar elementos sin texto visible o que no son relevantes
+            if (isNaN(fontSize) || el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+
+            let nuevoTamaño = fontSize;
+
+            if (accion === '+' && fontSize < this.tamañoMax) {
+                nuevoTamaño += this.tamañoPaso;
+            } else if (accion === '-' && fontSize > this.tamañoMin) {
+                nuevoTamaño -= this.tamañoPaso;
+            }
+
+            el.style.fontSize = nuevoTamaño + 'px';
+        });
+    },
+
+    cambiarContraste: function () {
+        document.body.classList.toggle('modo-alto-contraste');
+    },
+
+    alternarDislexia: function () {
+        document.body.classList.toggle('fuente-dislexia');
+    }
+};
+</script>
+
 
 <?php endif; ?>

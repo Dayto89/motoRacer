@@ -172,9 +172,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <form method="POST" action="">
                 <div class="form-group">
                     <label>Ingrese el código:</label>
-                    <input type="text" id="codigo" name="codigo" required />
+                    <input type="text" id="codigo" name="codigo" required 
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     <label>Ingrese el nombre de la marca:</label>
-                    <input type="text" id="nombre" name="nombre" required />
+                    <input type="text" id="nombre" name="nombre" required 
+                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
                 </div>
                 <div class="modal-buttons">
                     <button type="button" id="btnCancelar">Cancelar</button>
@@ -418,6 +420,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         }); // ← Fin del DOMContentLoaded
     </script>
+        <div class="userInfo">
+        <!-- Nombre y apellido del usuario y rol -->
+        <!-- Consultar datos del usuario -->
+        <?php
+        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $id_usuario = $_SESSION['usuario_id'];
+        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario->bind_param("i", $id_usuario);
+        $stmtUsuario->execute();
+        $resultUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $nombreUsuario = $rowUsuario['nombre'];
+        $apellidoUsuario = $rowUsuario['apellido'];
+        $rol = $rowUsuario['rol'];
+        $foto = $rowUsuario['foto'];
+        $stmtUsuario->close();
+        ?>
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
+
+    </div>
+    <div class="profilePic">
+        <?php if (!empty($rowUsuario['foto'])): ?>
+            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
+    </div>
 
 
 

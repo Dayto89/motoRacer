@@ -101,3 +101,108 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
+// 1. Mapeo página → sección
+const pageToSection = {
+  crearproducto:        'PRODUCTO',
+  categorias:           'PRODUCTO',
+  ubicacion:            'PRODUCTO',
+  marca:                'PRODUCTO',
+
+  listaproveedor:       'PROVEEDOR',
+
+  listaproductos:       'INVENTARIO',
+
+  ventas:               'FACTURA',
+  reportes:             'FACTURA',
+  listaclientes:        'FACTURA',
+  listanotificaciones:  'FACTURA',
+
+  informacion:          'USUARIO',
+
+  stock:                'CONFIGURACION',
+  gestiondeusuarios:    'CONFIGURACION',
+  copiadeseguridad:     'CONFIGURACION'
+  // … añade las que falten …
+};
+
+// 2. Colores por sección
+const sectionColors = {
+  PRODUCTO:      '#3f6fb6',
+  PROVEEDOR:     '#3f6fb6',
+  INVENTARIO:    '#3f6fb6',
+  FACTURA:       '#3f6fb6',
+  USUARIO:       '#3f6fb6',
+  CONFIGURACION: '#3f6fb6',
+};
+
+// 3. Función que pinta el <a id="icon-SECCION">
+function highlightCurrentIcon() {
+  // Extrae nombre de archivo sin .php
+  const path = window.location.pathname.split('/').pop();     // "crearproducto.php"
+  const page = path.replace('.php', '');                      // "crearproducto"
+  
+  // Busca la sección padre
+  const sec = pageToSection[page];
+  if (!sec) return;
+
+  // Aplica estilo al <a id="icon-SECCION">
+  const linkEl = document.getElementById(`icon-${sec}`);
+  if (!linkEl) return;
+
+  linkEl.style.backgroundColor = sectionColors[sec];
+  linkEl.style.padding         = '6px';
+  linkEl.style.borderRadius    = '8px';
+  linkEl.style.display         = 'inline-flex';
+  linkEl.style.alignItems      = 'center';
+}
+
+// 4. Observador para ejecutar justo después de inyectar el header por AJAX
+document.addEventListener('DOMContentLoaded', () => {
+  const menuContainer = document.getElementById('menu');
+  if (!menuContainer) return;
+
+  const observer = new MutationObserver((mutations, obs) => {
+    // Una vez que el menú tenga hijos, pintamos y desconectamos
+    if (menuContainer.children.length > 0) {
+      highlightCurrentIcon();
+      obs.disconnect();
+    }
+  });
+
+  observer.observe(menuContainer, { childList: true });
+});
+
+
+function highlightCurrentIcon() {
+  const path = window.location.pathname.split('/').pop();     // e.g. "crearproducto.php"
+  const page = path.replace('.php', '');                      // e.g. "crearproducto"
+  const sec  = pageToSection[page];
+
+  if (!sec) return;
+
+  // ahora el id apunta al <a>
+  const linkEl = document.getElementById(`icon-${sec}`);
+  if (linkEl) {
+    // aplicamos sólo al contenedor del icono, pero como el <a> envuelve icono+texto,
+    // puedes limitar el ancho con display:inline-flex si quieres ajustar el padding
+    linkEl.style.backgroundColor = sectionColors[sec];
+    linkEl.style.borderRadius    = '8px';
+    linkEl.style.display         = 'inline-flex';
+    linkEl.style.alignItems      = 'center';
+  }
+}
+
+const menuContainer = document.getElementById('menu');
+if (menuContainer) {
+  const obs = new MutationObserver((mutations, observer) => {
+    if (menuContainer.children.length > 0) {
+      highlightCurrentIcon();
+      observer.disconnect();
+    }
+  });
+  obs.observe(menuContainer, { childList: true });
+} else {
+  document.addEventListener('DOMContentLoaded', highlightCurrentIcon);
+}
+
+

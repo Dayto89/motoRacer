@@ -172,7 +172,7 @@ input {
   height: 44px;
   width: 100%;
   font-size: 15px;
-  border-radius: 9px;
+  border-radius: 23px;
 }
 
 .efectivo-row {
@@ -180,12 +180,14 @@ input {
   align-items: flex-end;
   gap: 8px;
   width: 100%;
+  border-radius: 23px;
 }
 
 .efectivo-row input {
     flex: 1;
     min-width: 153px;
     padding: 10px;
+    border-radius: 23px;
 }
 
 .content {
@@ -282,8 +284,7 @@ button {
     width: 79px;
     height: 41px;
     color: white;
-    border-radius: 15px;
-   
+    border-radius: 23px;
     font-size: 14px;
 }
 
@@ -346,6 +347,7 @@ button {
   border-radius: 5px;
   box-sizing: border-box;
   font-size: 14px;
+  border-radius: 23px;
 }
 
 .notes label {
@@ -370,6 +372,7 @@ input#observaciones {
     height: 94px;
     width: 100%;
     padding: 10px;
+    border-radius: 23px;
 }
 
 .contenedor-preciom p {
@@ -388,7 +391,7 @@ input#observaciones {
   padding: 10px;
   font-size: 15px;
   box-sizing: border-box;
-  border-radius: 9px;
+  border-radius: 23px;
 }
 
 .user-info,
@@ -414,6 +417,7 @@ input#observaciones {
   width: 100%;
   padding: 10px;
   font-size: 15px;
+  border-radius: 23px;
 }
 
 .suggestions {

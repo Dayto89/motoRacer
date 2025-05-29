@@ -68,7 +68,7 @@ h1 {
     background: #f4f4f4;
     color: #333;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 23px;
     text-align: left;
     font-family: Arial, Helvetica, sans-serif;
     size: 10px;
@@ -138,7 +138,7 @@ width: 115%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 23px;
 }
 
 .popup button {

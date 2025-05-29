@@ -225,8 +225,11 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
                     <input type="text" id="nombre" name="nombre" placeholder="Nombre">
                     <input type="text" id="apellido" name="apellido" placeholder="Apellido">
-                    <input type="text" id="telefono" name="telefono" placeholder="Teléfono">
-                    <input type="email" id="correo" name="correo" placeholder="Correo Electrónico">
+                    <input type="text" id="telefono" name="telefono" placeholder="Teléfono"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                    <input type="email" id="correo" name="correo" placeholder="Correo Electrónico"
+                    pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+              title="Ingresa un correo válido (debe contener @ y un dominio)." />
                 </div>
                 <div class="payment-box">
                     <div class="payment-section">
@@ -696,6 +699,35 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
         document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
     </script>
+        <div class="userInfo">
+        <!-- Nombre y apellido del usuario y rol -->
+        <!-- Consultar datos del usuario -->
+        <?php
+        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $id_usuario = $_SESSION['usuario_id'];
+        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario->bind_param("i", $id_usuario);
+        $stmtUsuario->execute();
+        $resultUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $nombreUsuario = $rowUsuario['nombre'];
+        $apellidoUsuario = $rowUsuario['apellido'];
+        $rol = $rowUsuario['rol'];
+        $foto = $rowUsuario['foto'];
+        $stmtUsuario->close();
+        ?>
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
+
+    </div>
+    <div class="profilePic">
+        <?php if (!empty($rowUsuario['foto'])): ?>
+            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
+    </div>
 </body>
 
 </html>

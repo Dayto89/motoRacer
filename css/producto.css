@@ -183,7 +183,8 @@ label {
     margin-top: 20px;
     height: 40px;
     margin-right: 45px;
-    border-radius: 5px;
+    border-radius: 23px;
+    padding: 10px 0px 10px 8px;
 
 }
 
@@ -403,7 +404,7 @@ input[type="checkbox"] {
     width: 125%;
     padding: 10px;
     font-size: 13px;
-    border-radius: 5px;
+    border-radius: 23px;
     margin-top: 14px;
     border-width: 2px;
     border-color: #000;

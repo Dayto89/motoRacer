@@ -85,8 +85,7 @@ $animatedIcons = [
 ];
 
 // Detectar la página actual (sin .php)
-$currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
-echo $currentPage;
+$currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
 // Buscar la sección a la que corresponde esa página
 $activeSection = '';
@@ -149,43 +148,47 @@ $sectionColors = [
     </div>
 
     <ul class="menu">
-      <?php foreach ($permisos as $seccion => $subsecciones):
-        $iconData  = $animatedIcons[$seccion] ?? null;
-        $isActive  = ($seccion === $activeSection);
-        // estilo inline para el icono (fondo + algo de padding y borde redondeado)
-        $iconStyle = $isActive
-          ? "background-color: {$sectionColors[$seccion]}; padding:4px; border-radius:8px;"
-          : "";
-      ?>
-        <li>
-          <a id="icon-<?php echo $seccion; ?>" href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')" style="<?php echo $iconStyle; ?>">
-            <?php if ($iconData): ?>
-              <animated-icons
-                
-                src="<?php echo $iconData['src']; ?>"
-                trigger="<?php echo $iconData['trigger']; ?>"
-                attributes='<?php echo $iconData['attributes']; ?>'
-                height="<?php echo $iconData['size']; ?>"
-                width="<?php echo $iconData['size']; ?>"></animated-icons>
-            <?php else: ?>
-              <i class="bx bx-folder" style="<?php echo $iconStyle; ?>"></i>
-            <?php endif; ?>
-            <span><?php echo $seccion; ?></span>
-            <i class="bx bx-chevron-down icon2"></i>
-          </a>
-          <!-- resto idéntico -->
-          <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
-            <?php foreach ($subsecciones as $subseccion): ?>
-              <li>
-                <a href="../html/<?php echo strtolower(str_replace(' ', '', $subseccion)); ?>.php">
-                  <?php echo $subseccion; ?>
-                </a>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
-      <?php endforeach; ?>
-
+  <?php foreach ($permisos as $seccion => $subsecciones):
+    $iconData = $animatedIcons[$seccion] ?? null;
+    // ¿es esta la sección activa?
+    $isActive = ($seccion === $activeSection);
+    // Generar style sólo si está activa
+    $style = $isActive
+      ? "background-color: {$sectionColors[$seccion]};"
+      : "";
+  ?>
+    <li>
+      <a href="#"
+         onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')"
+         style="<?php echo $style; ?>">
+        <!-- icono y texto -->
+        <?php if ($iconData): ?>
+          <animated-icons
+            src="<?php echo $iconData['src']; ?>"
+            trigger="<?php echo $iconData['trigger']; ?>"
+            attributes='<?php echo $iconData['attributes']; ?>'
+            height="<?php echo $iconData['size']; ?>"
+            width="<?php echo $iconData['size']; ?>">
+          </animated-icons>
+        <?php else: ?>
+          <i class="bx bx-folder"></i>
+        <?php endif; ?>
+        <span><?php echo $seccion; ?></span>
+        <i class="bx bx-chevron-down icon2"></i>
+      </a>
+      <!-- resto igual -->
+      <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
+        <?php foreach ($subsecciones as $subseccion): ?>
+          <?php $subSlug = strtolower(str_replace(' ', '', $subseccion)); ?>
+          <li>
+            <a href="../html/<?php echo $subSlug; ?>.php">
+              <?php echo $subseccion; ?>
+            </a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </li>
+  <?php endforeach; ?>
 
       <li>
         <a href="../componentes/logout.php">
@@ -199,6 +202,34 @@ $sectionColors = [
         </a>
       </li>
     </ul>
+  </div>
+  <div class="user-info">
+    <!-- Nombre y apellido del usuario y rol -->
+    <!-- Consultar datos del usuario -->
+    <?php
+    $id_usuario = $_SESSION['usuario_id'];
+    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+    $stmtUsuario = $conexion->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_usuario);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $rowUsuario = $resultUsuario->fetch_assoc();
+    $nombreUsuario = $rowUsuario['nombre'];
+    $apellidoUsuario = $rowUsuario['apellido'];
+    $rol = $rowUsuario['rol'];
+    $foto = $rowUsuario['foto'];
+    $stmtUsuario->close();
+    ?>
+    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+    <p class="rol">Rol: <?php echo $rol; ?></p>
+
+  </div>
+  <div class="profilePic">
+    <?php if (!empty($rowUsuario['foto'])): ?>
+      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+    <?php else: ?>
+      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+    <?php endif; ?>
   </div>
 </body>
 

@@ -87,6 +87,7 @@ h3 {
 .category-table th {
   background-color: #98bde9;
   color: #0b111a;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .category-table tr:nth-child(even) {
@@ -324,7 +325,7 @@ input[type="text"] {
   /* Tamaño del texto */
   border: 1px solid #ccc;
   /* Borde del input */
-  border-radius: 5px;
+  border-radius: 23px;
   /* Bordes redondeados */
   box-sizing: border-box;
   /* Asegura que padding no afecte el ancho total */

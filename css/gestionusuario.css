@@ -305,7 +305,7 @@ tbody input[type="checkbox"] {
 .switch {
   position: relative;
   display: inline-block;
-  width: 49px;
+  width: 50px;
   height: 20px;
   
 }
@@ -358,7 +358,7 @@ input[type="checkbox"] {
 /* Estilos para el contenedor de columnas */
 .column-container {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 1fr 2fr;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr;
   gap: 20px; /* Espacio entre columnas */
   padding: 20px;
   align-items: start; /* Alinea las columnas a la izquierda */
@@ -384,15 +384,34 @@ input[type="checkbox"] {
 /* Estilos para las subsecciones */
 .subsection {
   display: flex;
-  align-items: center; /* Centra verticalmente el label con el switch */
-  gap: 10px; /* Espacio entre el switch y el label */
+  align-items: flex-start;
+  gap: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: left;
 }
+
+/* Asegura que el switch tenga ancho fijo y no sea afectado por el texto */
+.subsection .switch {
+  flex-shrink: 0;
+  width: 50px;
+  margin-top: 3px;
+}
+
+/* Permite que el texto se divida en varias líneas */
+.subsection span {
+  flex: 1;
+  word-break: break-word;
+}
+
 
 div.subsection{
 
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
   margin-bottom: 15px; /* Ajusta el valor según necesites */
+  text-align: left;
 }
 
 #btnGuardar {
