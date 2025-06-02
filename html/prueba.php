@@ -329,7 +329,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
             let correo = document.getElementById("correo").value;
-            let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(",", ""));
+            let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(/,/g, ""));
 
             //Verificar si saldo pendiente es cero
             saldoPendiente = calcularSaldoRestante();
@@ -364,7 +364,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                     let partes = li.textContent.split(" x ");
                     let cantidad = parseInt(partes[0].trim());
                     let nombreProducto = partes[1].split(" - $")[0].trim();
-                    let precio = parseFloat(partes[1].split("$")[1].replace(",", ""));
+                    let precio = parseFloat(partes[1].split("$")[1].replace(/,/g, ""));
                     let id = li.getAttribute("data-id");
 
                     productos.push({

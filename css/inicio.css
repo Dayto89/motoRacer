@@ -6,16 +6,18 @@
 
 
 body {
-  
+
     font-family: "Metal Mania", system-ui;
 
     background-image: url('/imagenes/fondo.webp');
-    background-size: cover; /* This will contain the image on top of the gradient */
+    background-size: cover;
+    /* This will contain the image on top of the gradient */
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-  }
-  body::before {
+}
+
+body::before {
     content: "";
     position: fixed;
     top: 0;
@@ -25,11 +27,11 @@ body {
 
     z-index: 1;
     background: none;
-   
-    
+
+
 }
 
-.fondo{
+.fondo {
     height: 100vh;
     width: 100%;
     position: absolute;
@@ -38,7 +40,7 @@ body {
 }
 
 
-.inicio-img-container{
+.inicio-img-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -46,24 +48,28 @@ body {
     margin-left: 150px;
     filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255));
 }
-.inicio-img{
+
+.inicio-img {
     max-width: 45%;
     height: 426px;
 }
-h2{
+
+h2 {
     font-size: 55px;
     color: white;
     text-align: center;
     margin-top: -78px;
     margin-left: 112px;
     font-weight: bold;
-    text-shadow: 
-    -1px -1px 0 #000000,  
-    1px -1px 0 #000,  
-    -1px 1px 0 #000,  
-    3px 3px 0 #000;  /* Cambia el color y tamaño del contorno según necesites */
+    text-shadow:
+        -1px -1px 0 #000000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        3px 3px 0 #000;
+    /* Cambia el color y tamaño del contorno según necesites */
 }
-.noti{
+
+.noti {
     position: absolute;
     z-index: 50;
     right: 50px;
@@ -72,6 +78,7 @@ h2{
     cursor: pointer;
     border: none;
 }
+
 .notificaciones {
     position: absolute;
     z-index: 100;
@@ -85,7 +92,8 @@ h2{
     padding: 10px;
     border-radius: 10px 0 0 10px;
     overflow-y: auto;
-    display: none; /* Oculto por defecto */
+    display: none;
+    /* Oculto por defecto */
 }
 
 .notificaciones h3 {
@@ -105,6 +113,17 @@ h2{
     border-radius: 5px;
     font-size: 14px;
 }
+
+.stock {
+    position: absolute;
+    z-index: 50;
+    right: 100px;
+    top: 30px;
+    background-color: #ffffff00;
+    cursor: pointer;
+    border: none;
+}
+
 
 /* TABLETS */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
@@ -241,6 +260,4 @@ h2{
 }
 
 /* Vertical */
-@media screen and (max-width: 767px) and (orientation: portrait) {
-
-}
+@media screen and (max-width: 767px) and (orientation: portrait) {}

@@ -27,29 +27,36 @@
 
 <script>
 const Accesibilidad = {
-    tamañoMin: 12,
-    tamañoMax: 24,
     tamañoPaso: 2,
+    nivelFuente: 0, // entre -3 y +3
 
     cambiarFuente: function(accion) {
-        const elementosTexto = document.querySelectorAll('body, body *');
+        const etiquetasTexto = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'li', 'span', 'label', 'td', 'th', 'button'];
 
-        elementosTexto.forEach(el => {
-            const estilo = window.getComputedStyle(el);
-            const fontSize = parseFloat(estilo.fontSize);
+        if (accion === '+' && this.nivelFuente < 3) {
+            this.nivelFuente++;
+        } else if (accion === '-' && this.nivelFuente > -3) {
+            this.nivelFuente--;
+        } else {
+            return; // no hacer nada si está en el límite
+        }
 
-            // Ignorar elementos sin texto visible o que no son relevantes
-            if (isNaN(fontSize) || el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+        etiquetasTexto.forEach(tag => {
+            const elementos = document.querySelectorAll(tag);
 
-            let nuevoTamaño = fontSize;
+            elementos.forEach(el => {
+                let tamañoBase;
 
-            if (accion === '+' && fontSize < this.tamañoMax) {
-                nuevoTamaño += this.tamañoPaso;
-            } else if (accion === '-' && fontSize > this.tamañoMin) {
-                nuevoTamaño -= this.tamañoPaso;
-            }
+                // Guardamos el tamaño base original una vez
+                if (!el.dataset.fontSizeBase) {
+                    const estilo = window.getComputedStyle(el);
+                    el.dataset.fontSizeBase = parseFloat(estilo.fontSize);
+                }
 
-            el.style.fontSize = nuevoTamaño + 'px';
+                tamañoBase = parseFloat(el.dataset.fontSizeBase);
+                const nuevoTamaño = tamañoBase + (this.nivelFuente * this.tamañoPaso);
+                el.style.fontSize = nuevoTamaño + 'px';
+            });
         });
     },
 
@@ -62,6 +69,7 @@ const Accesibilidad = {
     }
 };
 </script>
+
 
 
 <?php endif; ?>

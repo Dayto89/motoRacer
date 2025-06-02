@@ -29,7 +29,7 @@ if ($rol === 'administrador') {
     'INVENTARIO' => ['Lista productos'],
     'FACTURA' => ['Ventas', 'Reportes', 'Lista Clientes', 'Lista Notificaciones'],
     'USUARIO' => ['Información'],
-    'CONFIGURACION' => ['Stock', 'Gestion de Usuarios', 'Copia de Seguridad']
+    'CONFIGURACION' => ['Gestion de Usuarios', 'Copia de Seguridad']
   ];
 } else {
   // Si no es administrador, consultar los permisos del usuario
@@ -86,7 +86,6 @@ $animatedIcons = [
 
 // Detectar la página actual (sin .php)
 $currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
-echo $currentPage;
 
 // Buscar la sección a la que corresponde esa página
 $activeSection = '';

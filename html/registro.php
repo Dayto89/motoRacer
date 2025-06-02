@@ -128,20 +128,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <div class="campo">
           <label for="contrasena">Contraseña: </label>
           <input type="password" name="contrasena" id="contrasena" required disabled>
+          <i id="togglePassword"
+            class='bx bx-hide'
+            style="position: absolute; right: 12rem; left: 70.5rem; top: 59.7%; transform: translateY(-50%); cursor: pointer; color:black; font-size: 1.5rem; width: 20px; height: 20px;">
+          </i>
         </div>
         <div class="campo">
           <label for="confirmar">Confirmar Contraseña: </label>
           <input type="password" name="confirmar" id="confirmar" required disabled>
+          <i id="togglePassword2"
+            class='bx bx-hide'
+            style="position: absolute; right: 0rem; left: 92.2rem; top: 59.7%; transform: translateY(-50%); cursor: pointer; color:black; font-size: 1.5rem; width: 20px; height: 20px;">
+          </i>
         </div>
       </div>
     </div>
     <div class="button_container">
       <button type="submit" name="registrar" class="boton">Registrar</button>
       <a href="../html/gestiondeusuarios.php" class="botonn">Volver</a>
+
     </div>
   </form>
 
   <?php
+
+  // Inicializamos variables para mantener valores al mostrar el formulario
+$identificacion = $rol = $nombre = $apellido = $telefono = $direccion = $correo = '';
+$mostrar_form = true; // controla si se muestra el formulario (para no duplicar) 
+
   if ($_POST && isset($_POST['registrar'])) {
     $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
     if ($conexion->connect_error) {
@@ -321,19 +335,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       $resultado = $conexion->query("INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES
                 ($identificacion, 'PRODUCTO', 'Crear Producto', 0),
                 ($identificacion, 'PRODUCTO', 'Actualizar Producto', 0),
-                ($identificacion, 'PRODUCTO', 'Categorías', 0),
-                ($identificacion, 'PRODUCTO', 'Ubicación', 0),
+                ($identificacion, 'PRODUCTO', 'Categorias', 0),
+                ($identificacion, 'PRODUCTO', 'Ubicacion', 0),
                 ($identificacion, 'PRODUCTO', 'Marca', 0),
                 ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
                 ($identificacion, 'INVENTARIO', 'Lista de Productos', 0),
-                ($identificacion, 'FACTURA', 'Venta', 0),
-                ($identificacion, 'FACTURA', 'Reporte', 0),
+                ($identificacion, 'FACTURA', 'Ventas', 0),
+                ($identificacion, 'FACTURA', 'Reportes', 0),
                 ($identificacion, 'FACTURA', 'Lista Clientes', 0),
                 ($identificacion, 'FACTURA', 'Lista de Notificaciones', 0),
-                ($identificacion, 'USUARIO', 'Información', 1),
-                ($identificacion, 'CONFIGURACIÓN', 'Stock', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Gestión de Usuarios', 0),
-                ($identificacion, 'CONFIGURACIÓN', 'Copia de Seguridad', 0)");
+                ($identificacion, 'USUARIO', 'Información', 1)");
 
       if ($resultado) {
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
@@ -390,10 +401,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   </div>
 
   <script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const passwordInput = document.querySelector('#contrasena');
+
+    togglePassword.addEventListener('click', () => {
+      // Alterna el tipo de input
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+
+      // Cambia el icono: de ojo abierto a ojo cerrado
+      togglePassword.classList.toggle('bx-show');
+      togglePassword.classList.toggle('bx-hide');
+    });
+
+    const togglePassword2 = document.querySelector('#togglePassword2');
+    const passwordInput2 = document.querySelector('#confirmar');
+
+    togglePassword2.addEventListener('click', () => {
+      // Alterna el tipo de input
+      const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput2.setAttribute('type', type);
+
+      // Cambia el icono: de ojo abierto a ojo cerrado
+      togglePassword2.classList.toggle('bx-show');
+      togglePassword2.classList.toggle('bx-hide');
+    });
+
     //cerrar modal
     function cerrarModal() {
-      const modal = document.getElementById('modalVerificacion');
-      const modalContent = modal.querySelector('.modal-content');
+      modalProductos.classList.remove("show");
+      modalProductos.classList.add("hide");
+      setTimeout(() => {
+        modalProductos.classList.remove("hide");
+      }, 300);
+    }
 
       // Agrega clase para animación de salida
       modalContent.classList.remove('show');

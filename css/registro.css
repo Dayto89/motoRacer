@@ -375,8 +375,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   opacity: 0;
   transform: translateY(-50px);
   transition: opacity 0.4s ease, transform 0.4s ease;
-  margin-left: 20%;
-  
+ 
 }
 /* Mostrar el modal con animación */
 .modal-content.show {

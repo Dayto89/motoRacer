@@ -70,8 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form name="formulario" method="post" action="">
             <div class="input-wrapper">
                 <i class='bx bx-user-circle'></i>
-                <input type="text" placeholder="Identificación" name="identificacion" require 
-                 oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                <input type="text" placeholder="Identificación" name="identificacion" require
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
             </div>
             <div class="input-wrapper">
                 <i class='bx bx-lock-alt'></i>
@@ -90,20 +90,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
     </div>
     <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
 
- 
-  const togglePassword = document.querySelector('#togglePassword');
-  const passwordInput  = document.querySelector('#password');
+        togglePassword.addEventListener('click', () => {
+            // Alterna el tipo de input
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
 
-  togglePassword.addEventListener('click', () => {
-    // Alterna el tipo de input
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-
-    // Cambia el icono: de ojo abierto a ojo cerrado
-    togglePassword.classList.toggle('bx-show');
-    togglePassword.classList.toggle('bx-hide');
-  });
+            // Cambia el icono: de ojo abierto a ojo cerrado
+            togglePassword.classList.toggle('bx-show');
+            togglePassword.classList.toggle('bx-hide');
+        });
 
 
         const mensaje = "<?php echo $mensaje; ?>";

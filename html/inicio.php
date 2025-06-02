@@ -10,6 +10,62 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+
+// Conexión a la base de datos
+$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+if (!$conexion) {
+    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+}
+
+// Obtener configuración existente (última fila de configuracion_stock)
+$config = ['min_quantity' => 0, 'alarm_time' => '', 'notification_method' => ''];
+$stmtConfig = $conexion->prepare("SELECT * FROM configuracion_stock ORDER BY id DESC LIMIT 1");
+if ($stmtConfig->execute()) {
+    $resultConfig = $stmtConfig->get_result();
+    if ($resultConfig->num_rows > 0) {
+        $config = $resultConfig->fetch_assoc();
+    }
+}
+$stmtConfig->close();
+
+// Procesar formulario al enviar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_config_stock'])) {
+    // Validar y sanitizar inputs
+    $min_quantity = isset($_POST['min_quantity']) ? (int) $_POST['min_quantity'] : 0;
+    $alarm_time = $_POST['alarm_time'] ?? null;
+    $notification_method = $_POST['notification_method'] ?? 'popup';
+
+    $stmtInsert = $conexion->prepare("INSERT INTO configuracion_stock 
+        (min_quantity, alarm_time, notification_method) VALUES (?, ?, ?)");
+    $stmtInsert->bind_param("iss", $min_quantity, $alarm_time, $notification_method);
+
+    if ($stmtInsert->execute()) {
+        header("Location: inicio.php?success=1");
+        exit();
+    } else {
+        header("Location: inicio.php?error=1");
+        exit();
+    }
+    $stmtInsert->close();
+}
+
+// --------------------
+// 2) Lógica Usuario
+// --------------------
+$conexionUsuario = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+$id_usuario = $_SESSION['usuario_id'];
+$sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+$stmtUsuario = $conexionUsuario->prepare($sqlUsuario);
+$stmtUsuario->bind_param("i", $id_usuario);
+$stmtUsuario->execute();
+$resultUsuario = $stmtUsuario->get_result();
+$rowUsuario = $resultUsuario->fetch_assoc();
+$nombreUsuario = $rowUsuario['nombre'];
+$apellidoUsuario = $rowUsuario['apellido'];
+$rol = $rowUsuario['rol'];
+$foto = $rowUsuario['foto'];
+$stmtUsuario->close();
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
@@ -159,9 +215,57 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div id="badgeNotificaciones" class="badge-notificaciones">0</div>
     </button>
 
+    <button class="stock" onclick="mostrarStock()">
+        <animated-icons
+            src="https://animatedicons.co/get-icon?name=Minecraft&style=minimalistic&token=e1134e0f-af6b-4a81-894b-9708d1f0d153"
+            trigger="hover"
+            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#000000FF","background":"#FFFFFFFF"}}'
+            height="70"
+            width="70"></animated-icons>
+    </button>
+<div id="stock" class="notificaciones">
+        <h3>Stock</h3>
+
+        <!-- Aquí reemplazamos la lista vacía por el formulario -->
+        <div class="form-stock">
+            <form method="POST">
+                <input type="hidden" name="guardar_config_stock" value="1">
+
+                <div class="form-group">
+                    <label for="min_quantity">Cantidad Mínima:</label>
+                    <input type="number" id="min_quantity" name="min_quantity"
+                        value="<?= htmlspecialchars($config['min_quantity']) ?>"
+                        min="1" required>
+                </div>
+                <button type="submit">Guardar Configuración</button>
+            </form>
+            <?php if (isset($_GET['success'])): ?>
+                <p style="color: lightgreen; margin-top: 8px;">Configuración guardada correctamente.</p>
+            <?php elseif (isset($_GET['error'])): ?>
+                <p style="color: lightcoral; margin-top: 8px;">Error al guardar la configuración.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+
     <script>
+        // Función para mostrar/ocultar stock
+        function mostrarStock() {
+            // Si esta mostrando notificaciones, ocultarlas
+            if (document.getElementById('notificaciones').style.display === 'block') {
+                mostrarNotificaciones();
+            }
+            const notificaciones = document.getElementById('stock');
+            notificaciones.style.display = notificaciones.style.display === 'none' ? 'block' : 'none';
+        }
+
         // Función para mostrar/ocultar notificaciones
         function mostrarNotificaciones() {
+
+            // Si esta mostrando stock, ocultarlo
+            if (document.getElementById('stock').style.display === 'block') {
+                mostrarStock();
+            }
             const notificaciones = document.getElementById('notificaciones');
             notificaciones.style.display = notificaciones.style.display === 'none' ? 'block' : 'none';
         }
@@ -216,7 +320,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             setInterval(cargarNotificaciones, 30000);
         });
     </script>
-        <div class="userInfo">
+    <div class="userInfo">
         <!-- Nombre y apellido del usuario y rol -->
         <!-- Consultar datos del usuario -->
         <?php

@@ -46,11 +46,25 @@ $mensaje = [
             'Name' => "Soporte Moto Racer"
         ],
         'To' => [[ 'Email' => $correo ]],
-        'Subject' => "Código de verificación",
-        'TextPart' => "Tu código de verificación es: $codigo",
-        'HTMLPart' => "<h3>Tu código es: <strong>$codigo</strong></h3>"
+        'Subject' => "Verificación de correo - Moto Racer",
+        'TextPart' => "Hola,\n\nGracias por registrarte en Moto Racer. Tu código de verificación es: $codigo\n\nIngresa este código en la página de registro para completar tu cuenta.\n\nSi no solicitaste este registro, puedes ignorar este mensaje.",
+        'HTMLPart' => "
+            <html>
+            <body style='font-family: Arial, sans-serif;'>
+                <h2>Verifica tu correo en Moto Racer</h2>
+                <p>Gracias por registrarte en nuestro sistema.</p>
+                <p>Tu código de verificación es:</p>
+                <h3 style='color: #e74c3c;'>$codigo</h3>
+                <p>Por favor, ingresa este código en la página de registro para activar tu cuenta.</p>
+                <p>Si tú no solicitaste este registro, simplemente ignora este mensaje.</p>
+                <br>
+                <p>Atentamente,<br><strong>Soporte Moto Racer</strong></p>
+            </body>
+            </html>
+        "
     ]]
 ];
+
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://api.mailjet.com/v3.1/send");
