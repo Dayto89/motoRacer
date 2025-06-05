@@ -524,4 +524,24 @@ input[type="checkbox"] {
 .swal2-popup {
     border-radius: 20px;
 }
- 
+
+/*MODAL ANIMACION*/
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  opacity: 0;
+  transform: translateY(-40px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.modal-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.modal-content.hide {
+  opacity: 0;
+  transform: translateY(-40px);
+}

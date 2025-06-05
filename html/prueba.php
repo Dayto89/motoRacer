@@ -71,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $correo = $data["correo"];
     $productos = $data["productos"];
     $metodos_pago = $data["metodos_pago"];
+    $cambio = $data["cambio"];
     $total = $data["total"];
 
     // Verificar si el cliente existe
@@ -93,10 +94,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Registrar factura
-    $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, precioTotal) VALUES (NOW(), ?, ?, ?)";
+    $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, cambio, precioTotal) VALUES (NOW(), ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $usuario_id = $_SESSION["usuario_id"] ?? null;
-    $stmt->bind_param("ssd", $usuario_id, $cliente_id, $total);
+    $stmt->bind_param("ssdd", $usuario_id, $cliente_id, $cambio, $total);
     $stmt->execute();
     $factura_id = $stmt->insert_id;
 
@@ -177,10 +178,9 @@ $total = $_SESSION['total'] ?? 0;
 // Limpiar los datos de la sesión después de usarlos
 unset($_SESSION['productos']);
 unset($_SESSION['total']);
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
-
 <html lang="es">
 
 <head>
@@ -226,10 +226,10 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                     <input type="text" id="nombre" name="nombre" placeholder="Nombre">
                     <input type="text" id="apellido" name="apellido" placeholder="Apellido">
                     <input type="text" id="telefono" name="telefono" placeholder="Teléfono"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                     <input type="email" id="correo" name="correo" placeholder="Correo Electrónico"
-                    pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-              title="Ingresa un correo válido (debe contener @ y un dominio)." />
+                        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                        title="Ingresa un correo válido (debe contener @ y un dominio)." />
                 </div>
                 <div class="payment-box">
                     <div class="payment-section">
@@ -333,6 +333,13 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
             //Verificar si saldo pendiente es cero
             saldoPendiente = calcularSaldoRestante();
+
+            // Definimos cambio a 0 por defecto
+            let cambio = 0;
+            if (saldoPendiente < 0) {
+                // Si saldoPendiente es negativo, el exceso de pago es Math.abs(saldoPendiente)
+                cambio = Math.abs(saldoPendiente);
+            }
             if (saldoPendiente > 0) {
                 Swal.fire({
                     title: '<span class="titulo-alerta advertencia">Advertencia</span>',
@@ -356,6 +363,8 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                 return;
 
             } else {
+
+
 
 
                 // Obtener productos de la factura
@@ -430,6 +439,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                             correo,
                             total,
                             productos,
+                            cambio,
                             metodos_pago
                         })
                     })
@@ -446,14 +456,14 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
                     <p>Factura registrada correctamente con ID: <strong>${data.factura_id}</strong>.</p>
                 </div>
             `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
                             }).then(() => {
                                 window.location.href = "recibo.php?factura_id=" + data.factura_id;
                             });
@@ -699,7 +709,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
 
         document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
     </script>
-        <div class="userInfo">
+    <div class="userInfo">
         <!-- Nombre y apellido del usuario y rol -->
         <!-- Consultar datos del usuario -->
         <?php

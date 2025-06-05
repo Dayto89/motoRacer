@@ -214,6 +214,7 @@ input.form-control {
     background-color: #28a745; /* Color verde */
     color: white;
     cursor: pointer;
+    height: 30px;
 }
 
 .icon-button i {
@@ -457,7 +458,7 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(5), 
 .main-content table td:nth-child(5) { 
-    width: 150px; 
+    width: 200px; 
 }
 
 .main-content table th:nth-child(6), 
@@ -467,18 +468,18 @@ form input[type="text"], #editForm select {
 
 .main-content table th:nth-child(7), 
 .main-content table td:nth-child(7) { 
-    width: 100px;
-    height: 57px;
+    width: 150px;
 }
 
 .main-content table th:nth-child(8), 
 .main-content table td:nth-child(8) { 
-    width: 90px;
+       width: 100px;
+    height: 57px;
 }
 
 .main-content table th:nth-child(9), 
 .main-content table td:nth-child(9) { 
-    width: 300px;
+    width: 90px;
 }
 
 .main-content table th:nth-child(10), 
@@ -609,6 +610,7 @@ form input[type="text"], #editForm select {
     border: 2px solid transparent;
     padding: 5px;
     border-radius: 50%;
+    margin-left: 68%;
 }
 
 .recibo-button:hover {
@@ -900,6 +902,13 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 }
 
+#barraReportes{
+        height: 34px;
+        width: 50%;
+        font-size: 16px;
+        border-radius: 12px;
+        text-align: center;
+}
 
 /* TABLETS */
 /* Horizontal */
@@ -907,3 +916,5 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 /* Vertical */
 @media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {}
+
+

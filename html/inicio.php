@@ -86,6 +86,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="stylesheet" href="/css/inicio.css">
     <script src="https://kit.fontawesome.com/d6f1e7ff1f.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
@@ -206,7 +208,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <h3>Notificaciones</h3>
         <ul id="listaNotificaciones"></ul>
     </div>
-    <button class="noti" onclick="mostrarNotificaciones()"><animated-icons
+    <button class="noti" onclick="mostrarNotificaciones()" title="notificaciones"><animated-icons
             src="https://animatedicons.co/get-icon?name=notification&style=minimalistic&token=2a8c285f-a7a0-4f4d-b2c3-acccc136c454"
             trigger="loop-on-hover"
             attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#1B1B1BFF","group-2":"#000000FF","background":"#FFFFFFFF"}}'
@@ -215,7 +217,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div id="badgeNotificaciones" class="badge-notificaciones">0</div>
     </button>
 
-    <button class="stock" onclick="mostrarStock()">
+    <button class="stock" onclick="mostrarStock()" title="stock">
         <animated-icons
             src="https://animatedicons.co/get-icon?name=Minecraft&style=minimalistic&token=e1134e0f-af6b-4a81-894b-9708d1f0d153"
             trigger="hover"
@@ -223,7 +225,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             height="70"
             width="70"></animated-icons>
     </button>
-<div id="stock" class="notificaciones">
+    <div id="stock" class="cantidad">
         <h3>Stock</h3>
 
         <!-- Aquí reemplazamos la lista vacía por el formulario -->
@@ -233,17 +235,58 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                 <div class="form-group">
                     <label for="min_quantity">Cantidad Mínima:</label>
-                    <input type="number" id="min_quantity" name="min_quantity"
+                    <input type="text" id="min_quantity" name="min_quantity"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                         value="<?= htmlspecialchars($config['min_quantity']) ?>"
                         min="1" required>
                 </div>
-                <button type="submit">Guardar Configuración</button>
+                <button type="submit">Guardar</button>
             </form>
-            <?php if (isset($_GET['success'])): ?>
-                <p style="color: lightgreen; margin-top: 8px;">Configuración guardada correctamente.</p>
-            <?php elseif (isset($_GET['error'])): ?>
-                <p style="color: lightcoral; margin-top: 8px;">Error al guardar la configuración.</p>
-            <?php endif; ?>
+           <?php if (isset($_GET['success'])): ?>
+    <script>
+         Swal.fire({
+              title: `<span class='titulo-alerta confirmacion'>Éxito</span>`,
+              html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" class="moto">
+                                </div>
+                                <p>Los cambios fueron guardados correctamente.</p>
+                            </div>
+                        `,
+              background: '#ffffffdb',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#007bff',
+              customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+              }
+            })
+    </script>
+<?php elseif (isset($_GET['error'])): ?>
+    <script>
+         Swal.fire({
+              title: `<span class='titulo-alerta confirmacion'>Error</span>`,
+              html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" class="llave">
+                                </div>
+                                <p>Error al guardar los cambios.</p>
+                            </div>
+                        `,
+              background: '#ffffffdb',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#007bff',
+              customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+              }
+            })
+    </script>
+<?php endif; ?>
         </div>
     </div>
 

@@ -367,9 +367,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <th>Método de Pago</th>
             <th>Vendedor</th>
             <th>Cliente</th>
+            <th>Cedula</th>
             <th>Total</th>
             <th>Acciones</th>
-            <th><input type="checkbox" id="select-all"></th>
           </tr>
         </thead>
         <tbody>
@@ -380,9 +380,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <td><?php echo $fila['metodoPago']; ?></td>
               <td><?php echo $fila['usuario_nombre'] . " " . $fila['usuario_apellido']; ?></td>
               <td><?php echo $fila['cliente_nombre'] . " " . $fila['cliente_apellido']; ?></td>
+              <td><?php echo $fila['Cliente_codigo']; ?></td>
               <td><?php echo number_format($fila['precioTotal'], 2); ?></td>
               <td class="acciones">
-                <button class="delete-button" onclick="eliminarFactura('<?= $fila['codigo'] ?>')"><i class="fa-solid fa-trash" style='color:#fffbfb'></i></button>
                 <form method="POST">
                   <input type="hidden" name="factura_id" value="<?php echo $fila['codigo']; ?>">
                   <button type="submit" class="recibo-button">
@@ -390,9 +390,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                   </button>
                 </form>
               </td>
-              <td>
-                <input type="checkbox" class="select-product" value="<?= $fila['codigo'] ?>">
-              </td> <!-- Checkbox agregado -->
             </tr>
           <?php endwhile; ?>
         </tbody>

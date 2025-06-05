@@ -113,13 +113,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   <form name="formulario" method="post" action="">
     <div class="container">
       <div class="form-grid">
-        <div class="campo"><label for="identificacion">Identificación: </label><input type="number" name="identificacion" id="identificacion" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
+        <div class="campo"><label for="identificacion">Identificación: </label><input type="number" name="identificacion" id="identificacion" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')" required></div>
         <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol" required>
             <option value="gerente" selected>Gerente </option>
           </select></div>
         <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre" required></div>
         <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido" required></div>
-        <div class="campo"><label for="telefono">Teléfono: </label><input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required></div>
+        <div class="campo"><label for="telefono">Teléfono: </label><input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            required></div>
         <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion" required></div>
         <div class="campo" id="contenedorCorreo"><label for="correo">Correo: </label>
           <button type="button" id="btnAbrirModalCorreo">Verificar correo</button>
@@ -151,10 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   </form>
 
   <?php
-
   // Inicializamos variables para mantener valores al mostrar el formulario
-$identificacion = $rol = $nombre = $apellido = $telefono = $direccion = $correo = '';
-$mostrar_form = true; // controla si se muestra el formulario (para no duplicar) 
+  $identificacion = $rol = $nombre = $apellido = $telefono = $direccion = $correo = '';
+  $mostrar_form = true; // controla si se muestra el formulario (para no duplicar) 
 
   if ($_POST && isset($_POST['registrar'])) {
     $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -315,9 +317,6 @@ $mostrar_form = true; // controla si se muestra el formulario (para no duplicar)
 
     $verificarTelefono->close();
 
-
-
-
     $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
     $estado = 'activo';
     $tipoDocumento = 'cedula de ciudadania';
@@ -385,10 +384,9 @@ $mostrar_form = true; // controla si se muestra el formulario (para no duplicar)
   ?>
 
   <!-- Modal Verificacion-->
-  <div id="modalVerificacion" class="modal hidden">
+  <div id="modalVerificacion" class="hidden">
     <div class="modal-content">
-      <h2>Verificar Correo</h2>
-      <span class="close" onclick="cerrarModal()">×</span>
+      <button id="btnCerrarModal">X</button>
       <p id="mensajeModal"></p>
       <input type="email" id="inputCorreo" placeholder="Correo electrónico">
       <button id="btnEnviarCodigo">Enviar código</button>
@@ -427,46 +425,22 @@ $mostrar_form = true; // controla si se muestra el formulario (para no duplicar)
       togglePassword2.classList.toggle('bx-hide');
     });
 
-    //cerrar modal
-    function cerrarModal() {
-      modalProductos.classList.remove("show");
-      modalProductos.classList.add("hide");
-      setTimeout(() => {
-        modalProductos.classList.remove("hide");
-      }, 300);
-    }
-
-      // Agrega clase para animación de salida
-      modalContent.classList.remove('show');
-      modalContent.classList.add('hide');
-
-      // Espera la duración de la animación antes de ocultar el modal completo
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 400); // 400ms debe coincidir con el tiempo en el CSS
-    }
-
-
     document.addEventListener('DOMContentLoaded', function() {
       const modal = document.getElementById('modalVerificacion');
       const btnAbrirModal = document.getElementById('btnAbrirModalCorreo');
+      const btnCerrarModal = document.getElementById('btnCerrarModal');
       const btnEnviarCodigo = document.getElementById('btnEnviarCodigo');
       const btnVerificarCodigo = document.getElementById('btnVerificarCodigo');
       const inputCorreo = document.getElementById('inputCorreo');
       const inputCodigo = document.getElementById('inputCodigo');
       const codigoSection = document.getElementById('codigoSection');
       const mensajeModal = document.getElementById('mensajeModal');
+
       // Mostrar modal al hacer clic en botón "Verificar correo"
       btnAbrirModal.addEventListener('click', () => {
         modal.classList.remove('hidden');
-
-        const modalContent = modal.querySelector('.modal-content');
-        modalContent.classList.remove('hide'); // Por si viene de cerrarse
-        modalContent.classList.add('show');
-
-        // Reiniciar estado del modal
-        mensajeModal.textContent = 'El correo debe verificarse para continuar con el registro.';
-        mensajeModal.style.color = 'black';
+        mensajeModal.textContent = '';
+        mensajeModal.style.color = '';
         inputCorreo.value = '';
         inputCodigo.value = '';
         codigoSection.classList.add('hidden');
@@ -474,12 +448,24 @@ $mostrar_form = true; // controla si se muestra el formulario (para no duplicar)
         btnEnviarCodigo.disabled = false;
       });
 
+      // Cerrar modal
+      btnCerrarModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
 
       // Enviar código al correo
       btnEnviarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
+        const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail.com|yahoo.com)$/;
+
         if (!correo) {
-          mensajeModal.textContent = 'Por favor ingresa un correo válido.';
+          mensajeModal.textContent = 'Por favor ingresa un correo.';
+          mensajeModal.style.color = 'red';
+          return;
+        }
+
+        if (!regexCorreo.test(correo)) {
+          mensajeModal.textContent = 'Por favor, ingresa un correo válido. Sugerencia: usa uno que termine en @gmail.com, @outlook.com, @hotmail.com o @yahoo.com.';
           mensajeModal.style.color = 'red';
           return;
         }
@@ -580,35 +566,6 @@ $mostrar_form = true; // controla si se muestra el formulario (para no duplicar)
       });
     });
   </script>
-  <div class="userInfo">
-    <!-- Nombre y apellido del usuario y rol -->
-    <!-- Consultar datos del usuario -->
-    <?php
-    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-    $id_usuario = $_SESSION['usuario_id'];
-    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-    $stmtUsuario = $conexion->prepare($sqlUsuario);
-    $stmtUsuario->bind_param("i", $id_usuario);
-    $stmtUsuario->execute();
-    $resultUsuario = $stmtUsuario->get_result();
-    $rowUsuario = $resultUsuario->fetch_assoc();
-    $nombreUsuario = $rowUsuario['nombre'];
-    $apellidoUsuario = $rowUsuario['apellido'];
-    $rol = $rowUsuario['rol'];
-    $foto = $rowUsuario['foto'];
-    $stmtUsuario->close();
-    ?>
-    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-    <p class="rol">Rol: <?php echo $rol; ?></p>
-
-  </div>
-  <div class="profilePic">
-    <?php if (!empty($rowUsuario['foto'])): ?>
-      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-    <?php else: ?>
-      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-    <?php endif; ?>
-  </div>
 
 
 </body>

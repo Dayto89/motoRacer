@@ -1,32 +1,35 @@
-<?php if(!isset($accesibilidad_incluido)) : ?>
-<?php $accesibilidad_incluido = true; ?>
+<?php if (!isset($accesibilidad_incluido)) : ?>
+    <?php $accesibilidad_incluido = true; ?>
 
-<div class="accesibilidad-container">
-    <button class="accesibilidad-btn">
-        <i class="fas fa-universal-access"></i>
-    </button>
-    <div class="accesibilidad-panel">
-        <button onclick="Accesibilidad.cambiarContraste()" data-funcion="contraste">
-            <i class="fas fa-adjust"></i> <span>Contraste</span>
+    <div class="accesibilidad-container">
+        <button class="accesibilidad-btn">
+            <i class="fas fa-universal-access"></i>
         </button>
-        <div class="control-fuente">
-            <button onclick="Accesibilidad.cambiarFuente('-')" id="btnDisminuir">
-                <i class="fas fa-text-width"></i> A-
+        <div class="accesibilidad-panel">
+            <button onclick="Accesibilidad.cambiarContraste()" data-funcion="contraste">
+                <i class="fas fa-adjust"></i> <span>Contraste</span>
             </button>
-            <button onclick="Accesibilidad.cambiarFuente('+')" id="btnAumentar">
-                <i class="fas fa-text-height"></i> A+
-            </button> 
+            <div class="control-fuente">
+                <button onclick="Accesibilidad.cambiarFuente('-')" id="btnDisminuir">
+                    <i class="fas fa-text-width"></i> A-
+                </button>
+                <button onclick="Accesibilidad.cambiarFuente('+')" id="btnAumentar">
+                    <i class="fas fa-text-height"></i> A+
+                </button>
+            </div>
+            <button onclick="Accesibilidad.alternarDislexia()">
+                <i class="fas fa-font"></i> Fuente Legible
+            </button>
         </div>
-        <button onclick="Accesibilidad.alternarDislexia()">
-            <i class="fas fa-font"></i> Fuente Legible
-        </button>
     </div>
-</div>
 
-<link rel="stylesheet" href="/componentes/accesibilidad.css">
+    <link rel="stylesheet" href="/componentes/accesibilidad.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-<script>
-const Accesibilidad = {
+
+    <script>
+        const Accesibilidad = {
     tamañoPaso: 2,
     nivelFuente: 0, // entre -3 y +3
 
@@ -38,37 +41,46 @@ const Accesibilidad = {
         } else if (accion === '-' && this.nivelFuente > -3) {
             this.nivelFuente--;
         } else {
-            return; // no hacer nada si está en el límite
+            return;
         }
 
         etiquetasTexto.forEach(tag => {
             const elementos = document.querySelectorAll(tag);
-
             elementos.forEach(el => {
-                let tamañoBase;
-
-                // Guardamos el tamaño base original una vez
                 if (!el.dataset.fontSizeBase) {
                     const estilo = window.getComputedStyle(el);
                     el.dataset.fontSizeBase = parseFloat(estilo.fontSize);
                 }
 
-                tamañoBase = parseFloat(el.dataset.fontSizeBase);
+                const tamañoBase = parseFloat(el.dataset.fontSizeBase);
                 const nuevoTamaño = tamañoBase + (this.nivelFuente * this.tamañoPaso);
                 el.style.fontSize = nuevoTamaño + 'px';
             });
         });
     },
 
-    cambiarContraste: function () {
-        document.body.classList.toggle('modo-alto-contraste');
+    cambiarContraste: function() {
+        const body = document.body;
+        if (!body.classList.contains('modo-alto-contraste') && !body.classList.contains('modo-claro')) {
+            body.classList.add('modo-alto-contraste');
+            return;
+        }
+        if (body.classList.contains('modo-alto-contraste')) {
+            body.classList.remove('modo-alto-contraste');
+            body.classList.add('modo-claro');
+            return;
+        }
+        if (body.classList.contains('modo-claro')) {
+            body.classList.remove('modo-claro');
+        }
     },
 
     alternarDislexia: function () {
-        document.body.classList.toggle('fuente-dislexia');
+        document.body.classList.toggle('fuente-legible');
     }
 };
-</script>
+
+    </script>
 
 
 

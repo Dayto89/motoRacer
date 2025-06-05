@@ -100,30 +100,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <input type="text" id="codigo2" name="codigo2" required><br>
                 </div>
                 <div class="campo">
-                    <label for="nombre">Nombre:</label>
+                    <label for="nombre">Producto:</label>
                     <input type="text" id="nombre" name="nombre" required><br>
                 </div>
 
                 <div class="campo">
-                    <label for="iva">IVA:</label>
-                    <input type="text" id="iva" name="iva" required
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-                </div>
-
-                <div class="campo">
-                    <label for="precio1">Precio 1:</label>
+                    <label for="precio1">Precio llegada:</label>
                     <input type="text" id="precio1" name="precio1" required
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
                 <div class="campo">
-                    <label for="precio2">Precio 2:</label>
+                    <label for="precio2">Precio taller:</label>
                     <input type="text" id="precio2" name="precio2"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
 
                 <div class="campo">
-                    <label for="precio3">Precio 3:</label>
+                    <label for="precio3">Precio publico:</label>
                     <input type="text" id="precio3" name="precio3"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
                 </div>
@@ -158,7 +152,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     </select><br>
                 </div>
                 <div class="campo">
-                    <label for="unidadMedida">Unidad de Medida:</label>
+                    <label for="unidadMedida">Clase:</label>
                     <select name="unidadMedida" id="unidadMedida" required>
                         <option value="">Seleccione una unidad de medida</option>
                         <?php while ($fila = $unidades->fetch_assoc()) { ?>
@@ -234,7 +228,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         $codigo1 = $_POST['codigo1'];
         $codigo2 = $_POST['codigo2'];
         $nombre = $_POST['nombre'];
-        $iva = $_POST['iva'];
+        $iva = 19;
         $precio1 = $_POST['precio1'];
         $precio2 = $_POST['precio2'];
         $precio3 = $_POST['precio3'];

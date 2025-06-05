@@ -118,11 +118,187 @@ h2 {
     position: absolute;
     z-index: 50;
     right: 100px;
-    top: 30px;
+    top: 20px;
     background-color: #ffffff00;
     cursor: pointer;
     border: none;
 }
+
+/*Alertas*/
+
+
+/* Estilos generales de los párrafos */
+p {
+    font-size: 16px;
+    color: black;
+    font-family: arial;
+    padding: 10px;
+}
+
+
+
+/* Ajuste para el popup de SweetAlert */
+div:where(.swal2-container).swal2-center>.swal2-popup {
+    width: 28%;
+    /* Se ajusta automáticamente */
+    max-width: 350px;
+    /* Define un límite de ancho */
+}
+
+
+
+.custom-alert .tornillo,
+.custom-alert .moto,
+.custom-alert .llave {
+    width: 201px;
+    height: 145px;
+}
+
+
+
+/* Contenedor de la imagen */
+.contenedor-imagen {
+    position: relative;
+    display: inline-block;
+}
+
+
+
+.titulo-alerta {
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+    font-family: 'Arial Black', sans-serif;
+    letter-spacing: 1px;
+}
+
+.titulo-alerta.confirmacion {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #9b9496;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+.titulo-alerta.error {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #af3b3b;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+.titulo-alerta.advertencia {
+    font-family: 'Metal Mania', system-ui;
+    font-size: 1.01em;
+    letter-spacing: 3px;
+    color: #e09804;
+    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+    margin: auto;
+}
+
+
+.btn-aceptar {
+    background-color: #007bff !important;
+    color: white !important;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.swal2-border-radius {
+    border-radius: 5px !important;
+}
+
+
+
+.fondo-oscuro {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    /* Fondo oscuro */
+    backdrop-filter: blur(2px);
+    /* Opcional: desenfoque sutil */
+}
+
+.swal2-popup {
+    border-radius: 20px;
+}
+
+
+/*stock*/
+
+.cantidad {
+    position: absolute;
+    z-index: 100;
+    right: 20px;
+    top: 120px;
+    width: 220px;
+    height: auto;
+    max-height: 80vh;
+    background: rgb(199 198 198 / 45%);
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 11px 11px 11px 12px;
+    overflow-y: auto;
+    display: none;
+}
+    .form-stock .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-stock label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #ffffff;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+ .form-stock input[type="text"] {
+    width: 36%;
+    padding: 6px 7px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 23px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    text-align: center;
+    margin-top: 5%;
+}
+
+    .form-stock input[type="text"]:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+.form-stock button {
+    width: 50%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 44%;
+    margin-top: -27%;
+}
+
+    .form-stock button:hover {
+        background-color: #0056b3;
+    }
+
+h3 {
+    font-size: 29px;
+    color: #ffffff;
+    text-shadow: 5px 0px 0 #1c51a0, 3px 4px 0 #1c51a0;
+    letter-spacing: 2;
+    
+}
+
 
 
 /* TABLETS */
@@ -257,6 +433,11 @@ h2 {
         width: 15px;
         height: 15px;
     }
+
+    .stock {
+    margin-top: 50px;
+    margin-right: 10px;
+}
 }
 
 /* Vertical */

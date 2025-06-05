@@ -315,7 +315,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <label><input type="checkbox" name="criterios[]" value="precio3"> Precio 3</label>
               <label><input type="checkbox" name="criterios[]" value="categoria"> Categoría</label>
               <label><input type="checkbox" name="criterios[]" value="marca"> Marca</label>
-              <label><input type="checkbox" name="criterios[]" value="ubicacion"> Ubicación</label>
+              <label><input type="checkbox" name="criterios[]" value="ubicacion"> Clase</label>
               <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
             </div>
 
@@ -354,7 +354,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <th>Descripción</th>
               <th>Categoría</th>
               <th>Marca</th>
-              <th>Unidad Medida</th>
+              <th>Clase</th>
               <th>Ubicación</th>
               <th>Proveedor</th>
               <th> Acciones</th>
@@ -542,7 +542,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             ?>
           </select>
         </div>
-        <div class="campo"><label for="editUnidadMedida">Unidad Medida:</label>
+        <div class="campo"><label for="editUnidadMedida">Clase:</label>
           <select name="unidadmedida-id" id="editUnidadMedida" required>
             <option value="">Seleccione una medida</option>
             <?php

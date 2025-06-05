@@ -62,7 +62,7 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
 // Encabezados
-$encabezados = ['Código', 'Código 2', 'Nombre', 'IVA', 'Precio 1', 'Precio 2', 'Precio 3', 'Cantidad', 'Descripción', 'Categoría', 'Marca', 'Unidad Medida', 'Ubicación', 'Proveedor'];
+$encabezados = ['Código', 'Código 2', 'Nombre', 'IVA', 'Precio 1', 'Precio 2', 'Precio 3', 'Cantidad', 'Descripción', 'Categoría', 'Marca', 'Clase', 'Ubicación', 'Proveedor'];
 $sheet->fromArray($encabezados, NULL, 'A1');
 
 // Estilos para encabezados

@@ -522,7 +522,7 @@ form input[type="text"],
 
 .main-content table th:nth-child(12),
 .main-content table td:nth-child(12) {
-    width: 85px;
+    width: 100px;
 }
 
 .main-content table th:nth-child(13),

@@ -10,7 +10,7 @@ $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
 }
-
+    
 
 
 // ID de la factura (recibida por GET o POST)
@@ -56,25 +56,28 @@ $totalBruto = $factura['precioTotal'];
 $ivaPorcentaje = 19;
 $base = $totalBruto / (1 + ($ivaPorcentaje / 100));
 $impuesto = $totalBruto - $base;
+$cambio = $factura['cambio'];
 
 date_default_timezone_set('America/Bogota');
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>Factura</title>
-        <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-        <link rel="stylesheet" href="../css/recibo.css">
-        <link rel="stylesheet" href="../css/alertas.css">
-        <link rel="stylesheet" href="../componentes/header.css">
-        <script src="../js/header.js"></script>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Factura</title>
+    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+    <link rel="stylesheet" href="../css/recibo.css">
+    <link rel="stylesheet" href="../css/alertas.css">
+    <link rel="stylesheet" href="../componentes/header.css">
+    <script src="../js/header.js"></script>
     <script defer src="/js/index.js"></script>
 </head>
+
 <body>
-<div class="sidebar">
+    <div class="sidebar">
         <div id="menu"></div>
     </div>
     <form class="form-descarga" action="factura_pdf.php" method="post" target="_blank">
@@ -171,6 +174,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
         <div class="factura-total">
             <strong>Total bruto: $<?php echo number_format($base, 2); ?></strong><br>
             <strong>IVA <?php echo $ivaPorcentaje; ?>%: $<?php echo number_format($impuesto, 2); ?></strong><br>
+            <strong>Cambio $<?php echo number_format($cambio, 2); ?></strong><br>
             <strong>Total a pagar: $<?php echo number_format($totalBruto, 2); ?></strong>
         </div>
 
@@ -178,7 +182,7 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
             <p>¡Gracias por su compra!</p>
         </div>
     </div>
-        <div class="userInfo">
+    <div class="userInfo">
         <!-- Nombre y apellido del usuario y rol -->
         <!-- Consultar datos del usuario -->
         <?php
@@ -209,4 +213,5 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
     </div>
 
 </body>
+
 </html>
