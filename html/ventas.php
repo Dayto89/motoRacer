@@ -7,6 +7,8 @@ if (!isset($_SESSION['usuario_id'])) {
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
+
+
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
@@ -148,29 +150,42 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
             if ($resultado->num_rows > 0) {
                 while ($fila = mysqli_fetch_assoc($resultado)) {
-                    $disabledClass = $fila['cantidad'] <= 0 ? 'disabled' : '';
-                    echo "<div class='card $disabledClass' 
-                                data-id='{$fila['codigo1']}' 
-                                data-nombre='" . htmlspecialchars($fila['nombre']) . "' 
-                                data-precio='{$fila['precio2']}' 
-                                data-cantidad='{$fila['cantidad']}'>
-                            <span class='contador-producto'>0</span>
-                            <div class='card-header'>
-                                <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
-                            </div>
-                            <p class='product-price'>$" . number_format($fila['precio2']) . "</p>
-                            <p class='product-price'>$" . number_format($fila['precio3']) . "</p>
-                            <p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>
-                            <div class='iconos-container'>
-                                <div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'>
-                                    <img class='plus' src='../imagenes/material-symbols--add-2.svg' alt='Agregar al resumen'>
-                                </div>
-                                <div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'>
-                                    <img class='minus' src='../imagenes/material-symbols--check-indeterminate-small-rounded.svg' alt='Quitar del resumen'>
-                                </div>
-                            </div>
-                        </div>";
-                }
+    $disabledClass = $fila['cantidad'] <= 0 ? 'disabled' : '';
+    echo "<div class='card $disabledClass' 
+                data-id='{$fila['codigo1']}' 
+                data-nombre='" . htmlspecialchars($fila['nombre']) . "' 
+                data-cantidad='{$fila['cantidad']}'
+                data-precio2='{$fila['precio2']}' 
+                data-precio3='{$fila['precio3']}'>
+            <span class='contador-producto'>0</span>
+            <div class='card-header'>
+                <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
+            </div>
+
+            <!-- Select para escoger precio -->
+            <label for='select-precio-{$fila['codigo1']}' class='sr-only'>Seleccionar precio</label>
+            <select id='select-precio-{$fila['codigo1']}' class='price-selector'>
+                <option value='{$fila['precio2']}'>
+                    Precio Taller – $" . number_format($fila['precio2']) . "
+                </option>
+                <option value='{$fila['precio3']}'>
+                    Precio Público – $" . number_format($fila['precio3']) . "
+                </option>
+            </select>
+
+            <p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>
+
+            <div class='iconos-container'>
+                <div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'>
+                    <img class='plus' src='../imagenes/material-symbols--add-2.svg' alt='Agregar al resumen'>
+                </div>
+                <div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'>
+                    <img class='minus' src='../imagenes/material-symbols--check-indeterminate-small-rounded.svg' alt='Quitar del resumen'>
+                </div>
+            </div>
+        </div>";
+}
+
             } else {
                 echo "<script>
                     Swal.fire({
@@ -352,110 +367,119 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
 
         function agregarAlResumen(elemento) {
-            if (elemento.classList.contains("disabled")) {
-                Swal.fire({
-                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
-                    html: `
-                        <div class="custom-alert">
-                            <div class="contenedor-imagen">
-                                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                            </div>
-                            <p>Este producto está agotado.</p>
-                        </div>
-                    `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
-                });
-                return;
+    if (elemento.classList.contains("disabled")) {
+        Swal.fire({
+            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>Este producto está agotado.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
             }
+        });
+        return;
+    }
 
-            let id = elemento.getAttribute("data-id");
-            let nombre = elemento.getAttribute("data-nombre");
-            let precio = parseFloat(elemento.getAttribute("data-precio"));
-            let contadorElemento = elemento.querySelector(".contador-producto");
-            let cantidElement = elemento.querySelector('.product-cantidad');
-            let cantidActual = parseInt(elemento.getAttribute('data-cantidad'));
+    let id = elemento.getAttribute("data-id");
+    let nombre = elemento.getAttribute("data-nombre");
 
-            if (cantidActual <= 0) {
-                Swal.fire({
-                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
-                    html: `
-                        <div class="custom-alert">
-                            <div class="contenedor-imagen">
-                                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                            </div>
-                            <p>No hay más stock disponible.</p>
-                        </div>
-                    `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
-                });
-                return;
+    // ------ AQUÍ cambiamos para leer el precio desde el <select> ------
+    let selectPrecio = elemento.querySelector(".price-selector");
+    let precio = parseFloat(selectPrecio.value);
+    // -----------------------------------------------------------------
+
+    let contadorElemento = elemento.querySelector(".contador-producto");
+    let cantidElement = elemento.querySelector('.product-cantidad');
+    let cantidActual = parseInt(elemento.getAttribute('data-cantidad'));
+
+    if (cantidActual <= 0) {
+        Swal.fire({
+            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+            html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                    </div>
+                    <p>No hay más stock disponible.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
             }
+        });
+        return;
+    }
 
-            // Actualizar contador visual
-            let contador = parseInt(contadorElemento.textContent) || 0;
-            contador++;
-            contadorElemento.textContent = contador;
-            contadorElemento.style.display = "block";
+    // Actualizar contador visual
+    let contador = parseInt(contadorElemento.textContent) || 0;
+    contador++;
+    contadorElemento.textContent = contador;
+    contadorElemento.style.display = "block";
 
-            // Reducir stock y actualizar visualmente
-            cantidActual--;
-            elemento.setAttribute('data-cantidad', cantidActual);
-            cantidElement.textContent = `Cantidad: ${cantidActual}`;
+    // Reducir stock y actualizar visualmente
+    cantidActual--;
+    elemento.setAttribute('data-cantidad', cantidActual);
+    cantidElement.textContent = `Cantidad: ${cantidActual}`;
 
-            if (cantidActual === 0) {
-                elemento.classList.add('disabled');
-                elemento.style.pointerEvents = "none";
-                let btnQuitar = elemento.querySelector(".btn-remove");
-                if (btnQuitar) {
-                    btnQuitar.style.pointerEvents = "auto";
-                    btnQuitar.style.opacity = "1";
-                    btnQuitar.style.position = "relative";
-                }
-            }
-
-            // Actualizar lista de resumen
-            let listaResumen = document.getElementById("listaResumen");
-            let items = listaResumen.getElementsByTagName("li");
-            let encontrado = false;
-
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].getAttribute("data-nombre") === nombre) {
-                    let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
-                    items[i].setAttribute("data-cantidad", cantidad);
-                    items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
-                    encontrado = true;
-                    break;
-                }
-            }
-
-            if (!encontrado) {
-                let item = document.createElement("li");
-                item.setAttribute("data-id", id);
-                item.setAttribute("data-nombre", nombre);
-                item.setAttribute("data-precio", precio);
-                item.setAttribute("data-cantidad", 1);
-                item.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
-                listaResumen.appendChild(item);
-            }
-
-            // Actualizar total
-            total += precio;
-            document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+    if (cantidActual === 0) {
+        elemento.classList.add('disabled');
+        elemento.style.pointerEvents = "none";
+        let btnQuitar = elemento.querySelector(".btn-remove");
+        if (btnQuitar) {
+            btnQuitar.style.pointerEvents = "auto";
+            btnQuitar.style.opacity = "1";
+            btnQuitar.style.position = "relative";
         }
+    }
+
+    // Actualizar lista de resumen
+    let listaResumen = document.getElementById("listaResumen");
+    let items = listaResumen.getElementsByTagName("li");
+    let encontrado = false;
+
+    for (let i = 0; i < items.length; i++) {
+        // Comparamos nombre y precio para distinguir variantes
+        if (items[i].getAttribute("data-nombre") === nombre && 
+            parseFloat(items[i].getAttribute("data-precio")) === precio
+        ) {
+            let cantidad = parseInt(items[i].getAttribute("data-cantidad")) + 1;
+            items[i].setAttribute("data-cantidad", cantidad);
+            items[i].innerHTML = `${nombre} x${cantidad} - $${(precio * cantidad).toLocaleString()}`;
+            encontrado = true;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        let item = document.createElement("li");
+        item.setAttribute("data-id", id);
+        item.setAttribute("data-nombre", nombre);
+        item.setAttribute("data-precio", precio);
+        item.setAttribute("data-cantidad", 1);
+        item.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
+        listaResumen.appendChild(item);
+    }
+
+    // Actualizar total
+    total += precio;
+    document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
+}
+
 
         function quitarDelResumen(elemento) {
             let nombre = elemento.getAttribute("data-nombre");

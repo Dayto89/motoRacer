@@ -16,70 +16,9 @@ if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-// Construcción de filtros
-$filtros = [];
-$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
-$criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
-
-if (!empty($valor) && !empty($criterios)) {
-  foreach ($criterios as $criterio) {
-    $c = mysqli_real_escape_string($conexion, $criterio);
-    switch ($c) {
-      case 'codigo':
-        $filtros[] = "p.codigo1 LIKE '%$valor%'";
-        break;
-      case 'codigo2':
-        $filtros[] = "p.codigo2 LIKE '%$valor%'";
-        break;
-      case 'nombre':
-        $filtros[] = "p.nombre LIKE '%$valor%'";
-        break;
-      case 'precio1':
-        $filtros[] = "p.precio1 LIKE '%$valor%'";
-        break;
-      case 'precio2':
-        $filtros[] = "p.precio2 LIKE '%$valor%'";
-        break;
-      case 'precio3':
-        $filtros[] = "p.precio3 LIKE '%$valor%'";
-        break;
-      case 'categoria':
-        $filtros[] = "c.nombre LIKE '%$valor%'";
-        break;
-      case 'marca':
-        $filtros[] = "m.nombre LIKE '%$valor%'";
-        break;
-      case 'ubicacion':
-        $filtros[] = "ub.nombre LIKE '%$valor%'";
-        break;
-      case 'proveedor':
-        $filtros[] = "pr.nombre LIKE '%$valor%'";
-        break;
-    }
-  }
-}
-
-// PAGINACIÓN
-$por_pagina = 7;
-$pagina_actual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
-$offset = ($pagina_actual - 1) * $por_pagina;
-
-// Conteo total con filtros
-$sql_count = "SELECT COUNT(*) AS total FROM producto p
-LEFT JOIN categoria c ON p.Categoria_codigo = c.codigo
-LEFT JOIN marca m ON p.Marca_codigo = m.codigo
-LEFT JOIN unidadmedida u ON p.UnidadMedida_codigo = u.codigo
-LEFT JOIN ubicacion ub ON p.Ubicacion_codigo = ub.codigo
-LEFT JOIN proveedor pr ON p.proveedor_nit = pr.nit WHERE 1=1";
-if (!empty($filtros)) {
-  $sql_count .= " AND (" . implode(' OR ', $filtros) . ")";
-}
-$res_count = mysqli_query($conexion, $sql_count);
-$row_count = mysqli_fetch_assoc($res_count);
-$total_reg = $row_count['total'];
-$total_paginas = ceil($total_reg / $por_pagina);
-
-// Consulta principal con LIMIT
+// ——————————————————————————————————————————————————————————
+// 1) TRAER TODOS LOS PRODUCTOS (sin FILTROS ni PAGINACIÓN) 
+// ——————————————————————————————————————————————————————————
 $consulta = "SELECT 
   p.codigo1,
   p.codigo2, 
@@ -99,32 +38,32 @@ $consulta = "SELECT
   p.Ubicacion_codigo    AS ubicacion_id,
   ub.nombre             AS ubicacion,
   p.proveedor_nit       AS proveedor_id,
-  pr.nombre             AS proveedor,
-  c.nombre AS categoria, 
-  m.nombre AS marca, 
-  u.nombre AS unidadmedida,
-  ub.nombre AS ubicacion, 
-  pr.nombre AS proveedor
+  pr.nombre             AS proveedor
 FROM producto p
 LEFT JOIN categoria c ON p.Categoria_codigo = c.codigo
 LEFT JOIN marca m ON p.Marca_codigo = m.codigo
 LEFT JOIN unidadmedida u ON p.UnidadMedida_codigo = u.codigo
 LEFT JOIN ubicacion ub ON p.Ubicacion_codigo = ub.codigo
 LEFT JOIN proveedor pr ON p.proveedor_nit = pr.nit
-WHERE 1=1";
-if (!empty($filtros)) {
-  $consulta .= " AND (" . implode(' OR ', $filtros) . ")";
-}
-$consulta .= " LIMIT $por_pagina OFFSET $offset";
+ORDER BY p.nombre ASC"; 
 
 $resultado = mysqli_query($conexion, $consulta);
 if (!$resultado) {
   die("Error en consulta: " . mysqli_error($conexion));
 }
 
-// Actualización de datos del modal
+// Construimos un array PHP con TODAS las filas
+$todosLosDatos = [];
+while ($fila = mysqli_fetch_assoc($resultado)) {
+    $todosLosDatos[] = $fila;
+}
+
+// ——————————————————————————————————————————————————————————
+// 2) ACTUALIZAR (POST) Y ELIMINAR (AJAX) SIN CAMBIOS
+// ——————————————————————————————————————————————————————————
+
+// Actualización desde el modal (igual que antes)
 if (isset($_POST['codigo1'])) {
-  // Se reciben y se escapan las variables
   $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
   $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
   $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
@@ -160,61 +99,58 @@ if (isset($_POST['codigo1'])) {
               document.addEventListener('DOMContentLoaded', function() {
                   Swal.fire({
                       title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
-                      html: `
+                      html: \`
                           <div class='alerta'>
                               <div class='contenedor-imagen'>
                                   <img src='../imagenes/moto.png' alt=\"Éxito\" class='moto'>
                               </div>
                               <p>Los datos se actualizaron con éxito.</p>
                           </div>
-                      `,
+                      \`,
                       background: '#ffffffdb',
-    confirmButtonText: 'Aceptar',
-    confirmButtonColor: '#007bff',
-    customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-    }
+                      confirmButtonText: 'Aceptar',
+                      confirmButtonColor: '#007bff',
+                      customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                      }
                   }).then(() => {
-                      window.location.href = 'listaproductos.php'; // Redirige después de cerrar el alert
+                      window.location.href = 'listaproductos.php'; 
                   });
               });
           </script>";
   } else {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
     echo "<script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    Swal.fire({
-                        title: '<span class=\"titulo-alerta error\">Error</span>',
-                        html: `
-                            <div class=\"custom-alert\">
-                                <div class=\"contenedor-imagen\">
-                                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                                </div>
-                                <p>Error al actulizar los datos/p>
-                            </div>
-                        `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                    });
-                    </script>";
+          document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+              title: '<span class=\"titulo-alerta error\">Error</span>',
+              html: \`
+                <div class=\"custom-alert\">
+                  <div class=\"contenedor-imagen\">
+                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                  </div>
+                  <p>Error al actualizar los datos.</p>
+                </div>
+              \`,
+              background: '#ffffffdb',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#dc3545',
+              customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+              }
+            });
+          });
+        </script>";
   }
 }
 
-
-
+// Eliminación individual por AJAX (igual que antes)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
-
-  // Debug: Registrar el código recibido
-  error_log("Código recibido: " . $_POST['codigo']);
 
   if (!$conexion) {
     echo json_encode(['success' => false, 'error' => 'Error de conexión']);
@@ -226,7 +162,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   $stmt->bind_param("s", $codigo);
 
   if (!$stmt->execute()) {
-    error_log("Error SQL: " . $stmt->error); // Registrar el error
     echo json_encode(['success' => false, 'error' => $stmt->error]);
     exit;
   }
@@ -257,12 +192,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="stylesheet" href="../css/inventario.css" />
   <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
-  <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
-    .pagination {
+    /* ------------------------------------------------- */
+    /* Estilos para filtrado/ordenamiento/resaltado     */
+    /* ------------------------------------------------- */
+    /* Resaltado de fila seleccionada */
+    table tbody tr.selected {
+      background-color: rgba(0, 123, 255, 0.15);
+    }
+
+    /* Cursor pointer en encabezados para indicar que son clicables */
+    table th {
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Flecha de ordenamiento en cada <th> */
+    .sort-arrow {
+      margin-left: 5px;
+      font-size: 0.8em;
+      display: inline-block;
+      width: 0.8em;
+      text-align: center;
+    }
+
+    /* Input para búsqueda en tiempo real */
+    #searchRealtime {
+      width: 200px;
+      padding: 5px 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Botón eliminar múltiple */
+    #delete-selected {
+      margin-left: 10px;
+    }
+
+    /* Estilos básicos para paginación dinámica */
+    .pagination-dinamica {
       display: flex;
       justify-content: center;
       margin-top: 23px;
@@ -271,21 +245,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       font-size: 11px;
     }
 
-    .pagination a {
-      padding: 8px 12px;
+    .pagination-dinamica button {
+      padding: 6px 10px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
-      text-decoration: none;
       color: #333;
       border-radius: 4px;
-      transition: background-color 0.3s;
+      cursor: pointer;
+      font-size: 0.9em;
     }
 
-    .pagination a:hover {
+    .pagination-dinamica button:hover:not(.active) {
       background-color: rgb(158, 146, 209);
     }
 
-    .pagination a.active {
+    .pagination-dinamica button.active {
       background-color: #007bff;
       color: white;
       font-weight: bold;
@@ -301,182 +275,84 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
   <div class="main-content">
     <h1>Inventario</h1>
+
+    <!-- ============================== -->
+    <!-- 6) FILTROS / BÚSQUEDA CLIENTE  -->
+    <!-- ============================== -->
     <div class="filter-bar">
       <details class="filter-dropdown">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
-          <form method="GET" action="../html/listaproductosPrueba.php" class="search-form">
-            <div class="criteria-group">
-              <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
-              <label><input type="checkbox" name="criterios[]" value="codigo2"> Código 2</label>
-              <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
-              <label><input type="checkbox" name="criterios[]" value="precio1"> Precio 1</label>
-              <label><input type="checkbox" name="criterios[]" value="precio2"> Precio 2</label>
-              <label><input type="checkbox" name="criterios[]" value="precio3"> Precio 3</label>
-              <label><input type="checkbox" name="criterios[]" value="categoria"> Categoría</label>
-              <label><input type="checkbox" name="criterios[]" value="marca"> Marca</label>
-              <label><input type="checkbox" name="criterios[]" value="ubicacion"> Clase</label>
-              <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
-            </div>
-
+          <!-- Checkboxes para el filtrado JS (sin “Descripción”) -->
+          <div class="criteria-group">
+            <label><input type="checkbox" name="criteriosJS[]" value="codigo1"> Código</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="codigo2"> Código 2</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="nombre"> Nombre</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="precio1"> Precio 1</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="precio2"> Precio 2</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="precio3"> Precio 3</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="categoria"> Categoría</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="marca"> Marca</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="ubicacion"> Clase</label>
+            <label><input type="checkbox" name="criteriosJS[]" value="proveedor"> Proveedor</label>
+          </div>
         </div>
       </details>
-      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
-      <button class="search-button" type="submit">Buscar</button>
-      </form>
-      <div class="export-button">
+
+      <!-- Caja de búsqueda en tiempo real (cliente) -->
+      <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
+
+            <!-- Botón exportar a Excel (agregado de nuevo) -->
+      <div class="export-button" style="margin-left: 15px;">
         <form action="exportar_excel.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
             <i class="fas fa-file-excel"></i>
             <label> Exportar a Excel</label>
           </button>
         </form>
-
       </div>
 
-      <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
-
-
+      <!-- Botón para eliminar seleccionados -->
+      <button id="delete-selected" class="btn btn-danger" style="display: none;">
+        <i class="fa-solid fa-trash"></i>
+      </button>
     </div>
+
     <div class="table-wrapper">
-      <?php if (mysqli_num_rows($resultado) > 0): ?>
-        <table>
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Código 2</th>
-              <th>Nombre</th>
-              <th>Iva</th>
-              <th>Precio 1</th>
-              <th>Precio 2</th>
-              <th>Precio 3</th>
-              <th>Cantidad</th>
-              <th>Descripción</th>
-              <th>Categoría</th>
-              <th>Marca</th>
-              <th>Clase</th>
-              <th>Ubicación</th>
-              <th>Proveedor</th>
-              <th> Acciones</th>
-              <th><input type="checkbox" id="select-all"></th>
-
-            </tr>
-          </thead>
-          <tbody>
-            <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
-              <tr>
-                <td><?= htmlspecialchars($fila['codigo1']) ?></td>
-                <td><?= htmlspecialchars($fila['codigo2']) ?></td>
-                <td><?= htmlspecialchars($fila['nombre']) ?></td>
-                <td><?= htmlspecialchars($fila['iva']) ?></td>
-                <td><?= htmlspecialchars($fila['precio1']) ?></td>
-                <td><?= htmlspecialchars($fila['precio2']) ?></td>
-                <td><?= htmlspecialchars($fila['precio3']) ?></td>
-                <td><?= htmlspecialchars($fila['cantidad']) ?></td>
-                <td><?= htmlspecialchars($fila['descripcion']) ?></td>
-                <td data-categoria-id="<?= htmlspecialchars($fila['categoria_id']) ?>">
-                  <?= htmlspecialchars($fila['categoria']) ?>
-                </td>
-                <td data-marca-id="<?= htmlspecialchars($fila['marca_id']) ?>">
-                  <?= htmlspecialchars($fila['marca']) ?>
-                </td>
-                <td data-unidadmedida-id="<?= htmlspecialchars($fila['unidad_id']) ?>">
-                  <?= htmlspecialchars($fila['unidadmedida']) ?>
-                </td>
-                <td data-ubicacion-id="<?= htmlspecialchars($fila['ubicacion_id']) ?>">
-                  <?= htmlspecialchars($fila['ubicacion']) ?>
-                </td>
-                <td data-proveedor-id="<?= htmlspecialchars($fila['proveedor_id']) ?>">
-                  <?= htmlspecialchars($fila['proveedor']) ?>
-                </td>
-                <td class="acciones">
-                  <button class="edit-button" data-id="<?= $fila['codigo1'] ?>">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
-                  <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo1'] ?>')"><i class="fa-solid fa-trash"></i></button>
-                </td>
-                <td>
-                  <input type="checkbox" class="select-product" value="<?= $fila['codigo1'] ?>">
-                </td>
-              </tr>
-            <?php endwhile; ?>
-          </tbody>
-        </table>
+      <table id="productTable">
+        <thead>
+          <tr>
+            <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
+            <th data-col="1" data-type="string">Código 2<span class="sort-arrow"></span></th>
+            <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
+            <th data-col="3" data-type="number">Iva<span class="sort-arrow"></span></th>
+            <th data-col="4" data-type="number">Precio 1<span class="sort-arrow"></span></th>
+            <th data-col="5" data-type="number">Precio 2<span class="sort-arrow"></span></th>
+            <th data-col="6" data-type="number">Precio 3<span class="sort-arrow"></span></th>
+            <th data-col="7" data-type="number">Cantidad<span class="sort-arrow"></span></th>
+            <th data-col="8" data-type="string">Descripción<span class="sort-arrow"></span></th>
+            <th data-col="9" data-type="string">Categoría<span class="sort-arrow"></span></th>
+            <th data-col="10" data-type="string">Marca<span class="sort-arrow"></span></th>
+            <th data-col="11" data-type="string">Clase<span class="sort-arrow"></span></th>
+            <th data-col="12" data-type="string">Ubicación<span class="sort-arrow"></span></th>
+            <th data-col="13" data-type="string">Proveedor<span class="sort-arrow"></span></th>
+            <th data-col="14" data-type="none">Acciones</th>
+            <th data-col="15" data-type="none">
+              <input type="checkbox" id="select-all">
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Se llenará dinámicamente con JavaScript -->
+        </tbody>
+      </table>
     </div>
-    <!-- Paginación -->
 
-    <?php if ($total_paginas > 1): ?>
-      <div class="pagination">
-        <?php
-          // Construir query base conservando filtros
-          $base_params = $_GET;
-        ?>
-        <!-- Primera -->
-        <?php
-          $base_params['pagina'] = 1;
-          $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">« Primera</a>
+    <!-- Paginación Dinámica (cliente) -->
+    <div id="paginationContainer" class="pagination-dinamica"></div>
+  </div>
 
-        <!-- Anterior -->
-        <?php if ($pagina_actual > 1): ?>
-          <?php
-            $base_params['pagina'] = $pagina_actual - 1;
-            $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">‹ Anterior</a>
-        <?php endif; ?>
-
-        <?php
-          // Rango de páginas: dos antes y dos después
-          $start = max(1, $pagina_actual - 2);
-          $end   = min($total_paginas, $pagina_actual + 2);
-
-          // Si hay hueco antes, muestra ellipsis
-          if ($start > 1) {
-            echo '<span class="ellips">…</span>';
-          }
-
-          // Botones de páginas
-          for ($i = $start; $i <= $end; $i++):
-            $base_params['pagina'] = $i;
-            $url = '?' . http_build_query($base_params);
-        ?>
-          <a href="<?= $url ?>"
-            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-            <?= $i ?>
-          </a>
-        <?php endfor;
-
-          // Si hay hueco después, muestra ellipsis
-          if ($end < $total_paginas) {
-            echo '<span class="ellips">…</span>';
-          }
-        ?>
-
-        <!-- Siguiente -->
-        <?php if ($pagina_actual < $total_paginas): ?>
-          <?php
-            $base_params['pagina'] = $pagina_actual + 1;
-            $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">Siguiente ›</a>
-        <?php endif; ?>
-
-        <!-- Última -->
-        <?php
-          $base_params['pagina'] = $total_paginas;
-          $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">Última »</a>
-      </div>
-    <?php endif; ?>
-
-  <?php else: ?>
-    <p>No se encontraron resultados.</p>
-  <?php endif; ?>
-
-  <!-- Modal de edición -->
+  <!-- Modal de edición (igual que antes) -->
   <div id="editModal" class="modal">
     <div class="modal-content">
       <span class="close">
@@ -485,33 +361,41 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       <h2>Editar Producto</h2>
       <form id="editForm" method="post">
-        <!-- Campo oculto para enviar el código 1 -->
         <input type="hidden" id="editCodigo1" name="codigo1">
-        <div class="campo"><label for="editCodigo1Visible">Código:</label>
+        <div class="campo">
+          <label for="editCodigo1Visible">Código:</label>
           <input type="text" id="editCodigo1Visible" readonly>
         </div>
-        <div class="campo"><label for="editCodigo2">Código 2:</label>
+        <div class="campo">
+          <label for="editCodigo2">Código 2:</label>
           <input type="text" id="editCodigo2" name="codigo2">
         </div>
-        <div class="campo"><label for="editNombre">Nombre:</label>
+        <div class="campo">
+          <label for="editNombre">Nombre:</label>
           <input type="text" id="editNombre" name="nombre">
         </div>
-        <div class="campo"> <label for="editPrecio1">Precio 1:</label>
+        <div class="campo">
+          <label for="editPrecio1">Precio 1:</label>
           <input type="text" id="editPrecio1" name="precio1">
         </div>
-        <div class="campo"><label for="editPrecio2">Precio 2:</label>
+        <div class="campo">
+          <label for="editPrecio2">Precio 2:</label>
           <input type="text" id="editPrecio2" name="precio2">
         </div>
-        <div class="campo"> <label for="editPrecio3">Precio 3:</label>
+        <div class="campo">
+          <label for="editPrecio3">Precio 3:</label>
           <input type="text" id="editPrecio3" name="precio3">
         </div>
-        <div class="campo"><label for="editCantidad">Cantidad:</label>
+        <div class="campo">
+          <label for="editCantidad">Cantidad:</label>
           <input type="text" id="editCantidad" name="cantidad">
         </div>
-        <div class="campo"> <label for="editDescripcion">Descripción:</label>
+        <div class="campo">
+          <label for="editDescripcion">Descripción:</label>
           <input type="text" id="editDescripcion" name="descripcion">
         </div>
-        <div class="campo"><label for="editCategoria">Categoría:</label>
+        <div class="campo">
+          <label for="editCategoria">Categoría:</label>
           <select name="categoria-id" id="editCategoria" required>
             <option value="">Seleccione una categoría</option>
             <?php
@@ -528,7 +412,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             ?>
           </select>
         </div>
-        <div class="campo"><label for="editMarca">Marca:</label>
+        <div class="campo">
+          <label for="editMarca">Marca:</label>
           <select name="marca-id" id="editMarca" required>
             <option value="">Seleccione una marca</option>
             <?php
@@ -542,7 +427,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             ?>
           </select>
         </div>
-        <div class="campo"><label for="editUnidadMedida">Clase:</label>
+        <div class="campo">
+          <label for="editUnidadMedida">Clase:</label>
           <select name="unidadmedida-id" id="editUnidadMedida" required>
             <option value="">Seleccione una medida</option>
             <?php
@@ -556,7 +442,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             ?>
           </select>
         </div>
-        <div class="campo"><label for="editUbicacion">Ubicación:</label>
+        <div class="campo">
+          <label for="editUbicacion">Ubicación:</label>
           <select name="ubicacion-id" id="editUbicacion" required>
             <option value="">Seleccione una ubicación</option>
             <?php
@@ -570,7 +457,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             ?>
           </select>
         </div>
-        <div class="campo"><label for="editProveedor">Proveedor:</label>
+        <div class="campo">
+          <label for="editProveedor">Proveedor:</label>
           <select name="proveedor-id" id="editProveedor" required>
             <option value="">Seleccione un proveedor</option>
             <?php
@@ -584,72 +472,530 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             ?>
           </select>
         </div>
-        <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
-
+        <div class="modal-boton">
+          <button type="submit" id="modal-boton">Guardar Cambios</button>
+        </div>
       </form>
     </div>
   </div>
-  </div>
+
+  <!-- —————————————————————————————————————————————————————————— -->
+  <!-- 3) SCRIPT DE JAVASCRIPT: paginación / filtrado / ordenamiento -->
+  <!-- —————————————————————————————————————————————————————————— -->
   <script>
+    // Convertimos el array PHP $todosLosDatos a JSON para JS
+    const allData = <?php echo json_encode($todosLosDatos, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+
+    // Variables de estado para paginación y filtrado
+    let filteredData = [...allData];
+    const rowsPerPage = 7;
+    let currentPage = 1;
+
+    const tableBody = document.querySelector('#productTable tbody');
+    const paginationContainer = document.getElementById('paginationContainer');
+    const inputBusqueda = document.getElementById('searchRealtime');
+
+    // Devuelve el valor “limpio” de una fila según criterio
+    function getFieldValue(rowObj, criterion) {
+      switch (criterion) {
+        case 'codigo1':
+          return rowObj.codigo1.toString().toLowerCase();
+        case 'codigo2':
+          return rowObj.codigo2.toString().toLowerCase();
+        case 'nombre':
+          return rowObj.nombre.toLowerCase();
+        case 'precio1':
+          return rowObj.precio1.toString().toLowerCase();
+        case 'precio2':
+          return rowObj.precio2.toString().toLowerCase();
+        case 'precio3':
+          return rowObj.precio3.toString().toLowerCase();
+        case 'categoria':
+          return rowObj.categoria.toLowerCase();
+        case 'marca':
+          return rowObj.marca.toLowerCase();
+        case 'ubicacion':
+          return rowObj.ubicacion.toLowerCase();
+        case 'proveedor':
+          return rowObj.proveedor.toLowerCase();
+        default:
+          return '';
+      }
+    }
+
+    // Función para ordenar filteredData por columna
+    function getCellValueForSort(rowObj, colIndex) {
+      switch (colIndex) {
+        case 0:
+          return rowObj.codigo1.toLowerCase();
+        case 1:
+          return rowObj.codigo2.toLowerCase();
+        case 2:
+          return rowObj.nombre.toLowerCase();
+        case 3:
+          return parseFloat(rowObj.iva) || 0;
+        case 4:
+          return parseFloat(rowObj.precio1) || 0;
+        case 5:
+          return parseFloat(rowObj.precio2) || 0;
+        case 6:
+          return parseFloat(rowObj.precio3) || 0;
+        case 7:
+          return parseFloat(rowObj.cantidad) || 0;
+        case 8:
+          return rowObj.descripcion.toLowerCase();
+        case 9:
+          return rowObj.categoria.toLowerCase();
+        case 10:
+          return rowObj.marca.toLowerCase();
+        case 11:
+          return rowObj.unidadmedida.toLowerCase();
+        case 12:
+          return rowObj.ubicacion.toLowerCase();
+        case 13:
+          return rowObj.proveedor.toLowerCase();
+        default:
+          return '';
+      }
+    }
+    function sortData(colIndex, asc = true) {
+      filteredData.sort((a, b) => {
+        const valA = getCellValueForSort(a, colIndex);
+        const valB = getCellValueForSort(b, colIndex);
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
+        return 0;
+      });
+    }
+
+    // Renderiza la tabla según página actual
+    function renderTable() {
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageData = filteredData.slice(start, end);
+
+      tableBody.innerHTML = '';
+      pageData.forEach(rowObj => {
+        const tr = document.createElement('tr');
+
+        // 1) Código
+        let td = document.createElement('td');
+        td.textContent = rowObj.codigo1;
+        tr.appendChild(td);
+
+        // 2) Código 2
+        td = document.createElement('td');
+        td.textContent = rowObj.codigo2;
+        tr.appendChild(td);
+
+        // 3) Nombre
+        td = document.createElement('td');
+        td.textContent = rowObj.nombre;
+        tr.appendChild(td);
+
+        // 4) Iva
+        td = document.createElement('td');
+        td.textContent = rowObj.iva;
+        tr.appendChild(td);
+
+        // 5) Precio 1
+        td = document.createElement('td');
+        td.textContent = rowObj.precio1;
+        tr.appendChild(td);
+
+        // 6) Precio 2
+        td = document.createElement('td');
+        td.textContent = rowObj.precio2;
+        tr.appendChild(td);
+
+        // 7) Precio 3
+        td = document.createElement('td');
+        td.textContent = rowObj.precio3;
+        tr.appendChild(td);
+
+        // 8) Cantidad
+        td = document.createElement('td');
+        td.textContent = rowObj.cantidad;
+        tr.appendChild(td);
+
+        // 9) Descripción
+        td = document.createElement('td');
+        td.textContent = rowObj.descripcion;
+        tr.appendChild(td);
+
+        // 10) Categoría
+        td = document.createElement('td');
+        td.textContent = rowObj.categoria;
+        td.setAttribute('data-categoria-id', rowObj.categoria_id);
+        tr.appendChild(td);
+
+        // 11) Marca
+        td = document.createElement('td');
+        td.textContent = rowObj.marca;
+        td.setAttribute('data-marca-id', rowObj.marca_id);
+        tr.appendChild(td);
+
+        // 12) Clase (unidadmedida)
+        td = document.createElement('td');
+        td.textContent = rowObj.unidadmedida;
+        td.setAttribute('data-unidadmedida-id', rowObj.unidad_id);
+        tr.appendChild(td);
+
+        // 13) Ubicación
+        td = document.createElement('td');
+        td.textContent = rowObj.ubicacion;
+        td.setAttribute('data-ubicacion-id', rowObj.ubicacion_id);
+        tr.appendChild(td);
+
+        // 14) Proveedor
+        td = document.createElement('td');
+        td.textContent = rowObj.proveedor;
+        td.setAttribute('data-proveedor-id', rowObj.proveedor_id);
+        tr.appendChild(td);
+
+        // 15) Acciones (editar / eliminar individual)
+        td = document.createElement('td');
+        td.classList.add('acciones');
+        // Botón editar
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'edit-button';
+        btnEdit.setAttribute('data-id', rowObj.codigo1);
+        btnEdit.innerHTML = "<i class='fa-solid fa-pen-to-square'></i>";
+        td.appendChild(btnEdit);
+        // Botón eliminar
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'delete-button';
+        btnDelete.setAttribute('onclick', `eliminarProducto('${rowObj.codigo1}')`);
+        btnDelete.innerHTML = "<i class='fa-solid fa-trash'></i>";
+        td.appendChild(btnDelete);
+        tr.appendChild(td);
+
+        // 16) Checkbox selección múltiple
+        td = document.createElement('td');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'select-product';
+        checkbox.value = rowObj.codigo1;
+        td.appendChild(checkbox);
+        tr.appendChild(td);
+
+        tableBody.appendChild(tr);
+      });
+
+      renderPaginationControls();
+      attachEditButtonListeners();
+      attachRowHighlightListeners();   // <-- volvemos a añadir a cada <tr>
+      attachCheckboxListeners();
+    }
+
+    // Renderiza los botones de paginación
+    function renderPaginationControls() {
+      paginationContainer.innerHTML = '';
+      const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+      if (totalPages <= 1) return;
+
+      // « Primera
+      const btnFirst = document.createElement('button');
+      btnFirst.textContent = '« Primera';
+      btnFirst.disabled = (currentPage === 1);
+      btnFirst.addEventListener('click', () => {
+        currentPage = 1;
+        renderTable();
+      });
+      if (currentPage === 1) btnFirst.classList.add('active');
+      paginationContainer.appendChild(btnFirst);
+
+      // ‹ Anterior
+      const btnPrev = document.createElement('button');
+      btnPrev.textContent = '‹ Anterior';
+      btnPrev.disabled = (currentPage === 1);
+      btnPrev.addEventListener('click', () => {
+        if (currentPage > 1) currentPage--;
+        renderTable();
+      });
+      if (currentPage === 1) btnPrev.classList.add('active');
+      paginationContainer.appendChild(btnPrev);
+
+      // Números de página (hasta 5 alrededor)
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, currentPage + 2);
+      if (currentPage <= 2) {
+        endPage = Math.min(5, totalPages);
+      }
+      if (currentPage >= totalPages - 1) {
+        startPage = Math.max(1, totalPages - 4);
+      }
+
+      if (startPage > 1) {
+        const ellipsis = document.createElement('button');
+        ellipsis.textContent = '…';
+        ellipsis.disabled = true;
+        paginationContainer.appendChild(ellipsis);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        const btnPage = document.createElement('button');
+        btnPage.textContent = i;
+        if (i === currentPage) btnPage.classList.add('active');
+        btnPage.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+        });
+        paginationContainer.appendChild(btnPage);
+      }
+
+      if (endPage < totalPages) {
+        const ellipsis2 = document.createElement('button');
+        ellipsis2.textContent = '…';
+        ellipsis2.disabled = true;
+        paginationContainer.appendChild(ellipsis2);
+      }
+
+      // Siguiente ›
+      const btnNext = document.createElement('button');
+      btnNext.textContent = 'Siguiente ›';
+      btnNext.disabled = (currentPage === totalPages);
+      btnNext.addEventListener('click', () => {
+        if (currentPage < totalPages) currentPage++;
+        renderTable();
+      });
+      if (currentPage === totalPages) btnNext.classList.add('active');
+      paginationContainer.appendChild(btnNext);
+
+      // Última »
+      const btnLast = document.createElement('button');
+      btnLast.textContent = 'Última »';
+      btnLast.disabled = (currentPage === totalPages);
+      btnLast.addEventListener('click', () => {
+        currentPage = totalPages;
+        renderTable();
+      });
+      if (currentPage === totalPages) btnLast.classList.add('active');
+      paginationContainer.appendChild(btnLast);
+    }
+
+    // Filtrado en tiempo real según criterios marcados
+    function applyFilter() {
+      const query = inputBusqueda.value.trim().toLowerCase();
+      // Tomamos los checkboxes marcados
+      const checkedBoxes = document.querySelectorAll('input[name="criteriosJS[]"]:checked');
+      const selectedCriteria = Array.from(checkedBoxes).map(cb => cb.value);
+
+      if (query === '') {
+        filteredData = [...allData];
+      } else if (selectedCriteria.length === 0) {
+        // Búsqueda global en todas las columnas si no hay criterios
+        filteredData = allData.filter(row => {
+          const composite = 
+            row.codigo1 + ' ' +
+            row.codigo2 + ' ' +
+            row.nombre + ' ' +
+            row.iva + ' ' +
+            row.precio1 + ' ' +
+            row.precio2 + ' ' +
+            row.precio3 + ' ' +
+            row.cantidad + ' ' +
+            row.descripcion + ' ' +
+            row.categoria + ' ' +
+            row.marca + ' ' +
+            row.unidadmedida + ' ' +
+            row.ubicacion + ' ' +
+            row.proveedor;
+          return composite.toString().toLowerCase().includes(query);
+        });
+      } else {
+        // Si hay criterios, buscamos solo en esos campos
+        filteredData = allData.filter(row => {
+          return selectedCriteria.some(crit => {
+            const fieldValue = getFieldValue(row, crit);
+            return fieldValue.includes(query);
+          });
+        });
+      }
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    // ============================================================
+    // 4) ORDENAMIENTO POR COLUMNAS: clic en <th>
+    // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionamos todos los botones de edición
+      const thead = document.querySelector('#productTable thead');
+      const sortStates = {};
+
+      thead.querySelectorAll('th').forEach(th => {
+        const colIndex = parseInt(th.getAttribute('data-col'), 10);
+        const type = th.getAttribute('data-type');
+        if (!type || type === 'none') return;
+
+        sortStates[colIndex] = true; // ascendente inicial
+
+        th.addEventListener('click', () => {
+          sortStates[colIndex] = !sortStates[colIndex];
+          sortData(colIndex, sortStates[colIndex]);
+
+          // Limpiar flechas de otros encabezados
+          thead.querySelectorAll('th .sort-arrow').forEach(span => {
+            span.textContent = '';
+          });
+          // Poner flecha en el clicado
+          th.querySelector('.sort-arrow').textContent = sortStates[colIndex] ? '▲' : '▼';
+
+          renderTable();
+        });
+      });
+    });
+
+    // ============================================================
+    // 5) RESALTADO DE FILA: listener en cada <tr>
+    // ============================================================
+    function attachRowHighlightListeners() {
+      const rows = document.querySelectorAll('#productTable tbody tr');
+      rows.forEach(row => {
+        row.addEventListener('click', () => {
+          row.classList.toggle('selected');
+        });
+      });
+    }
+
+    // ============================================================
+    // 6) SELECCIÓN MÚLTIPLE: activar botón Eliminar Múltiple
+    // ============================================================
+    function attachCheckboxListeners() {
+      const selectAllCheckbox = document.getElementById("select-all");
+      const deleteButton = document.getElementById("delete-selected");
+
+      // Recolectamos checkboxes tras renderizar
+      const checkboxes = document.querySelectorAll(".select-product");
+
+      selectAllCheckbox.addEventListener("change", function() {
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        toggleDeleteButtonVisibility();
+      });
+
+      checkboxes.forEach(cb => {
+        cb.addEventListener("change", toggleDeleteButtonVisibility);
+      });
+
+      deleteButton.addEventListener("click", () => {
+        const selectedCodes = Array.from(checkboxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value.trim());
+        if (selectedCodes.length === 0) {
+          alert("Selecciona al menos un producto para eliminar.");
+          return;
+        }
+        Swal.fire({
+          title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
+          html: `
+            <div class="custom-alert">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                <p>Los productos se eliminarán de forma permanente.</p>
+            </div>
+        `,
+          background: '#ffffffdb',
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+          customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",
+            cancelButton: "btn-cancelar",
+            container: 'fondo-oscuro'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch("eliminar_productos.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ codigos: selectedCodes })
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  Swal.fire({
+                      title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                      html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                                </div>
+                                <p>Productos eliminados correctamente.</p>
+                            </div>
+                        `,
+                      background: '#ffffffdb',
+                      confirmButtonText: 'Aceptar',
+                      confirmButtonColor: '#007bff',
+                      customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                      }
+                    })
+                    .then(() => location.reload());
+                } else {
+                  Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
+                }
+              })
+              .catch(error => {
+                console.error("Error en la solicitud:", error);
+                Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
+              });
+          }
+        });
+      });
+    }
+
+    function toggleDeleteButtonVisibility() {
+      const checkboxes = document.querySelectorAll(".select-product");
+      const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+      document.getElementById("delete-selected").style.display = anyChecked ? "inline-block" : "none";
+    }
+
+    // ============================================================
+    // 7) MÓDULO DE EDICIÓN: adjuntar listeners a botones editar
+    // ============================================================
+    function attachEditButtonListeners() {
       const editButtons = document.querySelectorAll('.edit-button');
-      // Modal y botón de cierre
       const modal = document.getElementById('editModal');
-      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
       const closeModal = modal.querySelector('.close');
-      // Listener para cada botón de edición
+
       editButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+          // Evitamos que el clic en el botón lance el toggle de resaltado
+          e.stopPropagation();
+
           const row = this.closest('tr');
-          // Se asume que las columnas están en el siguiente orden:
-          // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
-          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
-          const codigo1 = row.cells[0].innerText.trim();
-          document.getElementById('editCodigo1').value = codigo1;
-          document.getElementById('editCodigo1Visible').value = codigo1;
+          document.getElementById('editCodigo1').value = row.cells[0].innerText.trim();
+          document.getElementById('editCodigo1Visible').value = row.cells[0].innerText.trim();
           document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
           document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-          // Asumimos que Precio1 está en la columna 4 (ajusta si es necesario)
           document.getElementById('editPrecio1').value = row.cells[4].innerText.trim();
           document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
           document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
           document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
           document.getElementById('editDescripcion').value = row.cells[8].innerText.trim();
-          // Para select de Categoría: usamos el data attribute de la celda correspondiente
           document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
-          // Para los inputs de Marca, UnidadMedida, Ubicación y Proveedor, se usan los data attributes:
           document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
           document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
           document.getElementById('editUbicacion').value = row.cells[12].getAttribute('data-ubicacion-id');
           document.getElementById('editProveedor').value = row.cells[13].getAttribute('data-proveedor-id');
-
           modal.style.display = 'block';
         });
       });
 
-
-
-      // Listener para cerrar el modal
       closeModal.addEventListener('click', function() {
         modal.style.display = 'none';
       });
-    });
-    document.addEventListener('click', function(event) {
-      const filterDropdown = document.querySelector('.filter-dropdown');
+    }
 
-      if (
-        filterDropdown.hasAttribute('open') &&
-        !filterDropdown.contains(event.target)
-      ) {
-        filterDropdown.removeAttribute('open');
-      }
-    });
-    // Función para eliminar un producto con SweetAlert2
+    // ============================================================
+    // 8) ELIMINACIÓN INDIVIDUAL: SweetAlert2 + AJAX
+    // ============================================================
     function eliminarProducto(codigo) {
       Swal.fire({
-        title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
-
+        title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
         html: `
             <div class="custom-alert">
                 <div class="contenedor-imagen">
@@ -658,42 +1004,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <p>¿Quieres eliminar el producto <strong>${codigo}</strong>?</p>
             </div>
         `,
-
         background: '#ffffffdb',
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
         customClass: {
           popup: "custom-alert",
-          confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
-          cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar",
           container: 'fondo-oscuro'
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          // Enviar la solicitud al servidor
-          fetch('../html/listaproductos.php', {
+          fetch('listaproductos.php', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-              },
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
               body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
             })
             .then(response => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
+              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
               return response.json();
             })
             .then(data => {
               if (data.success) {
-                // Mostrar alerta de éxito
                 Swal.fire({
                   title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
                   html: `
                             <div class="custom-alert">
                                 <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                                    <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
                                 </div>
                                  <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
                             </div>
@@ -707,158 +1046,50 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     container: 'fondo-oscuro'
                   }
                 }).then(() => {
-                  location.reload(); // Recargar página después de cerrar la alerta
+                  location.reload();
                 });
               } else {
-                // Mostrar alerta de error
-                Swal.fire({
-                  title: '<span class="titulo-alerta error">Error</span>',
-                  html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al eliminar el producto.</p>
-                </div>
-            `,
-                  background: '#ffffffdb',
-                  confirmButtonText: 'Aceptar',
-                  confirmButtonColor: '#007bff',
-                  customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                  }
-                });
+                Swal.fire("Error", data.error || "No se pudo completar la eliminación", "error");
               }
             })
             .catch(error => {
-              console.error("Error:", error);
-              Swal.fire("Error", "No se pudo eliminar. Ver consola para detalles.", "error");
+              console.error('Error:', error);
+              Swal.fire("Error", "Error al conectar con el servidor", "error");
             });
         }
       });
     }
 
-
-    // funcion de los checkboxes
-    document.getElementById("select-all").addEventListener("change", function() {
-      let checkboxes = document.querySelectorAll(".select-product");
-      checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-      });
+    // ============================================================
+    // 9) CERRAR DROPDOWN SI SE HACE CLIC FUERA
+    // ============================================================
+    document.addEventListener('click', function(event) {
+      const filterDropdown = document.querySelector('.filter-dropdown');
+      if (filterDropdown.hasAttribute('open') && !filterDropdown.contains(event.target)) {
+        filterDropdown.removeAttribute('open');
+      }
     });
 
-    document.addEventListener("DOMContentLoaded", function() {
-      let selectAllCheckbox = document.getElementById("select-all");
-      let checkboxes = document.querySelectorAll(".select-product");
-      let deleteButton = document.getElementById("delete-selected");
+    // ============================================================
+    // 10) INICIALIZACIÓN: aplicamos ordenamiento, filtrado y paginación
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Al cargar, pintamos la primera página
+      renderTable();
 
-      function toggleDeleteButton() {
-        let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-        deleteButton.style.display = anyChecked ? "inline-block" : "none";
-      }
-
-      selectAllCheckbox.addEventListener("change", function() {
-        checkboxes.forEach(checkbox => {
-          checkbox.checked = this.checked;
-        });
-        toggleDeleteButton();
-      });
-
-      checkboxes.forEach(checkbox => {
-        checkbox.addEventListener("change", toggleDeleteButton);
-      });
-
-      deleteButton.addEventListener("click", function() {
-        let selectedCodes = Array.from(checkboxes)
-          .filter(checkbox => checkbox.checked)
-          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
-
-        if (selectedCodes.length === 0) {
-          alert("Selecciona al menos un producto para eliminar.");
-          return;
-        }
-
-        // Mostrar la alerta con SweetAlert
-        Swal.fire({
-          title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
-          html: `
-            <div class="custom-alert">
-                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                <p>Los productos se eliminarán de forma permanente.</p>
-            </div>
-        `,
-          background: '#ffffffdb',
-          showCancelButton: true,
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-          customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
-            cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
-            container: 'fondo-oscuro'
-          }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Depuración: Ver datos antes de enviarlos
-            console.log("Enviando códigos a eliminar:", selectedCodes);
-
-            // Enviar datos al servidor
-            fetch("eliminar_productos.php", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  codigos: selectedCodes
-                })
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log("Respuesta del servidor:", data); // Depuración
-                if (data.success) {
-                  Swal.fire({
-                      title: '<span class="titulo-alerta confirmacion">Exito</span>',
-                      html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" alt="Exito" class="moto">
-                                </div>
-                                <p>Productos elimanados correctamente.</p>
-                            </div>
-                        `,
-                      background: '#ffffffdb',
-                      confirmButtonText: 'Aceptar',
-                      confirmButtonColor: '#007bff',
-                      customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                      }
-                    })
-                    .then(() => location.reload()); // Recargar página después de cerrar la alerta
-                } else {
-                  Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
-                }
-              })
-              .catch(error => {
-                console.error("Error en la solicitud:", error);
-                Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
-              });
-          }
-        });
+      // Al escribir en el input de búsqueda en tiempo real
+      inputBusqueda.addEventListener('input', function() {
+        applyFilter();
       });
     });
   </script>
+
   <div class="userInfo">
-    <!-- Nombre y apellido del usuario y rol -->
-    <!-- Consultar datos del usuario -->
     <?php
-    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+    $conexion2 = new mysqli('localhost', 'root', '', 'inventariomotoracer');
     $id_usuario = $_SESSION['usuario_id'];
     $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-    $stmtUsuario = $conexion->prepare($sqlUsuario);
+    $stmtUsuario = $conexion2->prepare($sqlUsuario);
     $stmtUsuario->bind_param("i", $id_usuario);
     $stmtUsuario->execute();
     $resultUsuario = $stmtUsuario->get_result();
@@ -871,7 +1102,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     ?>
     <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
     <p class="rol">Rol: <?php echo $rol; ?></p>
-
   </div>
   <div class="profilePic">
     <?php if (!empty($rowUsuario['foto'])): ?>

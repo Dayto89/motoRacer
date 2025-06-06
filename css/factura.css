@@ -18,7 +18,7 @@
 
 .titulo {
     font-family: "Metal Mania", system-ui;
-    font-size: 85px;
+    font-size: 50px;
     margin-bottom: -7px;
     margin-top: 0px;
     color: white;
@@ -192,7 +192,7 @@ body::before {
     transition: width 1s ease;
     width: 90px;
     overflow: hidden;
-    height: 80px;
+    height: 185px;
 }
 
 .search-bar:hover {
@@ -253,7 +253,7 @@ body::before {
 
 .product-id {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 2px;
 }
 
@@ -274,7 +274,7 @@ body::before {
     font-family: Arial, sans-serif;
     width: 350px;
     padding: 10px;
-    font-size: 20px;
+    font-size: 16px;
     flex-direction: column;
     height: 100vh;
     justify-content: space-between;
@@ -282,7 +282,7 @@ body::before {
 
 .sidebar-right h3 {
     margin-top: 40px;
-    font-size: 28px;
+    font-size: 20px;
     color: white;
 }
 
@@ -307,7 +307,7 @@ body::before {
     justify-content: space-evenly;
     font-weight: bold;
     margin-top: 60px;
-    font-size: 28px;
+    font-size: 20px;
     color: white;
 }
 
@@ -388,7 +388,7 @@ a.brand {
     position: relative;
     color: #333;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 46px;
     padding: 0px 10px 0px 10px;
 }
@@ -896,3 +896,114 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     display: none;
     /* Chrome, Safari */
 }
+
+.price-selector {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-color: transparent;
+    border: 1px solid #ccc;
+    padding: 10px 40px 10px 15px;
+    font-size: 1rem;
+    border-radius: 8px;
+    box-shadow: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='30,50 70,90 110,50' fill='none' stroke='%23222' stroke-width='15'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+
+    cursor: pointer;
+    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.price-selector:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.price-selector option {
+    background-color: white;
+    color: #000;
+}
+
+.price-selector {
+    width: 100%;
+    font-size: 16px;
+    padding: 5px 30px 5px 10px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #000;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23222' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    box-sizing: border-box;
+    overflow: visible;
+    white-space: normal; /* permite que el texto baje de línea si es necesario */
+    text-overflow: initial;
+}
+.price-selector {
+    min-height: 38px;
+}
+.products {
+  max-height: 600px; /* o el valor que necesites */
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar personalizable */
+.products::-webkit-scrollbar {
+  width: 4px;
+}
+
+.products::-webkit-scrollbar-track {
+  background: #f1f1f100;
+  border-radius: 4px;
+}
+
+.products::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border-radius: 4px;
+}
+
+.products::-webkit-scrollbar-thumb:hover {
+  background: #ffffff;
+}
+.botones-cantidad {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* espacio entre botones */
+  margin-top: 10px;
+}
+
+.btn-sumar,
+.btn-restar {
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  border-radius: 5px;
+  border: 2px solid;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.btn-sumar {
+  color: green;
+  border-color: green;
+}
+
+.btn-restar {
+  color: red;
+  border-color: red;
+}
+
+

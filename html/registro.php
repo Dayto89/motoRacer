@@ -387,29 +387,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   <div id="modalVerificacion" class="modal hidden">
     <div class="modal-overlay" id="modalOverlay"></div>
     <div class="modal-container">
-      <h2>Verificar Correo</h2> <!-- Título como en tu imagen -->
-
-      <!-- Contenido original de tu modal (mismos IDs y estructura) -->
+      <h2>Verificar Correo</h2>
       <p id="mensajeModal"></p>
-
       <div id="correoSection">
         <div class="input-group">
-          <input type="email" id="inputCorreo" > <!-- Mismo ID -->
+          <input type="email" id="inputCorreo" > 
         </div>
         <div id="correoSectionButtons" class="modal-actions">
-          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button> <!-- Mismo ID -->
-          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button> <!-- Mismo ID -->
+          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button> 
+          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button> 
         </div>
       </div>
 
       <div id="codigoSection" class="hidden">
         <div class="input-group">
-          <label>Ingrese el código recibido:</label> <!-- Texto como en tu imagen -->
-          <input type="text" id="inputCodigo" > <!-- Mismo ID -->
+          <label>Ingrese el código recibido:</label> 
+          <input type="text" id="inputCodigo" > 
         </div>
         <div class="modal-actions">
-          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button> <!-- Nuevo botón (opcional) -->
-          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button> <!-- Mismo ID -->
+          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button> 
+          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button> 
         </div>
       </div>
     </div>

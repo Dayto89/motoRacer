@@ -1,487 +1,507 @@
 /* Reseteo y estilos básicos */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Merriweather', serif;
-    background-color: #1c1c1c;
-    color: white;
+  font-family: "Merriweather", serif;
+  background-color: #1c1c1c;
+  color: white;
 }
 
 .container {
-    align-items: center;
-    background: rgb(174 174 174 / 59%);
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    width: 87%;
-    max-width: 44%;
-    padding: 29px;
+  align-items: center;
+  background: rgb(174 174 174 / 59%);
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  width: 87%;
+  max-width: 44%;
+  padding: 29px;
 }
 
 h1 {
-    font-size: 44px;
-    color: white;
-    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 37%;
-    letter-spacing: 5px;
-    padding: 14px;
-    letter-spacing: 5px;
+  font-size: 44px;
+  color: white;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
+  margin-left: 37%;
+  letter-spacing: 5px;
+  padding: 14px;
+  letter-spacing: 5px;
 }
 
 .profile-pic {
-    text-align: center;
+  text-align: center;
 }
 
 .profile-pic img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #87CEFA;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #87cefa;
 }
 
 .info-group {
-    display: flex;
-    flex-direction: column;
-    margin-top: 47px;
-    margin-left: 74px;
-    display: flex;
-    justify-content: space-between;
-    width: 70%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 47px;
+  margin-left: 74px;
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
 }
 
 .info-group label {
-    margin-bottom: 5px;
-    color: white;
-    font-size: 19px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: 2px 0 #1c51a0;
-    white-space: nowrap;
+  margin-bottom: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
 }
 
 .info-group span {
-    flex: 0.5;
-    padding: 10px;
-    background: #f4f4f4;
-    color: #333;
-    border: 1px solid #ddd;
-    border-radius: 23px;
-    text-align: left;
-    font-family: Arial, Helvetica, sans-serif;
-    size: 10px;
-    font-weight: normal;
-width: 115%;
+  flex: 0.5;
+  padding: 10px;
+  background: #f4f4f4;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 23px;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  size: 10px;
+  font-weight: normal;
+  width: 115%;
 }
 
 .btn-abrir {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #1167CC;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-left: 87%;
-    margin-top: 18%;
-    width: 30%;
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #1167cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 87%;
+  margin-top: 18%;
+  width: 30%;
 }
 
 .btn-abrir:hover {
-    background-color: #0056b3;
-    transform: scale(1.07);
+  background-color: #0056b3;
+  transform: scale(1.07);
 }
 
 /* Estilo del fondo oscuro */
 .overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
 }
 
 /* Estilo de la ventana emergente */
 .popup {
-    background-color: rgb(200 200 200 / 76%);
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    animation: slideIn 0.3s ease-out;
+  background-color: rgba(200, 200, 200, 0.76);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
 }
 
 .popup h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: #003366;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 4px #000000;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #003366;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px #000000;
 }
 
 .popup form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.popup input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 23px;
+.button_popup {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 50%;
+  margin-left: 27%;
 }
 
-.popup button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+.btn-verificar-correo {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 91%;
+  margin-left: 5%;
+  margin-right: 5%;
+  height: 40px;
 }
-
 .btn-cancelar {
-    background: red;
-    color: white;
-    margin-right: 10px;
+  background: red;
+  color: white;
+  margin-right: 10px;
 }
-
-.btn-guardar {
-    background: blue;
-    color: white;
-}
-
 
 body {
-    font-family: "Metal Mania", system-ui;
-    background: url('fondoMotoRacer.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  font-family: "Metal Mania", system-ui;
+  background: url("fondoMotoRacer.png") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    opacity: 0.7;
-    z-index: -1;
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0.7;
+  z-index: -1;
 }
 
-
 .form-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin-right: 5%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-right: 5%;
 }
 
 /* Formularios */
 .form-container form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .input-group {
-    text-align: left;
+  text-align: left;
 }
 
 .input-group label {
-    display: block;
-    font-size: 1em;
-    margin-bottom: 5px;
-    color: #ddd;
+  display: block;
+  font-size: 1em;
+  margin-bottom: 5px;
+  color: #ddd;
 }
 
 .input-group input,
 .input-group textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    color: #fff;
-    font-size: 1em;
-    transition: background 0.3s, box-shadow 0.3s;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  color: #fff;
+  font-size: 1em;
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .input-group input:focus,
 .input-group textarea:focus {
-    background: rgb(174, 174, 174 / 59%);
-    box-shadow: 0 0 5px #1e88e5;
-    outline: none;
+  background: rgb(174, 174, 174 / 59%);
+  box-shadow: 0 0 5px #1e88e5;
+  outline: none;
 }
 
 .input-group textarea {
-    resize: none;
-    height: 80px;
+  resize: none;
+  height: 80px;
 }
-
-
 
 /* Estilos para la ventana emergente */
 .overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
 }
 
 .popup {
-    background-color: rgb(200 200 200 / 76%);
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    animation: slideIn 0.3s ease-out;
-    margin-left: 43%;
-    margin-top: 5.7%;
+  background-color: rgb(200 200 200 / 76%);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+  margin-left: 43%;
+  margin-top: 5.7%;
 }
 
 @keyframes slideIn {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
 
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-
 .popup h2 {
-    font-size: 32px;
-    margin-top: -7px;
-    color: white;
-    text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
-    margin-left: 13px;
-    letter-spacing: 5px;
-    padding: 28px;
+  font-size: 32px;
+  margin-top: -7px;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 28px;
 }
 
 .popup input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1em;
-}
-
-.popup button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    margin: 5px;
-}
-
-.btn-cancelar1 {
-    background: red;
-    color: white;
+  margin: 0;
+  background-color: #ffffff;
+  border-radius: 24px;
+  height: 40px;
+  width: 277px;
+  color: #000;
+  padding: 0px 0px 0px 10px;
+  border: none;
+  font-size: 13px;
+  margin-bottom: 12px;
+  -webkit-appearance: none;
 }
 
 .btn-cancelar:hover {
-    background: #c01515;
-    transform: scale(1.05);
+  background: #c01515;
+  transform: scale(1.05);
 }
 
-.btn-guardar {
-    background: blue;
-    color: white;
+.btn-guardar1 {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
 }
 
-.btn-guardar:hover {
-    background: #1565c0;
-    transform: scale(1.05);
+.btn-guardar1:hover {
+  background: #1565c0;
+  transform: scale(1.05);
 }
 
 /* Mostrar ventana emergente */
 .overlay.active {
-    display: block;
+  display: block;
 }
 
-/*Alertas*/
-
-
-/* Estilos generales de los párrafos */
-p {
-    font-size: 16px;
-    color: black;
-    font-family: arial;
-    padding: 10px;
+/*SECCION DE VERIFICAR*/
+/* ======================= */
+/* 1) Ocultar elementos:  */
+/* ======================= */
+.hidden {
+  display: none !important;
 }
 
-
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%;
-    /* Se ajusta automáticamente */
-    max-width: 350px;
-    /* Define un límite de ancho */
+/* ======================= */
+/* 2) Botones de verificación (igual que antes) */
+/* ======================= */
+.btn-cancelar1 {
+  background-color: #df2f2f;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.btnCancelar1:hover {
+  background-color: #a71d2a;
 }
 
-
-
-.custom-alert .tornillo,
-.custom-alert .moto,
-.custom-alert .llave {
-    width: 201px;
-    height: 145px;
+.btn-guardar {
+  background-color: rgb(50 83 133);
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.btn-guardar:hover {
+  background-color: #007bff;
 }
 
-
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-    position: relative;
-    display: inline-block;
+/* ======================= */
+/* 3) Estilos de inputs y labels */
+/* ======================= */
+.popup label {
+  margin-bottom: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
 }
 
-
-
-.titulo-alerta {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 10px;
-    font-family: 'Arial Black', sans-serif;
-    letter-spacing: 1px;
+.input-group input {
+  width: 92%;
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 18px;
+  margin-left: 20px;
 }
 
-.titulo-alerta.confirmacion {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #9b9496;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+/* ======================= */
+/* 4) Estilo del botón “Cambiar correo” */
+/* ======================= */
+.btn-verificar-correo {
+  background-color: white;
+  color: #3d3a3a;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+.btn-verificar-correo:hover {
+  background-color: #85baf1;
 }
 
-.titulo-alerta.error {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #af3b3b;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+/* ======================= */
+/* 5) Ajustes de #verificacionWrapper */
+/* ======================= */
+#verificacionWrapper {
+  margin-top: 20px;
+}
+#verificacionWrapper h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+/* 3) (Opcional) Reducir margen superior/inferior de verificacionWrapper */
+#verificacionWrapper {
+  margin-top: 10px; /* Un poco menos de separación para ganar espacio */
+  margin-bottom: 10px;
+}
+#mensajeModal {
+  text-align: center;
 }
 
-.titulo-alerta.advertencia {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #e09804;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+/* ======================= */
+/* 6) Estilos generales de tu modal principal (.overlay / .popup) */
+/* ======================= */
+/* (ya los tenías; no es necesario cambiarlos aquí) */
+/* 1) Limitar la altura del popup y permitir scroll */
+.popup {
+  max-height: 77vh; /* Hasta el 80% de la altura de la ventana */
+  overflow-y: auto; /* Activa el scroll vertical cuando sobrepase */
+  /* Si quieres que el scroll solo aparezca en móviles muy estrechos, puedes usar media queries */
 }
-
-
-.btn-aceptar {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
+.popup::-webkit-scrollbar {
+  width: 3px; /* barra muy delgada */
 }
-
-.swal2-border-radius {
-    border-radius: 5px !important;
+/* 2.2) Hacer que la pista (track) sea transparente */
+.popup::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-
-
-.fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    /* Fondo oscuro */
-    backdrop-filter: blur(2px);
-    /* Opcional: desenfoque sutil */
+/* 2.3) Thumb (la parte que se arrastra), color azul vivo */
+.popup::-webkit-scrollbar-thumb {
+  background-color: rgb(47 121 182); /* azul brillante */
+  border-radius: 3px; /* bordes redondeados */
 }
-
-.swal2-popup {
-    border-radius: 20px;
+/* 2.4) Al pasar el cursor por la thumb, cambiar ligeramente */
+.popup::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(47 121 182); /* azul un poco más oscuro en hover */
 }
-
-.btn-eliminar {
-    background-color: #bd2d3b;
-    border-radius: 10px;
+/* En Firefox usamos propiedades estándar */
+.popup {
+  scrollbar-width: thin; /* hace la barra más estrecha */
+  scrollbar-color: rgb(213, 215, 218) transparent; /* thumb color / track color */
 }
-
-.btn-cancelar {
-    background-color: #537c5a;
-    border-radius: 10px;
+/* 2) Ajustar padding para que no choque con el scroll */
+.popup {
+  padding: 4px 4px; /* Ajusta a tu gusto */
+  box-sizing: border-box;
 }
 
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
-
-    .container {
-        margin-top: 60%;
-        margin-left: 0%;
-        max-width: 100%;
-        padding: 0;
-    }
+  .container {
+    margin-top: 60%;
+    margin-left: 0%;
+    max-width: 100%;
+    padding: 0;
+  }
 }
 
 /* Vertical */
 @media screen and (max-width: 870px) and (orientation: portrait) {
-        .container {
-        max-width: 75%;
-        margin-left: 20%;
-        height: 98%;
-        
-    }
+  .container {
+    max-width: 75%;
+    margin-left: 20%;
+    height: 98%;
+  }
 
-    .form-container {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        margin-right: 0%;
-    }
+  .form-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    margin-right: 0%;
+  }
 
-    .info-group {
-        margin-top: 2vh;
-        margin-left: 4.5vh;
-    }
+  .info-group {
+    margin-top: 2vh;
+    margin-left: 4.5vh;
+  }
 
-    h1{
-        margin-left: 25%;
-    }
+  h1 {
+    margin-left: 25%;
+  }
 
-    .btn-abrir {
-        margin-left: 35%;
-    }
+  .btn-abrir {
+    margin-left: 35%;
+  }
 }
-
 
 /* TABLETS */
 /* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {}
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+}
 
 /* Vertical */
-@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {}
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+}

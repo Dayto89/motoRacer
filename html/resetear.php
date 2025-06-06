@@ -103,7 +103,6 @@ if ($_POST) {
                         <li id="numero"> Al menos un número</li>
                         <li id="simbolo"> Al menos un símbolo especial</li>
                     </ul>
-                    <p id="mensaje-seguridad">✔ Contraseña segura</p>
                 </div>
 
             </div>
@@ -129,7 +128,7 @@ if ($_POST) {
         const passwordInput = document.querySelector('#nueva_contrasena');
         const passwordInput2 = document.querySelector('#confirmar_contrasena');
         const tooltip = document.getElementById("tooltip-requisitos");
-        const mensajeSeguridad = document.getElementById("mensaje-seguridad");
+        
 
         const reglas = {
             minCaracteres: document.getElementById("min-caracteres"),

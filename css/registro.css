@@ -368,7 +368,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   text-decoration: underline;
 }
 
-/*MODAL VERIFICACION*/
+/*MODAL VERIFICACION---------------------------------------------------------*/
 /* Estilos del modal (nuevo diseño) */
 p {
   font-size: 14px;
@@ -533,3 +533,64 @@ p {
 #correoSectionButtons.hidden {
   display: none;
 }
+
+
+/* Hacemos que cada .campo sea un contenedor relativo */
+.campo {
+    position: relative;
+}
+
+/*---------------------------------------------------------------------------------*/
+/* Parámetros contraseña (requisitos y confirmación) */
+.requisitos {
+    list-style: none;
+    padding-left: 0;
+}
+
+.requisitos li {
+    text-decoration: none;
+    color: rgb(184, 26, 26);
+    -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+    text-align: left;
+}
+
+.requisitos li.validado {
+    color: rgb(20, 177, 41) !important; /* Verde oscuro */
+    -webkit-text-stroke-width: 1px;
+    text-decoration: none !important;
+    -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+}
+
+/* Ajustamos la posición de la “ventana emergente” para que siempre quede justo debajo del input padre */
+.ventana-requisitos {
+    position: absolute;
+    top: 100%;      /* justo debajo del input */
+    left: 0;        /* alineada a la izquierda del input */
+    margin-top: 4px; /* un pequeño espacio extra para separarla del input */
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.842);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 999;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: aliceblue;
+    text-align: left;
+}
+
+/* Si tu mensaje está dentro de un <p> con id="mensaje-confirmar": */
+#mensaje-confirmar {
+    font-size: 14px; /* o el tamaño que prefieras */
+  
+  }
+
+
+
+/* Puedes usar esta clase si deseas cambiar el color del texto de la regla validada */
+.validado {
+    color: green;
+}
+
+/*---------------------------------------------------------------------------------*/

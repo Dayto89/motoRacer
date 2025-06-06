@@ -195,20 +195,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     </div>
                 </div>
 
-
-
-                <!-- Modal de confirmación -->
-                <div id="modalConfirm" class="modal hidden">
-                    <div class="modal-content">
-                        <h2 id="modalTitle">Confirmación</h2>
-                        <p id="modalMessage">¿Estás seguro de que quieres guardar este producto?</p>
-                        <div id="modalButtons" class="modal-buttons">
-                            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                            <button type="submit" name="guardar">Guardar</button>
-                        </div>
-                    </div>
-                </div>
-
             </form>
 
 

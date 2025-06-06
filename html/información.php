@@ -202,20 +202,245 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     </div>
                     <input type="file" name="foto" id="imageInput" accept="image/*">
                 </div>
-                <input type="text" name="nombre" placeholder="Nombre" value="<?php echo $nombre; ?>">
-                <input type="text" name="apellido" placeholder="Apellido" value="<?php echo $apellido; ?>">
-                <input type="text" name="celular" placeholder="Celular" value="<?php echo $celular; ?>">
-                <input type="email" name="correo" placeholder="Correo Electrónico" value="<?php echo $correo; ?>">
-                <div>
-                    <button type="button" class="btn-cancelar1" onclick="cerrarPopup()">Cancelar</button>
-                    <button type="submit" class="btn-guardar">Guardar</button>
+                <div class="campo"><label for="nombre">Nombre: </label>
+                <input type="text" name="nombre" placeholder="Nombre" value="<?php echo $nombre; ?>"></div>
+                 <div class="campo"><label for="apellido">Apellido: </label>
+                 <input type="text" name="apellido" placeholder="Apellido" value="<?php echo $apellido; ?>"></div>
+                <div class="campo"><label for="telefono">Teléfono: </label>
+                <input type="text" name="celular" placeholder="Celular" value="<?php echo $celular; ?>"></div>
+                <div id="correoContenedor"></div>
+                <button type="button"
+                    id="btnAbrirModalCorreo"
+                    class="btn-verificar-correo">
+                    Cambiar correo
+                </button>
+                <div id="verificacionWrapper" class="hidden">
+                    <p id="mensajeModal">Por favor ingrese el correo para continuar con el proceso de registro.</p>
+
+                    <div id="correoSection">
+                        <div class="input-group">
+                            <input type="email"
+                                id="inputCorreo"
+                                placeholder="Ingresa tu correo">
+                        </div>
+                        <div id="correoSectionButtons" class="modal-actions">
+                            <button type="button"
+                                id="btnEnviarCodigo"
+                                class="btn-guardar">
+                                Enviar código
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="codigoSection" class="hidden">
+                        <div class="input-group">
+                            <label for="inputCodigo">Ingrese el código recibido:</label>
+                            <input type="text"
+                                id="inputCodigo"
+                                placeholder="Código">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button"
+                                id="btnVerificarCodigo"
+                                class="btn-guardar">
+                                Verificar código
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="button_container">
+                    <button type="button"
+                        class="btn-cancelar1"
+                        onclick="cerrarPopup()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-guardar1">
+                        Guardar
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-
     <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+  // -----------------------------
+  // 1) REFERENCIAS A ELEMENTOS
+  // -----------------------------
+  const btnAbrirModal       = document.getElementById('btnAbrirModalCorreo');
+  const verificacionWrapper = document.getElementById('verificacionWrapper');
+
+  const btnCerrarModal      = document.getElementById('btnCerrarModal');
+  const btnCerrarModal2     = document.getElementById('btnCerrarModal2');
+  const btnEnviarCodigo     = document.getElementById('btnEnviarCodigo');
+  const btnVerificarCodigo  = document.getElementById('btnVerificarCodigo');
+
+  const inputCorreo         = document.getElementById('inputCorreo');
+  const inputCodigo         = document.getElementById('inputCodigo');
+  const mensajeModal        = document.getElementById('mensajeModal');
+
+  const correoSectionButtons = document.getElementById('correoSectionButtons');
+  const codigoSection       = document.getElementById('codigoSection');
+
+  // Donde se mostrará el input final de correo verificado:
+  const contenedorCorreoFinal = document.getElementById('correoContenedor');
+
+  // -----------------------------
+  // 2) FUNCIONES AUXILIARES
+  // -----------------------------
+  function resetearVerificacion() {
+    mensajeModal.textContent = 'Por favor ingrese el correo para continuar con el proceso de registro.';
+    mensajeModal.style.color = 'black';
+    mensajeModal.style.fontWeight = 'bold';
+
+    inputCorreo.value = '';
+    inputCodigo.value = '';
+
+    // Mostrar sección "Correo" y ocultar "Código"
+    codigoSection.classList.add('hidden');
+    correoSectionButtons.classList.remove('hidden');
+
+    inputCorreo.disabled = false;
+    btnEnviarCodigo.disabled = false;
+  }
+
+  function mostrarSeccionCorreo() {
+    correoSectionButtons.classList.remove('hidden');
+    codigoSection.classList.add('hidden');
+    inputCorreo.disabled = false;
+    btnEnviarCodigo.disabled = false;
+  }
+
+  function mostrarSeccionCodigo() {
+    correoSectionButtons.classList.add('hidden');
+    codigoSection.classList.remove('hidden');
+  }
+
+  // -----------------------------
+  // 3) ABRIR / CERRAR “SECCIÓN” DE VERIFICACIÓN
+  // -----------------------------
+  btnAbrirModal.addEventListener('click', () => {
+    // Oculta la sección final de correo si hubiera quedado algo
+    contenedorCorreoFinal.innerHTML = '';
+    // Muestra el bloque de verificación
+    verificacionWrapper.classList.remove('hidden');
+    resetearVerificacion();
+  });
+
+  btnCerrarModal.addEventListener('click', () => {
+    verificacionWrapper.classList.add('hidden');
+    resetearVerificacion();
+  });
+  btnCerrarModal2.addEventListener('click', () => {
+    verificacionWrapper.classList.add('hidden');
+    resetearVerificacion();
+  });
+
+  // -----------------------------
+  // 4) ENVIAR CÓDIGO AL CORREO
+  // -----------------------------
+  btnEnviarCodigo.addEventListener('click', () => {
+    const correo = inputCorreo.value.trim();
+    const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/;
+
+    if (!correo) {
+      mensajeModal.textContent = 'Por favor ingresa un correo.';
+      mensajeModal.style.color = 'red';
+      return;
+    }
+    if (!regexCorreo.test(correo)) {
+      mensajeModal.textContent = 'Por favor, ingresa un correo válido. Sugerencia: use @gmail.com, @outlook.com, @hotmail.com o @yahoo.com.';
+      mensajeModal.style.color = 'red';
+      return;
+    }
+
+    btnEnviarCodigo.disabled = true;
+    mensajeModal.textContent = 'Enviando código...';
+    mensajeModal.style.color = 'black';
+
+    fetch('../html/enviar_codigo.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo: correo })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        mensajeModal.textContent = 'Código enviado. Revisa tu correo.';
+        mensajeModal.style.color = '#12521a';
+        mostrarSeccionCodigo();
+        inputCorreo.disabled = true;
+      } else {
+        mensajeModal.textContent = data.message || 'Error al enviar código.';
+        mensajeModal.style.color = '#df2f2f';
+        btnEnviarCodigo.disabled = false;
+      }
+    })
+    .catch(() => {
+      mensajeModal.textContent = 'Error en la conexión.';
+      mensajeModal.style.color = '#df2f2f';
+      btnEnviarCodigo.disabled = false;
+    });
+  });
+
+  // -----------------------------
+  // 5) VERIFICAR CÓDIGO INGRESADO
+  // -----------------------------
+  btnVerificarCodigo.addEventListener('click', () => {
+    const correo = inputCorreo.value.trim();
+    const codigo = inputCodigo.value.trim();
+
+    if (!codigo) {
+      mensajeModal.textContent = 'Por favor ingresa el código.';
+      mensajeModal.style.color = 'red';
+      return;
+    }
+    mensajeModal.textContent = 'Verificando código...';
+    mensajeModal.style.color = 'black';
+
+    fetch('../html/verificar_codigo_correo.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo: correo, codigo: codigo })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        mensajeModal.textContent = 'Código verificado correctamente.';
+        mensajeModal.style.color = 'green';
+
+        // 1) Ocultamos el bloque de verificación
+        verificacionWrapper.classList.add('hidden');
+
+        // 2) INSERTAMOS EL INPUT DE CORREO VERIFICADO DENTRO DEL FORM
+        //    y eliminamos el botón “Cambiar correo”
+        contenedorCorreoFinal.innerHTML = '';
+        btnAbrirModal.classList.add('hidden');
+
+        const inputCorreoFinal = document.createElement('input');
+        inputCorreoFinal.type = 'email';
+        inputCorreoFinal.name = 'correo';
+        inputCorreoFinal.id   = 'correoPrincipal';
+        inputCorreoFinal.value = correo;
+        inputCorreoFinal.readOnly = true;
+        inputCorreoFinal.style.marginBottom = '15px';  // opcional para separar
+        inputCorreoFinal.classList.add('input-group');
+
+        contenedorCorreoFinal.appendChild(inputCorreoFinal);
+      } else {
+        mensajeModal.textContent = data.message || 'Código incorrecto.';
+        mensajeModal.style.color = 'red';
+      }
+    })
+    .catch(() => {
+      mensajeModal.textContent = 'Error en la conexión.';
+      mensajeModal.style.color = 'red';
+    });
+  });
+});
+
+
         // Mostrar el popup
         function abrirPopup() {
             document.getElementById('overlay').style.display = 'block';
