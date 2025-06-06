@@ -358,7 +358,7 @@ input[type="checkbox"] {
 /* Estilos para el contenedor de columnas */
 .column-container {
   display: grid;
-  grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr;
   gap: 20px; /* Espacio entre columnas */
   padding: 20px;
   align-items: start; /* Alinea las columnas a la izquierda */

@@ -147,7 +147,7 @@ input[type="checkbox"] {
 
 .filter-button {
     padding: 8px 16px;
-    background-color: #1aa906;
+    background-color:#0f6103;
     color: white;
     border: none;
     cursor: pointer;
@@ -157,7 +157,7 @@ input[type="checkbox"] {
 }
 
 .filter-button:hover {
-    background-color: #155e33;
+    background-color: #0d3f06;
 }
 
 .filter-options {
@@ -213,13 +213,17 @@ input.form-control {
     display: flex;
     align-items: center;
     padding: 7px 16px;
-    background-color: #28a745;
+    background-color: #0f6103;
     color: white;
     border: none;
     cursor: pointer;
     border-radius: 4px;
     font-size: 14px;
 }
+.icon-button:hover {
+    background-color: #0d3f06;
+}
+
 
 .icon-button label:hover {
     cursor: pointer;
@@ -230,9 +234,6 @@ input.form-control {
     /* Ajusta según necesites */
 }
 
-.icon-button:hover {
-    background-color: #218838;
-}
 
 .criteria-group {
     display: flex;

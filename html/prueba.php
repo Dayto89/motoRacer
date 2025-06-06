@@ -1,198 +1,245 @@
 <?php
-// Iniciar el buffer de salida
-ob_start();
+// prueba.php
+// Este archivo cumple doble función:
+//  1) Mostrar la pantalla de pago (al llegar desde ventas.php)
+//  2) Recibir el POST AJAX para registrar la factura y responder JSON
 
-// session_start() debe ser lo primero
+// 1) Inicio de sesión y validación de usuario
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-    // Si no está autorizado, devolver un JSON de error
-    ob_end_clean(); // Limpiar el buffer
-    header('Content-Type: application/json');
-    echo json_encode(["success" => false, "error" => "No autorizado"]);
+    // Si no hay usuario logueado, devolver error o redirigir
+    header("Location: ../index.php");
     exit();
 }
 
-// Conexión a la base de datos
+// 2) Conexión a la base de datos
 $servername = "localhost";
-$username = "root";
-$password = "";
-$database = "inventariomotoracer";
+$username  = "root";
+$password  = "";
+$database  = "inventariomotoracer";
 
 $conn = new mysqli($servername, $username, $password, $database);
 if ($conn->connect_error) {
-    ob_end_clean(); // Limpiar el buffer
-    header('Content-Type: application/json');
-    echo json_encode(["success" => false, "error" => "Conexión fallida: " . $conn->connect_error]);
-    exit;
+    // Si falla la conexión, respondemos JSON de error (en caso de POST) o mostramos mensaje (en GET)
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        header('Content-Type: application/json');
+        echo json_encode(["success" => false, "error" => "Conexión fallida: " . $conn->connect_error]);
+        exit;
+    } else {
+        die("Conexión fallida: " . $conn->connect_error);
+    }
 }
 
-// Manejar solicitudes GET para autocompletar
 if (isset($_GET['codigo'])) {
-    $codigo = $_GET['codigo'] . "%";
-    $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo FROM cliente WHERE codigo LIKE ?";
+    // Agregar el wildcard (%) para la búsqueda
+    $codigoBusqueda = $_GET['codigo'] . '%';
+    $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo 
+            FROM cliente 
+            WHERE codigo LIKE ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $codigo);
+    $stmt->bind_param("s", $codigoBusqueda);
     $stmt->execute();
     $result = $stmt->get_result();
 
     $clientes = [];
-    while ($row = $result->fetch_assoc()) {
-        $clientes[] = $row;
+    while ($fila = $result->fetch_assoc()) {
+        $clientes[] = $fila;
     }
-    ob_end_clean(); // Limpiar el buffer
     header('Content-Type: application/json');
     echo json_encode($clientes);
-    exit;
+    exit();
 }
 
-// Manejar solicitudes POST para guardar la factura
+// ————————————————————————————————————————————————
+// 3) Bloque para manejar el POST AJAX que guarda la factura
+// ————————————————————————————————————————————————
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    ob_end_clean(); // Limpiar el buffer
+    // Leemos JSON enviado por fetch()
     $data = json_decode(file_get_contents("php://input"), true);
+    header('Content-Type: application/json');
+
     if (!$data) {
-        header('Content-Type: application/json');
         echo json_encode(["success" => false, "error" => "No se recibieron datos"]);
         exit;
     }
 
-    // Validar datos recibidos
-    if (!isset($data["codigo"], $data["tipoDoc"], $data["nombre"], $data["apellido"], $data["telefono"], $data["correo"], $data["productos"], $data["metodos_pago"], $data["total"])) {
-        header('Content-Type: application/json');
-        echo json_encode(["success" => false, "error" => "Datos incompletos"]);
-        exit;
-    }
-
-    // Asignar valores
-    $codigo = $data["codigo"];
-    $tipoDoc = $data["tipoDoc"];
-    $nombre = $data["nombre"];
-    $apellido = $data["apellido"];
-    $telefono = $data["telefono"];
-    $correo = $data["correo"];
-    $productos = $data["productos"];
-    $metodos_pago = $data["metodos_pago"];
-    $cambio = $data["cambio"];
-    $total = $data["total"];
-
-    // Verificar si el cliente existe
-    $sql = "SELECT codigo FROM cliente WHERE codigo = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $codigo);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 0) {
-        // Registrar cliente si no existe
-        $sql = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
-        $stmt->execute();
-        $cliente_id = $stmt->insert_id;
-    } else {
-        $cliente = $result->fetch_assoc();
-        $cliente_id = $cliente["codigo"];
-    }
-
-    // Registrar factura
-    $sql = "INSERT INTO factura (fechaGeneracion, Usuario_identificacion, Cliente_codigo, cambio, precioTotal) VALUES (NOW(), ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $usuario_id = $_SESSION["usuario_id"] ?? null;
-    $stmt->bind_param("ssdd", $usuario_id, $cliente_id, $cambio, $total);
-    $stmt->execute();
-    $factura_id = $stmt->insert_id;
-
-    // Registrar métodos de pago
-    foreach ($metodos_pago as $metodo) {
-        $sql = "INSERT INTO factura_metodo_pago (Factura_codigo, metodoPago, monto) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isd", $factura_id, $metodo["tipo"], $metodo["valor"]);
-        $stmt->execute();
-    }
-
-    // Registrar productos en la factura
-    foreach ($productos as $producto) {
-        $sql = "INSERT INTO producto_factura (Factura_codigo, Producto_codigo, cantidad, precioUnitario) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iiid", $factura_id, $producto["id"], $producto["cantidad"], $producto["precio"]);
-        $stmt->execute();
-
-        // Descontar stock del producto
-        $sql = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $producto["cantidad"], $producto["id"]);
-        $stmt->execute();
-    }
-
-    $min_quantity = 0;
-
-    // 1. Usar $conn en lugar de $conexion
-    $stmt = $conn->prepare("SELECT min_quantity FROM configuracion_stock ORDER BY id DESC LIMIT 1");
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            $min_quantity = (int)$row['min_quantity'];
+    // Validar campos requeridos
+    $requiredFields = ["codigo", "tipoDoc", "nombre", "apellido", "telefono", "correo", "productos", "metodos_pago", "total"];
+    foreach ($requiredFields as $f) {
+        if (!isset($data[$f])) {
+            echo json_encode(["success" => false, "error" => "Falta el campo: $f"]);
+            exit;
         }
     }
 
-    // 2. Verificar solo si hay cantidad mínima configurada
+    // 3.1) Obtener datos del vendedor (usuario logueado)
+    $sqlUsr = "SELECT nombre, apellido FROM usuario WHERE identificacion = ?";
+    $stmtUsr = $conn->prepare($sqlUsr);
+    $stmtUsr->bind_param("s", $_SESSION["usuario_id"]);
+    $stmtUsr->execute();
+    $resUsr = $stmtUsr->get_result();
+    $rowUsr = $resUsr->fetch_assoc();
+    $nameUser     = $rowUsr["nombre"];
+    $apellidoUser = $rowUsr["apellido"];
+    $stmtUsr->close();
+
+    // 3.2) Asignar valores del cliente y factura
+    $codigo     = $data["codigo"];
+    $tipoDoc    = $data["tipoDoc"];
+    $nombre     = $data["nombre"];
+    $apellido   = $data["apellido"];
+    $telefono   = $data["telefono"];
+    $correo     = $data["correo"];
+    $productos  = $data["productos"];    // arreglo de productos
+    $metodos_pago = $data["metodos_pago"]; // arreglo de métodos { tipo, valor }
+    $cambio     = $data["cambio"];
+    $total      = $data["total"];
+
+    // 3.3) Verificar si el cliente existe; si no, insertarlo
+    $sqlCl = "SELECT codigo FROM cliente WHERE codigo = ?";
+    $stmtCl = $conn->prepare($sqlCl);
+    $stmtCl->bind_param("s", $codigo);
+    $stmtCl->execute();
+    $resCl = $stmtCl->get_result();
+
+    if ($resCl->num_rows === 0) {
+        $sqlInsertCl = "INSERT INTO cliente (codigo, identificacion, nombre, apellido, telefono, correo) 
+                        VALUES (?, ?, ?, ?, ?, ?)";
+        $stmtInsertCl = $conn->prepare($sqlInsertCl);
+        $stmtInsertCl->bind_param("ssssss", $codigo, $tipoDoc, $nombre, $apellido, $telefono, $correo);
+        $stmtInsertCl->execute();
+        $cliente_id = $stmtInsertCl->insert_id;
+        $stmtInsertCl->close();
+    } else {
+        $rowCl      = $resCl->fetch_assoc();
+        $cliente_id = $rowCl["codigo"];
+    }
+    $stmtCl->close();
+
+    // 3.4) Registrar factura
+    $sqlFac = "INSERT INTO factura 
+               (fechaGeneracion, Usuario_identificacion, nombreUsuario, apellidoUsuario, Cliente_codigo, 
+                nombreCliente, apellidoCliente, telefonoCliente, identificacionCliente, cambio, precioTotal) 
+               VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmtFac = $conn->prepare($sqlFac);
+    $usuario_id = $_SESSION["usuario_id"];
+    $stmtFac->bind_param("ississssdd",
+        $usuario_id,
+        $nameUser,
+        $apellidoUser,
+        $cliente_id,
+        $nombre,
+        $apellido,
+        $telefono,
+        $codigo,
+        $cambio,
+        $total
+    );
+    $stmtFac->execute();
+    $factura_id = $stmtFac->insert_id;
+    $stmtFac->close();
+
+    // 3.5) Registrar métodos de pago
+    foreach ($metodos_pago as $m) {
+        $sqlMP = "INSERT INTO factura_metodo_pago (Factura_codigo, metodoPago, monto) VALUES (?, ?, ?)";
+        $stmtMP = $conn->prepare($sqlMP);
+        $stmtMP->bind_param("isd", $factura_id, $m["tipo"], $m["valor"]);
+        $stmtMP->execute();
+        $stmtMP->close();
+    }
+
+    // 3.6) Registrar productos en la factura y descontar stock
+    foreach ($productos as $prod) {
+        $sqlPF = "INSERT INTO producto_factura 
+                  (Factura_codigo, Producto_codigo, nombreProducto, cantidad, precioUnitario) 
+                  VALUES (?, ?, ?, ?, ?)";
+        $stmtPF = $conn->prepare($sqlPF);
+        $stmtPF->bind_param("issid",
+            $factura_id,
+            $prod["id"],
+            $prod["nombre"],
+            $prod["cantidad"],
+            $prod["precio"]
+        );
+        $stmtPF->execute();
+        $stmtPF->close();
+
+        // Descontar stock
+        $sqlUp = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
+        $stmtUp = $conn->prepare($sqlUp);
+        $stmtUp->bind_param("ii", $prod["cantidad"], $prod["id"]);
+        $stmtUp->execute();
+        $stmtUp->close();
+    }
+
+    // 3.7) Verificar notificaciones de stock bajo (opcional)
+    $min_quantity = 0;
+    $stmtConf = $conn->prepare("SELECT min_quantity FROM configuracion_stock ORDER BY id DESC LIMIT 1");
+    if ($stmtConf->execute()) {
+        $resConf = $stmtConf->get_result();
+        if ($fila = $resConf->fetch_assoc()) {
+            $min_quantity = (int) $fila['min_quantity'];
+        }
+    }
+    $stmtConf->close();
+
     if ($min_quantity > 0) {
-        $stmt = $conn->prepare("
-            SELECT codigo1, nombre, cantidad 
+        $stmtChk = $conn->prepare("
+            SELECT codigo1, nombre, cantidad, descripcion 
             FROM producto 
             WHERE cantidad < ?
         ");
-        $stmt->bind_param("i", $min_quantity);
-
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            while ($producto = $result->fetch_assoc()) {
+        $stmtChk->bind_param("i", $min_quantity);
+        if ($stmtChk->execute()) {
+            $resChk = $stmtChk->get_result();
+            while ($prodBajo = $resChk->fetch_assoc()) {
                 $mensaje = sprintf(
                     "Producto %s bajo mínimo! Stock actual: %d",
-                    $producto['nombre'],
-                    $producto['cantidad']
+                    $prodBajo['nombre'],
+                    $prodBajo['cantidad']
                 );
-
-                // 3. Manejo seguro de errores
                 try {
-                    $insert = $conn->prepare("INSERT INTO notificaciones (mensaje, fecha) VALUES (?, NOW())");
-                    $insert->bind_param("s", $mensaje);
-                    $insert->execute();
+                    $insertNotif = $conn->prepare("INSERT INTO notificaciones (mensaje, descripcion, fecha) VALUES (?, ?, NOW())");
+                    $insertNotif->bind_param("ss", $mensaje, $prodBajo['descripcion']);
+                    $insertNotif->execute();
+                    $insertNotif->close();
                 } catch (Exception $e) {
-                    error_log("Error en notificación: " . $e->getMessage());
+                    error_log("Error al insertar notificación: " . $e->getMessage());
                 }
             }
         }
+        $stmtChk->close();
     }
+
+    // 3.8) Almacenar factura_id en sesión por si lo necesitas luego
     $_SESSION['factura_id'] = $factura_id;
-    // Respuesta JSON
-    header('Content-Type: application/json');
+
+    // 3.9) BORRAR SOLO AQUÍ las variables de sesión 'productos' y 'total',
+    // porque la factura ya se registró correctamente.
+    unset($_SESSION['productos']);
+    unset($_SESSION['total']);
+
+    // 3.10) Responder JSON de éxito
     echo json_encode(["success" => true, "factura_id" => $factura_id]);
     exit;
 }
+// ————————————————————————————————————————————————
+// Si NO es POST, continuo con la parte del HTML (pantalla de pago)
+// ————————————————————————————————————————————————
 
-// Si no es una solicitud POST o GET, continuar con la generación del HTML
-ob_end_clean(); // Limpiar el buffer antes de generar HTML
-// Recuperar datos para mostrar en pago.php
-$productos = $_SESSION['productos'] ?? [];
-$total = $_SESSION['total'] ?? 0;
-// Limpiar los datos de la sesión después de usarlos
-unset($_SESSION['productos']);
-unset($_SESSION['total']);
-include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago</title>
+    <title>Pagar Factura</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
 
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../css/pago.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -202,7 +249,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
-
 <body>
     <div class="sidebar">
         <div id="menu"></div>
@@ -222,7 +268,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <input type="text" id="codigo" name="codigo" onfocus="buscarCodigo()" oninput="buscarCodigo()">
                         <div id="suggestions" class="suggestions"></div>
                     </div>
-
                     <input type="text" id="nombre" name="nombre" placeholder="Nombre">
                     <input type="text" id="apellido" name="apellido" placeholder="Apellido">
                     <input type="text" id="telefono" name="telefono" placeholder="Teléfono"
@@ -231,6 +276,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
                         title="Ingresa un correo válido (debe contener @ y un dominio)." />
                 </div>
+
                 <div class="payment-box">
                     <div class="payment-section">
                         <h2>Registrar Pago</h2>
@@ -248,7 +294,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <h3>Pagos con tarjeta</h3>
                                 <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
                             </div>
-
                             <div class="barra">
                                 <div class="tarjeta-content">
                                     <select name="tipo_tarjeta">
@@ -258,11 +303,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                     </select>
                                     <input type="text" name="voucher" placeholder="Nro. voucher">
                                     <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
-
                                 </div>
                             </div>
                         </div>
-
                         <div class="payment-box" id="otro">
                             <div class="plus-icon">
                                 <h3>Otros pagos</h3>
@@ -275,7 +318,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                         <option value="transferencia">Transferencia</option>
                                     </select>
                                     <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
-
                                 </div>
                             </div>
                         </div>
@@ -283,35 +325,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             <label for="observaciones">Observaciones:</label><br>
                             <input type="text" id="observaciones" name="observaciones" placeholder="Ingrese observaciones...">
                         </div>
-
-
                     </div>
                 </div>
+
                 <div class="summary-section">
                     <h3>Información de pago</h3>
+
+                    <?php
+                    // 4) Recuperar productos y total desde sesión (sin borrarlos)
+                    $productos = $_SESSION['productos'] ?? [];
+                    $total     = $_SESSION['total'] ?? 0;
+                    ?>
+
                     <?php if (!empty($productos)): ?>
                         <div class="summary-container">
                             <h2>Productos:</h2>
-
                             <ul>
                                 <?php foreach ($productos as $producto): ?>
                                     <li data-id="<?php echo $producto['id']; ?>">
-                                        <p><?php echo $producto['cantidad'] . " x " . $producto['nombre'] . " - <span class='precio'>$" . number_format($producto['precio'], 2) . "</span>"; ?></p>
+                                        <p>
+                                            <?php echo $producto['cantidad'] . " x " . $producto['nombre']; ?>
+                                            – 
+                                            <span class="precio">
+                                                $<?php echo number_format($producto['precio'], 2); ?>
+                                            </span>
+                                        </p>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
 
-
                             <p id="saldoPendiente">Saldo pendiente: $0.00</p>
-
                             <h2>Total a pagar:</h2>
-
                             <div class="contenedor-precio">
                                 <p>$<?php echo number_format($total, 2); ?></p>
                             </div>
-                        </div>
-                        <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
 
+                            <!-- BOTÓN “Editar” -->
+                            <button class="btn-editar" onclick="window.location.href='ventas.php'">
+                                ✏️ Editar productos
+                            </button>
+
+                            <!-- BOTÓN “Pagar” -->
+                            <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
+                        </div>
                     <?php else: ?>
                         <p>No hay productos en el resumen.</p>
                     <?php endif; ?>
@@ -319,38 +375,101 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </div>
-    </div>
 
+    <!-- 5) Scripts JavaScript -->
     <script>
         function guardarFactura() {
-            let codigo = document.getElementById("codigo").value;
-            let tipoDoc = document.getElementById("tipo_doc").value;
-            let nombre = document.getElementById("nombre").value;
+            // 5.1) Recopilar información del cliente
+            let codigo   = document.getElementById("codigo").value;
+            let tipoDoc  = document.getElementById("tipo_doc").value;
+            let nombre   = document.getElementById("nombre").value;
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
-            let correo = document.getElementById("correo").value;
-            let total = parseFloat(document.querySelector(".contenedor-precio p").textContent.replace("$", "").replace(/,/g, ""));
+            let correo   = document.getElementById("correo").value;
 
-            //Verificar si saldo pendiente es cero
-            saldoPendiente = calcularSaldoRestante();
+            // 5.2) Reconstruir arreglo de productos desde el resumen
+            let productos = [];
+            document.querySelectorAll(".summary-section ul li").forEach(li => {
+                let partes        = li.textContent.split(" x ");
+                let cantidad      = parseInt(partes[0].trim());
+                let nombreProd    = partes[1].split(" – ")[0].trim();
+                let precioString  = partes[1].split("$")[1].replace(/,/g, "");
+                let precioUn      = parseFloat(precioString);
+                let id            = li.getAttribute("data-id");
 
-            // Definimos cambio a 0 por defecto
+                productos.push({
+                    id:       id,
+                    nombre:   nombreProd,
+                    cantidad: cantidad,
+                    precio:   precioUn
+                });
+            });
+
+            // 5.3) Reconstruir métodos de pago
+            let metodos_pago = [];
+            // Efectivo
+            let valEfectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            if (valEfectivo > 0) {
+                metodos_pago.push({ tipo: "efectivo", valor: valEfectivo });
+            }
+            // Tarjetas
+            document.querySelectorAll("input[name='valor_tarjeta']").forEach(input => {
+                let val = parseFloat(input.value) || 0;
+                if (val > 0) {
+                    let tipoTarjeta = input.parentNode.querySelector("select[name='tipo_tarjeta']").value || "tarjeta";
+                    metodos_pago.push({ tipo: tipoTarjeta, valor: val });
+                }
+            });
+            // Otros
+            document.querySelectorAll("input[name='valor_otro']").forEach(input => {
+                let val = parseFloat(input.value) || 0;
+                if (val > 0) {
+                    let tipoOtro = input.parentNode.querySelector("select[name='tipo_otro']").value;
+                    if (!tipoOtro) {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+                            html: `
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                                    </div>
+                                    <p>Selecciona un tipo de pago para 'otro'.</p>
+                                </div>
+                            `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                        return;
+                    }
+                    metodos_pago.push({ tipo: tipoOtro, valor: val });
+                }
+            });
+
+            // 5.4) Cálculo de total y cambio
+            let total = parseFloat("<?php echo $total; ?>");
+            let totalPagado = metodos_pago.reduce((acc, m) => acc + m.valor, 0) + valEfectivo;
+            let saldoPendiente = total - totalPagado;
             let cambio = 0;
             if (saldoPendiente < 0) {
-                // Si saldoPendiente es negativo, el exceso de pago es Math.abs(saldoPendiente)
                 cambio = Math.abs(saldoPendiente);
             }
             if (saldoPendiente > 0) {
                 Swal.fire({
                     title: '<span class="titulo-alerta advertencia">Advertencia</span>',
                     html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                    <p>Falta ingresar valores para pagar.</p>
-                </div>
-            `,
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                            </div>
+                            <p>Falta ingresar valores para pagar.</p>
+                        </div>
+                    `,
                     background: '#ffffffdb',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#007bff',
@@ -361,173 +480,110 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     }
                 });
                 return;
+            }
 
-            } else {
+            // 5.5) Preparar body que enviaremos por fetch
+            let body = {
+                codigo:       codigo,
+                tipoDoc:      tipoDoc,
+                nombre:       nombre,
+                apellido:     apellido,
+                telefono:     telefono,
+                correo:       correo,
+                productos:    productos,
+                metodos_pago: metodos_pago,
+                total:        total,
+                cambio:       cambio
+            };
 
-
-
-
-                // Obtener productos de la factura
-                let productos = [];
-                document.querySelectorAll(".summary-section ul li").forEach(li => {
-                    let partes = li.textContent.split(" x ");
-                    let cantidad = parseInt(partes[0].trim());
-                    let nombreProducto = partes[1].split(" - $")[0].trim();
-                    let precio = parseFloat(partes[1].split("$")[1].replace(/,/g, ""));
-                    let id = li.getAttribute("data-id");
-
-                    productos.push({
-                        nombre: nombreProducto,
-                        cantidad,
-                        precio,
-                        id
-                    });
-                });
-
-                let metodos_pago = [];
-                document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                    let valor = parseFloat(input.value);
-                    if (!isNaN(valor) && valor > 0) {
-                        let tipo = input.name.replace("valor_", "");
-                        if (tipo === "otro") {
-                            // Aquí se toma el valor del select correspondiente
-                            let tipoOtro = document.querySelector("select[name='tipo_otro']").value;
-                            if (tipoOtro) {
-                                tipo = tipoOtro; // Se usa el valor seleccionado, ej. "transferencia"
-                            } else {
-                                Swal.fire({
-                                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
-                                    html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                    <p>Selecciona un tipo de pago para 'otro'.</p>
-                </div>
-            `,
-                                    background: '#ffffffdb',
-                                    confirmButtonText: 'Aceptar',
-                                    confirmButtonColor: '#007bff',
-                                    customClass: {
-                                        popup: 'swal2-border-radius',
-                                        confirmButton: 'btn-aceptar',
-                                        container: 'fondo-oscuro'
-                                    }
-                                });
-                                return;
-                            }
+            // 5.6) Enviar petición AJAX a este mismo archivo (prueba.php)
+            fetch("prueba.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                        html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
+                                </div>
+                                <p>Factura registrada correctamente con ID: <strong>${data.factura_id}</strong>.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
                         }
-                        metodos_pago.push({
-                            tipo,
-                            valor
-                        });
+                    }).then(() => {
+                        window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                    });
+                } else {
+                    Swal.fire({
+                        title: '<span class="titulo-alerta error">Error</span>',
+                        html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                </div>
+                                <p>Error al registrar factura.<br><small>${data.error || "Ocurrió un problema."}</small></p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error al registrar:", error);
+                Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/llave.png" alt="Error" class="llave">
+                            </div>
+                            <p>Error al registrar factura. Intenta de nuevo.<br><small>${error.message}</small></p>
+                        </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
                     }
                 });
-
-
-                fetch("prueba.php", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            codigo,
-                            tipoDoc,
-                            nombre,
-                            apellido,
-                            telefono,
-                            correo,
-                            total,
-                            productos,
-                            cambio,
-                            metodos_pago
-                        })
-                    })
-                    .then(response => response.json()) // Parsear la respuesta como JSON
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-                                html: `
-                <div class=\"custom-alert\">
-                    <div class=\"contenedor-imagen\">
-                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                    </div>
-                    <p>Factura registrada correctamente con ID: <strong>${data.factura_id}</strong>.</p>
-                </div>
-            `,
-                                background: '#ffffffdb',
-                                confirmButtonText: 'Aceptar',
-                                confirmButtonColor: '#007bff',
-                                customClass: {
-                                    popup: 'swal2-border-radius',
-                                    confirmButton: 'btn-aceptar',
-                                    container: 'fondo-oscuro'
-                                }
-                            }).then(() => {
-                                window.location.href = "recibo.php?factura_id=" + data.factura_id;
-                            });
-                        } else {
-                            Swal.fire({
-                                title: '<span class="titulo-alerta error">Error</span>',
-                                html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al registrar factura.<br><small>${data.error || "Ocurrió un problema."}</small></p>
-                </div>
-            `,
-                                background: '#ffffffdb',
-                                confirmButtonText: 'Aceptar',
-                                confirmButtonColor: '#007bff',
-                                customClass: {
-                                    popup: 'swal2-border-radius',
-                                    confirmButton: 'btn-aceptar',
-                                    container: 'fondo-oscuro'
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error al registrar:", error);
-                        Swal.fire({
-                            title: '<span class="titulo-alerta error">Error</span>',
-                            html: `
-            <div class="custom-alert">
-                <div class="contenedor-imagen">
-                    <img src="../imagenes/llave.png" alt="Error" class="llave">
-                </div>
-                <p>Error al registrar factura. Intenta de nuevo.<br><small>${error.message}</small></p>
-            </div>
-        `,
-                            background: '#ffffffdb',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#007bff',
-                            customClass: {
-                                popup: 'swal2-border-radius',
-                                confirmButton: 'btn-aceptar',
-                                container: 'fondo-oscuro'
-                            }
-                        });
-                    });
-
-            }
+            });
         }
 
-
         function actualizarSaldoPendiente() {
-            let total = <?php echo $total; ?>; // Total desde PHP
+            let total = <?php echo $total; ?>; 
             let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
             let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
             let otros = document.querySelectorAll("input[name='valor_otro']");
 
             let totalPagado = efectivo;
-
             tarjetas.forEach(input => {
                 totalPagado += parseFloat(input.value) || 0;
             });
-
             otros.forEach(input => {
                 totalPagado += parseFloat(input.value) || 0;
             });
@@ -540,13 +596,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
             let clone = tarjeta.cloneNode(true);
 
-            // Crear contenedor del icono
-            let contenedorIcono = document.createElement("div");
-            contenedorIcono.style.display = "flex";
-            contenedorIcono.style.alignItems = "center";
-            contenedorIcono.style.justifyContent = "center";
-            contenedorIcono.style.marginLeft = "10px";
-
             let eliminar = document.createElement("i");
             eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
             eliminar.alt = "Eliminar";
@@ -556,8 +605,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             };
 
             clone.appendChild(eliminar);
-            clone.appendChild(contenedorIcono);
-
             tarjeta.insertAdjacentElement("afterend", clone);
         }
 
@@ -565,7 +612,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             let otro = document.querySelector("#otro .otro-content");
             let clone = otro.cloneNode(true);
 
-            // Crear botón de eliminar con el mismo estilo que tarjeta
             let eliminar = document.createElement("i");
             eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
             eliminar.alt = "Eliminar";
@@ -578,31 +624,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             otro.insertAdjacentElement("afterend", clone);
         }
 
-
-        function EliminarTarjeta() {
-            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
-            tarjeta.remove();
-        }
-
-        function EliminarOtroPago() {
-            let otro = document.querySelector("#otro .otro-content");
-            otro.remove();
-        }
-
         function llenarValor(tipoPago, valor) {
             let input = document.querySelector(`input[name='valor_${tipoPago}']`);
             input.value = valor;
-            input.dispatchEvent(new Event("input", {
-                bubbles: true
-            })); // Para disparar el evento
+            input.dispatchEvent(new Event("input", { bubbles: true }));
         }
 
-
         function buscarCodigo() {
-            let input = document.getElementById("codigo").value;
+            let inputVal = document.getElementById("codigo").value;
             let suggestionsBox = document.getElementById("suggestions");
-
-            fetch(`?codigo=${input}`)
+            fetch(`?codigo=${inputVal}`)
                 .then(response => response.json())
                 .then(data => {
                     suggestionsBox.innerHTML = "";
@@ -618,7 +649,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         suggestionsBox.style.display = "none";
                     }
                 })
-                .catch(error => console.error("Error al obtener datos:", error));
+                .catch(err => console.error("Error al obtener datos:", err));
         }
 
         function seleccionarCodigo(user) {
@@ -631,31 +662,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             document.getElementById("correo").value = user.correo;
         }
 
-        //Deshabilitar solo si el valor total de los productos se completo
-
         document.addEventListener("DOMContentLoaded", function() {
             function actualizarEstadoInputs() {
                 let totalPagar = <?php echo $total; ?>;
                 let sumaPagos = 0;
 
-                // Obtener valores de pago ingresados
                 let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
                 let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
                 let otros = document.querySelectorAll("input[name='valor_otro']");
 
                 sumaPagos += efectivo;
+                tarjetas.forEach(input => { sumaPagos += parseFloat(input.value) || 0; });
+                otros.forEach(input => { sumaPagos += parseFloat(input.value) || 0; });
 
-                tarjetas.forEach(input => {
-                    let valor = parseFloat(input.value) || 0;
-                    sumaPagos += valor;
-                });
-
-                otros.forEach(input => {
-                    let valor = parseFloat(input.value) || 0;
-                    sumaPagos += valor;
-                });
-
-                // Si la suma de los pagos es igual al total, deshabilitar los inputs vacíos
                 if (sumaPagos >= totalPagar) {
                     document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
                         if (input.value.trim() === "") {
@@ -663,64 +682,43 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         }
                     });
                 } else {
-                    // Si la suma aún no llega al total, habilitar todos los inputs
                     document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
                         input.disabled = false;
                     });
                 }
             }
 
-            // Agregar eventos para verificar en tiempo real
             document.addEventListener("input", actualizarEstadoInputs);
             document.addEventListener("change", actualizarEstadoInputs);
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-            actualizarSaldoPendiente(); // Asegúrate de que esta función se ejecuta al cargar la página.
+            actualizarSaldoPendiente();
 
-            // Seleccionar solo los inputs con name específico
+            // Si el usuario hace clic en un input vacío, autocompletar con saldo restante
             document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
                 input.addEventListener("click", function() {
-                    if (this.value.trim() === "") { // Si el input está vacío
-                        let saldoRestante = calcularSaldoRestante(); // Calcula el saldo restante
-                        this.value = saldoRestante; // Autocompleta en los inputs específicos
-
-                        // Disparar manualmente el evento 'input' para que cualquier otra lógica lo detecte
-                        this.dispatchEvent(new Event("input", {
-                            bubbles: true
-                        }));
+                    if (this.value.trim() === "") {
+                        let saldoRestante = <?php echo $total; ?> - (
+                            (parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0) +
+                            Array.from(document.querySelectorAll("input[name='valor_tarjeta']")).reduce((a,b)=>a+(parseFloat(b.value)||0),0) +
+                            Array.from(document.querySelectorAll("input[name='valor_otro']")).reduce((a,b)=>a+(parseFloat(b.value)||0),0)
+                        );
+                        this.value = saldoRestante;
+                        this.dispatchEvent(new Event("input", { bubbles: true }));
                     }
                 });
             });
         });
-
-
-        function calcularSaldoRestante() {
-            let total = <?php echo $total; ?>; // Total desde PHP
-            let sumaInputs = 0;
-
-            document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                let valor = parseFloat(input.value) || 0; // Convierte a número o usa 0 si está vacío
-                sumaInputs += valor;
-            });
-
-            return total - sumaInputs; // Retorna el saldo restante
-        }
-
-
-        document.addEventListener("DOMContentLoaded", actualizarSaldoPendiente);
     </script>
+
     <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
         <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $conexionUsr = new mysqli('localhost', 'root', '', 'inventariomotoracer');
         $id_usuario = $_SESSION['usuario_id'];
         $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario = $conexionUsr->prepare($sqlUsuario);
         $stmtUsuario->bind_param("i", $id_usuario);
         $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
+        $resUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resUsuario->fetch_assoc();
         $nombreUsuario = $rowUsuario['nombre'];
         $apellidoUsuario = $rowUsuario['apellido'];
         $rol = $rowUsuario['rol'];
@@ -729,15 +727,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         ?>
         <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
         <p class="rol">Rol: <?php echo $rol; ?></p>
-
     </div>
     <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
+        <?php if (!empty($foto)): ?>
             <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
         <?php else: ?>
             <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
         <?php endif; ?>
     </div>
 </body>
-
 </html>

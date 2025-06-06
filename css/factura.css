@@ -18,18 +18,18 @@
 
 .titulo {
     font-family: "Metal Mania", system-ui;
-    font-size: 50px;
-    margin-top: 20px;
+    font-size: 85px;
+    margin-bottom: -7px;
+    margin-top: 0px;
     color: white;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 50%;
+    margin-left: 41%;
     letter-spacing: 5px;
 }
 
 ul.breadcrumb {
     list-style: none;
     border-radius: 5px;
-    margin: 0px 0px 0px 55px;
     display: flex;
     gap: 10px;
 }
@@ -184,7 +184,6 @@ body::before {
 }
 
 .search-bar {
-
     top: 9px;
     right: 141px;
     z-index: 1000;
@@ -193,6 +192,7 @@ body::before {
     transition: width 1s ease;
     width: 90px;
     overflow: hidden;
+    height: 80px;
 }
 
 .search-bar:hover {
@@ -722,9 +722,7 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 /* MÓVILES */
 /* Horizontal */
-@media screen and (max-width: 870px) and (orientation: landscape) {
-    
-}
+@media screen and (max-width: 870px) and (orientation: landscape) {}
 
 /* Vertical */
 @media screen and (max-width: 767px) and (orientation: portrait) {}
@@ -739,132 +737,162 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 .bxs-plus-square:before {
     font-size: 39px;
-    color:green;
+    color: green;
 }
 
-.bxs-minus-square:before{
+.bxs-minus-square:before {
 
     font-size: 39px;
-    color:red;
+    color: red;
 }
+
 .card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #fff;
-  width: 150px;
-  border-radius: 10px;
-  margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fff;
+    width: 150px;
+    border-radius: 10px;
+    margin: 10px;
 }
 
 .iconos {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: auto; /* empuja los botones al final */
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: auto;
+    /* empuja los botones al final */
 }
 
-.btn-sumar, .btn-restar {
-  width: 30px;
-  height: 30px;
-  font-size: 20px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
+.btn-sumar,
+.btn-restar {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
 }
 
 .btn-sumar {
-  background-color: green;
+    background-color: green;
 }
 
 .btn-restar {
-  background-color: red;
+    background-color: red;
 }
 
-#btnRight{
-    position: absolute;
+#btnRight {
     right: 9px;
     top: 50%;
-    transform: translateY(-50%);
     z-index: 10;
     display: none;
     background: none;
     border: none;
 
 }
-#btnLeft{
+
+#btnLeft {
     position: absolute;
-    left: 9px;
     top: 50%;
     transform: translateY(-50%);
     z-index: 10;
     display: none;
     background: none;
     border: none;
-
+    background-color: white;
+    height: 90%;
+    width: 5%;
 }
-#icono-flecha-izquierda {
-  width: 42px;
-  height: auto;
-  cursor: pointer;
 
+#icono-flecha-izquierda {
+    width: 42px;
+    height: auto;
+    cursor: pointer;
+    margin-left: 14px;
 }
 
 #icono-flecha-derecha {
-  width: 42px;
-  height: auto;
-  color: #000;
-  cursor: pointer;
+    width: 42px;
+    height: auto;
+    color: #000;
+    cursor: pointer;
 }
+
 #icono-flecha-izquierda:hover {
-  filter: brightness(0) saturate(100%) invert(26%) sepia(99%) saturate(7500%) hue-rotate(208deg) brightness(105%) contrast(105%);
+    filter: brightness(0) saturate(100%) invert(26%) sepia(99%) saturate(7500%) hue-rotate(208deg) brightness(105%) contrast(105%);
 }
 
 #icono-flecha-derecha:hover {
-  filter: brightness(0) saturate(100%) invert(26%) sepia(99%) saturate(7500%) hue-rotate(208deg) brightness(105%) contrast(105%);
+    filter: brightness(0) saturate(100%) invert(26%) sepia(99%) saturate(7500%) hue-rotate(208deg) brightness(105%) contrast(105%);
 }
+
 .breadcrumb .brand {
-  display: inline-block;
-  padding: 8px 12px;
-  text-decoration: none;
-  color: black; /* o el color que estés usando */
-  transition: opacity 0.3s ease;
+    display: inline-block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+    /* o el color que estés usando */
+    transition: opacity 0.3s ease;
 }
 
 .breadcrumb .brand:hover {
-  background-color: #66666668;
-  border-radius: 5px;
-  height: 40px;
-  align-items: center;
+    background-color: #66666668;
+    border-radius: 5px;
+    height: 40px;
+    align-items: center;
 }
+
 .breadcrumb .brand {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  margin: 4px;
-  min-width: 100px; /* opcional */
-  height: 40px;
-  text-decoration: none;
-  color: black; /* mantiene el texto negro */
-  font-weight: 500;
-  background-color: transparent;
-  border-radius: 10px;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    margin: 4px;
+    min-width: 100px;
+    /* opcional */
+    height: 40px;
+    text-decoration: none;
+    color: black;
+    /* mantiene el texto negro */
+    font-weight: 500;
+    background-color: transparent;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
 .breadcrumb .brand:hover {
-  color: black; /* evita que cambie el color del texto al hacer hover */
+    color: black;
+    /* evita que cambie el color del texto al hacer hover */
 }
 
 .breadcrumb .brand.activo {
-  background-color: #000000;
-  font-weight: 500;
-  color: black; /* asegura que la activa también se vea bien */
-}
-.barraModulos{
-    background-color:rgb(255, 255, 255);
+    background-color: #000000;
+    font-weight: 500;
+    color: black;
+    /* asegura que la activa también se vea bien */
 }
 
+.barraModulos {
+    background-color: rgb(255, 255, 255);
+}
 
+#categoriaScroll {
+    max-width: 1250px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    display: flex;
+
+    /* Oculta scrollbar para WebKit (Chrome, Edge, Safari) */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 10+ */
+}
+
+#categoriaScroll::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}

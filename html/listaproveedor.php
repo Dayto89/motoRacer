@@ -567,7 +567,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       const modal = document.getElementById("nuevoModal");
       const openBtn = document.getElementById("btnAbrirModal");
       const cancelBtn = document.getElementById("btnCancelar");
-
+      
       if (openBtn && modal && cancelBtn) {
         // Asegúrate de que el modal tenga class="modal hide" inicialmente
         openBtn.addEventListener("click", () => {
@@ -586,6 +586,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
       }
     });
+      document.addEventListener('click', function(event) {
+    const filterDropdown = document.querySelector('.filter-dropdown');
+
+    if (
+      filterDropdown.hasAttribute('open') &&
+      !filterDropdown.contains(event.target)
+    ) {
+      filterDropdown.removeAttribute('open');
+    }
+  });
     document.addEventListener('DOMContentLoaded', function() {
       // Seleccionamos todos los botones de edición
       const editButtons = document.querySelectorAll('.edit-button');

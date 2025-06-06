@@ -6,7 +6,7 @@
 
 body {
   font-family: "Metal Mania", system-ui;
-  background-image: url('fondoMotoRacer.png');
+  background-image: url("fondoMotoRacer.png");
   background-size: cover;
   background-position: center;
 }
@@ -15,12 +15,11 @@ body::before {
   position: fixed;
   width: 200%;
   height: 200%;
-  z-index: -1;  
+  z-index: -1;
   background: black;
   opacity: 0.6;
 }
-… 
-.main-content {
+… .main-content {
   padding: 20px;
 
   height: 100vh;
@@ -32,7 +31,6 @@ body::before {
   margin-bottom: 20px;
 }
 
-
 .main-content h1 {
   color: white;
   text-align: center;
@@ -40,11 +38,8 @@ body::before {
   margin-bottom: 20px;
   font-family: "Metal Mania", system-ui;
   font-size: 70px;
-  text-shadow: 
-      7px -1px 0 #1c51a0,  
-      1px -1px 0 #1c51a0,  
-      -1px 1px 0 #1c51a0,  
-      3px 5px 0 #1c51a0;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
 }
 
 .form-section {
@@ -59,7 +54,8 @@ table {
   font-family: Arial;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #666;
   padding: 10px;
   text-align: left;
@@ -102,11 +98,8 @@ input[type="checkbox"] {
 #inventario {
   font-family: Arial, Helvetica, sans-serif;
   color: #ffffff;
-  text-shadow: 
-      -1px -1px 0 #000,  
-      1px -1px 0 #000,  
-      -1px 1px 0 #000,  
-      3px 3px 0 #000;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
 }
 
 /* Ajustes para el título */
@@ -117,12 +110,8 @@ input[type="checkbox"] {
   margin-bottom: 20px;
   font-family: "Metal Mania", system-ui;
   font-size: 70px;
-  text-shadow: 
-      7px -1px 0 #1c51a0,  
-      1px -1px 0 #1c51a0,  
-      -1px 1px 0 #1c51a0,  
-      3px 5px 0 #1c51a0;
-      
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
 }
 
 /* Ajustes para el filter-bar */
@@ -146,7 +135,7 @@ input[type="checkbox"] {
 
 .filter-button {
   padding: 8px 16px;
-  background-color: #1aa906;
+  background-color: #0f6103;
   color: white;
   border: none;
   cursor: pointer;
@@ -156,7 +145,7 @@ input[type="checkbox"] {
 }
 
 .filter-button:hover {
-  background-color: #155e33;
+  background-color: #0d3f06;
 }
 
 .filter-options {
@@ -170,6 +159,7 @@ input[type="checkbox"] {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
 }
+
 .search-form {
   display: flex;
   align-items: center;
@@ -187,8 +177,7 @@ input.form-control {
 }
 
 .search-button {
-
-  background-color: #007BFF;
+  background-color: #007bff;
   font-weight: bold;
   color: white;
   border: none;
@@ -218,7 +207,7 @@ input.form-control {
   font-size: 14px;
 }
 
-.icon-button label:hover{
+.icon-button label:hover {
   cursor: pointer;
 }
 
@@ -242,22 +231,99 @@ input.form-control {
   gap: 5px; /* Espacio entre el checkbox y el texto */
 }
 
-
-
 /* Estilos básicos para el modal */
 .modal {
-  display: none;
   position: fixed;
-  z-index: 1000;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: rgb(0 0 0 / 78%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 90%;
+}
+.modal.show {
+  display: flex;
+}
+.modal.hidden {
+  display: none;
 }
 
+#exportar-boton {
+  background-color: #0f6103;
+}
+#exportar-boton:hover {
+  background-color: #0d3f06;
+}
 
+/* MODAL DE NUEVO PROVEEDOR --------------------------------------------------------------------------------------------------------*/
+.form-grid label,
+#editForm label {
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+  text-align: left; /* Alinea el texto a la izquierda */
+  padding-right: 10px; /* Añade espacio a la derecha */
+  margin-bottom: 5px; /* Ajusta el margen inferior */
+}
 
+/*MODAL DE NUEVO PROVEEDOR-----------------------------------------------------------------------------*/
+.modal-content-nuevo {
+  width: 35%;
+  text-align: center;
+  background-color: rgb(174 174 174 / 61%);
+  padding: 23px;
+  border-radius: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 9%;
+  margin-left: 35%;
+  height: 54%;
+}
+.modal-content h2,
+.modal-content-nuevo h2 {
+  font-size: 38px;
+  margin-top: -4%;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 16px;
+}
+.campo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 101%;
+  padding: 10px;
+  margin-bottom: 1.5px;
+}
+
+.campo label {
+  margin-bottom: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+}
+
+/*MODAL DE EDITAR --------------------------------------------------------------*/
+.modal-boton {
+  margin-left: 19%;
+  margin-top: 4%;
+}
 .close {
   position: absolute;
   right: 31%;
@@ -289,162 +355,11 @@ form#editForm {
   row-gap: 10px; /* Ajusta el espacio entre filas */
   align-items: center; /* Alinea los elementos verticalmente */
 }
-/* MODAL DE NUEVO PROVEEDOR */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Ajusta según el número de columnas necesarias */
-    row-gap: 19px; /* Espacio entre filas */
-    column-gap: 10px; /* Ajusta el espacio entre columnas según lo necesites */
-    margin-left: 32px;
-    margin-top: 27px;
-    padding: 10px;
-}
-@media (max-width: 768px) {
-    .form-grid {
-        grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-}
-.button-container {
-    grid-column: 1 / -1; /* Hace que el contenedor de botones ocupe todo el ancho de la fila */
-    display: flex; /* Coloca los botones en una fila */
-    justify-content: flex-start; /* Alinea los botones al inicio, puedes cambiarlo a 'center' o 'flex-end' según prefieras */
-    gap: 10px; /* Ajusta el espacio entre botones */
-}
-.boton {
-    display: flex; /* Coloca los botones en una fila */
-    justify-content: center; /* Alinea los botones al centro */
-    gap: 10px; /* Ajusta el espacio entre botones */
-}
-/* Botones del modal */
-.modal-buttons {
-  display: flex;
-  gap: 34px;
-  justify-content: center;
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-#btnCancelar {
-  background-color: #df2f2f;
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-#btnCancelar:hover {
-  background-color: #a71d2a;
-}
-
-button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-#exportar-boton{
-  background-color: #0f6103;
-}
-#exportar-boton:hover{
-  background-color: #0d3f06;
-}
-
-.form-grid label,
-#editForm  label {
-  color: white;
-  font-size: 19px;
-  font-family: Arial, Helvetica, sans-serif;
-  text-shadow: 2px 0 #1c51a0;
-  white-space: nowrap;
-  text-align: left; /* Alinea el texto a la izquierda */
-  padding-right: 10px; /* Añade espacio a la derecha */
-  margin-bottom: 5px; /* Ajusta el margen inferior */
-}
-
-/*-----------------------------------------------------------------------------*/
-
-form input[type="text"], #editForm select {
-    background-color: #ffffff;
-    border-radius: 23px;
-    height: 35px;
-    width: calc(100% - 34px);
-    color: #000;
-    padding: 4px 17px;
-    border: none;
-    font-size: 14px;
-    margin-bottom: 13px;
-}
-.modal-content {
-  width: 35%;
-  text-align: center;
-  background-color: rgb(174 174 174 / 46%);
-  padding: 23px;
-  border-radius: 18px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 7%;
-  margin-left: 35%;
-}
-.modal-content-nuevo {
-    width: 35%;
-    text-align: center;
-    background-color: rgb(174 174 174 / 61%);
-    padding: 23px;
-    border-radius: 18px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 9%;
-    margin-left: 35%;
-    height: 54%;
-}
-.modal-content h2, .modal-content-nuevo h2 {
-  font-size: 38px;
-  margin-top: -4%;
-  color: white;
-  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
-  margin-left: 13px;
-  letter-spacing: 5px;
-  padding: 16px;
-}
-.campo {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 101%;
-  padding: 10px;
-  margin-bottom: 1.5px;
-}
-
-.campo label {
-  margin-bottom: 5px;
-  color: white;
-  font-size: 19px;
-  font-family: Arial, Helvetica, sans-serif;
-  text-shadow: 2px 0 #1c51a0;
-  white-space: nowrap;
-}
-
-
-.modal-boton {
-  margin-left: 19%;
-  margin-top: 4%;
-}
-
 #modal-boton {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #007BFF;
+  background-color: #007bff;
   font-weight: bold;
   color: white;
   border: none;
@@ -464,12 +379,11 @@ form input[type="text"], #editForm select {
   background-color: #0056b3;
 }
 
-
 /* Barra lateral (Menú) */
 .sidebar {
   width: 100px;
   height: 100vh;
-  background: linear-gradient(180deg, #1167CC, #083972, #000000);
+  background: linear-gradient(180deg, #1167cc, #083972, #000000);
   transition: width 0.3s ease;
   overflow: hidden;
   position: fixed;
@@ -506,6 +420,7 @@ form input[type="text"], #editForm select {
   width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
   max-width: 100%; /* Evita que se desborde */
   table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
+  margin-left: 214px;
 }
 
 .main-content table th,
@@ -519,47 +434,45 @@ form input[type="text"], #editForm select {
   table-layout: fixed; /* Fija el ancho de las columnas según lo especificado */
 }
 
-.main-content table th:nth-child(1), 
-.main-content table td:nth-child(1) { 
-  width: 10%; 
-}
-
-.main-content table th:nth-child(2), 
-.main-content table td:nth-child(2) { 
+.main-content table th:nth-child(1),
+.main-content table td:nth-child(1) {
   width: 10%;
 }
 
-.main-content table th:nth-child(3), 
-.main-content table td:nth-child(3) { 
-  width: 10%; 
-}
-
-.main-content table th:nth-child(4), 
-.main-content table td:nth-child(4) { 
-  width: 20%; 
-}
-
-.main-content table th:nth-child(5), 
-.main-content table td:nth-child(5) { 
-  width: 25%; 
-}
-
-.main-content table th:nth-child(6), 
-.main-content table td:nth-child(6) { 
+.main-content table th:nth-child(2),
+.main-content table td:nth-child(2) {
   width: 10%;
 }
 
-.main-content table th:nth-child(7), 
-.main-content table td:nth-child(7) { 
+.main-content table th:nth-child(3),
+.main-content table td:nth-child(3) {
   width: 10%;
 }
 
-.main-content table th:nth-child(8), 
-.main-content table td:nth-child(8) { 
+.main-content table th:nth-child(4),
+.main-content table td:nth-child(4) {
+  width: 20%;
+}
+
+.main-content table th:nth-child(5),
+.main-content table td:nth-child(5) {
+  width: 25%;
+}
+
+.main-content table th:nth-child(6),
+.main-content table td:nth-child(6) {
+  width: 10%;
+}
+
+.main-content table th:nth-child(7),
+.main-content table td:nth-child(7) {
+  width: 10%;
+}
+
+.main-content table th:nth-child(8),
+.main-content table td:nth-child(8) {
   width: 0%;
 }
-
-
 
 .edit-button,
 .delete-button {
@@ -575,7 +488,7 @@ form input[type="text"], #editForm select {
 .edit-button i,
 .delete-button i {
   font-size: 20px; /* Tamaño del ícono */
-  color: #ffffff;  /* Color del ícono */
+  color: #ffffff; /* Color del ícono */
   border: 2px solid transparent; /* Inicialmente sin borde */
   padding: 5px; /* Espacio interno */
   border-radius: 50%; /* Hace el borde circular */
@@ -583,18 +496,18 @@ form input[type="text"], #editForm select {
 }
 
 .edit-button i:hover {
-  color: #ffffff;  /* Mantiene el color del ícono */
+  color: #ffffff; /* Mantiene el color del ícono */
   background-color: #0c68a5; /* Fondo azul al hacer hover */
   border: 2px solid #ffffff; /* Borde blanco */
 }
 
 .delete-button i:hover {
-  color: #ffffff;  /* Mantiene el color del ícono */
+  color: #ffffff; /* Mantiene el color del ícono */
   background-color: #d11212; /* Fondo rojo al hacer hover */
   border: 2px solid #ffffff; /* Borde blanco */
 }
 
-#delete-selected{
+#delete-selected {
   background: none;
   border: none;
   padding: 0;
@@ -605,20 +518,19 @@ form input[type="text"], #editForm select {
 }
 #delete-selected i {
   font-size: 20px; /* Tamaño del ícono */
-  color: #ffffff;  /* Color del ícono */
+  color: #ffffff; /* Color del ícono */
   border: 2px solid transparent; /* Inicialmente sin borde */
   padding: 5px; /* Espacio interno */
   border-radius: 50%; /* Hace el borde circular */
   transition: all 0.3s ease-in-out; /* Animación suave */
 }
 #delete-selected i:hover {
-  color: #ffffff;  /* Mantiene el color del ícono */
+  color: #ffffff; /* Mantiene el color del ícono */
   background-color: #d11212; /* Fondo rojo al hacer hover */
   border: 2px solid #ffffff; /* Borde blanco */
 }
 
-/*Alertas*/
-
+/*Alertas -----------------------------------------------------------------------------*/
 
 /* Estilos generales de los párrafos */
 p {
@@ -628,16 +540,13 @@ p {
   padding: 10px;
 }
 
-
-
 /* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center>.swal2-popup {
+div:where(.swal2-container).swal2-center > .swal2-popup {
   width: 28%;
   /* Se ajusta automáticamente */
   max-width: 350px;
   /* Define un límite de ancho */
 }
-
 
 /* Imágenes dentro del modal */
 .custom-alert .moto,
@@ -647,51 +556,50 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   height: 130px;
 }
 
-
 /* Contenedor de la imagen */
 .contenedor-imagen {
   position: relative;
   display: inline-block;
 }
 
-
-
 .titulo-alerta {
   font-size: 28px;
   font-weight: bold;
   display: block;
   margin-bottom: 10px;
-  font-family: 'Arial Black', sans-serif;
+  font-family: "Arial Black", sans-serif;
   letter-spacing: 1px;
 }
 
 .titulo-alerta.confirmacion {
-  font-family: 'Metal Mania', system-ui;
+  font-family: "Metal Mania", system-ui;
   font-size: 1.01em;
   letter-spacing: 3px;
   color: #9b9496;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
   margin: auto;
 }
 
 .titulo-alerta.error {
-  font-family: 'Metal Mania', system-ui;
+  font-family: "Metal Mania", system-ui;
   font-size: 1.01em;
   letter-spacing: 3px;
   color: #af3b3b;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
   margin: auto;
 }
 
 .titulo-alerta.advertencia {
-  font-family: 'Metal Mania', system-ui;
+  font-family: "Metal Mania", system-ui;
   font-size: 1.01em;
   letter-spacing: 3px;
   color: #e09804;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
   margin: auto;
 }
-
 
 .btn-aceptar {
   background-color: #007bff !important;
@@ -705,8 +613,6 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   border-radius: 5px !important;
 }
 
-
-
 .fondo-oscuro {
   background-color: rgba(0, 0, 0, 0.7) !important;
   /* Fondo oscuro */
@@ -717,9 +623,10 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 .swal2-popup {
   border-radius: 20px;
 }
+/*------------------------------------------------------------------*/
 
-.btn-nuevo-proveedor{
-  background-color: #007BFF;
+.btn-nuevo-proveedor {
+  background-color: #007bff;
   font-weight: bold;
   color: white;
   border: none;
@@ -729,35 +636,30 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   border-radius: 9px;
 }
 
-.btn-nuevo-proveedor:hover{
+.btn-nuevo-proveedor:hover {
   background-color: #0056b3;
 }
-
-
-
-
 
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
-
   /* Contenedor general (sin scroll por defecto) */
-.table-wrapper {
-  overflow-x: auto;        /* Scroll horizontal siempre que la tabla desborde */
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-  overflow: visible;
-}
+  .table-wrapper {
+    overflow-x: auto; /* Scroll horizontal siempre que la tabla desborde */
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+    overflow: visible;
+  }
 
-.table-wrapper table {
-  width: 100%;             /* Que la tabla mida lo que necesite */
-  min-width: 100%;        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
-  table-layout: auto;      /* Que las columnas tomen el ancho de su contenido */
-}
+  .table-wrapper table {
+    width: 100%; /* Que la tabla mida lo que necesite */
+    min-width: 100%; /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+    table-layout: auto; /* Que las columnas tomen el ancho de su contenido */
+  }
 
-.table-wrapper th,
-.table-wrapper td {
-  white-space: nowrap;     /* Evita que el texto salte líneas */
-}
+  .table-wrapper th,
+  .table-wrapper td {
+    white-space: nowrap; /* Evita que el texto salte líneas */
+  }
 
   .main-content {
     margin-left: 0%;
@@ -772,36 +674,34 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   table {
     margin-left: 0%;
   }
-
 }
 
 /* Vertical */
 @media screen and (max-width: 870px) and (orientation: portrait) {
-
   /* Contenedor general (sin scroll por defecto) */
-.table-wrapper {
-  overflow-x: auto;        /* Scroll horizontal siempre que la tabla desborde */
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-  overflow: visible;
-}
+  .table-wrapper {
+    overflow-x: auto; /* Scroll horizontal siempre que la tabla desborde */
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+    overflow: visible;
+  }
 
-.table-wrapper table {
-  width: 100%;             /* Que la tabla mida lo que necesite */
-  min-width: 100%;        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
-  table-layout: auto;      /* Que las columnas tomen el ancho de su contenido */
-}
+  .table-wrapper table {
+    width: 100%; /* Que la tabla mida lo que necesite */
+    min-width: 100%; /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+    table-layout: auto; /* Que las columnas tomen el ancho de su contenido */
+  }
 
-.table-wrapper th,
-.table-wrapper td {
-  white-space: nowrap;     /* Evita que el texto salte líneas */
-}
+  .table-wrapper th,
+  .table-wrapper td {
+    white-space: nowrap; /* Evita que el texto salte líneas */
+  }
 
-    .main-content {
+  .main-content {
     margin-left: 15%;
     padding: 50px 0px 0px 15px;
   }
 
-    .sidebar:hover ~ .main-content {
+  .sidebar:hover ~ .main-content {
     margin-left: 15%;
     transition: none;
     margin-right: 0px;
@@ -815,19 +715,19 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     overflow-x: auto;
   }
   .table-wrapper table {
-    min-width: 500px;  /* o el ancho necesario para mostrar TODAS las columnas sin romper */
+    min-width: 500px; /* o el ancho necesario para mostrar TODAS las columnas sin romper */
   }
 
-    .filter-bar {
+  .filter-bar {
     flex-direction: column;
-    align-items: stretch;   /* para que ocupen todo el ancho disponible */
-    gap: 8px;               /* espacio entre filas */
+    align-items: stretch; /* para que ocupen todo el ancho disponible */
+    gap: 8px; /* espacio entre filas */
     padding: 10px 5%;
   }
 
   .filter-bar > * {
-    width: 100%;            /* cada elemento ocupa ancho completo */
-    text-align: center;     /* opcional: centrar texto/botones */
+    width: 100%; /* cada elemento ocupa ancho completo */
+    text-align: center; /* opcional: centrar texto/botones */
   }
 
   /* Ajustes específicos si quieres distancias distintas */
@@ -842,25 +742,20 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
   .export-button {
     width: 100%;
-   
   }
 
   .icon-button {
     width: 100%;
     justify-content: center;
-     background-color: #155e33;
+    background-color: #155e33;
   }
-
 }
-
 
 /* TABLETS */
 /* Horizontal */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
-
 }
 
 /* Vertical */
 @media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
-
 }

@@ -51,7 +51,7 @@ $fila_total = mysqli_fetch_assoc($result_total);
 $total_resultados = $fila_total['total'];
 
 // Paginación
-$por_pagina = 12;
+$por_pagina = 10;
 $total_paginas = ceil($total_resultados / $por_pagina);
 
 $pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
@@ -59,7 +59,7 @@ $pagina_actual = max(1, min($total_paginas, $pagina_actual));
 $offset = ($pagina_actual - 1) * $por_pagina;
 
 // Consultar notificaciones
-$consulta = "SELECT id, mensaje, fecha, leida FROM notificaciones WHERE mensaje LIKE ? ORDER BY fecha DESC LIMIT ? OFFSET ?";
+$consulta = "SELECT id, mensaje, descripcion, fecha, leida FROM notificaciones WHERE mensaje LIKE ? ORDER BY fecha DESC LIMIT ? OFFSET ?";
 $stmt = mysqli_prepare($conexion, $consulta);
 mysqli_stmt_bind_param($stmt, "sii", $busqueda_param, $por_pagina, $offset);
 mysqli_stmt_execute($stmt);
@@ -188,6 +188,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <thead>
           <tr>
             <th>Mensaje</th>
+            <th>Descripción</th>
             <th>Fecha</th>
             <th>Estado</th>
             <th>Acción</th>
@@ -197,6 +198,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
             <tr>
               <td><?= htmlspecialchars($fila["mensaje"]) ?></td>
+              <td><?= htmlspecialchars($fila["descripcion"]) ?></td>
               <td><?= htmlspecialchars($fila["fecha"]) ?></td>
               <td><?= $fila["leida"] ? "Leída" : "No leída"; ?></td>
               <td>

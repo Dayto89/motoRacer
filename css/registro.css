@@ -351,21 +351,185 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
 
 /*Parametros contraseña*/
 .requisitos {
-    list-style-type: disc;
-    margin-top: 10px;
-    margin-left: 20px;
-    color: #444;
-    font-size: 14px;
-    line-height: 1.6;
+  list-style-type: disc;
+  margin-top: 10px;
+  margin-left: 20px;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .requisitos li {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .requisitos li.validado {
-    color: green;
-    text-decoration: underline;
+  color: green;
+  text-decoration: underline;
 }
 
+/*MODAL VERIFICACION*/
+/* Estilos del modal (nuevo diseño) */
+p {
+  font-size: 14px;
+  font-family: arial;
+}
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
+.modal-container h2 {
+  font-size: 32px;
+  margin-top: -7px;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 2px;
+}
+
+.input-group label {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-weight: bold;
+}
+.input-group #inputCodigo {
+  width: 92%;
+  padding: 9px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 18px;
+  margin-top: 10px;
+}
+.input-group input {
+  width: 92%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.btnCancelar {
+  background-color: #df2f2f;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.btnCancelar:hover {
+  background-color: #a71d2a;
+}
+
+.btn-guardar {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.btn-guardar:hover {
+  background-color: #0056b3;
+}
+#mensajeModal {
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+#btnAbrirModalCorreo {
+  color: #3d3a3a;
+  font-size: 16px;
+  padding: 13px 13px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+  border-radius: 24px;
+  height: 40px;
+  width: 277px;
+}
+#btnAbrirModalCorreo:hover {
+  background-color: #85baf1;
+}
+/* Animaciones para el modal */
+
+/* Estructura principal del modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* Cambiado a none para mejor compatibilidad */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal:not(.hidden) {
+  display: flex;
+}
+
+/* Overlay de fondo */
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal:not(.hidden) .modal-overlay {
+  opacity: 1;
+}
+
+/* Contenedor del modal con animaciones */
+.modal-container {
+  background-color: rgba(200, 200, 200, 0.76);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.modal:not(.hidden) .modal-container {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Clases para ocultar elementos */
+.hidden {
+  display: none !important;
+}
+
+#correoSectionButtons.hidden {
+  display: none;
+}

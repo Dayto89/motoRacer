@@ -1,10 +1,13 @@
         /* Ejemplo de estilo para un recibo/tirilla de 80mm de ancho */
         body {
-            width: 120mm; /* Ancho típico de rollo de impresora térmica */
+            width: 120mm;
+            /* Ancho típico de rollo de impresora térmica */
             margin: 0 auto;
         }
 
-        h1, h3, p {
+        h1,
+        h3,
+        p {
             margin: 0;
             padding: 0;
             margin: 50px;
@@ -29,7 +32,8 @@
             text-shadow: none;
         }
 
-        .factura-header, .factura-footer {
+        .factura-header,
+        .factura-footer {
             text-align: center;
             margin-bottom: 10px;
         }
@@ -56,42 +60,58 @@
             font-size: 1.2em;
         }
 
-        img{
+        img {
             width: 280px;
         }
 
-        hr{
+        hr {
             width: 100%;
             border: 1px solid #000;
-           
+
             margin-bottom: 20px;
         }
 
         @media print {
             @page {
-                margin: 20mm; /* Ajusta según sea necesario */
-            }
-            body {
-                
-                    padding: 20px;
-                }
-                
-            
+                margin: 20mm;
+                /* Ajusta según sea necesario */
             }
 
-            .factura {
-                margin: 20px auto; /* Ajusta el valor para separarla más */
-                padding: 10px;
-                background: white;
-                width: 100%; /* Ajusta según el diseño */
+            body {
+
+                padding: 20px;
             }
-            
-            
-        
-        
+
+
+        }
+
+        .factura {
+            margin: 20px auto;
+            /* Ajusta el valor para separarla más */
+            padding: 10px;
+            background: white;
+            width: 100%;
+            /* Ajusta según el diseño */
+        }
+
+
+        .btn-descargar-imagen {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-descargar-imagen:hover {
+            background-color: #45a049;
+        }
+
 
         .btn-descargar {
-            
+
             color: white;
             border: none;
             padding: 10px 15px;
@@ -101,46 +121,50 @@
             transition: background 0.3s;
             background-color: #00000000;
         }
-        
-         .form-descarga{
-            position: absolute;
-    right: 550px;
-    margin-top: -26px;
-         }
-      
 
-         .impuestos-container {
+        .form-descarga {
+            position: absolute;
+            right: 550px;
+            margin-top: -26px;
+        }
+
+
+        .impuestos-container {
             display: flex;
             flex-direction: column;
         }
-        
+
         .metodo-pago {
             margin-top: 10px;
             font-weight: bold;
         }
 
         table {
-            border-collapse: collapse; /* Evita bordes dobles */
+            border-collapse: collapse;
+            /* Evita bordes dobles */
             width: 100%;
         }
-        
-        th, td {
-            border: none; /* Elimina los bordes */
+
+        th,
+        td {
+            border: none;
+            /* Elimina los bordes */
             padding: 8px;
         }
+
         .metodo-pago-tabla tr:nth-last-child(2) td {
             border-bottom: none;
         }
-        
-        .modo-alto-contraste tr:nth-child(odd), .modo-alto-contraste tr:nth-child(even) {
-            background-color: rgb(255, 255, 255)!important;
+
+        .modo-alto-contraste tr:nth-child(odd),
+        .modo-alto-contraste tr:nth-child(even) {
+            background-color: rgb(255, 255, 255) !important;
             color: #000 !important;
         }
 
-        .modo-alto-contraste table, .modo-alto-contraste th, .modo-alto-contraste td {
+        .modo-alto-contraste table,
+        .modo-alto-contraste th,
+        .modo-alto-contraste td {
             background-color: white !important;
             color: #000 !important;
         }
-        
-        
-      

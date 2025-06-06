@@ -96,15 +96,16 @@ if ($_POST) {
 
                 <!-- Ventana flotante -->
                 <div id="tooltip-requisitos" class="ventana-requisitos" style="display: none;">
-                    <ul class="requisitos">
-                        <li id="min-caracteres">✔ Mínimo 8 caracteres</li>
-                        <li id="letra-mayus">✔ Al menos una letra mayúscula</li>
-                        <li id="letra-minus">✔ Al menos una letra minúscula</li>
-                        <li id="numero">✔ Al menos un número</li>
-                        <li id="simbolo">✔ Al menos un símbolo especial</li>
+                    <ul class="requisitos" style="list-style: none; padding-left: 0;">
+                        <li id="min-caracteres"> Mínimo 8 caracteres</li>
+                        <li id="letra-mayus"> Al menos una letra mayúscula</li>
+                        <li id="letra-minus"> Al menos una letra minúscula</li>
+                        <li id="numero"> Al menos un número</li>
+                        <li id="simbolo"> Al menos un símbolo especial</li>
                     </ul>
                     <p id="mensaje-seguridad">✔ Contraseña segura</p>
                 </div>
+
             </div>
 
             <div class="campo"><label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
@@ -199,7 +200,12 @@ if ($_POST) {
         } else if (mensaje === "error_restablecer_contrasena" || mensaje === "parametros_invalidos") {
             Swal.fire({
                 title: '<span class="titulo-alerta error">Error</span>',
-                html: `<div class="custom-alert"><div class="contenedor-imagen"><img src="../imagenes/llave.png" alt="Error" class="llave"></div><p>Error al actualizar la contraseña.</p></div>`,
+                html: `<div class="custom-alert">
+                <div class="contenedor-imagen">
+                <img src="../imagenes/llave.png" alt="Error" class="llave">
+                </div>
+                <p>Error al actualizar la contraseña.</p>
+                </div>`,
                 background: 'hsl(0deg 0% 100% / 76%)',
                 confirmButtonText: 'Aceptar',
                 confirmButtonColor: '#007bff',

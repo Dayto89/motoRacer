@@ -8,12 +8,11 @@ if (!isset($_SESSION['usuario_id'])) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-
+// Iconos para agregar/quitar
 $icono1 = '
 <animated-icons class="icono-accion"
 src="https://animatedicons.co/get-icon?name=plus&style=minimalistic&token=3a3309ff-41ae-42ce-97d0-5767a4421b43"
@@ -30,45 +29,33 @@ attributes=\'{"variationThumbColour":"#536DFE","variationName":"Two Tone","varia
 height="50"
 width="50"></animated-icons>';
 
-// Guardar informacion de cliente en la base de datos
-
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
-if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
-}
-
-// Almacenar los productos y el total en la sesión antes de redirigir
+// Si el usuario hace clic en “Cobrar”, guardamos en sesión los productos y total
 if (isset($_POST['cobrar'])) {
     $productos = [];
     $total = 0;
 
-    // Recorrer los productos en el resumen y almacenarlos en un array
     foreach ($_POST['productos'] as $producto) {
         $productos[] = [
-            'nombre' => $producto['nombre'],
-            'precio' => $producto['precio'],
+            'nombre'   => $producto['nombre'],
+            'precio'   => $producto['precio'],
             'cantidad' => $producto['cantidad'],
-            'id' => $producto['id']
+            'id'       => $producto['id']
         ];
-        $total += $producto['precio'] * $producto['cantidad'];
+        $total += ($producto['precio'] * $producto['cantidad']);
     }
 
-    // Guardar los productos y el total en la sesión
     $_SESSION['productos'] = $productos;
-    $_SESSION['total'] = $total;
+    $_SESSION['total']     = $total;
 
-    // Redirigir a prueba.php
+    // Redirigir a prueba.php (o a la página de pago)
     header("Location: prueba.php");
     exit();
 }
-
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,54 +69,41 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
-
     <style>
         :root {
             --icon-bg: #FFFFFF;
-            /* fondo por defecto (modo claro) */
         }
-
         body.modo-alto-contraste {
             --icon-bg: #000000;
-            /* cambia a negro en alto contraste */
         }
-
         body.modo-claro {
             --icon-bg: #FFFFFF;
-            /* opcional: reafirma blanco si lo necesitas */
         }
     </style>
-
-    <script>
-
-    </script>
 </head>
-
 <body>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
 
     <div class="main">
-            <h1 class="titulo">Ventas</h1>
-            <div class="search-bar">
-                <form method="GET" action="ventas.php">
-                    <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
-                        <i class="bx bx-search-alt-2 icon"></i>
-                    </button>
-                    <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
-                </form>
-                
-            </div>
+        <h1 class="titulo">Ventas</h1>
+        <div class="search-bar">
+            <form method="GET" action="ventas.php">
+                <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
+                    <i class="bx bx-search-alt-2 icon"></i>
+                </button>
+                <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
+            </form>
+        </div>
 
-        <div class="barraModulos" style="position: relative; max-width: 1360px; margin-left: 40px;  border-radius: 5px; height: 93px; display: flex; align-items: center; border-color:aqua 2px solid;">
-
+        <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 63px; display: flex; align-items: center; border-color:aqua 2px solid;">
             <!-- Botón izquierda -->
-            <button id="btnLeft" onclick="scrollCategorias(-200)"">
+            <button id="btnLeft" onclick="scrollCategorias(-200)">
                 <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda" id="icono-flecha-izquierda">
             </button>
 
-            <!-- UL con scroll horizontal limitado -->
+            <!-- Categorías con scroll horizontal -->
             <ul id="categoriaScroll" class="breadcrumb" style="max-width: 1250px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; display: flex;">
                 <?php
                 $stmt = $conexion->prepare("SELECT * FROM categoria");
@@ -143,16 +117,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 } else {
                     echo "<li>No hay categorías disponibles</li>";
                 }
-
                 $stmt->close();
                 ?>
             </ul>
 
             <!-- Botón derecha -->
-            <button id="btnRight" onclick="scrollCategorias(200)"">
+            <button id="btnRight" onclick="scrollCategorias(200)">
                 <img src="../imagenes/material-symbols--east-rounded.svg" alt="Botón derecha" id="icono-flecha-derecha">
             </button>
-
         </div>
 
         <div class="products">
@@ -170,30 +142,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 $stmt->execute();
                 $resultado = $stmt->get_result();
             } else {
-                $consulta = "SELECT * FROM producto";
+                $consulta  = "SELECT * FROM producto";
                 $resultado = mysqli_query($conexion, $consulta);
             }
 
             if ($resultado->num_rows > 0) {
                 while ($fila = mysqli_fetch_assoc($resultado)) {
                     $disabledClass = $fila['cantidad'] <= 0 ? 'disabled' : '';
-                    echo "<div class='card $disabledClass' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-precio='{$fila['precio2']}' data-cantidad='{$fila['cantidad']}'>
-                    <span class='contador-producto'>0</span>
-                    <div class='card-header'>
-                        <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
-                    </div>
-                <p class='product-price'>$" . number_format($fila['precio2']) . "</p>
-                <p class='product-price'>$" . number_format($fila['precio3']) . "</p>
-                <p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>
-                <div class='iconos-container'>
-                    <div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'>
-                        <img class='plus' src='../imagenes/material-symbols--add-2.svg' alt='Agregar al resumen'>
-                    </div>
-                    <div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'>
-                        <img class='minus' src='../imagenes/material-symbols--check-indeterminate-small-rounded.svg' alt='Quitar del resumen'>
-                    </div>
-                </div>
-            </div>";
+                    echo "<div class='card $disabledClass' 
+                                data-id='{$fila['codigo1']}' 
+                                data-nombre='" . htmlspecialchars($fila['nombre']) . "' 
+                                data-precio='{$fila['precio2']}' 
+                                data-cantidad='{$fila['cantidad']}'>
+                            <span class='contador-producto'>0</span>
+                            <div class='card-header'>
+                                <p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p>
+                            </div>
+                            <p class='product-price'>$" . number_format($fila['precio2']) . "</p>
+                            <p class='product-price'>$" . number_format($fila['precio3']) . "</p>
+                            <p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>
+                            <div class='iconos-container'>
+                                <div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'>
+                                    <img class='plus' src='../imagenes/material-symbols--add-2.svg' alt='Agregar al resumen'>
+                                </div>
+                                <div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'>
+                                    <img class='minus' src='../imagenes/material-symbols--check-indeterminate-small-rounded.svg' alt='Quitar del resumen'>
+                                </div>
+                            </div>
+                        </div>";
                 }
             } else {
                 echo "<script>
@@ -215,25 +191,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             confirmButton: 'btn-aceptar',
                             container: 'fondo-oscuro'
                         }
-            }).then(() => {
+                    }).then(() => {
                         window.location.href = 'ventas.php';
                     });
-                    </script>";
+                </script>";
             }
 
             mysqli_close($conexion);
             ?>
         </div>
-
-
     </div>
 
     <div class="sidebar-right">
-
         <h3>Resumen</h3>
 
-        <!-- Contenedor con Scroll -->
-
+        <!-- Contenedor con scroll -->
         <div class="resumen-scroll">
             <ul id="listaResumen" class="listaResumen"></ul>
         </div>
@@ -269,19 +241,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         scrollContainer.addEventListener('scroll', updateButtonVisibility);
         window.addEventListener('load', updateButtonVisibility);
 
-        // Funcion cobrar abre modal de metodo de pago
+        // Función cobrar abre modal de metodo de pago
         function cobrar() {
-            if (document.querySelectorAll("#listaResumen li").length === 0) {
+            const items = document.querySelectorAll("#listaResumen li");
+            if (items.length === 0) {
                 Swal.fire({
                     title: `<span class="titulo-alerta error">Error</span>`,
                     html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" class="llave">
-                                </div>
-                                <p>No hay productos en la orden de venta.</p>
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/llave.png" class="llave">
                             </div>
-                        `,
+                            <p>No hay productos en la orden de venta.</p>
+                        </div>
+                    `,
                     background: '#ffffffdb',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#dc3545',
@@ -291,107 +264,91 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         container: 'fondo-oscuro'
                     }
                 });
-
-            } else {
-                let productos = [];
-                let items = document.querySelectorAll("#listaResumen li");
-
-                items.forEach(item => {
-                    let id = item.getAttribute("data-id")?.trim();
-
-                    let nombre = item.getAttribute("data-nombre");
-                    let precio = parseFloat(item.getAttribute("data-precio"));
-                    let cantidad = parseInt(item.getAttribute("data-cantidad"));
-
-                    console.log(id);
-
-
-                    productos.push({
-                        id: id,
-                        nombre: nombre,
-                        precio: precio,
-                        cantidad: cantidad
-                    });
-                });
-
-                // Crear formulario dinámico
-                let form = document.createElement("form");
-                form.method = "POST";
-                form.action = "ventas.php"; // Asegúrate de que la ruta sea correcta
-
-                // Campo para indicar que se está cobrando
-                let inputCobrar = document.createElement("input");
-                inputCobrar.type = "hidden";
-                inputCobrar.name = "cobrar";
-                form.appendChild(inputCobrar);
-
-                // Agregar productos como campos ocultos
-                productos.forEach((producto, index) => {
-                    let inputNombre = document.createElement("input");
-                    inputNombre.type = "hidden";
-                    inputNombre.name = `productos[${index}][nombre]`;
-                    inputNombre.value = producto.nombre;
-                    form.appendChild(inputNombre);
-
-                    let inputPrecio = document.createElement("input");
-                    inputPrecio.type = "hidden";
-                    inputPrecio.name = `productos[${index}][precio]`;
-                    inputPrecio.value = producto.precio;
-                    form.appendChild(inputPrecio);
-
-                    let inputCantidad = document.createElement("input");
-                    inputCantidad.type = "hidden";
-                    inputCantidad.name = `productos[${index}][cantidad]`;
-                    inputCantidad.value = producto.cantidad;
-                    form.appendChild(inputCantidad);
-
-                    let inputId = document.createElement("input");
-                    inputId.type = "hidden";
-                    inputId.name = `productos[${index}][id]`;
-                    inputId.value = producto.id;
-                    form.appendChild(inputId);
-                });
-
-                document.body.appendChild(form);
-                form.submit(); // Enviar el formulario
+                return;
             }
-        }
 
+            let productos = [];
+            items.forEach(item => {
+                let id       = item.getAttribute("data-id")?.trim();
+                let nombre   = item.getAttribute("data-nombre");
+                let precio   = parseFloat(item.getAttribute("data-precio"));
+                let cantidad = parseInt(item.getAttribute("data-cantidad"));
+                productos.push({ id, nombre, precio, cantidad });
+            });
+
+            // Crear formulario dinámico
+            let form = document.createElement("form");
+            form.method = "POST";
+            form.action = "ventas.php";
+
+            // Campo para indicar que se está cobrando
+            let inputCobrar = document.createElement("input");
+            inputCobrar.type = "hidden";
+            inputCobrar.name = "cobrar";
+            form.appendChild(inputCobrar);
+
+            // Agregar productos como campos ocultos
+            productos.forEach((producto, index) => {
+                let inputNombre = document.createElement("input");
+                inputNombre.type = "hidden";
+                inputNombre.name = `productos[${index}][nombre]`;
+                inputNombre.value = producto.nombre;
+                form.appendChild(inputNombre);
+
+                let inputPrecio = document.createElement("input");
+                inputPrecio.type = "hidden";
+                inputPrecio.name = `productos[${index}][precio]`;
+                inputPrecio.value = producto.precio;
+                form.appendChild(inputPrecio);
+
+                let inputCantidad = document.createElement("input");
+                inputCantidad.type = "hidden";
+                inputCantidad.name = `productos[${index}][cantidad]`;
+                inputCantidad.value = producto.cantidad;
+                form.appendChild(inputCantidad);
+
+                let inputId = document.createElement("input");
+                inputId.type = "hidden";
+                inputId.name = `productos[${index}][id]`;
+                inputId.value = producto.id;
+                form.appendChild(inputId);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
 
         function abrirModal() {
             const modal = document.getElementById("modalPaymentMethod");
             const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+            modal.style.display = "flex";
+            btnAbrirModal.style.display = "none";
         }
 
         function cerrarModal() {
             const modal = document.getElementById("modalPaymentMethod");
             const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+            modal.style.display = "none";
+            btnAbrirModal.style.display = "block";
         }
 
-        // Función para abrir el modal de información de cliente
         function openModal() {
             const modal = document.getElementById("modalConfirm");
             const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
+            modal.style.display = "flex";
+            btnAbrirModal.style.display = "none";
         }
 
-        // Función para cerrar el modal de información de cliente
         function closeModal() {
             const modal = document.getElementById("modalConfirm");
             const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
+            modal.style.display = "none";
+            btnAbrirModal.style.display = "block";
         }
 
-        // Prevenir el envío del formulario al hacer clic en "Cancelar"
-        document.getElementById("cancelButton").addEventListener("click", function(event) {
-            event.preventDefault(); // Evitar el envío del formulario
-            closeModal(); // Cerrar el modal
+        document.getElementById("cancelButton")?.addEventListener("click", function(event) {
+            event.preventDefault();
+            closeModal();
         });
 
         function agregarAlResumen(elemento) {
@@ -399,13 +356,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 Swal.fire({
                     title: '<span class="titulo-alerta advertencia">Advertencia</span>',
                     html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                    <p>Este producto está agotado.</p>
-                </div>
-            `,
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                            </div>
+                            <p>Este producto está agotado.</p>
+                        </div>
+                    `,
                     background: '#ffffffdb',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#007bff',
@@ -429,13 +386,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 Swal.fire({
                     title: '<span class="titulo-alerta advertencia">Advertencia</span>',
                     html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                    <p>No hay más stock disponible.</p>
-                </div>
-            `,
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                            </div>
+                            <p>No hay más stock disponible.</p>
+                        </div>
+                    `,
                     background: '#ffffffdb',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#007bff',
@@ -464,11 +421,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 elemento.style.pointerEvents = "none";
                 let btnQuitar = elemento.querySelector(".btn-remove");
                 if (btnQuitar) {
-                    btnQuitar.style.pointerEvents = "auto"; // Mantener activo
-                    btnQuitar.style.opacity = "1"; // Mantener visible
-                    btnQuitar.style.position = "relative"; // Mantener posición
+                    btnQuitar.style.pointerEvents = "auto";
+                    btnQuitar.style.opacity = "1";
+                    btnQuitar.style.position = "relative";
                 }
-
             }
 
             // Actualizar lista de resumen
@@ -501,7 +457,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
         }
 
-
         function quitarDelResumen(elemento) {
             let nombre = elemento.getAttribute("data-nombre");
             let precio = parseFloat(elemento.getAttribute("data-precio"));
@@ -525,13 +480,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                     total -= precio;
                     document.getElementById("total-price").innerText = `$${total.toLocaleString()}`;
-
                     encontrado = true;
                     break;
                 }
             }
 
-            // Solo aumentar la cantidad si el producto estaba en el resumen
             if (encontrado) {
                 let cantidElement = elemento.querySelector('.product-cantidad');
                 let cantidActual = parseInt(elemento.getAttribute('data-cantidad'));
@@ -550,26 +503,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                     let btnQuitar = elemento.querySelector(".btn-remove");
                     if (btnQuitar) {
-                        btnQuitar.style.pointerEvents = "auto"; // Mantener activo
-                        btnQuitar.style.opacity = "1"; // Mantener visible
+                        btnQuitar.style.pointerEvents = "auto";
+                        btnQuitar.style.opacity = "1";
                     }
                 }
 
-                // Reducir el contador si es mayor a 0
                 if (contador > 0) {
                     contador--;
                     contadorElemento.textContent = contador;
                     if (contador === 0) contadorElemento.style.display = "none";
                 }
             }
-            // En tu archivo JavaScript (dentro del <script>)
+
+            // Ajustar íconos por modo (alto contraste / claro)
             function actualizarIconosPorModo() {
                 const modoOscuro = document.body.classList.contains('modo-alto-contraste');
                 document.querySelectorAll('animated-icons').forEach(icono => {
                     const nuevoIcono = icono.cloneNode(true);
                     const attrs = JSON.parse(nuevoIcono.getAttribute('attributes'));
-
-                    // Configura colores según el modo
                     if (modoOscuro) {
                         attrs.defaultColours = {
                             "group-1": "#FFFFFF",
@@ -582,14 +533,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             "group-2": icono.src.includes('plus') ? "#158E05FF" : "#FF0000FF",
                             "background": "#FFFFFF"
                         };
-                    }   
-
+                    }
                     nuevoIcono.setAttribute('attributes', JSON.stringify(attrs));
                     icono.parentNode.replaceChild(nuevoIcono, icono);
                 });
             }
 
-            // Observador para detectar cambios en las clases del body
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.attributeName === 'class') {
@@ -598,19 +547,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 });
             });
 
-            observer.observe(document.body, {
-                attributes: true
-            });
+            observer.observe(document.body, { attributes: true });
 
-            // Ejecutar al cargar la página
             document.addEventListener('DOMContentLoaded', function() {
                 actualizarIconosPorModo();
             });
         }
     </script>
-        <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
+
+    <div class="userInfo">
         <?php
         $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
         $id_usuario = $_SESSION['usuario_id'];
@@ -628,7 +573,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         ?>
         <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
         <p class="rol">Rol: <?php echo $rol; ?></p>
-
     </div>
     <div class="profilePic">
         <?php if (!empty($rowUsuario['foto'])): ?>
@@ -638,6 +582,61 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <?php endif; ?>
     </div>
 
-</body>
+    <!-- ======= BLOQUE PARA “RESTAURAR” DESDE $_SESSION AL CARGAR ======= -->
+    <?php if (!empty($_SESSION['productos'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Leemos el arreglo de PHP a JS
+            let productosEnSesion = <?php echo json_encode($_SESSION['productos'], JSON_UNESCAPED_UNICODE); ?>;
+            let totalEnSesion    = <?php echo (int) $_SESSION['total']; ?>;
+            // Asignamos el total global
+            total = totalEnSesion;
+            document.getElementById('total-price').innerText = `$${totalEnSesion.toLocaleString()}`;
 
+            // Recorremos cada producto y lo insertamos en la lista
+            let listaResumen = document.getElementById('listaResumen');
+            productosEnSesion.forEach(item => {
+                // 1) Crear <li> en el resumen
+                let li = document.createElement('li');
+                li.setAttribute('data-id', item.id);
+                li.setAttribute('data-nombre', item.nombre);
+                li.setAttribute('data-precio', item.precio);
+                li.setAttribute('data-cantidad', item.cantidad);
+                li.innerHTML = `${item.nombre} x${item.cantidad} - $${(item.precio * item.cantidad).toLocaleString()}`;
+                listaResumen.appendChild(li);
+
+                // 2) Ajustar contador y stock en la “card” correspondiente
+                let selectorCard = `.products .card[data-id='${item.id}']`;
+                let card = document.querySelector(selectorCard);
+                if (card) {
+                    // a) Mostrar la cantidad en el contador
+                    let contadorElemento = card.querySelector('.contador-producto');
+                    contadorElemento.textContent = item.cantidad;
+                    contadorElemento.style.display = "block";
+
+                    // b) Reducir stock en data-cantidad y actualizar el texto
+                    let cantidElement = card.querySelector('.product-cantidad');
+                    let stockActual = parseInt(card.getAttribute('data-cantidad')) - item.cantidad;
+                    card.setAttribute('data-cantidad', stockActual);
+                    cantidElement.textContent = `Cantidad: ${stockActual}`;
+
+                    // c) Si el stock quedó en 0, deshabilitamos la tarjeta
+                    if (stockActual <= 0) {
+                        card.classList.add('disabled');
+                        card.style.pointerEvents = "none";
+
+                        let btnQuitar = card.querySelector(".btn-remove");
+                        if (btnQuitar) {
+                            btnQuitar.style.pointerEvents = "auto";
+                            btnQuitar.style.opacity = "1";
+                            btnQuitar.style.position = "relative";
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <?php endif; ?>
+
+</body>
 </html>

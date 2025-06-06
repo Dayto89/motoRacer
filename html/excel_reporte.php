@@ -15,87 +15,148 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 // Conexión a la base de datos
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
 if (!$conexion) {
     die("Error al conectar con la base de datos: " . mysqli_connect_error());
 }
 
-// Consulta para obtener datos
+// --------------------------------------------------
+// 1) Consulta para obtener los datos de facturas, usando los campos internos en factura
+// --------------------------------------------------
 $consulta = "
     SELECT 
         f.codigo,
         f.fechaGeneracion,
-        f.Usuario_identificacion,
-        f.Cliente_codigo,
+        f.nombreUsuario,
+        f.apellidoUsuario,
+        f.nombreCliente,
+        f.apellidoCliente,
+        f.telefonoCliente,
+        f.identificacionCliente,
         f.precioTotal,
-        c.nombre AS cliente_nombre,
-        c.apellido AS cliente_apellido,
-        n.nombre AS usuario_nombre,
-        n.apellido AS usuario_apellido,
-        GROUP_CONCAT(m.metodoPago SEPARATOR ', ') AS metodoPago
+        GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
     FROM 
         factura f
     LEFT JOIN 
         factura_metodo_pago m ON m.Factura_codigo = f.codigo
-    LEFT JOIN
-        cliente c ON c.codigo = f.Cliente_codigo
-    LEFT JOIN
-       usuario n ON n.identificacion = f.Usuario_identificacion
     GROUP BY 
-        f.codigo, f.fechaGeneracion, f.Usuario_identificacion, f.Cliente_codigo, f.precioTotal,         c.nombre, 
-        c.apellido, 
-        n.nombre, 
-        n.apellido 
+        f.codigo,
+        f.fechaGeneracion,
+        f.nombreUsuario,
+        f.apellidoUsuario,
+        f.nombreCliente,
+        f.apellidoCliente,
+        f.telefonoCliente,
+        f.identificacionCliente,
+        f.precioTotal
+    ORDER BY 
+        f.fechaGeneracion DESC
 ";
 
 $resultado = mysqli_query($conexion, $consulta);
-
 if (!$resultado) {
     die("Error en la consulta: " . mysqli_error($conexion));
 }
 
-// Crear hoja de Excel
+// --------------------------------------------------
+// 2) Creamos y configuramos la hoja de cálculo
+// --------------------------------------------------
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
-// Encabezados
-$encabezados = ['Código', 'Fecha Generacion', 'Usuario Identificacion', 'Cliente Codigo', 'Precio Total'];
-$sheet->fromArray($encabezados, NULL, 'A1');
-
-// Estilos para encabezados
-$styleEncabezado = [
-    'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 12],
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4CAF50']],
-    'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+// 2.1) Definir encabezados en la primera fila
+$encabezados = [
+    'A1' => 'Código',
+    'B1' => 'Fecha Generación',
+    'C1' => 'Vendedor',
+    'D1' => 'Cliente',
+    'E1' => 'Teléfono Cliente',
+    'F1' => 'Cédula Cliente',
+    'G1' => 'Total',
+    'H1' => 'Método(s) de Pago'
 ];
-$sheet->getStyle('A1:E1')->applyFromArray($styleEncabezado);
+// Colocar valores de encabezado
+foreach ($encabezados as $celda => $texto) {
+    $sheet->setCellValue($celda, $texto);
+}
 
-// Insertar datos desde la base de datos
-$filaExcel = 2; // Empieza en la fila 2
+// 2.2) Estilos para encabezados (fila 1)
+$styleEncabezado = [
+    'font' => [
+        'bold' => true,
+        'color' => ['rgb' => 'FFFFFF'],
+        'size' => 12
+    ],
+    'fill' => [
+        'fillType' => Fill::FILL_SOLID,
+        'startColor' => ['rgb' => '4CAF50']
+    ],
+    'borders' => [
+        'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+    ],
+    'alignment' => [
+        'horizontal' => Alignment::HORIZONTAL_CENTER,
+        'vertical'   => Alignment::VERTICAL_CENTER,
+    ],
+];
+// Aplicar estilo de encabezado desde A1 hasta H1
+$sheet->getStyle('A1:H1')->applyFromArray($styleEncabezado);
+
+// --------------------------------------------------
+// 3) Insertar cada registro de la consulta en filas sucesivas
+// --------------------------------------------------
+$filaExcel = 2; // comenzamos en la fila 2
 while ($fila = mysqli_fetch_assoc($resultado)) {
+    // Columna A: Código
     $sheet->setCellValue('A' . $filaExcel, $fila['codigo'] ?? 'N/A');
+    // Columna B: Fecha Generación
     $sheet->setCellValue('B' . $filaExcel, $fila['fechaGeneracion'] ?? 'N/A');
-    $sheet->setCellValue('C' . $filaExcel, ($fila['usuario_nombre'] ?? 'N/A') . ' ' . ($fila['usuario_apellido'] ?? 'N/A'));
-    $sheet->setCellValue('D' . $filaExcel, ($fila['cliente_nombre'] ?? 'N/A') . ' ' . ($fila['cliente_apellido'] ?? 'N/A'));
-
-    $sheet->setCellValue('E' . $filaExcel, $fila['precioTotal'] ?? 'N/A');
+    // Columna C: Vendedor (nombreUsuario + apellidoUsuario)
+    $nombreVendedor = trim(($fila['nombreUsuario'] ?? '') . ' ' . ($fila['apellidoUsuario'] ?? ''));
+    $sheet->setCellValue('C' . $filaExcel, $nombreVendedor !== '' ? $nombreVendedor : 'N/A');
+    // Columna D: Cliente (nombreCliente + apellidoCliente)
+    $nombreCliente = trim(($fila['nombreCliente'] ?? '') . ' ' . ($fila['apellidoCliente'] ?? ''));
+    $sheet->setCellValue('D' . $filaExcel, $nombreCliente !== '' ? $nombreCliente : 'N/A');
+    // Columna E: Teléfono Cliente
+    $sheet->setCellValue('E' . $filaExcel, $fila['telefonoCliente'] ?? 'N/A');
+    // Columna F: Cédula Cliente
+    $sheet->setCellValue('F' . $filaExcel, $fila['identificacionCliente'] ?? 'N/A');
+    // Columna G: Total
+    $sheet->setCellValue('G' . $filaExcel, $fila['precioTotal'] !== null ? number_format($fila['precioTotal']) : '0');
+    // Columna H: Método(s) de Pago
+    $sheet->setCellValue('H' . $filaExcel, $fila['metodoPago'] ?? 'N/A');
 
     $filaExcel++;
 }
 
-// Ajuste automático de ancho de columnas
-foreach (range('A', 'E') as $col) {
-    $sheet->getColumnDimension($col)->setAutoSize(true);
+// --------------------------------------------------
+// 4) Ajuste automático de ancho de columnas (A–H)
+// --------------------------------------------------
+foreach (range('A', 'H') as $columna) {
+    $sheet->getColumnDimension($columna)->setAutoSize(true);
 }
 
-// Bordes para todo el contenido
-$sheet->getStyle('A1:E' . ($filaExcel - 1))
-    ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+// --------------------------------------------------
+// 5) Aplicar bordes a todo el rango de datos (incluyendo encabezado)
+// --------------------------------------------------
+$ultimaFila = $filaExcel - 1;
+$rangoTotal = 'A1:H' . $ultimaFila;
+$sheet->getStyle($rangoTotal)
+      ->getBorders()
+      ->getAllBorders()
+      ->setBorderStyle(Border::BORDER_THIN);
 
-// Descargar el archivo
+// --------------------------------------------------
+// 6) Centrar verticalmente todas las celdas del rango
+// --------------------------------------------------
+$sheet->getStyle($rangoTotal)
+      ->getAlignment()
+      ->setVertical(Alignment::VERTICAL_CENTER);
+
+// --------------------------------------------------
+// 7) Enviar headers para descargar el archivo Excel
+// --------------------------------------------------
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="Inventario.xlsx"');
+header('Content-Disposition: attachment;filename="Reporte_Facturas.xlsx"');
 header('Cache-Control: max-age=0');
 
 $writer = new Xlsx($spreadsheet);

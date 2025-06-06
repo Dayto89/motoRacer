@@ -384,16 +384,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   ?>
 
   <!-- Modal Verificacion-->
-  <div id="modalVerificacion" class="hidden">
-    <div class="modal-content">
-      <button id="btnCerrarModal">X</button>
+  <div id="modalVerificacion" class="modal hidden">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-container">
+      <h2>Verificar Correo</h2> <!-- Título como en tu imagen -->
+
+      <!-- Contenido original de tu modal (mismos IDs y estructura) -->
       <p id="mensajeModal"></p>
-      <input type="email" id="inputCorreo" placeholder="Correo electrónico">
-      <button id="btnEnviarCodigo">Enviar código</button>
+
+      <div id="correoSection">
+        <div class="input-group">
+          <input type="email" id="inputCorreo" > <!-- Mismo ID -->
+        </div>
+        <div id="correoSectionButtons" class="modal-actions">
+          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button> <!-- Mismo ID -->
+          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button> <!-- Mismo ID -->
+        </div>
+      </div>
 
       <div id="codigoSection" class="hidden">
-        <input type="text" id="inputCodigo" placeholder="Código recibido">
-        <button id="btnVerificarCodigo">Verificar código</button>
+        <div class="input-group">
+          <label>Ingrese el código recibido:</label> <!-- Texto como en tu imagen -->
+          <input type="text" id="inputCodigo" > <!-- Mismo ID -->
+        </div>
+        <div class="modal-actions">
+          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button> <!-- Nuevo botón (opcional) -->
+          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button> <!-- Mismo ID -->
+        </div>
       </div>
     </div>
   </div>
@@ -429,30 +446,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       const modal = document.getElementById('modalVerificacion');
       const btnAbrirModal = document.getElementById('btnAbrirModalCorreo');
       const btnCerrarModal = document.getElementById('btnCerrarModal');
+      const btnCerrarModal2 = document.getElementById('btnCerrarModal2');
       const btnEnviarCodigo = document.getElementById('btnEnviarCodigo');
       const btnVerificarCodigo = document.getElementById('btnVerificarCodigo');
       const inputCorreo = document.getElementById('inputCorreo');
       const inputCodigo = document.getElementById('inputCodigo');
       const codigoSection = document.getElementById('codigoSection');
       const mensajeModal = document.getElementById('mensajeModal');
+      const correoSectionButtons = document.getElementById('correoSectionButtons');
+      // Función para abrir el modal con animación
+      function abrirModal() {
+        const modal = document.getElementById('modalVerificacion');
+        const modalContainer = modal.querySelector('.modal-container');
+
+        // Resetear estado inicial
+        modal.classList.remove('hidden');
+        modalContainer.style.transition = 'none';
+        modalContainer.style.transform = 'translateY(-50px)';
+        modalContainer.style.opacity = '0';
+
+        // Forzar reflow para activar la animación
+        void modal.offsetWidth;
+
+        // Activar animación
+        modalContainer.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        modalContainer.style.transform = 'translateY(0)';
+        modalContainer.style.opacity = '1';
+
+        resetearModal();
+      }
+
+      // Función para cerrar el modal con animación
+      function cerrarModal() {
+        const modal = document.getElementById('modalVerificacion');
+        const modalContainer = modal.querySelector('.modal-container');
+
+        // Iniciar animación de salida
+        modalContainer.style.transform = 'translateY(-50px)';
+        modalContainer.style.opacity = '0';
+
+        // Ocultar después de la animación
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          resetearModal();
+        }, 300);
+      }
+
+      // Mostrar modal al hacer clic en botón "Verificar correo"
+      // Función para resetear el modal
+      function resetearModal() {
+        mensajeModal.textContent = 'Por favor ingrese el correo para continuar con el proceso de registro.';
+        mensajeModal.style.color = 'black';
+        mensajeModal.style.fontWeight = 'bold';
+        inputCorreo.value = '';
+        inputCodigo.value = '';
+        codigoSection.classList.add('hidden');
+        correoSectionButtons.classList.remove('hidden');
+        inputCorreo.disabled = false;
+        btnEnviarCodigo.disabled = false;
+      }
+
+      // Función para cerrar el modal
+      function cerrarModalCompleto() {
+        modal.classList.add('hidden');
+        resetearModal(); // Resetear estado al cerrar
+      }
 
       // Mostrar modal al hacer clic en botón "Verificar correo"
       btnAbrirModal.addEventListener('click', () => {
         modal.classList.remove('hidden');
-        mensajeModal.textContent = '';
-        mensajeModal.style.color = '';
-        inputCorreo.value = '';
-        inputCodigo.value = '';
-        codigoSection.classList.add('hidden');
-        inputCorreo.disabled = false;
-        btnEnviarCodigo.disabled = false;
+        resetearModal(); // Resetear estado al abrir
       });
 
-      // Cerrar modal
-      btnCerrarModal.addEventListener('click', () => {
-        modal.classList.add('hidden');
+      // Asignar eventos a los botones de cancelar
+      btnAbrirModal.addEventListener('click', abrirModal);
+      btnCerrarModal.addEventListener('click', cerrarModal);
+      btnCerrarModal2.addEventListener('click', cerrarModal);
+
+      // Cerrar al hacer clic fuera del modal
+      document.querySelector('.modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          cerrarModal();
+        }
       });
 
+      function configurarCierreExterno() {
+        const modal = document.getElementById('modalVerificacion');
+
+        modal.addEventListener('click', function(evento) {
+          // Cierra SOLO si se hace clic en el overlay (área oscura)
+          if (evento.target.classList.contains('modal-overlay')) {
+            cerrarModalCompleto(); // Usa tu función existente de cierre
+          }
+        });
+      }
       // Enviar código al correo
       btnEnviarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
@@ -487,18 +574,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
           .then(data => {
             if (data.success) {
               mensajeModal.textContent = 'Código enviado. Revisa tu correo.';
-              mensajeModal.style.color = 'green';
+              mensajeModal.style.color = '#12521a';
               codigoSection.classList.remove('hidden');
               inputCorreo.disabled = true;
+              document.getElementById('correoSectionButtons').classList.add('hidden');
             } else {
               mensajeModal.textContent = data.message || 'Error al enviar código.';
-              mensajeModal.style.color = 'red';
+              mensajeModal.style.color = '#83abd6';
               btnEnviarCodigo.disabled = false;
             }
           })
           .catch(() => {
             mensajeModal.textContent = 'Error en la conexión.';
-            mensajeModal.style.color = 'red';
+            mensajeModal.style.color = '#83abd6';
             btnEnviarCodigo.disabled = false;
           });
       });
@@ -564,6 +652,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             mensajeModal.style.color = 'red';
           });
       });
+        configurarCierreExterno(); 
     });
   </script>
 

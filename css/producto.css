@@ -566,7 +566,7 @@ input[type="checkbox"] {
 /* Título "Descargar formato" estilo link */
 .modal-content a{
     font-size: 16px;
-    color: #007bff;
+    color: #0056b3;
     text-decoration: none;
     font-weight: 500;
     display: inline-block;
@@ -579,7 +579,7 @@ input[type="checkbox"] {
 /* Etiqueta del input */
 .modal-content label {
     font-size: 19px;
-    color: #333;
+    color: black;
     margin-bottom: 9px;
     font-weight: bold;
     text-align: center;
@@ -670,21 +670,21 @@ input[type="checkbox"] {
 }
 
 .modal-content button[type="submit"] {
-    background-color: #2773cd;
+    background-color: #007bff;
     color: white;
 }
 
 .modal-content button[type="submit"]:hover {
-    background-color: #1d4f8b;
+    background-color: #0056b3;
 }
 
 .modal-content button[type="button"] {
-    background-color: #7b7878;
+    background-color: rgb(84, 125, 91);
     color: #ffffff;
 }
 
 .modal-content button[type="button"]:hover {
-    background-color: #474747;
+    background-color: #3c5e4d;
 }
 /* Estilo para el input oculto */
 input[type="file"] {
@@ -773,11 +773,6 @@ input[type="file"] {
 
 .download-link i {
     font-size: 22px;
-    color: #1a73e8;
-}
-
-.download-link:hover {
-    color: #0b59c7;
 }
 
 /*---------------------------------------*/
@@ -812,14 +807,14 @@ input[type="file"] {
 }
 
 .icon-button:hover {
-    background-color: #218838;
+    background-color: #0d3f06;
 }
 
 .icon-button {
     display: flex;
     align-items: center;
     padding: 6px 7px;
-    background-color: #28a745;
+    background-color: #0f6103;
     color: white;
     border: none;
     cursor: pointer;

@@ -236,29 +236,64 @@ p {
 
 /*Parametros contraseña*/
 
+.requisitos {
+    list-style: none;
+    padding-left: 0;
+    
+}
+
+
 
 .requisitos li {
     text-decoration: none;
+    color: rgb(184, 26, 26);
+     -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+    
+ 
 }
 
 .requisitos li.validado {
-    color: green;
-    text-decoration: underline;
+    color: rgb(20, 177, 41) !important; /* Verde oscuro */
+    -webkit-text-stroke-width: 1px;
+    text-decoration: none !important;
+    -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+
+   
+
 }
 
 .ventana-requisitos {
     position: absolute;
     top: 50%;
     left: 105%;
-    width: 220px;
-    background: #f8f8f8;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.842);
     border: 1px solid #ccc;
     border-radius: 10px;
     padding: 10px;
     z-index: 999;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-size: 13px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: aliceblue;
 }
+
+.icono-validacion {
+    display: inline-block;
+    width: 1.2em;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-right: 6px;
+    transition: color 0.3s ease;
+    vertical-align: middle;
+}
+
+/* Puedes usar esta clase si deseas cambiar el color del texto de la regla validada */
+.validado {
+    color: green;
+}
+
+
 
 
 
