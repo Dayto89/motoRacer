@@ -108,18 +108,31 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <!-- Categorías con scroll horizontal -->
             <ul id="categoriaScroll" class="breadcrumb" style="max-width: 1250px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; display: flex;">
                 <?php
-                $stmt = $conexion->prepare("SELECT * FROM categoria");
+                $stmt = $conexion->prepare(
+    "SELECT c.codigo, c.nombre
+     FROM categoria c
+     JOIN producto p ON p.Categoria_codigo = c.codigo
+     GROUP BY c.codigo, c.nombre
+     HAVING COUNT(p.codigo1) > 0"
+);
                 $stmt->execute();
-                $resultado = $stmt->get_result();
+$resultado = $stmt->get_result();
 
-                if ($resultado->num_rows > 0) {
-                    while ($fila = $resultado->fetch_assoc()) {
-                        echo "<li><a class='brand' name='categoria' href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
-                    }
-                } else {
-                    echo "<li>No hay categorías disponibles</li>";
-                }
-                $stmt->close();
+if ($resultado->num_rows > 0) {
+    while ($fila = $resultado->fetch_assoc()) {
+        echo "<li>
+                <a class='brand' 
+                   name='categoria' 
+                   href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>
+                  " . htmlspecialchars($fila['nombre']) . "
+                </a>
+              </li>";
+    }
+} else {
+    echo "<li>No hay categorías con productos disponibles</li>";
+}
+$stmt->close();
+
                 ?>
             </ul>
 

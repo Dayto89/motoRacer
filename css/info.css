@@ -97,29 +97,6 @@ h1 {
   transform: scale(1.07);
 }
 
-/* Estilo del fondo oscuro */
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 1;
-}
-
-/* Estilo de la ventana emergente */
-.popup {
-  background-color: rgba(200, 200, 200, 0.76);
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  animation: slideIn 0.3s ease-out;
-}
-
 .popup h2 {
   font-size: 24px;
   margin-bottom: 20px;
@@ -131,7 +108,7 @@ h1 {
 .popup form {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .button_popup {
@@ -148,18 +125,10 @@ h1 {
   width: 50%;
   margin-left: 27%;
 }
-
-.btn-verificar-correo {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 24px;
-  font-size: 16px;
-  cursor: pointer;
-  width: 91%;
-  margin-left: 5%;
-  margin-right: 5%;
-  height: 40px;
+.button_container {
+  margin-bottom: 5%;
 }
+
 .btn-cancelar {
   background: red;
   color: white;
@@ -239,28 +208,29 @@ body::before {
 
 /* Estilos para la ventana emergente */
 .overlay {
-  display: none;
   position: fixed;
-  top: 0;
+  top: 0; /* Evita que se corte en la parte superior */
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* Oscurece todo el fondo */
+  display: none; /* Se mostrará con JS */
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
 .popup {
-  background-color: rgb(200 200 200 / 76%);
+  position: relative;
+  background-color: rgb(200 200 200 / 83%);
   padding: 20px;
   border-radius: 10px;
-  width: 400px;
+  width: 22%;
   text-align: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-out;
-  margin-left: 43%;
-  margin-top: 5.7%;
+  height: auto;
 }
-
 @keyframes slideIn {
   from {
     transform: translateY(-50px);
@@ -275,13 +245,12 @@ body::before {
 
 .popup h2 {
   font-size: 32px;
-  margin-top: -7px;
+  margin-top: 15px;
   color: white;
   text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
     -2px 3px 0 #1c51a0;
   margin-left: 13px;
-  letter-spacing: 5px;
-  padding: 28px;
+  letter-spacing: 4px;
 }
 
 .popup input {
@@ -289,7 +258,7 @@ body::before {
   background-color: #ffffff;
   border-radius: 24px;
   height: 40px;
-  width: 277px;
+  width: 67%;
   color: #000;
   padding: 0px 0px 0px 10px;
   border: none;
@@ -368,23 +337,42 @@ body::before {
 .popup label {
   margin-bottom: 5px;
   color: white;
-  font-size: 19px;
+  font-size: 16px;
   font-family: Arial, Helvetica, sans-serif;
   text-shadow: 2px 0 #1c51a0;
   white-space: nowrap;
 }
 
 .input-group input {
-  width: 92%;
   padding: 8px;
   font-size: 13px;
   border: 1px solid #ccc;
   border-radius: 23px;
   box-sizing: border-box;
   margin-bottom: 18px;
-  margin-left: 20px;
+  width: 83%;
+  margin-left: 9%;
 }
-
+input#correoVerificado.input-group {
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 18px;
+  width: 67%;
+  margin-left: 4%;
+}
+.input-group p{
+  text-align: center;
+  width: 83%;
+  margin-left: 9%;
+  font-size: 16px;
+  color: black;
+  font-family: arial;
+  padding: 10px;
+  font-weight: bold;
+}
 /* ======================= */
 /* 4) Estilo del botón “Cambiar correo” */
 /* ======================= */
@@ -396,7 +384,8 @@ body::before {
   border: none;
   border-radius: 24px;
   cursor: pointer;
-  margin-bottom: 15px;
+  width: 83%;
+  margin-left: 9%;
 }
 .btn-verificar-correo:hover {
   background-color: #85baf1;
@@ -419,12 +408,10 @@ body::before {
 }
 #mensajeModal {
   text-align: center;
+  width: 83%;
+  margin-left: 9%;
 }
 
-/* ======================= */
-/* 6) Estilos generales de tu modal principal (.overlay / .popup) */
-/* ======================= */
-/* (ya los tenías; no es necesario cambiarlos aquí) */
 /* 1) Limitar la altura del popup y permitir scroll */
 .popup {
   max-height: 77vh; /* Hasta el 80% de la altura de la ventana */
@@ -456,6 +443,76 @@ body::before {
 .popup {
   padding: 4px 4px; /* Ajusta a tu gusto */
   box-sizing: border-box;
+}
+/*PARA SUBIR IMAGEN AL EDITAR PERFIL*/
+/* Contenedor general */
+.image-upload-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+/* Posiciona imagen + overlay */
+.avatar-upload {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.avatar-upload .preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Oculta el input nativo */
+.avatar-upload input[type="file"] {
+  display: none;
+}
+
+/* El overlay: ocupa todo el círculo, centra icono */
+.avatar-upload .upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* abarque todo el círculo */
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column; /* apila texto + icono */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.2rem; /* espacio interior */
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+/* Al hacer hover, se ve el overlay */
+.avatar-upload:hover .upload-overlay {
+  opacity: 1;
+}
+
+/* Icono del botón */
+.avatar-upload .upload-overlay i {
+  font-size: 2rem;
+  color: #fff;
+}
+.upload-overlay .upload-text {
+  font-size: 12px;
+  line-height: 2.1;
+  word-break: break-word;
+  max-width: 100%;
+  color: #fff;
+}
+.upload-overlay i {
+  margin-top: 0.2rem;
+  font-size: 1.2rem;
+  color: #fff;
 }
 
 /* MÓVILES */

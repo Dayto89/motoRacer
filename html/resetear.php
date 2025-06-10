@@ -113,6 +113,9 @@ if ($_POST) {
                     class='bx bx-hide'
                     style="position: absolute; right: 12rem; left: 15rem; top: 54%; transform: translateY(-50%); cursor: pointer; color:black; font-size: 1.5rem; width: 20px; height: 20px;">
                 </i>
+                <div id="tooltip-confirmar" class="ventana-requisitos" style="display: none;">
+                    <p id="mensaje-confirmar" style="margin: 0; padding: 0.5rem;"></p>
+                </div>
             </div>
 
             <div class="button_container">
@@ -128,7 +131,9 @@ if ($_POST) {
         const passwordInput = document.querySelector('#nueva_contrasena');
         const passwordInput2 = document.querySelector('#confirmar_contrasena');
         const tooltip = document.getElementById("tooltip-requisitos");
-        
+        const tooltipConfirmar = document.getElementById("tooltip-confirmar");
+        const mensajeConfirmar = document.getElementById("mensaje-confirmar");
+
 
         const reglas = {
             minCaracteres: document.getElementById("min-caracteres"),
@@ -178,6 +183,42 @@ if ($_POST) {
 
             mensajeSeguridad.style.display = (cumpleMin && tieneMayus && tieneMinus && tieneNumero && tieneSimbolo) ? "block" : "none";
         });
+            // Mostrar y ocultar ventana de confirmación al enfocar/desenfocar el campo confirmar
+    passwordInput2.addEventListener("focus", () => {
+      tooltipConfirmar.style.display = "block";
+      actualizarConfirmacion();
+    });
+
+    passwordInput2.addEventListener("blur", () => {
+      setTimeout(() => {
+        tooltipConfirmar.style.display = "none";
+      }, 200);
+    });
+
+    // Validar coincidencia de contraseñas dinámicamente
+    passwordInput2.addEventListener("input", () => {
+      actualizarConfirmacion();
+    });
+
+    function actualizarConfirmacion() {
+      const valor1 = passwordInput.value;
+      const valor2 = passwordInput2.value;
+
+      if (!valor2) {
+        mensajeConfirmar.textContent = "Ingrese la contraseña para confirmar.";
+        mensajeConfirmar.style.color = "black";
+        return;
+      }
+
+      if (valor1 === valor2) {
+        mensajeConfirmar.textContent = "Las contraseñas coinciden.";
+        mensajeConfirmar.style.color = "green";
+      } else {
+        mensajeConfirmar.textContent = "Las contraseñas no coinciden.";
+        mensajeConfirmar.style.color = "red";
+      }
+    }
+
 
         const mensaje = "<?php echo $mensaje; ?>";
 

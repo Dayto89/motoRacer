@@ -241,7 +241,7 @@ input.form-control {
   display: none;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 1000;
 }
 .modal-content {
@@ -253,6 +253,9 @@ input.form-control {
 }
 .modal.show {
   display: flex;
+}
+.modal.hide {
+  display: none;
 }
 .modal.hidden {
   display: none;
@@ -266,6 +269,14 @@ input.form-control {
 }
 
 /* MODAL DE NUEVO PROVEEDOR --------------------------------------------------------------------------------------------------------*/
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 19px;
+  column-gap: 10px;
+  margin-top: 27px;
+  padding: 10px;
+}
 .form-grid label,
 #editForm label {
   color: white;
@@ -277,18 +288,74 @@ input.form-control {
   padding-right: 10px; /* Añade espacio a la derecha */
   margin-bottom: 5px; /* Ajusta el margen inferior */
 }
+.modal-buttons {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+}
+#nuevoModal .modal-buttons {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+}
 
-/*MODAL DE NUEVO PROVEEDOR-----------------------------------------------------------------------------*/
-.modal-content-nuevo {
+#btnCancelar,
+#btnCancelarEdit {
+  background-color: #df2f2f;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+#btnCancelar:hover,
+#btnCancelarEdit:hover {
+  background-color: #a71d2a;
+}
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+button[type="submit"]:hover {
+  background-color: #1565c0;
+}
+.btn-nuevo-proveedor:hover {
+  background-color: #0056b3;
+}
+
+.btn-nuevo-proveedor {
+  background-color: #007bff;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 9px;
+}
+/*-----------------------------------------------------------------*/
+.modal-content-nuevo,
+.modal-content {
   width: 35%;
+  max-width: 500px;
   text-align: center;
-  background-color: rgb(174 174 174 / 61%);
+  background-color: rgba(174, 174, 174, 0.61);
   padding: 23px;
   border-radius: 18px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 9%;
-  margin-left: 35%;
-  height: 54%;
+  height: auto;
 }
 .modal-content h2,
 .modal-content-nuevo h2 {
@@ -324,29 +391,6 @@ input.form-control {
   margin-left: 19%;
   margin-top: 4%;
 }
-.close {
-  position: absolute;
-  right: 31%;
-  top: 14%;
-  cursor: pointer;
-  font-size: 44px;
-  color: white;
-  margin-left: 13px;
-}
-
-.close i {
-  font-size: 15px;
-  color: #ffffff;
-  cursor: pointer;
-  transition: color 0.3sease-in-out;
-  border: 2px solid #ffffff;
-  padding: 8px;
-  border-radius: 50%;
-}
-
-.close i:hover {
-  background: #c00a0a; /* Cambia a rojo cuando pasas el mouse */
-}
 
 form#editForm {
   display: grid;
@@ -356,29 +400,30 @@ form#editForm {
   align-items: center; /* Alinea los elementos verticalmente */
 }
 #modal-boton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: #007bff;
-  font-weight: bold;
   color: white;
-  border: none;
-  padding: 3px 4px;
-  font-size: 16px;
+  padding: 10px 15px;
   cursor: pointer;
-  border-radius: 18px;
-  transition: background-color 0.3sease;
-  margin-right: 6%;
-  width: 157px;
-  height: 47px;
-  display: flex;
-  text-decoration: none;
-  font-family: Arial, Helvetica, sans-serif;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
 }
 #modal-boton:hover {
   background-color: #0056b3;
 }
-
+form input[type="text"],
+#editForm select {
+  background-color: #ffffff;
+  border-radius: 23px;
+  height: 35px;
+  width: 100%;
+  color: #000;
+  padding: 4px 17px;
+  border: none;
+  font-size: 14px;
+  margin-bottom: 13px;
+}
 /* Barra lateral (Menú) */
 .sidebar {
   width: 100px;
@@ -529,116 +574,7 @@ form#editForm {
   background-color: #d11212; /* Fondo rojo al hacer hover */
   border: 2px solid #ffffff; /* Borde blanco */
 }
-
-/*Alertas -----------------------------------------------------------------------------*/
-
-/* Estilos generales de los párrafos */
-p {
-  font-size: 16px;
-  color: black;
-  font-family: arial;
-  padding: 10px;
-}
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center > .swal2-popup {
-  width: 28%;
-  /* Se ajusta automáticamente */
-  max-width: 350px;
-  /* Define un límite de ancho */
-}
-
-/* Imágenes dentro del modal */
-.custom-alert .moto,
-.custom-alert .llave,
-.custom-alert .tornillo {
-  width: 177px;
-  height: 130px;
-}
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-  position: relative;
-  display: inline-block;
-}
-
-.titulo-alerta {
-  font-size: 28px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10px;
-  font-family: "Arial Black", sans-serif;
-  letter-spacing: 1px;
-}
-
-.titulo-alerta.confirmacion {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #9b9496;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.titulo-alerta.error {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #af3b3b;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.titulo-alerta.advertencia {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #e09804;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.btn-aceptar {
-  background-color: #007bff !important;
-  color: white !important;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-}
-
-.swal2-border-radius {
-  border-radius: 5px !important;
-}
-
-.fondo-oscuro {
-  background-color: rgba(0, 0, 0, 0.7) !important;
-  /* Fondo oscuro */
-  backdrop-filter: blur(2px);
-  /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-  border-radius: 20px;
-}
-/*------------------------------------------------------------------*/
-
-.btn-nuevo-proveedor {
-  background-color: #007bff;
-  font-weight: bold;
-  color: white;
-  border: none;
-  padding: 8px 23px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 9px;
-}
-
-.btn-nuevo-proveedor:hover {
-  background-color: #0056b3;
-}
+/*ANIMACIONES MODALES*/
 
 /* MÓVILES */
 /* Horizontal */
@@ -656,7 +592,7 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
     table-layout: auto; /* Que las columnas tomen el ancho de su contenido */
   }
 
-  .table-wrapper th,
+  .t-wrapper th,
   .table-wrapper td {
     white-space: nowrap; /* Evita que el texto salte líneas */
   }

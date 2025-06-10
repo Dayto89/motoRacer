@@ -727,7 +727,10 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   overflow-x: auto;         /* scroll horizontal cuando haga falta */
   -webkit-overflow-scrolling: touch; /* suavizar en iOS */
 }
-
+#editCodigo1Visible{
+      border: #ffffff solid 1px;
+    background-color: #ffffff42;
+} 
 
 /* MÓVILES */
 /* Horizontal */
@@ -858,6 +861,9 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
         width: 100%;
         justify-content: center;
     }
+
+
+
 
 }
 

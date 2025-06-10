@@ -18,10 +18,9 @@ if ($_POST && isset($_POST['guardar'])) {
   if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
   };
-  $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
   $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
 
-  $query = "INSERT INTO categoria (codigo, nombre) VALUES ('$codigo', '$nombre')";
+  $query = "INSERT INTO categoria (nombre) VALUES ('$nombre')";
 
   $resultado = mysqli_query($conexion, $query);
 
@@ -143,7 +142,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <table class="category-table">
         <thead>
           <tr>
-            <th>Código</th>
             <th>Nombre</th>
             <th>Acciones</th>
           </tr>
@@ -153,7 +151,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           $categorias = $conexion->query("SELECT * FROM categoria ORDER BY codigo ASC");
           while ($fila = $categorias->fetch_assoc()) {
             echo "<tr>";
-            echo "<td>" . htmlspecialchars($fila['codigo']) . "</td>";
             echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
             echo "<td class='td-options'>";
             echo "<button class='btn-list' data-id='" . htmlspecialchars($fila['codigo']) . "'>Lista de productos</button>";
@@ -173,9 +170,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <h2>Nueva categoría</h2>
       <form method="POST" action="">
         <div class="form-group">
-          <label>Ingrese el código:</label>
-          <input type="text" id="codigo" name="codigo" required 
-          oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
           <label>Ingrese el nombre de la categoría:</label>
           <input type="text" id="nombre" name="nombre" required 
           oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />

@@ -1,0 +1,153 @@
+/* reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* body y degradado */
+body {
+  font-family: "Metal Mania", system-ui;
+  background: url("/imagenes/fondo.webp") center/cover fixed no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.card-title {
+  margin-bottom: 2rem;
+  font-size: 64px;
+  margin-top: -1%;
+  color: white;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
+  margin-left: 2%;
+  letter-spacing: 5px;
+}
+.card {
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  box-shadow: rgb(0 0 0 / 57%) 0px 5px 18px;
+  max-width: 800px;
+  text-align: center;
+  background: rgb(0 0 0 / 57%);
+  border-radius: 16px;
+  padding: 15px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.icon-warning {
+  margin: 20px 0;
+}
+
+.card p {
+  font-size: 20px;
+  color: #ecf0f1;
+  margin: 13px 0;
+  line-height: 1.6;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+.card .btn {
+  display: inline-block;
+  padding: 13px 24px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  background: #007bff;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0s ease;
+  font-family: arial;
+}
+
+.card .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  background: #0056b3;
+}
+
+/* Ajuste responsivo */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 50px;
+  }
+
+  .card {
+    width: 95%;
+    padding: 40px 20px;
+  }
+
+  .card p {
+    font-size: 24px;
+  }
+
+  .card .btn {
+    font-size: 22px;
+    padding: 12px 30px;
+  }
+
+  animated-icons {
+    height: 200px;
+    width: 200px;
+  }
+}
+/* Perfil fijo abajo-derecha */
+.user-profile.fixed {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  padding: 10px 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/* Ajustes tamaño imagen */
+.user-profile.fixed .profilePic img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+}
+
+/* Texto */
+.user-profile.fixed .userInfo {
+  text-align: left;
+}
+.user-profile.fixed .userInfo .nombre {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.user-profile.fixed .userInfo .rol {
+  font-size: 0.75rem;
+  color: #ddd;
+}

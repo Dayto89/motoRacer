@@ -15,6 +15,9 @@ div:where(.swal2-container).swal2-center > .swal2-popup {
   max-width: 350px;
   /* Define un límite de ancho */
 }
+body.swal2-shown.swal2-height-auto{
+  background-color: rgba(255, 0, 0, 0) !important;
+}
 
 .custom-alert .tornillo,
 .custom-alert .moto,

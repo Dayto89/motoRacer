@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
     <div class="container">
-        <img src="/imagenes/motoracer.png" alt="Fondo" class="fondo">
+        <img src="/imagenes/motoracer.webp" alt="Fondo" class="fondo">
         <img src="/imagenes/LOGO.png" alt="Logo" class="logo_inicio"
             style="filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255))">
         <div class="barra"></div>

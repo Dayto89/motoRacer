@@ -4,85 +4,35 @@ if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
+
 require '../conexion/conexion.php'; // archivo con la conexión a BD y las librerías
-require '../vendor/autoload.php'; // si usas composer para Mailjet
+require '../vendor/autoload.php';   // si usas composer para Mailjet
 use \Mailjet\Resources;
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
-//****************************
+// === 1) Petición AJAX para check de código ===
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['accion']) 
+    && $_POST['accion'] === 'check_codigo') 
+{
+    header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'sendCode') {
-  $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    $identificacion = $_POST['identificacion'] ?? '';
+    $stmt = $conexion->prepare("SELECT 1 FROM usuario WHERE identificacion = ?");
+    $stmt->bind_param("s", $identificacion);
+    $stmt->execute();
+    $stmt->store_result();
+    $existe = $stmt->num_rows > 0;
 
-  if (!$email) {
-    echo json_encode(['success' => false, 'message' => 'Correo no válido.']);
-    exit;
-  }
-
-  // Verificar que el correo no exista en la tabla usuario
-  $stmt = $conn->prepare("SELECT COUNT(*) FROM usuario WHERE correo = ?");
-  $stmt->bind_param("s", $email);
-  $stmt->execute();
-  $stmt->bind_result($count);
-  $stmt->fetch();
-  $stmt->close();
-
-  if ($count > 0) {
-    echo json_encode(['success' => false, 'message' => 'El correo ya está registrado.']);
-    exit;
-  }
-
-  // Generar código numérico de 6 dígitos
-  $codigo = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-
-  // Eliminar códigos anteriores para ese correo
-  $stmt = $conn->prepare("DELETE FROM verificaciones WHERE correo = ?");
-  $stmt->bind_param("s", $email);
-  $stmt->execute();
-  $stmt->close();
-
-  // Insertar nuevo código
-  $stmt = $conn->prepare("INSERT INTO verificaciones (correo, codigo) VALUES (?, ?)");
-  $stmt->bind_param("ss", $email, $codigo);
-  $stmt->execute();
-  $stmt->close();
-
-  // Enviar el código por correo
-  $mj = new \Mailjet\Client('API_KEY', 'API_SECRET', true, ['version' => 'v3.1']);
-  $body = [
-    'Messages' => [
-      [
-        'From' => [
-          'Email' => "tu_correo@empresa.com",
-          'Name' => "Nombre de tu empresa"
-        ],
-        'To' => [
-          [
-            'Email' => $email,
-            'Name' => "Usuario"
-          ]
-        ],
-        'Subject' => "Código de verificación",
-        'TextPart' => "Tu código de verificación es: $codigo",
-        'HTMLPart' => "<h3>Tu código de verificación es: <strong>$codigo</strong></h3>"
-      ]
-    ]
-  ];
-
-  $response = $mj->post(Resources::$Email, ['body' => $body]);
-
-  if ($response->success()) {
-    echo json_encode(['success' => true, 'message' => 'Código enviado al correo.']);
-  } else {
-    echo json_encode(['success' => false, 'message' => 'Error al enviar el correo.']);
-  }
-  exit;
+    echo json_encode(['exists' => $existe]);
+    $stmt->close();
+    $conexion->close();
+    exit;  // TERMINA aquí la petición AJAX
 }
-
-
-//*************** */
+$mensaje = null; // Variable para almacenar el estado del mensaje
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -93,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="/css/registro.css" />
   <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="/componentes/header.php" />
@@ -100,6 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather&family=Metal+Mania&display=swap');
+
+    .required::after {
+      content: " *";
+      color: red;
+    }
   </style>
   <script src="/js/index.js"></script>
   <script src="../js/header.js"></script>
@@ -113,52 +69,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   <form name="formulario" method="post" action="">
     <div class="container">
       <div class="form-grid">
-        <div class="campo"><label for="identificacion">Identificación: </label><input type="number" name="identificacion" id="identificacion" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')" required></div>
-        <div class="campo"><label for="rol">Rol: </label><select name="rol" id="rol" required>
-            <option value="gerente" selected>Gerente </option>
-          </select></div>
-        <div class="campo"><label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre" required></div>
-        <div class="campo"><label for="apellido">Apellido: </label><input type="text" name="apellido" id="apellido" required></div>
-        <div class="campo"><label for="telefono">Teléfono: </label><input type="number" name="telefono" id="telefono" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+        <div class="campo">
+          <label class="required" for="identificacion">Identificación: </label>
+          <input
+            type="number"
+            name="identificacion"
+            id="identificacion"
+            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            required></div>
-        <div class="campo"><label for="direccion">Dirección: </label><input type="text" name="direccion" id="direccion" required></div>
-        <div class="campo" id="contenedorCorreo"><label for="correo">Correo: </label>
+            required>
+        </div>
+
+        <div class="campo">
+          <label class="required" for="rol">Rol: </label>
+          <select name="rol" id="rol" required>
+            <option value="gerente" selected>Gerente</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label class="required" for="nombre">Nombre: </label>
+          <input type="text" name="nombre" id="nombre" required>
+        </div>
+
+        <div class="campo">
+          <label class="required" for="apellido">Apellido: </label>
+          <input type="text" name="apellido" id="apellido" required>
+        </div>
+
+        <div class="campo">
+          <label class="required" for="telefono">Teléfono: </label>
+          <input
+            type="number"
+            name="telefono"
+            id="telefono"
+            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            required>
+        </div>
+
+        <div class="campo">
+          <label class="required" for="direccion">Dirección: </label>
+          <input type="text" name="direccion" id="direccion" required>
+        </div>
+
+        <div class="campo" id="contenedorCorreo">
+          <label class="required" for="correo">Correo: </label>
           <button type="button" id="btnAbrirModalCorreo">Verificar correo</button>
         </div>
-        <!-- Cambia en el formulario: -->
+
         <div class="campo">
-          <label for="contrasena">Contraseña: </label>
+          <label class="required" for="contrasena">Contraseña: </label>
           <input type="password" name="contrasena" id="contrasena" required disabled>
-          <i id="togglePassword"
-            class='bx bx-hide'
-            style="position: absolute; right: 12rem; left: 70.5rem; top: 59.7%; transform: translateY(-50%); cursor: pointer; color:black; font-size: 1.5rem; width: 20px; height: 20px;">
-          </i>
+          <i
+            id="togglePassword"
+            class="bx bx-hide"
+            style="position: absolute; right: 12rem; left: 16rem; top: 54.7%; transform: translateY(-50%); cursor: pointer; color: black; font-size: 1.5rem; width: 20px; height: 20px;"></i>
+          <!-- Ventana flotante para criterios de la contraseña -->
+          <div id="tooltip-requisitos" class="ventana-requisitos" style="display: none;">
+            <ul class="requisitos" style="list-style: none; padding-left: 0;">
+              <li id="min-caracteres"> Mínimo 8 caracteres</li>
+              <li id="letra-mayus"> Al menos una letra mayúscula</li>
+              <li id="letra-minus"> Al menos una letra minúscula</li>
+              <li id="numero"> Al menos un número</li>
+              <li id="simbolo"> Al menos un símbolo especial</li>
+            </ul>
+          </div>
         </div>
+
         <div class="campo">
-          <label for="confirmar">Confirmar Contraseña: </label>
+          <label class="required" for="confirmar">Confirmar Contraseña: </label>
           <input type="password" name="confirmar" id="confirmar" required disabled>
-          <i id="togglePassword2"
-            class='bx bx-hide'
-            style="position: absolute; right: 0rem; left: 92.2rem; top: 59.7%; transform: translateY(-50%); cursor: pointer; color:black; font-size: 1.5rem; width: 20px; height: 20px;">
-          </i>
+          <i
+            id="togglePassword2"
+            class="bx bx-hide"
+            style="position: absolute; right: 0rem; left: 16rem; top: 54.7%; transform: translateY(-50%); cursor: pointer; color: black; font-size: 1.5rem; width: 20px; height: 20px;"></i>
+          <!-- Ventana flotante para verificar coincidencia -->
+          <div id="tooltip-confirmar" class="ventana-requisitos" style="display: none;">
+            <p id="mensaje-confirmar" style="margin: 0; padding: 0.5rem;"></p>
+          </div>
         </div>
       </div>
     </div>
+
     <div class="button_container">
       <button type="submit" name="registrar" class="boton">Registrar</button>
       <a href="../html/gestiondeusuarios.php" class="botonn">Volver</a>
-
     </div>
   </form>
 
   <?php
   // Inicializamos variables para mantener valores al mostrar el formulario
   $identificacion = $rol = $nombre = $apellido = $telefono = $direccion = $correo = '';
-  $mostrar_form = true; // controla si se muestra el formulario (para no duplicar) 
 
   if ($_POST && isset($_POST['registrar'])) {
+    // Conexión a la base de datos
     $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
     if ($conexion->connect_error) {
       die("Error de conexión: " . $conexion->connect_error);
@@ -174,70 +179,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $direccion = $_POST['direccion'];
     $correo = $_POST['correo'];
 
-    if (empty($identificacion) || empty($contrasena) || empty($confirmar) || empty($nombre) || empty($apellido) || empty($telefono) || empty($direccion) || empty($correo)) {
+    if (
+      empty($identificacion) || empty($contrasena) || empty($confirmar) ||
+      empty($nombre) || empty($apellido) || empty($telefono) ||
+      empty($direccion) || empty($correo)
+    ) {
       echo "<script>alert('Todos los campos son obligatorios');</script>";
+      $conexion->close();
       exit;
     }
 
     if ($contrasena !== $confirmar) {
       echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
       echo "<script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                Swal.fire({
-                         title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: `
-                                <div class=\"custom-alert\">
-                                    <div class='contenedor-imagen'>
-                                          <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                                    </div>
-                                    <p>Las contraseñas no coinciden.</p>
-                                </div>
-                            `,
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: '<span class=\"titulo-alerta error\">Error</span>',
+                            html: `<div class=\"custom-alert\">
+                                        <div class='contenedor-imagen'>
+                                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                        </div>
+                                        <p>Las contraseñas no coinciden.</p>
+                                    </div>`,
                             background: '#ffffffdb',
-                          confirmButtonText: 'Aceptar',
-                          confirmButtonColor: '#dc3545',
-                          customClass: {
-                              popup: 'swal2-border-radius',
-                              confirmButton: 'btn-aceptar',
-                              container: 'fondo-oscuro'
-                          }
-                        } );
-                                    });
-                                    </script>";
-      exit;
-    }
-    // Validar seguridad de la contraseña
-    if (
-      strlen($contrasena) < 8 ||
-      !preg_match('/[A-Z]/', $contrasena) ||      // Al menos una mayúscula
-      !preg_match('/[a-z]/', $contrasena) ||      // Al menos una minúscula
-      !preg_match('/[\d\W]/', $contrasena)
-    ) {     // Al menos un número o símbolo
-
-      echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-      echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: '<span class=\"titulo-alerta error\">Contraseña inválida</span>',
-                html: `
-                    <div class=\"custom-alert\">
-                        <div class='contenedor-imagen'>
-                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                        </div>
-                        <p>La contraseña debe tener mínimo 8 caracteres, una letra mayúscula, una minúscula y un número o símbolo.</p>
-                    </div>
-                `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#dc3545',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        });
-    </script>";
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#dc3545',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    });
+                </script>";
+      $conexion->close();
       exit;
     }
 
@@ -250,28 +225,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if ($verificarCorreo->num_rows > 0) {
       echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
       echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: '<span class=\"titulo-alerta error\">Error</span>',
-                html: `
-                    <div class=\"custom-alert\">
-                        <div class='contenedor-imagen'>
-                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                        </div>
-                        <p>El correo ya está registrado. Intenta con otro.</p>
-                    </div>
-                `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#dc3545',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        });
-    </script>";
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            title: '<span class=\"titulo-alerta error\">Error</span>',
+                            html: `<div class=\"custom-alert\">
+                                        <div class='contenedor-imagen'>
+                                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                        </div>
+                                        <p>El correo ya está registrado. Intenta con otro.</p>
+                                    </div>`,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#dc3545',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    });
+                </script>";
       $verificarCorreo->close();
       $conexion->close();
       exit;
@@ -282,86 +255,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $verificarTelefono = $conexion->prepare("SELECT identificacion FROM usuario WHERE telefono = ?");
     $verificarTelefono->bind_param("s", $telefono);
     $verificarTelefono->execute();
-    $resultadoTelefono = $verificarTelefono->get_result(); // ✅ Obtener correctamente el resultado
+    $resultadoTelefono = $verificarTelefono->get_result();
 
     if ($resultadoTelefono->num_rows > 0) {
       echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
       echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: '<span class=\"titulo-alerta error\">Error</span>',
-                html: `
-                    <div class=\"custom-alert\">
-                        <div class='contenedor-imagen'>
-                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                        </div>
-                        <p>El número de teléfono ya está registrado. Intenta con otro.</p>
-                    </div>
-                `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#dc3545',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        });
-    </script>";
-
-      $verificarTelefono->close();
-      $conexion->close();
-      exit;
-    }
-
-    $verificarTelefono->close();
-
-    $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
-    $estado = 'activo';
-    $tipoDocumento = 'cedula de ciudadania';
-
-    $stmt = $conexion->prepare("INSERT INTO usuario (identificacion, tipoDocumento, rol, nombre, apellido, telefono, direccion, correo, contraseña, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-    if ($stmt === false) {
-      die("Error en la preparación de la consulta: " . $conexion->error);
-    }
-
-    $stmt->bind_param("ssssssssss", $identificacion, $tipoDocumento, $rol, $nombre, $apellido, $telefono, $direccion, $correo, $contrasenaHashed, $estado);
-
-
-    if ($stmt->execute()) {
-      $resultado = $conexion->query("INSERT INTO accesos (id_usuario, seccion, sub_seccion, permitido) VALUES
-                ($identificacion, 'PRODUCTO', 'Crear Producto', 0),
-                ($identificacion, 'PRODUCTO', 'Actualizar Producto', 0),
-                ($identificacion, 'PRODUCTO', 'Categorias', 0),
-                ($identificacion, 'PRODUCTO', 'Ubicacion', 0),
-                ($identificacion, 'PRODUCTO', 'Marca', 0),
-                ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
-                ($identificacion, 'INVENTARIO', 'Lista de Productos', 0),
-                ($identificacion, 'FACTURA', 'Ventas', 0),
-                ($identificacion, 'FACTURA', 'Reportes', 0),
-                ($identificacion, 'FACTURA', 'Lista Clientes', 0),
-                ($identificacion, 'FACTURA', 'Lista de Notificaciones', 0),
-                ($identificacion, 'USUARIO', 'Información', 1)");
-
-      if ($resultado) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
-                            title: '<span class=\"titulo-alerta confirmacion\">¡Registro exitoso!</span>',
-                            html: `
-                                <div class=\"custom-alert\">
-                                    <div class=\"contenedor-imagen\">
-                                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                                    </div>
-                                    <p>El usuario fue registrado y los permisos fueron guardados correctamente.</p>
-                                </div>
-                            `,
+                            title: '<span class=\"titulo-alerta error\">Error</span>',
+                            html: `<div class=\"custom-alert\">
+                                        <div class='contenedor-imagen'>
+                                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                        </div>
+                                        <p>El número de teléfono ya está registrado. Intenta con otro.</p>
+                                    </div>`,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#007bff',
+                            confirmButtonColor: '#dc3545',
                             customClass: {
                                 popup: 'swal2-border-radius',
                                 confirmButton: 'btn-aceptar',
@@ -370,6 +280,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         });
                     });
                 </script>";
+      $verificarTelefono->close();
+      $conexion->close();
+      exit;
+    }
+    $verificarTelefono->close();
+
+    $contrasenaHashed = password_hash($contrasena, PASSWORD_DEFAULT);
+    $estado = 'activo';
+    $tipoDocumento = 'cedula de ciudadania';
+
+    $stmt = $conexion->prepare(
+      "INSERT INTO usuario 
+            (identificacion, tipoDocumento, rol, nombre, apellido, telefono, direccion, correo, contraseña, estado) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    );
+
+    if ($stmt === false) {
+      die("Error en la preparación de la consulta: " . $conexion->error);
+    }
+
+    $stmt->bind_param(
+      "ssssssssss",
+      $identificacion,
+      $tipoDocumento,
+      $rol,
+      $nombre,
+      $apellido,
+      $telefono,
+      $direccion,
+      $correo,
+      $contrasenaHashed,
+      $estado
+    );
+
+    if ($stmt->execute()) {
+      $resultado = $conexion->query(
+        "INSERT INTO accesos
+                (id_usuario, seccion, sub_seccion, permitido) VALUES
+                ($identificacion, 'PRODUCTO', 'Crear Producto', 0),
+                ($identificacion, 'PRODUCTO', 'Categorias', 0),
+                ($identificacion, 'PRODUCTO', 'Ubicacion', 0),
+                ($identificacion, 'PRODUCTO', 'Marca', 0),
+                ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
+                ($identificacion, 'INVENTARIO', 'Lista Productos', 0),
+                ($identificacion, 'FACTURA', 'Ventas', 0),
+                ($identificacion, 'FACTURA', 'Reportes', 0),
+                ($identificacion, 'FACTURA', 'Lista Clientes', 0),
+                ($identificacion, 'FACTURA', 'Lista Notificaciones', 0),
+                ($identificacion, 'USUARIO', 'Información', 1)"
+      );
+
+      if ($resultado) {
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                title: '<span class=\"titulo-alerta confirmacion\">¡Registro exitoso!</span>',
+                                html: `<div class=\"custom-alert\">
+                                            <div class=\"contenedor-imagen\">
+                                                <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                                            </div>
+                                            <p>El usuario fue registrado y los permisos fueron guardados correctamente.</p>
+                                        </div>`,
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            });
+                        });
+                    </script>";
       } else {
         echo "<script>alert('Registro exitoso, pero error al guardar permisos');</script>";
       }
@@ -377,67 +361,161 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       echo "<script>alert('Error al guardar el usuario');</script>";
     }
 
-
     $stmt->close();
     $conexion->close();
   }
   ?>
 
-  <!-- Modal Verificacion-->
+  <!-- Modal de Verificación de Correo -->
   <div id="modalVerificacion" class="modal hidden">
     <div class="modal-overlay" id="modalOverlay"></div>
     <div class="modal-container">
       <h2>Verificar Correo</h2>
       <p id="mensajeModal"></p>
+
       <div id="correoSection">
         <div class="input-group">
-          <input type="email" id="inputCorreo" > 
+          <input type="email" id="inputCorreo">
         </div>
         <div id="correoSectionButtons" class="modal-actions">
-          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button> 
-          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button> 
+          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button>
+          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button>
         </div>
       </div>
 
       <div id="codigoSection" class="hidden">
         <div class="input-group">
-          <label>Ingrese el código recibido:</label> 
-          <input type="text" id="inputCodigo" > 
+          <label>Ingrese el código recibido:</label>
+          <input type="text" id="inputCodigo">
         </div>
         <div class="modal-actions">
-          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button> 
-          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button> 
+          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button>
+          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const togglePassword = document.querySelector('#togglePassword');
-    const passwordInput = document.querySelector('#contrasena');
+      // Función para verificar identificación en tiempo real
+    function verificarIdentificacion(identificacion) {
+      if (identificacion) {
+        fetch('../html/verificar_identificacion.php?identificacion=' + identificacion)
+          .then(response => response.json())
+          .then(data => {
+            const errorElement = document.getElementById('error-identificacion');
+            const inputElement = document.getElementById('identificacion');
+            
+            if (data.existe) {
+              errorElement.textContent = 'Esta identificación ya está registrada.';
+              errorElement.style.display = 'block';
+              inputElement.classList.add('input-error');
+            } else {
+              errorElement.style.display = 'none';
+              inputElement.classList.remove('input-error');
+            }
+          });
+      }
+    }
 
+    // Evento para verificar al salir del campo
+    document.getElementById('identificacion').addEventListener('blur', function() {
+      verificarIdentificacion(this.value);
+    });
+
+    const togglePassword = document.querySelector('#togglePassword');
+    const togglePassword2 = document.querySelector('#togglePassword2');
+    const passwordInput = document.querySelector('#contrasena');
+    const passwordInput2 = document.querySelector('#confirmar');
+    const tooltip = document.getElementById("tooltip-requisitos");
+    const tooltipConfirmar = document.getElementById("tooltip-confirmar");
+    const mensajeConfirmar = document.getElementById("mensaje-confirmar");
+
+    const reglas = {
+      minCaracteres: document.getElementById("min-caracteres"),
+      mayus: document.getElementById("letra-mayus"),
+      minus: document.getElementById("letra-minus"),
+      numero: document.getElementById("numero"),
+      simbolo: document.getElementById("simbolo")
+    };
+
+    // Mostrar/ocultar contraseña
     togglePassword.addEventListener('click', () => {
-      // Alterna el tipo de input
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput.setAttribute('type', type);
-
-      // Cambia el icono: de ojo abierto a ojo cerrado
       togglePassword.classList.toggle('bx-show');
       togglePassword.classList.toggle('bx-hide');
     });
 
-    const togglePassword2 = document.querySelector('#togglePassword2');
-    const passwordInput2 = document.querySelector('#confirmar');
-
     togglePassword2.addEventListener('click', () => {
-      // Alterna el tipo de input
       const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput2.setAttribute('type', type);
-
-      // Cambia el icono: de ojo abierto a ojo cerrado
       togglePassword2.classList.toggle('bx-show');
       togglePassword2.classList.toggle('bx-hide');
     });
+
+    // Mostrar y ocultar ventana de requisitos al enfocar/desenfocar el campo contraseña
+    passwordInput.addEventListener("focus", () => {
+      tooltip.style.display = "block";
+    });
+
+    passwordInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        tooltip.style.display = "none";
+      }, 200);
+    });
+
+    // Validar requisitos de la contraseña dinámicamente
+    passwordInput.addEventListener("input", () => {
+      const valor = passwordInput.value;
+      const cumpleMin = valor.length >= 8;
+      const tieneMayus = /[A-Z]/.test(valor);
+      const tieneMinus = /[a-z]/.test(valor);
+      const tieneNumero = /\d/.test(valor);
+      const tieneSimbolo = /[!@#$%^&*(),.?":{}|<>]/.test(valor);
+
+      reglas.minCaracteres.classList.toggle("validado", cumpleMin);
+      reglas.mayus.classList.toggle("validado", tieneMayus);
+      reglas.minus.classList.toggle("validado", tieneMinus);
+      reglas.numero.classList.toggle("validado", tieneNumero);
+      reglas.simbolo.classList.toggle("validado", tieneSimbolo);
+    });
+
+    // Mostrar y ocultar ventana de confirmación al enfocar/desenfocar el campo confirmar
+    passwordInput2.addEventListener("focus", () => {
+      tooltipConfirmar.style.display = "block";
+      actualizarConfirmacion();
+    });
+
+    passwordInput2.addEventListener("blur", () => {
+      setTimeout(() => {
+        tooltipConfirmar.style.display = "none";
+      }, 200);
+    });
+
+    // Validar coincidencia de contraseñas dinámicamente
+    passwordInput2.addEventListener("input", () => {
+      actualizarConfirmacion();
+    });
+
+    function actualizarConfirmacion() {
+      const valor1 = passwordInput.value;
+      const valor2 = passwordInput2.value;
+
+      if (!valor2) {
+        mensajeConfirmar.textContent = "Ingrese la contraseña para confirmar.";
+        mensajeConfirmar.style.color = "black";
+        return;
+      }
+
+      if (valor1 === valor2) {
+        mensajeConfirmar.textContent = "Las contraseñas coinciden.";
+        mensajeConfirmar.style.color = "green";
+      } else {
+        mensajeConfirmar.textContent = "Las contraseñas no coinciden.";
+        mensajeConfirmar.style.color = "red";
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
       const modal = document.getElementById('modalVerificacion');
@@ -451,46 +529,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       const codigoSection = document.getElementById('codigoSection');
       const mensajeModal = document.getElementById('mensajeModal');
       const correoSectionButtons = document.getElementById('correoSectionButtons');
-      // Función para abrir el modal con animación
-      function abrirModal() {
-        const modal = document.getElementById('modalVerificacion');
-        const modalContainer = modal.querySelector('.modal-container');
 
-        // Resetear estado inicial
+      function abrirModal() {
         modal.classList.remove('hidden');
+        const modalContainer = modal.querySelector('.modal-container');
         modalContainer.style.transition = 'none';
         modalContainer.style.transform = 'translateY(-50px)';
         modalContainer.style.opacity = '0';
-
-        // Forzar reflow para activar la animación
         void modal.offsetWidth;
-
-        // Activar animación
         modalContainer.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
         modalContainer.style.transform = 'translateY(0)';
         modalContainer.style.opacity = '1';
-
         resetearModal();
       }
 
-      // Función para cerrar el modal con animación
       function cerrarModal() {
-        const modal = document.getElementById('modalVerificacion');
         const modalContainer = modal.querySelector('.modal-container');
-
-        // Iniciar animación de salida
         modalContainer.style.transform = 'translateY(-50px)';
         modalContainer.style.opacity = '0';
-
-        // Ocultar después de la animación
         setTimeout(() => {
           modal.classList.add('hidden');
           resetearModal();
         }, 300);
       }
 
-      // Mostrar modal al hacer clic en botón "Verificar correo"
-      // Función para resetear el modal
       function resetearModal() {
         mensajeModal.textContent = 'Por favor ingrese el correo para continuar con el proceso de registro.';
         mensajeModal.style.color = 'black';
@@ -503,51 +565,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         btnEnviarCodigo.disabled = false;
       }
 
-      // Función para cerrar el modal
       function cerrarModalCompleto() {
         modal.classList.add('hidden');
-        resetearModal(); // Resetear estado al cerrar
+        resetearModal();
       }
 
-      // Mostrar modal al hacer clic en botón "Verificar correo"
-      btnAbrirModal.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        resetearModal(); // Resetear estado al abrir
-      });
-
-      // Asignar eventos a los botones de cancelar
+      // Abrir modal al hacer clic en "Verificar correo"
       btnAbrirModal.addEventListener('click', abrirModal);
+
+      // Botones de cancelar
       btnCerrarModal.addEventListener('click', cerrarModal);
       btnCerrarModal2.addEventListener('click', cerrarModal);
 
-      // Cerrar al hacer clic fuera del modal
-      document.querySelector('.modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-          cerrarModal();
+      // Cerrar al hacer clic fuera del área de contenido
+      modal.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-overlay')) {
+          cerrarModalCompleto();
         }
       });
 
-      function configurarCierreExterno() {
-        const modal = document.getElementById('modalVerificacion');
-
-        modal.addEventListener('click', function(evento) {
-          // Cierra SOLO si se hace clic en el overlay (área oscura)
-          if (evento.target.classList.contains('modal-overlay')) {
-            cerrarModalCompleto(); // Usa tu función existente de cierre
-          }
-        });
-      }
       // Enviar código al correo
       btnEnviarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
-        const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail.com|yahoo.com)$/;
+        const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/;
 
         if (!correo) {
           mensajeModal.textContent = 'Por favor ingresa un correo.';
           mensajeModal.style.color = 'red';
           return;
         }
-
         if (!regexCorreo.test(correo)) {
           mensajeModal.textContent = 'Por favor, ingresa un correo válido. Sugerencia: usa uno que termine en @gmail.com, @outlook.com, @hotmail.com o @yahoo.com.';
           mensajeModal.style.color = 'red';
@@ -574,7 +620,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
               mensajeModal.style.color = '#12521a';
               codigoSection.classList.remove('hidden');
               inputCorreo.disabled = true;
-              document.getElementById('correoSectionButtons').classList.add('hidden');
+              correoSectionButtons.classList.add('hidden');
             } else {
               mensajeModal.textContent = data.message || 'Error al enviar código.';
               mensajeModal.style.color = '#83abd6';
@@ -649,11 +695,151 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             mensajeModal.style.color = 'red';
           });
       });
-        configurarCierreExterno(); 
     });
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('form[name="formulario"]');
+      const pwd = document.getElementById('contrasena');
+      const pwd2 = document.getElementById('confirmar');
+
+      form.addEventListener('submit', function(e) {
+        const valor = pwd.value;
+        const valor2 = pwd2.value;
+        const reglasCumplidas = {
+          min: valor.length >= 8,
+          upper: /[A-Z]/.test(valor),
+          lower: /[a-z]/.test(valor),
+          num: /\d/.test(valor),
+          sym: /[!@#$%^&*(),.?":{}|<>]/.test(valor)
+        };
+
+        // ¿Todas las reglas OK?
+        const todas = Object.values(reglasCumplidas).every(v => v === true);
+ // Verificar si hay error de identificación
+        const errorIdentificacion = document.getElementById('error-identificacion');
+        if (errorIdentificacion.style.display === 'block') {
+          e.preventDefault();
+          Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+              <div class="custom-alert">
+                <div class="contenedor-imagen">
+                  <img src="../imagenes/llave.png" alt="Error" class="llave">
+                </div>
+                <p>La identificación ya está registrada.</p>
+              </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+              popup: 'swal2-border-radius',
+              confirmButton: 'btn-aceptar',
+              container: 'fondo-oscuro'
+            }
+          });
+          return;
+        }
+
+        if (!todas || valor !== valor2) {
+          e.preventDefault();
+          let mensajes = [];
+          if (!reglasCumplidas.min) mensajes.push('– Mínimo 8 caracteres');
+          if (!reglasCumplidas.upper) mensajes.push('– Al menos una letra mayúscula');
+          if (!reglasCumplidas.lower) mensajes.push('– Al menos una letra minúscula');
+          if (!reglasCumplidas.num) mensajes.push('– Al menos un número');
+          if (!reglasCumplidas.sym) mensajes.push('– Al menos un símbolo especial');
+          if (valor !== valor2) mensajes.push('– Las contraseñas no coinciden');
+
+          Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+      <div class="custom-alert">
+        <div class="contenedor-imagen">
+          <img src="../imagenes/llave.png" alt="Error" class="llave">
+        </div>
+        <p style="font-family: Arial, sans-serif; color: black; font-size: 14px;">
+          La contraseña no cumple con los requisitos. Por favor corrige lo siguiente:
+        </p>
+        <ul style="
+             font-family: Arial, sans-serif;
+             font-size: 13px;
+             color: black;
+             text-align: left;
+             padding-left: 1rem;
+             list-style: none;
+           ">
+          ${mensajes.map(m => `<li style="margin-bottom: .25rem;">${m}</li>`).join('')}
+        </ul>
+      </div>
+    `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#dc3545',
+            customClass: {
+              popup: 'swal2-border-radius',
+              confirmButton: 'btn-aceptar',
+              container: 'fondo-oscuro'
+            }
+          });
+        }
+      });
+    });
+
+
+   document.addEventListener('DOMContentLoaded', () => {
+  const inputIdentificacion = document.getElementById('identificacion');
+  const submitBtn = document.querySelector('button[type="submit"].boton');
+  const campo = inputIdentificacion.closest('.campo');
+
+  let tooltip = campo.querySelector('.small-error-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.className = 'small-error-tooltip';
+    tooltip.textContent = 'Esta identificación ya está registrada.';
+    campo.appendChild(tooltip);
+  }
+
+  inputIdentificacion.addEventListener('blur', () => {
+    const val = inputIdentificacion.value.trim();
+    if (!val) {
+      inputIdentificacion.classList.remove('error');
+      campo.classList.remove('error');
+      tooltip.style.display = 'none';
+      submitBtn.disabled = false;
+      return;
+    }
+
+    fetch('registro.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `accion=check_codigo&identificacion=${encodeURIComponent(val)}`
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.exists) {
+        inputIdentificacion.classList.add('error');
+        campo.classList.add('error');
+        tooltip.style.display = 'block';
+        submitBtn.disabled = true;
+      } else {
+        inputIdentificacion.classList.remove('error');
+        campo.classList.remove('error');
+        tooltip.style.display = 'none';
+        submitBtn.disabled = false;
+      }
+    })
+    .catch(() => {
+      inputIdentificacion.classList.remove('error');
+      campo.classList.remove('error');
+      tooltip.style.display = 'none';
+      submitBtn.disabled = false;
+    });
+  });
+});
+
   </script>
-
-
 </body>
 
 </html>

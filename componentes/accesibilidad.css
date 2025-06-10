@@ -4,7 +4,7 @@
 .accesibilidad-container {
   position: fixed;
   right: 20px;
-  top: 50%;
+  top: 0px;
   transform: translateY(-50%);
   z-index: 9999;
   transition: all 0.3s ease;
@@ -107,7 +107,7 @@
 .accesibilidad-container {
   position: fixed;
   right: 30px;
-  top: 50%;
+  top: 88%;
   transform: translateY(-50%);
   z-index: 1001;
   /* Superior al sidebar */
@@ -649,15 +649,15 @@ body.modo-alto-contraste {
   color: #ffffff !important;
 }
 .modo-alto-contraste .resumen-scroll{
-  background-color: #ffffff !important;
+  background-color: #000000 !important;
   color: #000000 !important;
 }
 .modo-alto-contraste .sidebar-right h3{
   color: #ffffff !important;
 }
 .modo-alto-contraste #listaResumen li{
-  background-color: #ffffff !important;
-  color: #000000 !important;
+     background-color: #000000 !important;
+    color: #ffffff !important;
 }
 .modo-alto-contraste .total{
   color: #ffffff !important;
@@ -909,9 +909,6 @@ color: white !important;
 .fuente-legible *:not(i):not([class^="fa"]):not([class*=" fa"]) {
     font-family: 'Lexend', Arial, sans-serif !important;
 }
-.modo-claro h3{
-  background-color: #ffffff;
-}
 .modo-alto-contraste .btn-cancelar1:hover{
 background-color: red  ;
 }
@@ -958,4 +955,36 @@ background-color: red ;
 }
 .modo-alto-contraste .marcarN:hover{
   background-color: rgb(128, 0, 0);
+}
+.modo-alto-contraste .card{
+  background-color: #000000;
+}
+.modo-alto-contraste .price-selector{
+  color: white;
+  background-color: black;
+}
+.modo-alto-contraste .resumen-scroll{
+      border: 5px solid #000000;
+}
+.modo-alto-contraste .price-selector:focus{
+  color:white !important;
+ border-color: #000 !important;
+}
+.modo-alto-contraste #btnLeft{
+  background-color: #000;
+
+}
+#icono-flecha-izquierda {
+  filter: invert(0); /* Modo normal: sin cambio */
+}
+
+.modo-alto-contraste #icono-flecha-izquierda {  
+  filter: invert(1); /* Modo contraste: blanco si la imagen es negra */
+}
+#icono-flecha-derecha {
+  filter: invert(0); /* Modo normal: sin cambio */
+}
+
+.modo-alto-contraste #icono-flecha-derecha {  
+  filter: invert(1); /* Modo contraste: blanco si la imagen es negra */
 }

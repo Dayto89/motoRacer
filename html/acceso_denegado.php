@@ -1,51 +1,42 @@
 <?php
-
-
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/header.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/header.php';
+// Datos de usuario para el bloque fijo
+$id = $_SESSION['usuario_id'];
+$sql = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$row = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-    .container {
-        margin-top: 100px;
-    }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aceso Denegado</title>
+  <link rel="stylesheet" href="../css/acceso_denegado.css">
+</head>
 
-    p {
-        font-size: 30px;
-        color: white;
-    }
-</style>
+<body>
+  <div class="container">
+    <!-- Título principal fuera de la .card -->
+    <h2 class="card-title">Acceso Denegado</h2>
 
-<div class="container">
-    <h2>Acceso Denegado</h2>
-    <p>No tienes permisos para acceder a esta sección.</p>
-    <a href="dashboard.php" class="btn btn-primary">Volver al Inicio</a>
-</div>
-  <div class="userInfo">
-    <!-- Nombre y apellido del usuario y rol -->
-    <!-- Consultar datos del usuario -->
-    <?php
-    $id_usuario = $_SESSION['usuario_id'];
-    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-    $stmtUsuario = $conexion->prepare($sqlUsuario);
-    $stmtUsuario->bind_param("i", $id_usuario);
-    $stmtUsuario->execute();
-    $resultUsuario = $stmtUsuario->get_result();
-    $rowUsuario = $resultUsuario->fetch_assoc();
-    $nombreUsuario = $rowUsuario['nombre'];
-    $apellidoUsuario = $rowUsuario['apellido'];
-    $rol = $rowUsuario['rol'];
-    $foto = $rowUsuario['foto'];
-    $stmtUsuario->close();
-    ?>
-    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-    <p class="rol">Rol: <?php echo $rol; ?></p>
-
+    <div class="card">
+      <div class="icon-warning">
+      <animated-icons
+        src="https://animatedicons.co/get-icon?name=Grab%20Attention&style=minimalistic&token=4ff92fe8-3f2e-471b-beff-2c28789b1813"
+        trigger="loop"
+        attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#0056B3FF","background":"#FFFFFFFF"}}'
+        height="300"
+        width="300"></animated-icons>
+        </div>
+      <p>¡Ups! Parece que no tienes permisos para acceder a esta página</p>
+      <a href="../html/inicio.php" class="btn">Volver al Inicio</a>
+    </div>
   </div>
-  <div class="profilePic">
-    <?php if (!empty($rowUsuario['foto'])): ?>
-      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-    <?php else: ?>
-      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-    <?php endif; ?>
-  </div>
+</body>
 
+</html>

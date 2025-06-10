@@ -185,7 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($min_quantity > 0) {
         $stmtChk = $conn->prepare("
-            SELECT codigo1, nombre, cantidad, descripcion 
+            SELECT codigo1, nombre, cantidad
             FROM producto 
             WHERE cantidad < ?
         ");
@@ -197,10 +197,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     "Producto %s bajo mínimo! Stock actual: %d",
                     $prodBajo['nombre'],
                     $prodBajo['cantidad']
+    
                 );
                 try {
+                    $prodBajo5 = "nose";
                     $insertNotif = $conn->prepare("INSERT INTO notificaciones (mensaje, descripcion, fecha) VALUES (?, ?, NOW())");
-                    $insertNotif->bind_param("ss", $mensaje, $prodBajo['descripcion']);
+                    $insertNotif->bind_param("ss", $mensaje, $prodBajo5);
                     $insertNotif->execute();
                     $insertNotif->close();
                 } catch (Exception $e) {

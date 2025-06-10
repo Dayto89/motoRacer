@@ -51,8 +51,15 @@ if (!empty($valor) && !empty($criterios)) {
   }
 }
 
+// justo tras conectar a BD
+$allQ = "SELECT nit,nombre,telefono,direccion,correo,estado FROM proveedor p";
+if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
+$allRes = mysqli_query($conexion, $allQ);
+$allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
+
+
 // PAGINACIÓN
-$por_pagina = 15;
+$por_pagina = 6;
 $pagina_actual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
 $offset = ($pagina_actual - 1) * $por_pagina;
 
@@ -285,7 +292,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    .pagination {
+    .required::after {
+      content: " *";
+      color: red;
+    }
+
+    .pagination-dinamica {
       display: flex;
       justify-content: center;
       margin-top: 23px;
@@ -294,7 +306,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       font-size: 11px;
     }
 
-    .pagination a {
+    .pagination-dinamica a {
       padding: 8px 12px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
@@ -304,21 +316,42 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       transition: background-color 0.3s;
     }
 
-    .pagination a:hover {
+    .pagination-dinamica a:hover {
       background-color: rgb(158, 146, 209);
     }
 
-    .pagination a.active {
+    .pagination-dinamica a.active {
       background-color: #007bff;
       color: white;
       font-weight: bold;
       pointer-events: none;
       border-color: #007bff;
     }
+
+    /* Al arrancar, ocultamos la paginación PHP (queda como fallback) */
+    .pagination {
+      display: none;
+    }
+
+
+    #providerTable tbody tr:hover,
+    #providerTable tbody tr:hover td {
+      background-color: rgba(0, 123, 255, 0.15);
+    }
   </style>
 </head>
 
 <body>
+  <?php
+  // Justo después de tu conexión y filtros:
+  $allQ = "SELECT nit,nombre,telefono,direccion,correo,estado FROM proveedor p";
+  if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
+  $allRes = mysqli_query($conexion, $allQ);
+  $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
+  ?>
+  <script>
+    const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
+  </script>
   <div class="sidebar">
     <div id="menu"></div>
   </div>
@@ -326,24 +359,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <h1>Proveedores</h1>
     <div class="filter-bar">
       <button id="btnAbrirModal" class="btn-nuevo-proveedor"><i class="bx bx-plus bx-flip-vertical bx-beat "></i>Nuevo </button>
-      <details class="filter-dropdown">
-        <summary class="filter-button">Filtrar</summary>
-        <div class="filter-options">
-          <form method="GET" action="../html/listaproveedor.php" class="search-form">
-            <div class="criteria-group">
-              <label><input type="checkbox" name="criterios[]" value="nit"> Nit</label>
-              <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
-              <label><input type="checkbox" name="criterios[]" value="telefono"> Teléfono</label>
-              <label><input type="checkbox" name="criterios[]" value="direccion"> Dirección</label>
-              <label><input type="checkbox" name="criterios[]" value="correo"> Correo</label>
-              <label><input type="checkbox" name="criterios[]" value="estado"> Estado</label>
-            </div>
 
-        </div>
-      </details>
-      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
-      <button class="search-button" type="submit">Buscar</button>
-      </form>
+      <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+
       <div class="export-button">
         <form action="exportar_excel_proveedores.php" method="get">
           <!-- Pasa filtros actuales si los hay -->
@@ -368,17 +386,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
     <div class="table-wrapper">
       <?php if (mysqli_num_rows($resultado) > 0): ?>
-        <table>
+        <table id="providerTable">
           <thead>
             <tr>
-              <th>Nit</th>
-              <th>Nombre</th>
-              <th>Teléfono</th>
-              <th>Dirección</th>
-              <th>Correo</th>
-              <th>Estado</th>
+              <th data-col="0" data-type="string">Nit <span class="sort-arrow"></span></th>
+              <th data-col="1" data-type="string">Nombre <span class="sort-arrow"></span></th>
+              <th data-col="2" data-type="string">Teléfono <span class="sort-arrow"></span></th>
+              <th data-col="3" data-type="string">Dirección <span class="sort-arrow"></span></th>
+              <th data-col="4" data-type="string">Correo <span class="sort-arrow"></span></th>
+              <th data-col="5" data-type="string">Estado <span class="sort-arrow"></span></th>
               <th>Acciones</th>
-              <th><input type="checkbox" id="select-all"></th>
+              <th></th>
 
             </tr>
           </thead>
@@ -404,7 +422,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endwhile; ?>
           </tbody>
         </table>
-
+        <div id="jsPagination" class="pagination-dinamica"></div>
     </div>
 
     <!-- Paginación -->
@@ -481,35 +499,40 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <?php endif; ?>
 
   <!-- Modal de nuevo proveedor -->
-  <div id="nuevoModal" class="modal">
+  <div id="nuevoModal" class="modal hide">
     <div class="modal-content-nuevo">
       <h2>Nuevo Proveedor</h2>
       <form id="nuevoForm" method="POST" action="">
         <div class="form-grid">
 
           <div class="campo">
-            <label>Nit:</label>
-            <input type="text" id="nit" name="nit" required />
+            <label class="required">Nit:</label>
+            <input type="text" id="nit" name="nit" required
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
           </div>
 
           <div class="campo">
-            <label>Nombre:</label>
+            <label class="required">Nombre:</label>
             <input type="text" id="nombre" name="nombre" required />
           </div>
 
           <div class="campo">
-            <label for="telefono">Telefono:</label>
-            <input type="text" id="telefono" name="telefono" required />
+            <label class="required" for="telefono">Telefono:</label>
+            <input type="text" id="telefono" name="telefono" required
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
           </div>
 
           <div class="campo">
-            <label for="direccion">Dirección:</label>
+            <label class="required" for="direccion">Dirección:</label>
             <input type="text" id="direccion" name="direccion" required />
           </div>
           <div class="campo">
-            <label for="correo">Correo:</label>
-            <input type="text" id="correo" name="correo" required />
+            <label class="required" for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" required
+              pattern=".+@.+"
+              placeholder="ejemplo@correo.com">
           </div>
+
 
           <div class="campo">
             <label for="estado">Estado:</label>
@@ -520,19 +543,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <button type="button" id="btnCancelar">Cancelar</button>
           <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
         </div>
-
+      </form>
     </div>
-    </form>
-  </div>
   </div>
 
   <!-- Modal de edición -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <span class="close">
-        <i class="fa-solid fa-x"></i>
-      </span>
-
+  <div id="editModal" class="modal hide">
+    <div class="modal-content" id="editContent">
       <h2>Editar Proveedor</h2>
       <form id="editForm" method="post">
         <!-- Campo oculto para enviar el código 1 -->
@@ -555,78 +572,84 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div class="campo"><label for="editEstado">Estado:</label>
           <input type="text" id="editEstado" name="estado">
         </div>
-        <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
-
       </form>
+      <div class="modal-buttons">
+        <button type="button" id="btnCancelarEdit">Cancelar</button>
+        <button type="submit" id="modal-boton">Guardar </button>
+      </div>
+
     </div>
   </div>
-  </div>
+
+  <script>
+    const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
+  </script>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       // 1) Abrir/Cerrar modal "Nuevo Proveedor"
-      const modal = document.getElementById("nuevoModal");
-      const openBtn = document.getElementById("btnAbrirModal");
-      const cancelBtn = document.getElementById("btnCancelar");
-      
-      if (openBtn && modal && cancelBtn) {
-        // Asegúrate de que el modal tenga class="modal hide" inicialmente
-        openBtn.addEventListener("click", () => {
-          modal.classList.replace("hide", "show");
-          modal.style.display = "block";
+      const nuevoModal = document.getElementById("nuevoModal");
+      const openNuevo = document.getElementById("btnAbrirModal");
+      const cancelNuevo = document.getElementById("btnCancelar");
+
+      if (openNuevo && nuevoModal && cancelNuevo) {
+        // Abrir con clase .show
+        openNuevo.addEventListener("click", () => {
+          nuevoModal.classList.replace("hide", "show");
         });
-        cancelBtn.addEventListener("click", () => {
-          modal.classList.replace("show", "hide");
-          setTimeout(() => modal.style.display = "none", 300);
+        // Cerrar con botón
+        cancelNuevo.addEventListener("click", () => {
+          nuevoModal.classList.replace("show", "hide");
         });
-        window.addEventListener("click", e => {
-          if (e.target === modal) {
-            modal.classList.replace("show", "hide");
-            setTimeout(() => modal.style.display = "none", 300);
+        // Cerrar al clicar fuera
+        nuevoModal.addEventListener("click", e => {
+          if (e.target === nuevoModal) {
+            nuevoModal.classList.replace("show", "hide");
           }
         });
       }
-    });
       document.addEventListener('click', function(event) {
-    const filterDropdown = document.querySelector('.filter-dropdown');
+        const filterDropdown = document.querySelector('.filter-dropdown');
 
-    if (
-      filterDropdown.hasAttribute('open') &&
-      !filterDropdown.contains(event.target)
-    ) {
-      filterDropdown.removeAttribute('open');
-    }
-  });
-    document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionamos todos los botones de edición
-      const editButtons = document.querySelectorAll('.edit-button');
-      // Modal y botón de cierre
-      const modal = document.getElementById('editModal');
-      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
-      const closeModal = modal.querySelector('.close');
-      // Listener para cada botón de edición
-      editButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const row = this.closest('tr');
-          // Se asume que las columnas están en el siguiente orden:
-          // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
-          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
-          const nit = row.cells[0].innerText.trim();
-          document.getElementById('editNit').value = nit;
-          document.getElementById('editNitVisible').value = nit;
-          document.getElementById('editNombre').value = row.cells[1].innerText.trim();
-          document.getElementById('editTelefono').value = row.cells[2].innerText.trim();
-          document.getElementById('editDireccion').value = row.cells[3].innerText.trim();
-          document.getElementById('editCorreo').value = row.cells[4].innerText.trim();
-          document.getElementById('editEstado').value = row.cells[5].innerText.trim();
-          modal.style.display = 'block';
-        });
+        if (
+          filterDropdown.hasAttribute('open') &&
+          !filterDropdown.contains(event.target)
+        ) {
+          filterDropdown.removeAttribute('open');
+        }
       });
+    });
+    // 2) Abrir/Cerrar modal "Editar Proveedor"
+    const editButtons = document.querySelectorAll(".edit-button");
+    const editModal = document.getElementById("editModal");
+    const cancelEdit = document.getElementById("btnCancelarEdit");
 
+    if (cancelEdit && editModal) {
+      // Cerrar con botón
+      cancelEdit.addEventListener("click", () => {
+        editModal.classList.replace("show", "hide");
+      });
+      // Cerrar al clicar fuera
+      editModal.addEventListener("click", e => {
+        if (e.target === editModal) {
+          editModal.classList.replace("show", "hide");
+        }
+      });
+    }
 
-
-      // Listener para cerrar el modal
-      closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
+    // Abrir + rellenar datos
+    editButtons.forEach(btn => {
+      btn.addEventListener("click", e => {
+        const row = btn.closest("tr");
+        document.getElementById("editNit").value = row.cells[0].innerText.trim();
+        document.getElementById("editNitVisible").value = row.cells[0].innerText.trim();
+        document.getElementById("editNombre").value = row.cells[1].innerText.trim();
+        document.getElementById("editTelefono").value = row.cells[2].innerText.trim();
+        document.getElementById("editDireccion").value = row.cells[3].innerText.trim();
+        document.getElementById("editCorreo").value = row.cells[4].innerText.trim();
+        document.getElementById("editEstado").value = row.cells[5].innerText.trim();
+        // Abrir con clase .show
+        editModal.classList.replace("hide", "show");
       });
     });
 
@@ -871,35 +894,150 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
     });
   </script>
-      <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
-        <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-        $id_usuario = $_SESSION['usuario_id'];
-        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
-        $nombreUsuario = $rowUsuario['nombre'];
-        $apellidoUsuario = $rowUsuario['apellido'];
-        $rol = $rowUsuario['rol'];
-        $foto = $rowUsuario['foto'];
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
+  <div class="userInfo">
 
-    </div>
-    <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
-    </div>
+    <?php
+    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+    $id_usuario = $_SESSION['usuario_id'];
+    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+    $stmtUsuario = $conexion->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_usuario);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $rowUsuario = $resultUsuario->fetch_assoc();
+    $nombreUsuario = $rowUsuario['nombre'];
+    $apellidoUsuario = $rowUsuario['apellido'];
+    $rol = $rowUsuario['rol'];
+    $foto = $rowUsuario['foto'];
+    $stmtUsuario->close();
+    ?>
+    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+    <p class="rol">Rol: <?php echo $rol; ?></p>
+
+  </div>
+  <div class="profilePic">
+    <?php if (!empty($rowUsuario['foto'])): ?>
+      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+    <?php else: ?>
+      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+    <?php endif; ?>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const rowsPerPage = 6;
+      let currentPage = 1;
+      let filteredData = [...allData];
+
+      const tableBody = document.querySelector('#providerTable tbody');
+      const paginationContainer = document.getElementById('jsPagination');
+      const inputBusqueda = document.getElementById('searchRealtime');
+      const headers = document.querySelectorAll('#providerTable thead th');
+
+      // Render tabla
+      function renderTable() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const pageData = filteredData.slice(start, start + rowsPerPage);
+
+        tableBody.innerHTML = '';
+        pageData.forEach(row => {
+          const tr = document.createElement('tr');
+          ['nit', 'nombre', 'telefono', 'direccion', 'correo', 'estado'].forEach(f => {
+            const td = document.createElement('td');
+            td.textContent = row[f];
+            tr.appendChild(td);
+          });
+          // Acciones (usa exactamente tu HTML)
+          const tdAcc = document.createElement('td');
+          tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
+                         <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
+          tr.appendChild(tdAcc);
+          // Checkbox
+          const tdChk = document.createElement('td');
+          tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.nit}">`;
+          tr.appendChild(tdChk);
+
+          tableBody.appendChild(tr);
+        });
+        renderPaginationControls();
+      }
+
+      // Controles de paginación
+      function renderPaginationControls() {
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        if (totalPages <= 1) return;
+
+        const btn = (txt, pg) => {
+          const b = document.createElement('button');
+          b.textContent = txt;
+          if (pg === currentPage) b.classList.add('active');
+          b.onclick = () => {
+            currentPage = pg;
+            renderTable();
+          };
+          return b;
+        };
+
+        paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+
+        let start = Math.max(1, currentPage - 2),
+          end = Math.min(totalPages, currentPage + 2);
+        if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), {
+          textContent: '…'
+        }));
+        for (let i = start; i <= end; i++) paginationContainer.append(btn(i, i));
+        if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), {
+          textContent: '…'
+        }));
+
+        paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+      }
+
+      // Búsqueda en tiempo real (global)
+      inputBusqueda.addEventListener('input', () => {
+        const q = inputBusqueda.value.trim().toLowerCase();
+        filteredData = allData.filter(r =>
+          Object.values(r).some(v => v.toLowerCase().includes(q))
+        );
+        currentPage = 1;
+        renderTable();
+      });
+
+      // Ordenamiento por click en <th>
+      const sortStates = {};
+      headers.forEach((th, idx) => {
+        const type = th.dataset.type;
+        if (!type || type === 'none') return;
+        th.style.cursor = 'pointer';
+        sortStates[idx] = true;
+        th.onclick = () => {
+          sortStates[idx] = !sortStates[idx];
+          const asc = sortStates[idx];
+          filteredData.sort((a, b) => {
+            let va = a[Object.keys(a)[idx]].toLowerCase();
+            let vb = b[Object.keys(b)[idx]].toLowerCase();
+            if (type === 'number') {
+              va = +va;
+              vb = +vb;
+            }
+            return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
+          });
+          // Actualiza flechas
+          headers.forEach(h => {
+            const sp = h.querySelector('.sort-arrow');
+            if (sp) sp.textContent = '';
+          });
+          th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
+          renderTable();
+        };
+      });
+
+      // Arranca
+      renderTable();
+    });
+  </script>
+
+
 </body>
 
 </html>

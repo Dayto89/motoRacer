@@ -1,58 +1,47 @@
-<?php 
+<?php
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-if (!$conexion) {
-  die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
-}
+if (!$conexion) die("Error BD: " . mysqli_connect_error());
 
-// ---------------------------------------------------
-// 1) FILTROS (fechas y criterios de búsqueda)       //
-// ---------------------------------------------------
+// 1) Construcción de filtros
 $filtros = [];
-
-// (A) Lectura y sanitización de fechas
-$fecha_desde_input = isset($_GET['fecha_desde']) ? trim($_GET['fecha_desde']) : '';
-$fecha_hasta_input = isset($_GET['fecha_hasta']) ? trim($_GET['fecha_hasta']) : '';
-if (!empty($fecha_desde_input) || !empty($fecha_hasta_input)) {
-  if (!empty($fecha_desde_input) && !empty($fecha_hasta_input)) {
-    $fecha_desde = mysqli_real_escape_string($conexion, $fecha_desde_input) . " 00:00:00";
-    $fecha_hasta = mysqli_real_escape_string($conexion, $fecha_hasta_input) . " 23:59:59";
-    $filtros[] = "f.fechaGeneracion BETWEEN '$fecha_desde' AND '$fecha_hasta'";
-  } elseif (!empty($fecha_desde_input)) {
-    $fecha_desde = mysqli_real_escape_string($conexion, $fecha_desde_input) . " 00:00:00";
-    $filtros[] = "f.fechaGeneracion >= '$fecha_desde'";
-  } else {
-    $fecha_hasta = mysqli_real_escape_string($conexion, $fecha_hasta_input) . " 23:59:59";
-    $filtros[] = "f.fechaGeneracion <= '$fecha_hasta'";
-  }
+if (!empty($_GET['fecha_desde']) && !empty($_GET['fecha_hasta'])) {
+  $d = mysqli_real_escape_string($conexion, $_GET['fecha_desde']) . ' 00:00:00';
+  $h = mysqli_real_escape_string($conexion, $_GET['fecha_hasta']) . ' 23:59:59';
+  $filtros[] = "f.fechaGeneracion BETWEEN '$d' AND '$h'";
 }
+if (!empty($_GET['busqueda'])) {
+  $b = mysqli_real_escape_string($conexion, $_GET['busqueda']);
+  $filtros[] = "(
+        f.codigo LIKE '%$b%' OR
+        f.nombreUsuario LIKE '%$b%' OR f.apellidoUsuario LIKE '%$b%' OR
+        f.nombreCliente LIKE '%$b%' OR f.apellidoCliente LIKE '%$b%' OR
+        f.Cliente_codigo LIKE '%$b%' OR
+        f.precioTotal LIKE '%$b%' OR
+        EXISTS(
+          SELECT 1 FROM factura_metodo_pago mp
+          WHERE mp.Factura_codigo = f.codigo
+            AND mp.metodoPago LIKE '%$b%'
+        )
+    )";
+}
+$where = $filtros ? ' WHERE ' . implode(' AND ', $filtros) : '';
 
-// (B) Lectura de criterios de búsqueda
-$criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
-
-// ---------------------------------------------------
-// 2) CONSULTA PRINCIPAL: traemos **TODOS** los datos //
-//    (sin LIMIT ni OFFSET) para pasarlos a JS        //
-// ---------------------------------------------------
-$sql = "
-  SELECT 
+// 2) Datos completos para JS (sin paginar)
+$jsQ = "SELECT
     f.codigo,
     f.fechaGeneracion,
-    f.Usuario_identificacion, 
     f.nombreUsuario,
     f.apellidoUsuario,
-    f.Cliente_codigo,
     f.nombreCliente,
     f.apellidoCliente,
-    f.telefonoCliente,
-    f.identificacionCliente,
+    f.Cliente_codigo,
     f.cambio,
     f.precioTotal,
     f.activo,
@@ -60,176 +49,119 @@ $sql = "
     GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
   FROM factura f
   LEFT JOIN factura_metodo_pago m ON m.Factura_codigo = f.codigo
-";
-if (!empty($filtros)) {
-  $sql .= " WHERE " . implode(' AND ', $filtros);
-}
-$sql .= "
-  GROUP BY 
+  $where
+  GROUP BY
+    f.codigo, f.fechaGeneracion,
+    f.nombreUsuario, f.apellidoUsuario,
+    f.nombreCliente, f.apellidoCliente,
+    f.Cliente_codigo, f.cambio,
+    f.precioTotal, f.activo, f.observacion";
+$jsData = mysqli_fetch_all(mysqli_query($conexion, $jsQ), MYSQLI_ASSOC);
+
+// 3) Paginación PHP
+$perPage = 8;
+$page    = max(1, (int)($_GET['pagina'] ?? 1));
+$offset  = ($page - 1) * $perPage;
+$countQ  = "SELECT COUNT(DISTINCT f.codigo) AS total
+  FROM factura f
+  LEFT JOIN factura_metodo_pago m ON m.Factura_codigo = f.codigo
+  $where";
+$total   = mysqli_fetch_assoc(mysqli_query($conexion, $countQ))['total'];
+$totalPg = ceil($total / $perPage);
+
+// 4) Consulta paginada
+$sql = "SELECT
     f.codigo,
     f.fechaGeneracion,
-    f.Usuario_identificacion,
+    CONCAT(f.nombreUsuario,' ',f.apellidoUsuario) AS usuario,
+    CONCAT(f.nombreCliente,' ',f.apellidoCliente) AS cliente,
     f.Cliente_codigo,
+    f.cambio,
     f.precioTotal,
-    f.nombreUsuario,
-    f.apellidoUsuario,
-    f.nombreCliente,
-    f.apellidoCliente,
-    f.telefonoCliente,
-    f.identificacionCliente,
     f.activo,
-    f.observacion
-  ORDER BY f.fechaGeneracion DESC
-";
+    f.observacion,
+    GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
+  FROM factura f
+  LEFT JOIN factura_metodo_pago m ON m.Factura_codigo = f.codigo
+  $where
+  GROUP BY
+    f.codigo, f.fechaGeneracion, usuario, cliente,
+    f.Cliente_codigo, f.cambio, f.precioTotal, f.activo, f.observacion
+  LIMIT $perPage OFFSET $offset";
+$resultado = mysqli_query($conexion, $sql) or die("Error consulta: " . mysqli_error($conexion));
 
-$resultado = mysqli_query($conexion, $sql);
-if (!$resultado) {
-  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
 
-// Recorrer todos los resultados en un array PHP
-$todosLosDatos = [];
-while ($fila = mysqli_fetch_assoc($resultado)) {
-    $todosLosDatos[] = $fila;
-}
-
-// ELIMINAR FACTURA (igual que antes)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
-  header('Content-Type: application/json');
-  $response = ['success' => false, 'error' => ''];
-  try {
-    $codigo = $_POST['codigo'];
-    mysqli_begin_transaction($conexion);
-
-    // 1) Eliminar métodos de pago
-    $stmt1 = $conexion->prepare("DELETE FROM factura_metodo_pago WHERE Factura_codigo = ?");
-    $stmt1->bind_param("i", $codigo);
-    if (!$stmt1->execute()) throw new Exception("Error en tabla factura_metodo_pago: " . $stmt1->error);
-
-    // 2) Eliminar productos de la factura
-    $stmt2 = $conexion->prepare("DELETE FROM producto_factura WHERE Factura_codigo = ?");
-    $stmt2->bind_param("i", $codigo);
-    if (!$stmt2->execute()) throw new Exception("Error en tabla producto_factura: " . $stmt2->error);
-
-    // 3) Eliminar la factura en sí
-    $stmt3 = $conexion->prepare("DELETE FROM factura WHERE codigo = ?");
-    $stmt3->bind_param("i", $codigo);
-    if (!$stmt3->execute()) throw new Exception("Error en tabla factura: " . $stmt3->error);
-
-    mysqli_commit($conexion);
-    $response['success'] = true;
-  } catch (Exception $e) {
-    mysqli_rollback($conexion);
-    $response['error'] = $e->getMessage();
-  } finally {
-    if (isset($stmt1)) $stmt1->close();
-    if (isset($stmt2)) $stmt2->close();
-    if (isset($stmt3)) $stmt3->close();
-  }
-  echo json_encode($response);
-  exit;
-}
-
-// REDIRECCIÓN A RECIBO (igual que antes)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['factura_id'])) {
   $_SESSION['factura_id'] = $_POST['factura_id'];
   header("Location: recibo.php");
   exit();
 }
 
+// PAGINACIÓN
+$por_pagina = 6;
+$pagina_actual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($pagina_actual - 1) * $por_pagina;
+
+// Conteo total con filtros
+$sql_count = "SELECT COUNT(*) AS total FROM proveedor p
+ WHERE 1=1";
+if (!empty($filtros)) {
+  $sql_count .= " AND (" . implode(' OR ', $filtros) . ")";
+}
+$res_count = mysqli_query($conexion, $sql_count);
+$row_count = mysqli_fetch_assoc($res_count);
+$total_reg = $row_count['total'];
+$total_paginas = ceil($total_reg / $por_pagina);
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reportes</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-
-  <!-- =============================== -->
-  <!-- 1) CSS Propios y Fuentes         -->
-  <!-- =============================== -->
+  <link rel="preload" as="image" href="https://animatedicons.co/get-icon?name=delete&style=minimalistic&token=c1352b7b-2e14-4124-b8fd-a064d7e44225">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../css/reporte.css" />
   <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <link rel="stylesheet" href="../componentes/header.php">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
+  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-  </style>
-
-  <!-- =============================== -->
-  <!-- 4) ESTILOS ADICIONALES (inline)    -->
-  <!-- =============================== -->
-  <style>
-    /* Resaltado de fila seleccionada */
-    #reportTable tbody tr.selected {
-      background-color: rgba(0, 123, 255, 0.15);
-    }
-    #reportTable tbody tr.selected td {
-      background-color: rgba(0, 123, 255, 0.15);
-    }
-
-    /* Cursor pointer en encabezados, para indicar que son clicables */
-    #reportTable th {
-      cursor: pointer;
-      position: relative;
-      user-select: none;
-    }
-
-    /* Flecha de ordenamiento en cada <th> */
-    .sort-arrow {
-      margin-left: 5px;
-      font-size: 0.8em;
-      display: inline-block;
-      width: 0.8em;
-      text-align: center;
-    }
-
-    /* Botón para "Activo/Inactivo" */
-    .btn-activo {
-      padding: 4px 8px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85em;
-    }
-    .btn-activo.activo {
-      background-color: #28a745;
-      color: white;
-    }
-    .btn-activo.inactivo {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    /* Estilos básicos para paginación (se generará dinámicamente) */
+    /* ocultar sólo la paginación estática de PHP */
     .pagination {
+      display: none;
+    }
+
+    /* estilos para la paginación dinámica (reutiliza los tuyos) */
+    .pagination-dinamica {
       display: flex;
       justify-content: center;
       margin-top: 20px;
       gap: 5px;
-      flex-wrap: wrap;
     }
-    .pagination button {
-      padding: 6px 10px;
+
+    .pagination-dinamica button {
+      padding: 8px 12px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
-      color: #333;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.9em;
     }
-    .pagination button:hover:not(.active) {
+
+    .pagination-dinamica button:hover:not(.active) {
       background-color: rgb(158, 146, 209);
     }
-    .pagination button.active {
+
+    .pagination-dinamica button.active {
       background-color: #007bff;
       color: white;
       font-weight: bold;
@@ -237,553 +169,404 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       border-color: #007bff;
     }
 
-    /* Estilos para la barra de búsqueda externa */
-    .search-bar-container {
-      margin-bottom: 15px;
-      text-align: right; /* la colocamos a la derecha */
-    }
-    .search-bar-container input[type="text"] {
-      width: 250px;
-      padding: 6px 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    /* hover sobre filas */
+    #facturaTable tbody tr:hover,
+    #facturaTable tbody tr:hover td {
+      background-color: rgba(0, 123, 255, 0.15);
     }
   </style>
 </head>
 
 <body>
+
+
+
+  <script>
+    function eliminarFactura(codigo) {
+      Swal.fire({
+        title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+        html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+          </div>
+          <p>¿Quieres eliminar la factura <strong>${codigo}</strong> y todos sus datos asociados?</p>
+        </div>
+      `,
+        background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#dc3545', // Rojo para botón eliminar
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-eliminar',
+          cancelButton: 'btn-cancelar',
+          container: 'fondo-oscuro'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch('../html/reportes.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+            })
+            .then(response => {
+              if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+              return response.json();
+            })
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  title: '<span class="titulo-alerta confirmacion">Exito</span>',
+                  html: `
+                <div class="custom-alert">
+                  <div class="contenedor-imagen">
+                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                  </div>
+                  <p>La factura <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
+                </div>
+              `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire("Error", data.error || "No se pudo completar la eliminación", "error");
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              Swal.fire("Error", "Error al conectar con el servidor", "error");
+            });
+        }
+      });
+    }
+  </script>
+
   <div class="sidebar">
     <div id="menu"></div>
   </div>
-
   <div class="main-content">
     <h1>Reportes</h1>
-
-    <!-- =============================== -->
-    <!-- 6) FILTROS / BÚSQUEDA            -->
-    <!-- =============================== -->
     <div class="filter-bar">
       <details class="filter-dropdown">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
-          <!-- Formulario de filtros: fechas + criterios -->
-          <form id="formFiltros" method="GET" action="../html/reportes.php" class="search-form">
-            <div class="criteria-group">
-              <label>
-                <input type="checkbox" name="criterios[]" value="codigo"
-                       <?php echo in_array('codigo', $criterios) ? 'checked' : ''; ?>>
-                Código
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="fechaGeneracion"
-                       <?php echo in_array('fechaGeneracion', $criterios) ? 'checked' : ''; ?>>
-                Fecha
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="metodoPago"
-                       <?php echo in_array('metodoPago', $criterios) ? 'checked' : ''; ?>>
-                Método pago
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="vendedor"
-                       <?php echo in_array('vendedor', $criterios) ? 'checked' : ''; ?>>
-                Vendedor
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="cliente"
-                       <?php echo in_array('cliente', $criterios) ? 'checked' : ''; ?>>
-                Cliente
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="precioTotal"
-                       <?php echo in_array('precioTotal', $criterios) ? 'checked' : ''; ?>>
-                Total
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="activo"
-                       <?php echo in_array('activo', $criterios) ? 'checked' : ''; ?>>
-                Activo
-              </label>
-              <label>
-                <input type="checkbox" name="criterios[]" value="observacion"
-                       <?php echo in_array('observacion', $criterios) ? 'checked' : ''; ?>>
-                Observación
-              </label>
-            </div>
-
-            <div class="date-filters">
-              <label>
-                Desde: <input type="date" name="fecha_desde"
-                              value="<?php echo htmlspecialchars($fecha_desde_input); ?>">
-              </label>
-              <label>
-                Hasta: <input type="date" name="fecha_hasta"
-                              value="<?php echo htmlspecialchars($fecha_hasta_input); ?>">
-              </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
-              Aplicar filtros
-            </button>
-          </form>
+          <div class="criteria-group">
+            <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
+            <label><input type="checkbox" name="criterios[]" value="fechaGeneracion"> Fecha</label>
+            <label><input type="checkbox" name="criterios[]" value="metodoPago"> Método pago</label>
+            <label><input type="checkbox" name="criterios[]" value="vendedor"> Vendedor</label>
+            <label><input type="checkbox" name="criterios[]" value="cliente"> Cliente</label>
+            <label><input type="checkbox" name="criterios[]" value="precioTotal"> Total</label>
+          </div>
+          <div class="date-filters">
+            <label>Desde: <input type="date" name="fecha_desde"></label>
+            <label>Hasta: <input type="date" name="fecha_hasta"></label>
+          </div>
+          <!-- Barra de búsqueda principal -->
         </div>
       </details>
-
-      <!-- == BARRA DE BÚSQUEDA EXTERNA == -->
-      <div class="search-bar-container">
-        <form onsubmit="return false;">
-          <input id="barraReportes" type="text"
-                 placeholder="Buscar en resultados..."
-                 autocomplete="off">
-        </form>
-      </div>
+      <input type="text" id="barraReportes" name="valor" placeholder="Ingrese el valor a buscar">
+      <?php
+      // Justo después de tu conexión y filtros:
+      $allQ = "SELECT
+    f.codigo,
+    f.fechaGeneracion,
+    f.nombreUsuario,
+    f.apellidoUsuario,
+    f.nombreCliente,
+    f.apellidoCliente,
+    f.Cliente_codigo,
+    f.cambio,
+    f.precioTotal,
+    f.activo,
+    f.observacion,
+    GROUP_CONCAT(DISTINCT m.metodoPago SEPARATOR ', ') AS metodoPago
+  FROM factura f
+  LEFT JOIN factura_metodo_pago m ON m.Factura_codigo = f.codigo
+  " . ($where ? "WHERE $where" : "") . "
+  GROUP BY
+    f.codigo, f.fechaGeneracion,
+    f.nombreUsuario, f.apellidoUsuario,
+    f.nombreCliente, f.apellidoCliente,
+    f.Cliente_codigo, f.cambio,
+    f.precioTotal, f.activo, f.observacion";
+      $allRes  = mysqli_query($conexion, $allQ);
+      $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
+      ?>
+      <script>
+        // json_encode una sola vez
+        const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
+      </script>
 
       <div class="export-button">
         <form action="excel_reporte.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
+
+            <!-- Agregar este botón junto al botón de exportar -->
             <i class="fas fa-file-excel"></i>
             <label> Exportar a Excel</label>
           </button>
         </form>
-        <button id="delete-selected" class="btn btn-danger" style="display: none;">
-          <i class="fa-solid fa-trash"></i>
-        </button>
       </div>
-    </div>
 
-    <!-- =============================== -->
-    <!-- 7) TABLA con id="reportTable"     -->
-    <!-- =============================== -->
+    </div>
     <div class="table-wrapper">
-      <table id="reportTable">
-        <thead>
-          <tr>
-            <th data-col="0" data-type="number">
-              Código<span class="sort-arrow"></span>
-            </th>
-            <th data-col="1" data-type="string">
-              Fecha<span class="sort-arrow"></span>
-            </th>
-            <th data-col="2" data-type="string">
-              Método de Pago<span class="sort-arrow"></span>
-            </th>
-            <th data-col="3" data-type="string">
-              Vendedor<span class="sort-arrow"></span>
-            </th>
-            <th data-col="4" data-type="string">
-              Cliente<span class="sort-arrow"></span>
-            </th>
-            <th data-col="5" data-type="string">
-              Teléfono<span class="sort-arrow"></span>
-            </th>
-            <th data-col="6" data-type="string">
-              Cédula Cliente<span class="sort-arrow"></span>
-            </th>
-            <th data-col="7" data-type="number">
-              Total<span class="sort-arrow"></span>
-            </th>
-            <th data-col="8" data-type="string">
-              Activo<span class="sort-arrow"></span>
-            </th>
-            <th data-col="9" data-type="string">
-              Observación<span class="sort-arrow"></span>
-            </th>
-            <th data-col="10" data-type="none">
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Se llenará dinámicamente con JavaScript -->
-        </tbody>
-      </table>
+      <?php if (mysqli_num_rows($resultado) > 0): ?>
+        <table id="facturaTable">
+          <thead>
+            <tr>
+              <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
+              <th data-col="1" data-type="string">Fecha<span class="sort-arrow"></span></th>
+              <th data-col="2" data-type="string">Usuario<span class="sort-arrow"></span></th>
+              <th data-col="3" data-type="string">Cliente<span class="sort-arrow"></span></th>
+              <th data-col="4" data-type="string">Cliente ID<span class="sort-arrow"></span></th>
+              <th data-col="5" data-type="number">Total<span class="sort-arrow"></span></th>
+              <th data-col="6" data-type="string">Activo<span class="sort-arrow"></span></th>
+              <th data-col="7" data-type="string">Observación<span class="sort-arrow"></span></th>
+              <th data-col="8" data-type="string">Método Pago<span class="sort-arrow"></span></th>
+              <th data-col="9" data-type="none">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
+              <tr>
+                <td><?= htmlspecialchars($fila['codigo']) ?></td>
+                <td><?= htmlspecialchars($fila['fechaGeneracion']) ?></td>
+                <!-- Para usuario y cliente ya tienes la concatenación en el SELECT paginado: -->
+                <td><?= htmlspecialchars($fila['usuario']) ?></td>
+                <td><?= htmlspecialchars($fila['cliente']) ?></td>
+                <td><?= htmlspecialchars($fila['Cliente_codigo']) ?></td>
+                <td><?= number_format($fila['precioTotal'], 2) ?></td>
+                <td><?= htmlspecialchars($fila['activo']) ?></td>
+                <td><?= htmlspecialchars($fila['observacion']) ?></td>
+                <td><?= htmlspecialchars($fila['metodoPago']) ?></td>
+                <td>
+                  <form method="POST"><input name="factura_id" type="hidden" value="<?= $fila['codigo'] ?>">
+                    <button class="recibo-button"><i class="bx bx-search-alt"></i></button>
+                  </form>
+                </td>
+              </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
+        <div id="jsPagination" class="pagination-dinamica"></div>
+      <?php else: ?>
+        <p>No se encontraron resultados con los criterios seleccionados.</p>
+      <?php endif; ?>
     </div>
 
-    <!-- =============================== -->
-    <!-- 8) Contenedor para paginación JS -->
-    <!-- =============================== -->
-    <div id="paginationContainer" class="pagination"></div>
 
-    <!-- =============================== -->
-    <!-- 9) Código JavaScript para manejar -->
-    <!--      - carga de datos             -->
-    <!--      - filtrado en tiempo real     -->
-    <!--      - ordenamiento por columnas   -->
-    <!--      - paginación dinámica         -->
-    <!--      - toggle de 'activo' vía AJAX -->
-    <!-- =============================== -->
+    <?php if ($total_paginas > 1): ?>
+      <div class="pagination">
+        <?php
+        // Construir query base conservando filtros
+        $base_params = $_GET;
+        ?>
+        <!-- Primera -->
+        <?php
+        $base_params['pagina'] = 1;
+        $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">« Primera</a>
+
+        <!-- Anterior -->
+        <?php if ($pagina_actual > 1): ?>
+          <?php
+          $base_params['pagina'] = $pagina_actual - 1;
+          $url = '?' . http_build_query($base_params);
+          ?>
+          <a href="<?= $url ?>">‹ Anterior</a>
+        <?php endif; ?>
+
+        <?php
+        // Rango de páginas: dos antes y dos después
+        $start = max(1, $pagina_actual - 2);
+        $end   = min($total_paginas, $pagina_actual + 2);
+
+        // Si hay hueco antes, muestra ellipsis
+        if ($start > 1) {
+          echo '<span class="ellips" style="color:white">…</span>';
+        }
+
+        // Botones de páginas
+        for ($i = $start; $i <= $end; $i++):
+          $base_params['pagina'] = $i;
+          $url = '?' . http_build_query($base_params);
+        ?>
+          <a href="<?= $url ?>"
+            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
+            <?= $i ?>
+          </a>
+        <?php endfor;
+
+        // Si hay hueco después, muestra ellipsis
+        if ($end < $total_paginas) {
+          echo '<span class="ellips" style="color:white">…</span>';
+        }
+        ?>
+
+        <!-- Siguiente -->
+        <?php if ($pagina_actual < $total_paginas): ?>
+          <?php
+          $base_params['pagina'] = $pagina_actual + 1;
+          $url = '?' . http_build_query($base_params);
+          ?>
+          <a href="<?= $url ?>">Siguiente ›</a>
+        <?php endif; ?>
+
+        <!-- Última -->
+        <?php
+        $base_params['pagina'] = $total_paginas;
+        $url = '?' . http_build_query($base_params);
+        ?>
+        <a href="<?= $url ?>">Última »</a>
+      </div>
+    <?php endif; ?>
     <script>
-      // 1) Convertimos el array PHP $todosLosDatos a un array JS
-      const allData = <?php echo json_encode($todosLosDatos, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
-
-      // 2) Variables de estado
-      let filteredData = [...allData]; // comienza idéntico a allData
-      const rowsPerPage = 10;
-      let currentPage = 1;
-      const tableBody = document.querySelector('#reportTable tbody');
-      const paginationContainer = document.getElementById('paginationContainer');
-      const inputBusqueda = document.getElementById('barraReportes');
-
-      // 3) Función para obtener valor “limpio” de un campo según criterio de filtro
-      function getFieldValue(rowObj, criterion) {
-        switch(criterion) {
-          case 'codigo':
-            return rowObj.codigo.toString().toLowerCase();
-          case 'fechaGeneracion':
-            return rowObj.fechaGeneracion.toLowerCase();
-          case 'metodoPago':
-            return (rowObj.metodoPago || '').toLowerCase();
-          case 'vendedor':
-            return (rowObj.nombreUsuario + ' ' + rowObj.apellidoUsuario).toLowerCase();
-          case 'cliente':
-            return (rowObj.nombreCliente + ' ' + rowObj.apellidoCliente).toLowerCase();
-          case 'telefonoCliente':
-            return (rowObj.telefonoCliente || '').toLowerCase();
-          case 'identificacionCliente':
-            return (rowObj.identificacionCliente || '').toLowerCase();
-          case 'precioTotal':
-            return rowObj.precioTotal.toString().toLowerCase();
-          case 'activo':
-            return (rowObj.activo ? 'activo' : 'inactivo').toLowerCase();
-          case 'observacion':
-            return (rowObj.observacion || '').toLowerCase();
-          default:
-            return '';
-        }
-      }
-
-      // 4) Función para ordenar `filteredData` según índice de columna
-      function getCellValueForSort(rowObj, colIndex) {
-        switch(colIndex) {
-          case 0: return parseInt(rowObj.codigo) || 0;
-          case 1: return rowObj.fechaGeneracion.toLowerCase();
-          case 2: return (rowObj.metodoPago || '').toLowerCase();
-          case 3: return (rowObj.nombreUsuario + ' ' + rowObj.apellidoUsuario).toLowerCase();
-          case 4: return (rowObj.nombreCliente + ' ' + rowObj.apellidoCliente).toLowerCase();
-          case 5: return (rowObj.telefonoCliente || '').toLowerCase();
-          case 6: return (rowObj.identificacionCliente || '').toLowerCase();
-          case 7: return parseFloat(rowObj.precioTotal) || 0;
-          case 8: return (rowObj.activo ? 'activo' : 'inactivo').toLowerCase();
-          case 9: return (rowObj.observacion || '').toLowerCase();
-          default: return '';
-        }
-      }
-      function sortData(colIndex, asc = true) {
-        filteredData.sort((a, b) => {
-          const valA = getCellValueForSort(a, colIndex);
-          const valB = getCellValueForSort(b, colIndex);
-          if (valA < valB) return asc ? -1 : 1;
-          if (valA > valB) return asc ? 1 : -1;
-          return 0;
+      // funcion de los checkboxes
+      document.getElementById("select-all").addEventListener("change", function() {
+        let checkboxes = document.querySelectorAll(".select-product");
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
         });
-      }
+      });
 
-      // 5) Función que pinta las filas de la página actual en <tbody>
-      function renderTable() {
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const pageData = filteredData.slice(start, end);
+      document.addEventListener("DOMContentLoaded", function() {
+        let selectAllCheckbox = document.getElementById("select-all");
+        let checkboxes = document.querySelectorAll(".select-product");
+        let deleteButton = document.getElementById("delete-selected");
 
-        tableBody.innerHTML = '';
-        pageData.forEach((rowObj, index) => {
-          const tr = document.createElement('tr');
+        function toggleDeleteButton() {
+          let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+          deleteButton.style.display = anyChecked ? "inline-block" : "none";
+        }
 
-          // 1) Código
-          let td = document.createElement('td');
-          td.textContent = rowObj.codigo;
-          tr.appendChild(td);
-
-          // 2) Fecha
-          td = document.createElement('td');
-          td.textContent = rowObj.fechaGeneracion;
-          tr.appendChild(td);
-
-          // 3) Método de Pago
-          td = document.createElement('td');
-          td.textContent = rowObj.metodoPago;
-          tr.appendChild(td);
-
-          // 4) Vendedor
-          td = document.createElement('td');
-          td.textContent = rowObj.nombreUsuario + ' ' + rowObj.apellidoUsuario;
-          tr.appendChild(td);
-
-          // 5) Cliente
-          td = document.createElement('td');
-          td.textContent = rowObj.nombreCliente + ' ' + rowObj.apellidoCliente;
-          tr.appendChild(td);
-
-          // 6) Teléfono
-          td = document.createElement('td');
-          td.textContent = rowObj.telefonoCliente;
-          tr.appendChild(td);
-
-          // 7) Cédula Cliente
-          td = document.createElement('td');
-          td.textContent = rowObj.identificacionCliente;
-          tr.appendChild(td);
-
-          // 8) Total
-          td = document.createElement('td');
-          td.textContent = Number(rowObj.precioTotal).toLocaleString();
-          tr.appendChild(td);
-
-          // 9) Activo como botón
-          td = document.createElement('td');
-          const btnActivo = document.createElement('button');
-          btnActivo.textContent = rowObj.activo ? 'Activo' : 'Inactivo';
-          btnActivo.classList.add('btn-activo');
-          btnActivo.classList.add(rowObj.activo ? 'activo' : 'inactivo');
-          btnActivo.addEventListener('click', () => {
-            toggleActivo(rowObj.codigo, rowObj.activo ? 0 : 1, btnActivo, rowObj);
+        selectAllCheckbox.addEventListener("change", function() {
+          checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
           });
-          td.appendChild(btnActivo);
-          tr.appendChild(td);
-
-          // 10) Observación
-          td = document.createElement('td');
-          td.textContent = rowObj.observacion || '';
-          tr.appendChild(td);
-
-          // 11) Acciones (ver recibo)
-          td = document.createElement('td');
-          td.classList.add('acciones');
-          const form = document.createElement('form');
-          form.method = 'POST';
-          const hidden = document.createElement('input');
-          hidden.type = 'hidden';
-          hidden.name = 'factura_id';
-          hidden.value = rowObj.codigo;
-          form.appendChild(hidden);
-          const btn = document.createElement('button');
-          btn.type = 'submit';
-          btn.className = 'recibo-button';
-          btn.title = 'Ver recibo';
-          btn.innerHTML = "<i class='bx bx-search-alt' style='color:#fffbfb'></i>";
-          form.appendChild(btn);
-          td.appendChild(form);
-          tr.appendChild(td);
-
-          // Resaltar fila al clic
-          tr.addEventListener('click', () => {
-            tr.classList.toggle('selected');
-          });
-
-          tableBody.appendChild(tr);
+          toggleDeleteButton();
         });
 
-        renderPaginationControls();
-      }
-
-      // 6) Función para generar controles de paginación en #paginationContainer
-      function renderPaginationControls() {
-        paginationContainer.innerHTML = '';
-        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-        if (totalPages <= 1) return;
-
-        // Botón “« Primera”
-        const btnFirst = document.createElement('button');
-        btnFirst.textContent = '« Primera';
-        btnFirst.disabled = (currentPage === 1);
-        btnFirst.addEventListener('click', () => {
-          currentPage = 1;
-          renderTable();
+        checkboxes.forEach(checkbox => {
+          checkbox.addEventListener("change", toggleDeleteButton);
         });
-        if (currentPage === 1) btnFirst.classList.add('active');
-        paginationContainer.appendChild(btnFirst);
 
-        // Botón “‹ Anterior”
-        const btnPrev = document.createElement('button');
-        btnPrev.textContent = '‹ Anterior';
-        btnPrev.disabled = (currentPage === 1);
-        btnPrev.addEventListener('click', () => {
-          if (currentPage > 1) currentPage--;
-          renderTable();
-        });
-        if (currentPage === 1) btnPrev.classList.add('active');
-        paginationContainer.appendChild(btnPrev);
+        deleteButton.addEventListener("click", function() {
+          let selectedCodes = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
-        // Botones de páginas (hasta 5 alrededor de currentPage)
-        let startPage = Math.max(1, currentPage - 2);
-        let endPage = Math.min(totalPages, currentPage + 2);
-        if (currentPage <= 2) {
-          endPage = Math.min(5, totalPages);
-        }
-        if (currentPage >= totalPages - 1) {
-          startPage = Math.max(1, totalPages - 4);
-        }
-
-        if (startPage > 1) {
-          const ellipsis = document.createElement('button');
-          ellipsis.textContent = '…';
-          ellipsis.disabled = true;
-          paginationContainer.appendChild(ellipsis);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-          const btnPage = document.createElement('button');
-          btnPage.textContent = i;
-          if (i === currentPage) btnPage.classList.add('active');
-          btnPage.addEventListener('click', () => {
-            currentPage = i;
-            renderTable();
-          });
-          paginationContainer.appendChild(btnPage);
-        }
-
-        if (endPage < totalPages) {
-          const ellipsis2 = document.createElement('button');
-          ellipsis2.textContent = '…';
-          ellipsis2.disabled = true;
-          paginationContainer.appendChild(ellipsis2);
-        }
-
-        // Botón “Siguiente ›”
-        const btnNext = document.createElement('button');
-        btnNext.textContent = 'Siguiente ›';
-        btnNext.disabled = (currentPage === totalPages);
-        btnNext.addEventListener('click', () => {
-          if (currentPage < totalPages) currentPage++;
-          renderTable();
-        });
-        if (currentPage === totalPages) btnNext.classList.add('active');
-        paginationContainer.appendChild(btnNext);
-
-        // Botón “Última »”
-        const btnLast = document.createElement('button');
-        btnLast.textContent = 'Última »';
-        btnLast.disabled = (currentPage === totalPages);
-        btnLast.addEventListener('click', () => {
-          currentPage = totalPages;
-          renderTable();
-        });
-        if (currentPage === totalPages) btnLast.classList.add('active');
-        paginationContainer.appendChild(btnLast);
-      }
-
-      // 7) Función de filtrado en tiempo real, respetando criterios seleccionados
-      function applyFilter() {
-        const query = inputBusqueda.value.trim().toLowerCase();
-        // Obtenemos los criterios marcados en el formulario de filtros
-        const checkedBoxes = document.querySelectorAll('input[name="criterios[]"]:checked');
-        const selectedCriteria = Array.from(checkedBoxes).map(cb => cb.value);
-
-        if (query === '') {
-          // Si no hay texto, volvemos a todos los datos
-          filteredData = [...allData];
-        } else if (selectedCriteria.length === 0) {
-          // Si ningún criterio está marcado, búsqueda "global"
-          filteredData = allData.filter(row => {
-            const composite = 
-              row.codigo + ' ' +
-              row.fechaGeneracion + ' ' +
-              row.metodoPago + ' ' +
-              row.nombreUsuario + ' ' +
-              row.apellidoUsuario + ' ' +
-              row.nombreCliente + ' ' +
-              row.apellidoCliente + ' ' +
-              row.telefonoCliente + ' ' +
-              row.identificacionCliente + ' ' +
-              row.precioTotal + ' ' +
-              (row.activo ? 'activo' : 'inactivo') + ' ' +
-              row.observacion;
-            return composite.toString().toLowerCase().includes(query);
-          });
-        } else {
-          // Si hay uno o más criterios, buscamos solo en esos campos
-          filteredData = allData.filter(row => {
-            for (const crit of selectedCriteria) {
-              const fieldValue = getFieldValue(row, crit);
-              if (fieldValue.includes(query)) {
-                return true;
+          if (selectedCodes.length === 0) {
+            Swal.fire({
+              title: "Advertencia",
+              html: `
+      <div class="alerta">
+        <div class="contenedor-imagen">
+          <img src="../imagenes/advertencia.png" class="tornillo">
+        </div>
+        <p>Selecciona al menos una factura para eliminar.</p>
+      </div>
+    `,
+              confirmButtonText: "Aceptar",
+              customClass: {
+                confirmButton: "btn-aceptar",
+                popup: "custom-alert"
               }
-            }
-            return false;
-          });
-        }
-
-        currentPage = 1;
-        renderTable();
-      }
-
-      // 8) Control de ordenamiento en encabezados (igual que antes, pero sobre filteredData)
-      const thead = document.querySelector('#reportTable thead');
-      const sortStates = {};
-
-      thead.querySelectorAll('th').forEach(th => {
-        const colIndex = parseInt(th.getAttribute('data-col'), 10);
-        const type = th.getAttribute('data-type');
-        if (!type || type === 'none') return;
-
-        sortStates[colIndex] = true;
-
-        th.addEventListener('click', () => {
-          sortStates[colIndex] = !sortStates[colIndex];
-          sortData(colIndex, sortStates[colIndex]);
-
-          thead.querySelectorAll('th .sort-arrow').forEach(span => {
-            span.textContent = '';
-          });
-          const arrowSpan = th.querySelector('.sort-arrow');
-          arrowSpan.textContent = sortStates[colIndex] ? '▲' : '▼';
-
-          renderTable();
-        });
-      });
-
-      // 9) Función para cambiar el estado "activo" vía AJAX
-      function toggleActivo(codigo, nuevoEstado, btn, rowObj) {
-        fetch('toggle_activo.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: `codigo=${encodeURIComponent(codigo)}&nuevo_estado=${encodeURIComponent(nuevoEstado)}`
-        })
-        .then(resp => resp.json())
-        .then(data => {
-          if (data.success) {
-            // Actualizamos el texto y la clase del botón
-            rowObj.activo = (data.nuevo_estado == 1);
-            btn.textContent = rowObj.activo ? 'Activo' : 'Inactivo';
-            btn.classList.toggle('activo', rowObj.activo);
-            btn.classList.toggle('inactivo', !rowObj.activo);
-          } else {
-            Swal.fire("Error", data.error || "No se pudo cambiar el estado", "error");
+            });
+            return;
           }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire("Error", "Error al conectar con el servidor", "error");
+
+          Swal.fire({
+            title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+            html: `
+    <div class="custom-alert">
+      <div class="contenedor-imagen">
+        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+      </div>
+      <p>¿Quieres eliminar <strong>${selectedCodes.length}</strong> factura(s)?</p>
+    </div>
+  `,
+            background: '#ffffffdb',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#dc3545', // Rojo para botón eliminar
+            customClass: {
+              popup: 'swal2-border-radius',
+              confirmButton: 'btn-eliminar',
+              cancelButton: 'btn-cancelar',
+              container: 'fondo-oscuro'
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              console.log("Enviando códigos a eliminar:", selectedCodes);
+
+              fetch("../html/eliminar_factura.php", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    codigos: selectedCodes
+                  })
+                })
+                .then(response => response.json())
+                .then(data => {
+                  console.log("Respuesta del servidor:", data);
+                  if (data.success) {
+                    Swal.fire({
+                      title: '<span class="titulo-alerta confirmacion">FActuras Elimindas</span>',
+                      html: `
+              <div class="custom-alert">
+                <div class="contenedor-imagen">
+                  <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                </div>
+                <p>Las facturas fueron eliminadas correctamente.</p>
+              </div>
+            `,
+                      confirmButtonText: "Aceptar",
+                      customClass: {
+                        confirmButton: "btn-aceptar",
+                        popup: "custom-alert"
+                      }
+                    }).then(() => {
+                      location.reload();
+                    });
+                  } else {
+                    Swal.fire("Error", data.error || "No se pudo completar la eliminación", "error");
+                  }
+                })
+                .catch(error => {
+                  console.error("Error en la solicitud:", error);
+                  Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
+                });
+            }
+          });
         });
-      }
-
-      // 10) Configurar “input” para filtrado en tiempo real (con debounce)
-      let debounceTimeout = null;
-      inputBusqueda.addEventListener('input', () => {
-        if (debounceTimeout) clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-          applyFilter();
-        }, 300);
-      });
-
-      // 11) Al cargar la página, pintamos todo por primera vez
-      document.addEventListener('DOMContentLoaded', () => {
-        renderTable();
       });
     </script>
 
-    <!-- =============================== -->
-    <!-- 10) DATOS USUARIO (Nombre, Rol, Foto) -->
-    <!-- =============================== -->
     <div class="userInfo">
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
       <?php
-      $conexion2 = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
       $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto 
-                       FROM usuario 
-                      WHERE identificacion = ?";
-      $stmtUsuario = $conexion2->prepare($sqlUsuario);
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
       $stmtUsuario->bind_param("i", $id_usuario);
       $stmtUsuario->execute();
       $resultUsuario = $stmtUsuario->get_result();
@@ -796,6 +579,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       ?>
       <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
       <p class="rol">Rol: <?php echo $rol; ?></p>
+
     </div>
     <div class="profilePic">
       <?php if (!empty($rowUsuario['foto'])): ?>
@@ -805,6 +589,173 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <?php endif; ?>
     </div>
 
-  </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+
+        console.log("allData:", allData);
+        // Configuración
+        const rowsPerPage = 8;
+        let currentPage = 1;
+        let filteredData = [...allData];
+        console.log("filteredData tras input:", filteredData);
+
+        // Selectores
+        const tableBody = document.querySelector('#facturaTable tbody');
+        const pagination = document.getElementById('jsPagination');
+        const searchInput = document.getElementById('barraReportes');
+        const headers = document.querySelectorAll('#facturaTable thead th');
+
+        // 1) Define campos, con objetos composite para unir nombre+apellido
+        const fields = [
+          'codigo',
+          'fechaGeneracion',
+          {
+            composite: ['nombreUsuario', 'apellidoUsuario']
+          },
+
+          {
+            composite: ['nombreCliente', 'apellidoCliente']
+          },
+          'Cliente_codigo',
+          'precioTotal',
+          'activo',
+          'observacion',
+          'metodoPago'
+        ];
+
+        // Helper: obtiene valor (string o number) listo para comparar
+        function getFieldValue(obj, fld) {
+          let val;
+          if (typeof fld === 'string') {
+            val = obj[fld];
+          } else {
+            val = fld.composite.map(k => obj[k]).join(' ');
+          }
+          // Normalizamos a cadena y pasamos a minúsculas:
+          return String(val ?? '').toLowerCase();
+        }
+
+
+
+        // 2) Renderiza la tabla según filteredData y currentPage
+        function renderTable() {
+          const start = (currentPage - 1) * rowsPerPage;
+          const page = filteredData.slice(start, start + rowsPerPage);
+
+          tableBody.innerHTML = '';
+          page.forEach(row => {
+            const tr = document.createElement('tr');
+            fields.forEach((fld, idx) => {
+              const td = document.createElement('td');
+              if (typeof fld === 'string') {
+                td.textContent = row[fld];
+              } else {
+                td.textContent = fld.composite.map(k => row[k]).join(' ');
+              }
+              tr.appendChild(td);
+            });
+            // Columna de acciones (manten tu HTML)
+            const tdA = document.createElement('td');
+            tdA.innerHTML = `
+        <form method="POST">
+          <input type="hidden" name="factura_id" value="${row.codigo}">
+          <button type="submit" class="recibo-button">
+            <i class='bx bx-search-alt'></i>
+          </button>
+        </form>`;
+            tr.appendChild(tdA);
+
+            tableBody.appendChild(tr);
+          });
+          renderPaginationControls();
+        }
+
+        // 3) Paginación dinámica
+        function renderPaginationControls() {
+          pagination.innerHTML = '';
+          const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+          if (totalPages <= 1) return;
+
+          const makeBtn = (txt, pg) => {
+            const btn = document.createElement('button');
+            btn.textContent = txt;
+            if (pg === currentPage) btn.classList.add('active');
+            btn.addEventListener('click', () => {
+              currentPage = pg;
+              renderTable();
+            });
+            return btn;
+          };
+
+          pagination.append(makeBtn('«', 1), makeBtn('‹', Math.max(1, currentPage - 1)));
+
+          let start = Math.max(1, currentPage - 2),
+            end = Math.min(totalPages, currentPage + 2);
+
+          if (start > 1) pagination.append(Object.assign(document.createElement('span'), {
+            textContent: '…'
+          }));
+          for (let i = start; i <= end; i++) pagination.append(makeBtn(i, i));
+          if (end < totalPages) pagination.append(Object.assign(document.createElement('span'), {
+            textContent: '…'
+          }));
+
+          pagination.append(makeBtn('›', Math.min(totalPages, currentPage + 1)),
+            makeBtn('»', totalPages));
+        }
+
+        // 4) Búsqueda en tiempo real (filtra en todos los campos, incluidos composite)
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  filteredData = allData.filter(row =>
+    fields.some((fld, idx) => {
+      const th = headers[idx];
+      const type = th.dataset.type;
+      if (!type || type === 'none') return false;
+      // Ahora getFieldValue ya devuelve siempre string:
+      return getFieldValue(row, fields[idx]).includes(q);
+    })
+  );
+  currentPage = 1;
+  renderTable();
+});
+
+
+        // Ordenamiento por click en <th>
+        const sortStates = {};
+        headers.forEach((th, idx) => {
+          const type = th.dataset.type;
+          if (!type || type === 'none') return;
+          th.style.cursor = 'pointer';
+          sortStates[idx] = true;
+          th.onclick = () => {
+            sortStates[idx] = !sortStates[idx];
+            const asc = sortStates[idx];
+            filteredData.sort((a, b) => {
+              let va = a[Object.keys(a)[idx]].toLowerCase();
+              let vb = b[Object.keys(b)[idx]].toLowerCase();
+              if (type === 'number') {
+                va = +va;
+                vb = +vb;
+              }
+              return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
+            });
+            // Actualiza flechas
+            headers.forEach(h => {
+              const sp = h.querySelector('.sort-arrow');
+              if (sp) sp.textContent = '';
+            });
+            th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
+            renderTable();
+          };
+        });
+
+        // 6) Inicializa
+
+
+        renderTable();
+      });
+    </script>
 </body>
+
 </html>

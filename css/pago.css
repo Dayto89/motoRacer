@@ -287,7 +287,16 @@ button {
     border-radius: 23px;
     font-size: 14px;
 }
-
+.btn-editar{
+   flex-shrink: 0;
+    background-color: #5496c3;
+    cursor: pointer;
+    width: 22vh;
+    height: 41px;
+    color: white;
+    border-radius: 15px;
+    font-size: 14px;
+}
 .plus-icon h3 {
   font-family: Arial, sans-serif;
   text-shadow: -1px 1px 0 rgb(85 170 239);

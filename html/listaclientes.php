@@ -14,7 +14,7 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 
-//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 // Conexión a la base de datos
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
             'image' => 'llave.png'
         ];
     }
-    header("Location: ".$_SERVER['PHP_SELF']);
+    header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
@@ -94,6 +94,12 @@ if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios']))
         $filtros[] = "$criterio LIKE '%$valor%'";
     }
 }
+
+// justo tras conectar a BD
+$allQ = "SELECT codigo,identificacion,nombre,apellido,telefono,correo FROM cliente";
+if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
+$allRes = mysqli_query($conexion, $allQ);
+$allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
 
 $por_pagina = 10;
 $pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
@@ -141,16 +147,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
-    
+
     <style>
-        .pagination {
+        .pagination-dinamica {
             display: flex;
             justify-content: center;
             margin-top: 20px;
             gap: 5px;
         }
 
-        .pagination a {
+        .pagination-dinamica a {
             padding: 8px 12px;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
@@ -160,11 +166,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             transition: background-color 0.3s;
         }
 
-        .pagination a:hover {
+        .pagination-dinamica a:hover {
             background-color: rgb(158, 146, 209);
         }
 
-        .pagination a.active {
+        .pagination-dinamica a.active {
             background-color: #007bff;
             color: white;
             font-weight: bold;
@@ -172,11 +178,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             border-color: #007bff;
         }
 
-       
+        /* Al arrancar, ocultamos la paginación PHP (queda como fallback) */
+        .pagination {
+            display: none;
+        }
+
+
+        #clientesTable tbody tr:hover,
+        #clientesTable tbody tr:hover td {
+            background-color: rgba(0, 123, 255, 0.15);
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
+    </script>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
@@ -184,37 +202,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="main-content">
         <h1>Clientes</h1>
         <div class="filter-bar">
-            <!-- Filtros adaptados -->
-            <details class="filter-dropdown">
-                <summary class="filter-button">Filtrar</summary>
-                <div class="filter-options">
-                    <form method="GET" action="../html/listaclientes.php" class="search-form">
-                        <div class="criteria-group">
-                            <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
-                            <label><input type="checkbox" name="criterios[]" value="identificacion"> Identificación</label>
-                            <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
-                            <label><input type="checkbox" name="criterios[]" value="apellido"> Apellido</label>
-                            <label><input type="checkbox" name="criterios[]" value="telefono"> Teléfono</label>
-                            <label><input type="checkbox" name="criterios[]" value="correo"> Correo</label>
-                        </div>
-                </div>
-            </details>
-            <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
-            <button class="search-button" type="submit">Buscar</button>
-            </form>
+            <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
         </div>
 
         <?php if (mysqli_num_rows($resultado) > 0): ?>
-            <table>
+            <table id="clientesTable">
                 <thead>
                     <tr>
-                        <th>Código</th>
-                        <th>Identificación</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
-                        <th>Acciones</th>
+                        <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
+                        <th data-col="1" data-type="string">Identificación<span class="sort-arrow"></span></th>
+                        <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
+                        <th data-col="3" data-type="string">Apellido<span class="sort-arrow"></span></th>
+                        <th data-col="4" data-type="string">Teléfono<span class="sort-arrow"></span></th>
+                        <th data-col="5" data-type="string">Correo<span class="sort-arrow"></span></th>
+                        <th data-col="6" data-type="none">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -238,7 +239,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <?php endwhile; ?>
                 </tbody>
             </table>
-            
+            <div id="jsPagination" class="pagination-dinamica"></div>
             <!-- Modal de edición -->
             <div id="editModal" class="modal">
                 <div class="modal-content">
@@ -322,10 +323,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <!-- Mostrar alertas desde sesión -->
 <?php if (isset($_SESSION['alert'])): ?>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        title: '<span class="titulo-alerta confirmacion <?= $_SESSION['alert']['type'] ?>"><?= $_SESSION['alert']['title'] ?></span>',
-        html: `
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '<span class="titulo-alerta confirmacion <?= $_SESSION['alert']['type'] ?>"><?= $_SESSION['alert']['title'] ?></span>',
+                html: `
             <div class="custom-alert">
                 <div class="contenedor-imagen">
                     <img class="<?= $_SESSION['alert']['type'] ?>" src="../imagenes/<?= $_SESSION['alert']['image'] ?>" alt="<?= $_SESSION['alert']['title'] ?>">
@@ -333,22 +334,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p><?= $_SESSION['alert']['message'] ?></p>
             </div>
         `,
-        background: '#ffffffdb',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '<?= $_SESSION['alert']['type'] === 'success' ? '#007bff' : '#dc3545' ?>',
-        customClass: {
-            popup: 'swal2-border-radius',
-            confirmButton: 'btn-aceptar',
-            container: 'fondo-oscuro'
-        }
-    }).then(() => {
-        <?php if (isset($_SESSION['alert']['redirect'])): ?>
-            window.location.href = '<?= $_SESSION['alert']['redirect'] ?>';
-        <?php endif; ?>
-    });
-    <?php unset($_SESSION['alert']); ?>
-});
-</script>
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '<?= $_SESSION['alert']['type'] === 'success' ? '#007bff' : '#dc3545' ?>',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            }).then(() => {
+                <?php if (isset($_SESSION['alert']['redirect'])): ?>
+                    window.location.href = '<?= $_SESSION['alert']['redirect'] ?>';
+                <?php endif; ?>
+            });
+            <?php unset($_SESSION['alert']); ?>
+        });
+    </script>
 <?php endif; ?>
 
 <script>
@@ -409,18 +410,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch('../html/listaclientes.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: '<span class="titulo-alerta confirmacion"> Eliminado</span>',
-                            html: `
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '<span class="titulo-alerta confirmacion"> Eliminado</span>',
+                                html: `
                                 <div class="custom-alert">
                                     <div class="contenedor-imagen">
                                         <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
@@ -428,21 +429,21 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <p>El cliente <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
                                 </div>
                             `,
-                            background: '#ffffffdb',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#007bff',
-                            customClass: {
-                                popup: 'swal2-border-radius',
-                                confirmButton: 'btn-aceptar',
-                                container: 'fondo-oscuro'
-                            }
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: '<span class="titulo-alerta error">Error</span>',
-                            html: `
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#007bff',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: '<span class="titulo-alerta error">Error</span>',
+                                html: `
                                 <div class="custom-alert">
                                     <div class="contenedor-imagen">
                                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -450,6 +451,28 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <p>${data.error || 'Error al eliminar el cliente'}</p>
                                 </div>
                             `,
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#dc3545',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta error">Error</span>',
+                            html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                </div>
+                                <p>Error al eliminar el cliente, puede tener registros de ventas.</p>
+                            </div>
+                        `,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -459,61 +482,158 @@ document.addEventListener('DOMContentLoaded', function() {
                                 container: 'fondo-oscuro'
                             }
                         });
-                    }
-                })
-                .catch(error => {
-                    Swal.fire({
-                        title: '<span class="titulo-alerta error">Error</span>',
-                        html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
-                                </div>
-                                <p>Error al eliminar el cliente, puede tener registros de ventas.</p>
-                            </div>
-                        `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
                     });
-                });
             }
         });
     }
 </script>
-    <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
-        <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-        $id_usuario = $_SESSION['usuario_id'];
-        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
-        $nombreUsuario = $rowUsuario['nombre'];
-        $apellidoUsuario = $rowUsuario['apellido'];
-        $rol = $rowUsuario['rol'];
-        $foto = $rowUsuario['foto'];
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
+<div class="userInfo">
+    <!-- Nombre y apellido del usuario y rol -->
+    <!-- Consultar datos del usuario -->
+    <?php
+    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+    $id_usuario = $_SESSION['usuario_id'];
+    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+    $stmtUsuario = $conexion->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_usuario);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $rowUsuario = $resultUsuario->fetch_assoc();
+    $nombreUsuario = $rowUsuario['nombre'];
+    $apellidoUsuario = $rowUsuario['apellido'];
+    $rol = $rowUsuario['rol'];
+    $foto = $rowUsuario['foto'];
+    $stmtUsuario->close();
+    ?>
+    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+    <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
-    </div>
+</div>
+<div class="profilePic">
+    <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+    <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+    <?php endif; ?>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rowsPerPage = 6;
+        let currentPage = 1;
+        let filteredData = [...allData];
+
+        console.log("allData:", allData);
+        console.log("filteredData tras input:", filteredData);
+
+        const tableBody = document.querySelector('#clientesTable tbody');
+        const paginationContainer = document.getElementById('jsPagination');
+        const inputBusqueda = document.getElementById('searchRealtime');
+        const headers = document.querySelectorAll('#clientesTable thead th');
+
+        // Render tabla
+        function renderTable() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const pageData = filteredData.slice(start, start + rowsPerPage);
+
+            tableBody.innerHTML = '';
+            pageData.forEach(row => {
+                const tr = document.createElement('tr');
+                ['codigo', 'identificacion', 'nombre', 'apellido', 'telefono', 'correo'].forEach(f => {
+                    const td = document.createElement('td');
+                    td.textContent = row[f];
+                    tr.appendChild(td);
+                });
+                // Acciones (usa exactamente tu HTML)
+                const tdAcc = document.createElement('td');
+                tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
+                         <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
+                tr.appendChild(tdAcc);
+                // Checkbox
+                const tdChk = document.createElement('td');
+                tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.nit}">`;
+                tr.appendChild(tdChk);
+
+                tableBody.appendChild(tr);
+            });
+            renderPaginationControls();
+        }
+
+        // Controles de paginación
+        function renderPaginationControls() {
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            if (totalPages <= 1) return;
+
+            const btn = (txt, pg) => {
+                const b = document.createElement('button');
+                b.textContent = txt;
+                if (pg === currentPage) b.classList.add('active');
+                b.onclick = () => {
+                    currentPage = pg;
+                    renderTable();
+                };
+                return b;
+            };
+
+            paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+
+            let start = Math.max(1, currentPage - 2),
+                end = Math.min(totalPages, currentPage + 2);
+            if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), {
+                textContent: '…'
+            }));
+            for (let i = start; i <= end; i++) paginationContainer.append(btn(i, i));
+            if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), {
+                textContent: '…'
+            }));
+
+            paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+        }
+
+        // Búsqueda en tiempo real (global)
+        inputBusqueda.addEventListener('input', () => {
+            const q = inputBusqueda.value.trim().toLowerCase();
+            filteredData = allData.filter(r =>
+                Object.values(r).some(v => v.toLowerCase().includes(q))
+            );
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Ordenamiento por click en <th>
+        const sortStates = {};
+        headers.forEach((th, idx) => {
+            const type = th.dataset.type;
+            if (!type || type === 'none') return;
+            th.style.cursor = 'pointer';
+            sortStates[idx] = true;
+            th.onclick = () => {
+                sortStates[idx] = !sortStates[idx];
+                const asc = sortStates[idx];
+                filteredData.sort((a, b) => {
+                    let va = a[Object.keys(a)[idx]].toLowerCase();
+                    let vb = b[Object.keys(b)[idx]].toLowerCase();
+                    if (type === 'number') {
+                        va = +va;
+                        vb = +vb;
+                    }
+                    return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
+                });
+                // Actualiza flechas
+                headers.forEach(h => {
+                    const sp = h.querySelector('.sort-arrow');
+                    if (sp) sp.textContent = '';
+                });
+                th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
+                renderTable();
+            };
+        });
+
+        // Arranca
+        renderTable();
+    });
+</script>
 </body>
+
 </html>

@@ -94,7 +94,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </thead>
       <tbody>
         <?php
-        $sql = "SELECT * FROM usuario";
+        $sql = "SELECT * FROM usuario WHERE rol = 'gerente'";
         $result = $conexion->query($sql);
         while ($row = $result->fetch_assoc()) {
           echo "<tr>";

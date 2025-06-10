@@ -28,7 +28,6 @@ $consulta = "SELECT
   p.precio2, 
   p.precio3, 
   p.cantidad, 
-  p.descripcion,
   p.Categoria_codigo    AS categoria_id,
   c.nombre              AS categoria,
   p.Marca_codigo        AS marca_id,
@@ -45,7 +44,7 @@ LEFT JOIN marca m ON p.Marca_codigo = m.codigo
 LEFT JOIN unidadmedida u ON p.UnidadMedida_codigo = u.codigo
 LEFT JOIN ubicacion ub ON p.Ubicacion_codigo = ub.codigo
 LEFT JOIN proveedor pr ON p.proveedor_nit = pr.nit
-ORDER BY p.nombre ASC"; 
+ORDER BY p.nombre ASC";
 
 $resultado = mysqli_query($conexion, $consulta);
 if (!$resultado) {
@@ -55,7 +54,7 @@ if (!$resultado) {
 // Construimos un array PHP con TODAS las filas
 $todosLosDatos = [];
 while ($fila = mysqli_fetch_assoc($resultado)) {
-    $todosLosDatos[] = $fila;
+  $todosLosDatos[] = $fila;
 }
 
 // ——————————————————————————————————————————————————————————
@@ -71,7 +70,6 @@ if (isset($_POST['codigo1'])) {
   $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
   $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
   $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
-  $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
   $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
   $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
   $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
@@ -86,7 +84,6 @@ if (isset($_POST['codigo1'])) {
         precio2 = '$precio2', 
         precio3 = '$precio3', 
         cantidad = '$cantidad', 
-        descripcion = '$descripcion', 
         Categoria_codigo = '$categoria', 
         Marca_codigo = '$marca', 
         UnidadMedida_codigo = '$unidadmedida', 
@@ -197,13 +194,26 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
+     .required::after {
+      content: " *";
+      color: red;
+    }
     /* ------------------------------------------------- */
     /* Estilos para filtrado/ordenamiento/resaltado     */
     /* ------------------------------------------------- */
     /* Resaltado de fila seleccionada */
-    table tbody tr.selected {
-      background-color: rgba(0, 123, 255, 0.15);
-    }
+    /* #productTable table tbody tr.selected {
+  background-color: rgba(0, 123, 255, 0.15);
+}
+#productTable tbody tr.selected td {
+  background-color: rgba(0, 123, 255, 0.15);
+} */
+
+#productTable tbody tr:hover,
+#productTable tbody tr:hover td {
+  background-color: rgba(0, 123, 255, 0.15);
+}
+
 
     /* Cursor pointer en encabezados para indicar que son clicables */
     table th {
@@ -302,7 +312,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <!-- Caja de búsqueda en tiempo real (cliente) -->
       <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
 
-            <!-- Botón exportar a Excel (agregado de nuevo) -->
+      <!-- Botón exportar a Excel (agregado de nuevo) -->
       <div class="export-button" style="margin-left: 15px;">
         <form action="exportar_excel.php" method="post">
           <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
@@ -330,7 +340,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <th data-col="5" data-type="number">Precio 2<span class="sort-arrow"></span></th>
             <th data-col="6" data-type="number">Precio 3<span class="sort-arrow"></span></th>
             <th data-col="7" data-type="number">Cantidad<span class="sort-arrow"></span></th>
-            <th data-col="8" data-type="string">Descripción<span class="sort-arrow"></span></th>
             <th data-col="9" data-type="string">Categoría<span class="sort-arrow"></span></th>
             <th data-col="10" data-type="string">Marca<span class="sort-arrow"></span></th>
             <th data-col="11" data-type="string">Clase<span class="sort-arrow"></span></th>
@@ -338,7 +347,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <th data-col="13" data-type="string">Proveedor<span class="sort-arrow"></span></th>
             <th data-col="14" data-type="none">Acciones</th>
             <th data-col="15" data-type="none">
-              <input type="checkbox" id="select-all">
+
             </th>
           </tr>
         </thead>
@@ -364,38 +373,39 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <input type="hidden" id="editCodigo1" name="codigo1">
         <div class="campo">
           <label for="editCodigo1Visible">Código:</label>
-          <input type="text" id="editCodigo1Visible" readonly>
+          <input type="text" id="editCodigo1Visible" disabled>
         </div>
         <div class="campo">
           <label for="editCodigo2">Código 2:</label>
-          <input type="text" id="editCodigo2" name="codigo2">
+          <input type="text" id="editCodigo2" name="codigo2"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo">
-          <label for="editNombre">Nombre:</label>
+          <label class="required" for="editNombre">Nombre:</label>
           <input type="text" id="editNombre" name="nombre">
         </div>
         <div class="campo">
-          <label for="editPrecio1">Precio 1:</label>
-          <input type="text" id="editPrecio1" name="precio1">
+          <label class="required" for="editPrecio1">Precio 1:</label>
+          <input type="text" id="editPrecio1" name="precio1"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo">
-          <label for="editPrecio2">Precio 2:</label>
-          <input type="text" id="editPrecio2" name="precio2">
+          <label class="required" for="editPrecio2">Precio 2:</label>
+          <input type="text" id="editPrecio2" name="precio2"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo">
-          <label for="editPrecio3">Precio 3:</label>
-          <input type="text" id="editPrecio3" name="precio3">
+          <label class="required" for="editPrecio3">Precio 3:</label>
+          <input type="text" id="editPrecio3" name="precio3"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo">
-          <label for="editCantidad">Cantidad:</label>
-          <input type="text" id="editCantidad" name="cantidad">
+          <label class="required" for="editCantidad">Cantidad:</label>
+          <input type="text" id="editCantidad" name="cantidad"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo">
-          <label for="editDescripcion">Descripción:</label>
-          <input type="text" id="editDescripcion" name="descripcion">
-        </div>
-        <div class="campo">
-          <label for="editCategoria">Categoría:</label>
+          <label class="required" for="editCategoria">Categoría:</label>
           <select name="categoria-id" id="editCategoria" required>
             <option value="">Seleccione una categoría</option>
             <?php
@@ -413,7 +423,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           </select>
         </div>
         <div class="campo">
-          <label for="editMarca">Marca:</label>
+          <label class="required" for="editMarca">Marca:</label>
           <select name="marca-id" id="editMarca" required>
             <option value="">Seleccione una marca</option>
             <?php
@@ -428,7 +438,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           </select>
         </div>
         <div class="campo">
-          <label for="editUnidadMedida">Clase:</label>
+          <label class="required" for="editUnidadMedida">Clase:</label>
           <select name="unidadmedida-id" id="editUnidadMedida" required>
             <option value="">Seleccione una medida</option>
             <?php
@@ -443,7 +453,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           </select>
         </div>
         <div class="campo">
-          <label for="editUbicacion">Ubicación:</label>
+          <label class="required" for="editUbicacion">Ubicación:</label>
           <select name="ubicacion-id" id="editUbicacion" required>
             <option value="">Seleccione una ubicación</option>
             <?php
@@ -458,7 +468,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           </select>
         </div>
         <div class="campo">
-          <label for="editProveedor">Proveedor:</label>
+          <label class="required" for="editProveedor">Proveedor:</label>
           <select name="proveedor-id" id="editProveedor" required>
             <option value="">Seleccione un proveedor</option>
             <?php
@@ -558,6 +568,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           return '';
       }
     }
+
     function sortData(colIndex, asc = true) {
       filteredData.sort((a, b) => {
         const valA = getCellValueForSort(a, colIndex);
@@ -618,11 +629,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         td.textContent = rowObj.cantidad;
         tr.appendChild(td);
 
-        // 9) Descripción
-        td = document.createElement('td');
-        td.textContent = rowObj.descripcion;
-        tr.appendChild(td);
-
         // 10) Categoría
         td = document.createElement('td');
         td.textContent = rowObj.categoria;
@@ -679,12 +685,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         td.appendChild(checkbox);
         tr.appendChild(td);
 
+        // Resaltar fila al clic
+        //tr.addEventListener('click', () => {
+         // tr.classList.toggle('selected');
+        //});
+
         tableBody.appendChild(tr);
       });
 
       renderPaginationControls();
       attachEditButtonListeners();
-      attachRowHighlightListeners();   // <-- volvemos a añadir a cada <tr>
       attachCheckboxListeners();
     }
 
@@ -786,7 +796,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       } else if (selectedCriteria.length === 0) {
         // Búsqueda global en todas las columnas si no hay criterios
         filteredData = allData.filter(row => {
-          const composite = 
+          const composite =
             row.codigo1 + ' ' +
             row.codigo2 + ' ' +
             row.nombre + ' ' +
@@ -795,7 +805,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             row.precio2 + ' ' +
             row.precio3 + ' ' +
             row.cantidad + ' ' +
-            row.descripcion + ' ' +
             row.categoria + ' ' +
             row.marca + ' ' +
             row.unidadmedida + ' ' +
@@ -850,14 +859,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     // ============================================================
     // 5) RESALTADO DE FILA: listener en cada <tr>
     // ============================================================
-    function attachRowHighlightListeners() {
-      const rows = document.querySelectorAll('#productTable tbody tr');
-      rows.forEach(row => {
-        row.addEventListener('click', () => {
-          row.classList.toggle('selected');
-        });
-      });
-    }
+    //function attachRowHighlightListeners() {
+    //  const rows = document.querySelectorAll('#productTable tbody tr');
+    //  rows.forEach(row => {
+    //    row.addEventListener('click', () => {
+    //      row.classList.toggle('selected');
+    //    });
+    //  });
+    //}
 
     // ============================================================
     // 6) SELECCIÓN MÚLTIPLE: activar botón Eliminar Múltiple
@@ -908,8 +917,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           if (result.isConfirmed) {
             fetch("eliminar_productos.php", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ codigos: selectedCodes })
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  codigos: selectedCodes
+                })
               })
               .then(response => response.json())
               .then(data => {
@@ -975,7 +988,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
           document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
           document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
-          document.getElementById('editDescripcion').value = row.cells[8].innerText.trim();
           document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
           document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
           document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
@@ -1018,7 +1030,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         if (result.isConfirmed) {
           fetch('listaproductos.php', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
               body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
             })
             .then(response => {

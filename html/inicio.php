@@ -67,6 +67,7 @@ $foto = $rowUsuario['foto'];
 $stmtUsuario->close();
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -194,6 +195,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+    <?php include 'boton-ayuda.php'; ?>
+
     <div id="menu"></div>
     <div class="fondo"></div>
 

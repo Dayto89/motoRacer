@@ -836,108 +836,68 @@ input[type="file"] {
     /* Ajusta según necesites */
     font-size: 20px;
 }
-
-
-/*Alertas*/
-
-
-/* Estilos generales de los párrafos */
-p {
-    font-size: 16px;
-    color: black;
-    font-family: arial;
-    padding: 10px;
+input#cantidad{
+    width: 126%;
 }
 
-
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%;
-    /* Se ajusta automáticamente */
-    max-width: 350px;
-    /* Define un límite de ancho */
+/* si el codigo esta duplicado*/
+/* Input con borde y fondo rojo suave */
+input.error {
+  border: 2px solid red;
+  background-color: #ffe6e6;
 }
 
-
-/* Imágenes dentro del modal */
-.custom-alert .moto,
-.custom-alert .llave,
-.custom-alert .tornillo {
-    width: 177px;
-    height: 130px;
+/* Asegura que cada .campo sea el contexto relativo */
+.campo {
+  position: relative;
 }
 
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-    position: relative;
-    display: inline-block;
+input.error {
+  border: 2px solid red;
+  background-color: #ffe6e6;
 }
 
-
-
-.titulo-alerta {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 10px;
-    font-family: 'Arial Black', sans-serif;
-    letter-spacing: 1px;
+/* Si quieres que TODO el componente .campo también se marque */
+.campo.error {
+  /* fondo claro para todo el bloque */
+  background-color: #ffe6e6;
+  /* opcional: un pequeño padding extra para destacar */
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 
-.titulo-alerta.confirmacion {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #9b9496;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+/* Estilo del tooltip emergente */
+.small-error-tooltip {
+    position: absolute;
+    top: 71%;
+    left: -137px;
+    transform: translateY(-50%);
+    background-color: #ffe6e6;
+    border: 1px solid red;
+    color: red;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    display: none;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.titulo-alerta.error {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #af3b3b;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+/* Flecha pequeña apuntando al input */
+.small-error-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+  border-width: 6px 0 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent #ffe6e6;
 }
 
-.titulo-alerta.advertencia {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #e09804;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-
-.btn-aceptar {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-.swal2-border-radius {
-    border-radius: 5px !important;
-}
-
-
-
-.fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    /* Fondo oscuro */
-    backdrop-filter: blur(2px);
-    /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-    border-radius: 20px;
-}
+/*---------------------------------------------------------------------------------------------------------*/
 
 /* MÓVILES */
 /* Horizontal */

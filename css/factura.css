@@ -17,14 +17,13 @@
 }
 
 .titulo {
+  color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
     font-family: "Metal Mania", system-ui;
-    font-size: 50px;
-    margin-bottom: -7px;
-    margin-top: 0px;
-    color: white;
+    font-size: 70px;
     text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
-    margin-left: 41%;
-    letter-spacing: 5px;
 }
 
 ul.breadcrumb {
@@ -210,17 +209,15 @@ body::before {
     border: none;
     cursor: pointer;
     padding: 0px 0px 20px 40px;
-    margin-right: 8px;
-    font-size: 3em;
+    margin-right: 10px;
+    font-size: 2.5em;
     text-shadow: 3px 1px 0 #1c51a0, 2px 3px 0 #1c51a0;
 }
 
 .search-bar input {
     border: none;
     outline: none;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 1.7em;
+    font-size: 1.5em;
     margin-bottom: 10px;
 }
 
@@ -255,6 +252,7 @@ body::before {
     font-weight: bold;
     font-size: 16px;
     margin-bottom: 2px;
+    text-transform: uppercase;
 }
 
 .product-price {
@@ -377,10 +375,10 @@ body::before {
 
 .iconos-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-around;  
     align-items: center;
     margin-top: 10px;
-    margin-bottom: auto;
+    margin-bottom: 25px;
 }
 
 a.brand {
@@ -431,10 +429,14 @@ a.brand {
     padding: 10px;
     margin-top: 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
+    background-color: #007bff;
+  color: white;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
 }
-
 .btn-precuenta {
     background: #ddd;
     color: #666;
@@ -452,11 +454,7 @@ a.brand {
 /* Contenedor de la lista con scroll */
 .resumen-scroll {
     max-height: 70%;
-    /* Ajusta la altura según necesidad */
     overflow-y: auto;
-    border: 5px solid #ccc;
-    background: #f9f9f9;
-    border-radius: 5px;
 }
 
 /* Personalizar la barra de desplazamiento */
@@ -749,8 +747,8 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 .card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    color: #fff;
+    justify-content: flex-end;
+    color: #ffffffc9;
     width: 150px;
     border-radius: 10px;
     margin: 10px;
@@ -838,9 +836,9 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 }
 
 .breadcrumb .brand:hover {
-    background-color: #66666668;
-    border-radius: 5px;
-    height: 40px;
+    background-color: #1859a381;
+    border-radius: 10px;
+    height: 20px;
     align-items: center;
 }
 
@@ -852,14 +850,15 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     margin: 4px;
     min-width: 100px;
     /* opcional */
-    height: 40px;
+    height: 20px;
     text-decoration: none;
     color: black;
     /* mantiene el texto negro */
     font-weight: 500;
     background-color: transparent;
-    border-radius: 10px;
+    border-radius: 5px;
     transition: background-color 0.3s ease, opacity 0.3s ease;
+    text-transform: uppercase;
 }
 
 .breadcrumb .brand:hover {
@@ -875,7 +874,7 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 }
 
 .barraModulos {
-    background-color: rgb(255, 255, 255);
+    background-color: white;
 }
 
 #categoriaScroll {
@@ -1005,5 +1004,12 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
   color: red;
   border-color: red;
 }
-
-
+.modo-alto-contraste .breadcrumb .brand:hover {
+    background-color: #ffffffbc;
+    border-radius: 5px;
+    height: 20px;
+    align-items: center;
+}
+.modo-alto-contraste .barraModulos{
+    border: 1px solid #ccc;
+}

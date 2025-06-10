@@ -235,11 +235,15 @@ p {
 }
 
 /*Parametros contraseña*/
+/* Cada .campo como contenedor relativo */
+.campo {
+  position: relative;
+}
 
+/* Requisitos de contraseña */
 .requisitos {
     list-style: none;
     padding-left: 0;
-    
 }
 
 
@@ -247,9 +251,8 @@ p {
 .requisitos li {
     text-decoration: none;
     color: rgb(184, 26, 26);
-     -webkit-text-stroke: 0.4px rgb(0, 0, 0);
-    
- 
+    -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+    text-align: left;
 }
 
 .requisitos li.validado {
@@ -257,9 +260,6 @@ p {
     -webkit-text-stroke-width: 1px;
     text-decoration: none !important;
     -webkit-text-stroke: 0.4px rgb(0, 0, 0);
-
-   
-
 }
 
 .ventana-requisitos {
@@ -278,15 +278,15 @@ p {
     color: aliceblue;
 }
 
-.icono-validacion {
-    display: inline-block;
-    width: 1.2em;
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-right: 6px;
-    transition: color 0.3s ease;
-    vertical-align: middle;
-}
+
+
+/* Si tu mensaje está dentro de un <p> con id="mensaje-confirmar": */
+#mensaje-confirmar {
+    font-size: 14px; /* o el tamaño que prefieras */
+  
+  }
+
+
 
 /* Puedes usar esta clase si deseas cambiar el color del texto de la regla validada */
 .validado {
