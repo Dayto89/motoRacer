@@ -23,7 +23,6 @@ $consulta = "SELECT
   p.codigo1,
   p.codigo2, 
   p.nombre, 
-  p.iva,
   p.precio1, 
   p.precio2, 
   p.precio3, 
@@ -194,10 +193,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-     .required::after {
+    .required::after {
       content: " *";
       color: red;
     }
+
     /* ------------------------------------------------- */
     /* Estilos para filtrado/ordenamiento/resaltado     */
     /* ------------------------------------------------- */
@@ -209,10 +209,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   background-color: rgba(0, 123, 255, 0.15);
 } */
 
-#productTable tbody tr:hover,
-#productTable tbody tr:hover td {
-  background-color: rgba(0, 123, 255, 0.15);
-}
+    #productTable tbody tr:hover,
+    #productTable tbody tr:hover td {
+      background-color: rgba(0, 123, 255, 0.15);
+    }
 
 
     /* Cursor pointer en encabezados para indicar que son clicables */
@@ -322,10 +322,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </form>
       </div>
 
-      <!-- Botón para eliminar seleccionados -->
-      <button id="delete-selected" class="btn btn-danger" style="display: none;">
-        <i class="fa-solid fa-trash"></i>
-      </button>
+
     </div>
 
     <div class="table-wrapper">
@@ -335,19 +332,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
             <th data-col="1" data-type="string">Código 2<span class="sort-arrow"></span></th>
             <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
-            <th data-col="3" data-type="number">Iva<span class="sort-arrow"></span></th>
-            <th data-col="4" data-type="number">Precio 1<span class="sort-arrow"></span></th>
-            <th data-col="5" data-type="number">Precio 2<span class="sort-arrow"></span></th>
-            <th data-col="6" data-type="number">Precio 3<span class="sort-arrow"></span></th>
-            <th data-col="7" data-type="number">Cantidad<span class="sort-arrow"></span></th>
-            <th data-col="9" data-type="string">Categoría<span class="sort-arrow"></span></th>
-            <th data-col="10" data-type="string">Marca<span class="sort-arrow"></span></th>
-            <th data-col="11" data-type="string">Clase<span class="sort-arrow"></span></th>
-            <th data-col="12" data-type="string">Ubicación<span class="sort-arrow"></span></th>
-            <th data-col="13" data-type="string">Proveedor<span class="sort-arrow"></span></th>
-            <th data-col="14" data-type="none">Acciones</th>
-            <th data-col="15" data-type="none">
-
+            <th data-col="3" data-type="number">Precio 1<span class="sort-arrow"></span></th>
+            <th data-col="4" data-type="number">Precio 2<span class="sort-arrow"></span></th>
+            <th data-col="5" data-type="number">Precio 3<span class="sort-arrow"></span></th>
+            <th data-col="6" data-type="number">Cantidad<span class="sort-arrow"></span></th>
+            <th data-col="7" data-type="string">Categoría<span class="sort-arrow"></span></th>
+            <th data-col="8" data-type="string">Marca<span class="sort-arrow"></span></th>
+            <th data-col="9" data-type="string">Clase<span class="sort-arrow"></span></th>
+            <th data-col="10" data-type="string">Ubicación<span class="sort-arrow"></span></th>
+            <th data-col="11" data-type="string">Proveedor<span class="sort-arrow"></span></th>
+            <th data-col="12" data-type="none">Acciones</th>
+            <th data-col="13" data-type="none" class="acciones-multiples">
+              <!-- Botón para eliminar seleccionados -->
+              <button id="delete-selected" class="btn btn-danger" style="display: none;">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </th>
           </tr>
         </thead>
@@ -543,26 +542,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         case 2:
           return rowObj.nombre.toLowerCase();
         case 3:
-          return parseFloat(rowObj.iva) || 0;
-        case 4:
           return parseFloat(rowObj.precio1) || 0;
-        case 5:
+        case 4:
           return parseFloat(rowObj.precio2) || 0;
-        case 6:
+        case 5:
           return parseFloat(rowObj.precio3) || 0;
-        case 7:
+        case 6:
           return parseFloat(rowObj.cantidad) || 0;
-        case 8:
+        case 7:
           return rowObj.descripcion.toLowerCase();
-        case 9:
+        case 8:
           return rowObj.categoria.toLowerCase();
-        case 10:
+        case 9:
           return rowObj.marca.toLowerCase();
-        case 11:
+        case 10:
           return rowObj.unidadmedida.toLowerCase();
-        case 12:
+        case 11:
           return rowObj.ubicacion.toLowerCase();
-        case 13:
+        case 12:
           return rowObj.proveedor.toLowerCase();
         default:
           return '';
@@ -602,11 +599,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         // 3) Nombre
         td = document.createElement('td');
         td.textContent = rowObj.nombre;
-        tr.appendChild(td);
-
-        // 4) Iva
-        td = document.createElement('td');
-        td.textContent = rowObj.iva;
         tr.appendChild(td);
 
         // 5) Precio 1
@@ -687,7 +679,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         // Resaltar fila al clic
         //tr.addEventListener('click', () => {
-         // tr.classList.toggle('selected');
+        // tr.classList.toggle('selected');
         //});
 
         tableBody.appendChild(tr);
@@ -800,7 +792,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             row.codigo1 + ' ' +
             row.codigo2 + ' ' +
             row.nombre + ' ' +
-            row.iva + ' ' +
             row.precio1 + ' ' +
             row.precio2 + ' ' +
             row.precio3 + ' ' +
@@ -872,98 +863,65 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     // 6) SELECCIÓN MÚLTIPLE: activar botón Eliminar Múltiple
     // ============================================================
     function attachCheckboxListeners() {
-      const selectAllCheckbox = document.getElementById("select-all");
-      const deleteButton = document.getElementById("delete-selected");
-
-      // Recolectamos checkboxes tras renderizar
+      // Recolectamos checkboxes y botón de cabecera
       const checkboxes = document.querySelectorAll(".select-product");
+      const deleteBtn = document.getElementById("delete-selected");
 
-      selectAllCheckbox.addEventListener("change", function() {
-        checkboxes.forEach(cb => cb.checked = this.checked);
-        toggleDeleteButtonVisibility();
-      });
-
+      // Cada vez que cambie cualquier checkbox, actualizamos visibilidad
       checkboxes.forEach(cb => {
         cb.addEventListener("change", toggleDeleteButtonVisibility);
       });
 
-      deleteButton.addEventListener("click", () => {
-        const selectedCodes = Array.from(checkboxes)
-          .filter(cb => cb.checked)
-          .map(cb => cb.value.trim());
-        if (selectedCodes.length === 0) {
-          alert("Selecciona al menos un producto para eliminar.");
-          return;
-        }
+      // Inicializamos estado al cargar
+      toggleDeleteButtonVisibility();
+
+      // Al hacer clic en eliminar seleccionados...
+      deleteBtn.addEventListener("click", () => {
+        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+        if (selected.length < 2) return; // redundante, pero seguro
+
         Swal.fire({
-          title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
-          html: `
-            <div class="custom-alert">
-                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                <p>Los productos se eliminarán de forma permanente.</p>
-            </div>
-        `,
-          background: '#ffffffdb',
+          title: '<span class="titulo-alerta advertencia">¿Eliminar seleccionados?</span>',
+          html: `<p>Se eliminarán ${selected.length} productos.</p>`,
           showCancelButton: true,
           confirmButtonText: "Sí, eliminar",
           cancelButtonText: "Cancelar",
           customClass: {
             popup: "custom-alert",
             confirmButton: "btn-eliminar",
-            cancelButton: "btn-cancelar",
-            container: 'fondo-oscuro'
+            cancelButton: "btn-cancelar"
           }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch("eliminar_productos.php", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  codigos: selectedCodes
-                })
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          // tu fetch a eliminar_productos.php con { codigos: selected }
+          fetch("eliminar_productos.php", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                codigos: selected
               })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  Swal.fire({
-                      title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-                      html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" alt="Éxito" class="moto">
-                                </div>
-                                <p>Productos eliminados correctamente.</p>
-                            </div>
-                        `,
-                      background: '#ffffffdb',
-                      confirmButtonText: 'Aceptar',
-                      confirmButtonColor: '#007bff',
-                      customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                      }
-                    })
-                    .then(() => location.reload());
-                } else {
-                  Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
-                }
-              })
-              .catch(error => {
-                console.error("Error en la solicitud:", error);
-                Swal.fire("Error", "Error en la comunicación con el servidor.", "error");
-              });
-          }
+            })
+            .then(r => r.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire("Eliminados", `${selected.length} productos eliminados.`, "success")
+                  .then(() => location.reload());
+              } else {
+                Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
+              }
+            })
+            .catch(() => Swal.fire("Error", "Fallo comunicación.", "error"));
         });
       });
     }
 
     function toggleDeleteButtonVisibility() {
-      const checkboxes = document.querySelectorAll(".select-product");
-      const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-      document.getElementById("delete-selected").style.display = anyChecked ? "inline-block" : "none";
+      const checkedCount = document.querySelectorAll(".select-product:checked").length;
+      const deleteBtn = document.getElementById("delete-selected");
+      // Mostramos solo si hay 2 o más
+      deleteBtn.style.display = checkedCount >= 2 ? "inline-block" : "none";
     }
 
     // ============================================================
@@ -984,15 +942,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           document.getElementById('editCodigo1Visible').value = row.cells[0].innerText.trim();
           document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
           document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-          document.getElementById('editPrecio1').value = row.cells[4].innerText.trim();
-          document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
-          document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
-          document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
-          document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
-          document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
-          document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
-          document.getElementById('editUbicacion').value = row.cells[12].getAttribute('data-ubicacion-id');
-          document.getElementById('editProveedor').value = row.cells[13].getAttribute('data-proveedor-id');
+          document.getElementById('editPrecio1').value = row.cells[3].innerText.trim();
+          document.getElementById('editPrecio2').value = row.cells[4].innerText.trim();
+          document.getElementById('editPrecio3').value = row.cells[5].innerText.trim();
+          document.getElementById('editCantidad').value = row.cells[6].innerText.trim();
+          document.getElementById('editCategoria').value = row.cells[7].getAttribute('data-categoria-id');
+          document.getElementById('editMarca').value = row.cells[8].getAttribute('data-marca-id');
+          document.getElementById('editUnidadMedida').value = row.cells[9].getAttribute('data-unidadmedida-id');
+          document.getElementById('editUbicacion').value = row.cells[10].getAttribute('data-ubicacion-id');
+          document.getElementById('editProveedor').value = row.cells[11].getAttribute('data-proveedor-id');
           modal.style.display = 'block';
         });
       });

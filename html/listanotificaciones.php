@@ -13,7 +13,7 @@ if (!$conexion) {
 }
 
 // justo tras conectar a BD
-$allQ = "SELECT nit,nombre,telefono,direccion,correo,estado FROM proveedor p";
+$allQ = "SELECT id,mensaje,descripcion,fecha,leida FROM notificaciones n";
 if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
 $allRes = mysqli_query($conexion, $allQ);
 $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
@@ -171,7 +171,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
   <?php
   // Justo después de tu conexión y filtros:
-  $allQ = "SELECT nit,nombre,telefono,direccion,correo,estado FROM proveedor p";
+  $allQ = "SELECT id,mensaje,descripcion,fecha,leida FROM notificaciones n";
   if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
   $allRes = mysqli_query($conexion, $allQ);
   $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
@@ -339,7 +339,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const rowsPerPage = 6;
+      const rowsPerPage = 7;
       let currentPage = 1;
       let filteredData = [...allData];
 
@@ -356,19 +356,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         tableBody.innerHTML = '';
         pageData.forEach(row => {
           const tr = document.createElement('tr');
-          ['nit', 'nombre', 'telefono', 'direccion', 'correo', 'estado'].forEach(f => {
+          ['mensaje', 'descripcion', 'fecha', 'leida'].forEach(f => {
             const td = document.createElement('td');
             td.textContent = row[f];
             tr.appendChild(td);
           });
           // Acciones (usa exactamente tu HTML)
           const tdAcc = document.createElement('td');
-          tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
-                         <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
+          tdAcc.innerHTML = `<button class="edit-button" data-id="${row.id}"><i class="fa-solid fa-pen-to-square"></i></button>
+                         <button class="delete-button" onclick="eliminarProducto('${row.id}')"><i class="fa-solid fa-trash"></i></button>`;
           tr.appendChild(tdAcc);
           // Checkbox
           const tdChk = document.createElement('td');
-          tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.nit}">`;
+          tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.id}">`;
           tr.appendChild(tdChk);
 
           tableBody.appendChild(tr);

@@ -59,7 +59,7 @@ $jsQ = "SELECT
 $jsData = mysqli_fetch_all(mysqli_query($conexion, $jsQ), MYSQLI_ASSOC);
 
 // 3) Paginación PHP
-$perPage = 8;
+$perPage = 7;
 $page    = max(1, (int)($_GET['pagina'] ?? 1));
 $offset  = ($page - 1) * $perPage;
 $countQ  = "SELECT COUNT(DISTINCT f.codigo) AS total
@@ -153,7 +153,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       padding: 8px 12px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
+      text-decoration: none;
+      color: #333;
       border-radius: 4px;
+      transition: background-color 0.3s;
       cursor: pointer;
     }
 
@@ -588,13 +591,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
     </div>
-
     <script>
       document.addEventListener('DOMContentLoaded', () => {
 
         console.log("allData:", allData);
         // Configuración
-        const rowsPerPage = 8;
+        const rowsPerPage = 7;
         let currentPage = 1;
         let filteredData = [...allData];
         console.log("filteredData tras input:", filteredData);

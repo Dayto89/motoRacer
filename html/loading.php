@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -22,7 +22,7 @@ $valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['val
 $criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
 
 if (!empty($valor) && empty($criterios)) {
-  $criterios = ['nit', 'nombre', 'telefono', 'direccion', 'correo'];
+  $criterios = ['nit', 'nombre', 'telefono', 'direccion', 'correo', 'estado'];
 }
 
 if (!empty($valor) && !empty($criterios)) {
@@ -43,6 +43,9 @@ if (!empty($valor) && !empty($criterios)) {
         break;
       case 'correo':
         $filtros[] = "p.correo LIKE '%$valor%'";
+        break;
+      case 'estado':
+        $filtros[] = "p.estado LIKE '%$valor%'";
         break;
     }
   }
@@ -100,9 +103,9 @@ if ($_POST && isset($_POST['guardar'])) {
   $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+  $estado = mysqli_real_escape_string($conexion, $_POST['estado']);
 
-
-  $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo')";
+  $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo, estado) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo', '$estado')";
 
   $resultado = mysqli_query($conexion, $query);
 
@@ -170,6 +173,7 @@ if (isset($_POST['nit'])) {
   $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+  $estado = mysqli_real_escape_string($conexion, $_POST['estado']);
 
   $consulta_update = "UPDATE proveedor SET 
         nit = '$nit', 
@@ -177,6 +181,7 @@ if (isset($_POST['nit'])) {
         telefono = '$telefono', 
         direccion = '$direccion', 
         correo = '$correo', 
+        estado = '$estado'
         WHERE nit = '$nit'";
   if (mysqli_query($conexion, $consulta_update)) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
@@ -315,7 +320,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       background-color: rgb(158, 146, 209);
     }
 
-    .pagination-dinamica button.active {
+    .pagination-dinamica button.active {  
       background-color: #007bff;
       color: white;
       font-weight: bold;
@@ -339,7 +344,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
   <?php
   // Justo después de tu conexión y filtros:
-  $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p";
+  $allQ = "SELECT nit,nombre,telefono,direccion,correo,estado FROM proveedor p";
   if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
   $allRes = mysqli_query($conexion, $allQ);
   $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
@@ -389,7 +394,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <th data-col="2" data-type="string">Teléfono <span class="sort-arrow"></span></th>
               <th data-col="3" data-type="string">Dirección <span class="sort-arrow"></span></th>
               <th data-col="4" data-type="string">Correo <span class="sort-arrow"></span></th>
+              <th data-col="5" data-type="string">Estado <span class="sort-arrow"></span></th>
               <th>Acciones</th>
+              <th></th>
+
             </tr>
           </thead>
           <tbody>
@@ -400,11 +408,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <td><?= htmlspecialchars($fila['telefono']) ?></td>
                 <td><?= htmlspecialchars($fila['direccion']) ?></td>
                 <td><?= htmlspecialchars($fila['correo']) ?></td>
+                <td><?= htmlspecialchars($fila['estado']) ?></td>
                 <td class="acciones">
                   <button class="edit-button" data-id="<?= $fila['nit'] ?>">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                   <button class="delete-button" onclick="eliminarProducto('<?= $fila['nit'] ?>')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+                <td>
+                  <input type="checkbox" class="select-product" value="<?= $fila['nit'] ?>">
                 </td>
               </tr>
             <?php endwhile; ?>
@@ -521,6 +533,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               placeholder="ejemplo@correo.com">
           </div>
 
+
+          <div class="campo">
+            <label for="estado">Estado:</label>
+            <input type="text" id="estado" name="estado" required />
+          </div>
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelar">Cancelar</button>
@@ -551,6 +568,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
         <div class="campo"> <label for="editCorreo">Correo:</label>
           <input type="text" id="editCorreo" name="correo">
+        </div>
+        <div class="campo"><label for="editEstado">Estado:</label>
+          <input type="text" id="editEstado" name="estado">
         </div>
       </form>
       <div class="modal-buttons">
@@ -627,6 +647,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         document.getElementById("editTelefono").value = row.cells[2].innerText.trim();
         document.getElementById("editDireccion").value = row.cells[3].innerText.trim();
         document.getElementById("editCorreo").value = row.cells[4].innerText.trim();
+        document.getElementById("editEstado").value = row.cells[5].innerText.trim();
         // Abrir con clase .show
         editModal.classList.replace("hide", "show");
       });
@@ -920,7 +941,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         tableBody.innerHTML = '';
         pageData.forEach(row => {
           const tr = document.createElement('tr');
-          ['nit', 'nombre', 'telefono', 'direccion', 'correo'].forEach(f => {
+          ['nit', 'nombre', 'telefono', 'direccion', 'correo', 'estado'].forEach(f => {
             const td = document.createElement('td');
             td.textContent = row[f];
             tr.appendChild(td);
@@ -930,11 +951,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
                          <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
           tr.appendChild(tdAcc);
+          // Checkbox
+          const tdChk = document.createElement('td');
+          tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.nit}">`;
+          tr.appendChild(tdChk);
 
           tableBody.appendChild(tr);
         });
         renderPaginationControls();
       }
+
       // Controles de paginación
       function renderPaginationControls() {
         paginationContainer.innerHTML = '';

@@ -149,14 +149,39 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="/js/index.js"></script>
 
     <style>
+        .export-container {
+            margin-bottom: 15px;
+        }
+
+        .btn-export {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-export:hover {
+            background-color: #218838;
+        }
+
+        .btn-export i {
+            margin-right: 6px;
+        }
+
         .pagination-dinamica {
             display: flex;
             justify-content: center;
             margin-top: 20px;
             gap: 5px;
+            font-family: arial;
+            font-size: 13px;
         }
 
-        .pagination-dinamica a {
+        .pagination-dinamica button {
             padding: 8px 12px;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
@@ -164,18 +189,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             color: #333;
             border-radius: 4px;
             transition: background-color 0.3s;
+            cursor: pointer;
         }
 
-        .pagination-dinamica a:hover {
+        .pagination-dinamica button:hover {
             background-color: rgb(158, 146, 209);
         }
 
-        .pagination-dinamica a.active {
+        .pagination-dinamica button.active {
             background-color: #007bff;
             color: white;
             font-weight: bold;
             pointer-events: none;
             border-color: #007bff;
+            cursor: pointer;
         }
 
         /* Al arrancar, ocultamos la paginación PHP (queda como fallback) */
@@ -203,7 +230,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <h1>Clientes</h1>
         <div class="filter-bar">
             <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+            <div class="export-container">
+                <a href="exportar_excel_clientes.php" class="btn-export">
+                    <i class="fa-solid fa-file-csv"></i> Exportar Excel
+                </a>
+            </div>
         </div>
+
 
         <?php if (mysqli_num_rows($resultado) > 0): ?>
             <table id="clientesTable">
@@ -546,18 +579,30 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 });
                 // Acciones (usa exactamente tu HTML)
                 const tdAcc = document.createElement('td');
-                tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
-                         <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
+                tdAcc.innerHTML = `<button class="edit-button" data-id="${row.codigo}"><i class="fa-solid fa-pen-to-square"></i></button>
+                         <button class="delete-button" onclick="eliminarProducto('${row.codigo}')"><i class="fa-solid fa-trash"></i></button>`;
                 tr.appendChild(tdAcc);
-                // Checkbox
-                const tdChk = document.createElement('td');
-                tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.nit}">`;
-                tr.appendChild(tdChk);
 
                 tableBody.appendChild(tr);
             });
             renderPaginationControls();
         }
+
+        document.getElementById('clientesTable').addEventListener('click', function(e) {
+            if (e.target.closest('.edit-button')) {
+                const btn = e.target.closest('.edit-button');
+                // Busca la fila correspondiente:
+                const row = btn.closest('tr');
+                // Rellena y abre el modal:
+                document.getElementById('editId').value = row.cells[0].innerText.trim();
+                document.getElementById('editIdentificacion').value = row.cells[1].innerText.trim();
+                document.getElementById('editNombre').value = row.cells[2].innerText.trim();
+                document.getElementById('editApellido').value = row.cells[3].innerText.trim();
+                document.getElementById('editTelefono').value = row.cells[4].innerText.trim();
+                document.getElementById('editCorreo').value = row.cells[5].innerText.trim();
+                document.getElementById('editModal').style.display = 'block';
+            }
+        });
 
         // Controles de paginación
         function renderPaginationControls() {
