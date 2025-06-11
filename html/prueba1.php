@@ -1,4 +1,34 @@
 <?php
+// —— AJAX check_identificacion — solo responde JSON y sale
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST'
+  && isset($_GET['action'])
+  && $_GET['action'] === 'check_identificacion'
+) {
+  header('Content-Type: application/json');
+  require '../conexion/conexion.php';
+
+  $raw  = file_get_contents('php://input');
+  $data = json_decode($raw, true);
+  $ident = trim($data['identificacion'] ?? '');
+
+  if ($ident === '') {
+    echo json_encode(['error' => 'No se recibió identificación']);
+    exit;
+  }
+
+  $stmt = $conexion->prepare("SELECT COUNT(*) FROM usuario WHERE identificacion = ?");
+  $stmt->bind_param("s", $ident);
+  $stmt->execute();
+  $stmt->bind_result($count);
+  $stmt->fetch();
+  $stmt->close();
+  $conexion->close();
+
+  echo json_encode(['exists' => $count > 0]);
+  exit;  // importantísimo: cortamos aquí
+}
+
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
@@ -9,27 +39,10 @@ require '../conexion/conexion.php'; // archivo con la conexión a BD y las libre
 require '../vendor/autoload.php';   // si usas composer para Mailjet
 use \Mailjet\Resources;
 
+
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
-// === 1) Petición AJAX para check de código ===
-if ($_SERVER['REQUEST_METHOD'] === 'POST'
-    && isset($_POST['accion']) 
-    && $_POST['accion'] === 'check_codigo') 
-{
-    header('Content-Type: application/json');
-
-    $identificacion = $_POST['identificacion'] ?? '';
-    $stmt = $conexion->prepare("SELECT 1 FROM usuario WHERE identificacion = ?");
-    $stmt->bind_param("s", $identificacion);
-    $stmt->execute();
-    $stmt->store_result();
-    $existe = $stmt->num_rows > 0;
-
-    echo json_encode(['exists' => $existe]);
-    $stmt->close();
-    $conexion->close();
-    exit;  // TERMINA aquí la petición AJAX
-}
 $mensaje = null; // Variable para almacenar el estado del mensaje
 ?>
 
@@ -44,6 +57,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <link rel="stylesheet" href="/css/registro.css" />
   <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="/componentes/header.php" />
@@ -51,11 +65,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather&family=Metal+Mania&display=swap');
-
-    .required::after {
-      content: " *";
-      color: red;
-    }
   </style>
   <script src="/js/index.js"></script>
   <script src="../js/header.js"></script>
@@ -70,7 +79,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
     <div class="container">
       <div class="form-grid">
         <div class="campo">
-          <label class="required" for="identificacion">Identificación: </label>
+          <label for="identificacion">Identificación: </label>
           <input
             type="number"
             name="identificacion"
@@ -78,27 +87,30 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             required>
+          <!-- Tooltip de error -->
+          <div class="small-error-tooltip">Este código ya está registrado.</div>
         </div>
+        
 
         <div class="campo">
-          <label class="required" for="rol">Rol: </label>
+          <label for="rol">Rol: </label>
           <select name="rol" id="rol" required>
             <option value="gerente" selected>Gerente</option>
           </select>
         </div>
 
         <div class="campo">
-          <label class="required" for="nombre">Nombre: </label>
+          <label for="nombre">Nombre: </label>
           <input type="text" name="nombre" id="nombre" required>
         </div>
 
         <div class="campo">
-          <label class="required" for="apellido">Apellido: </label>
+          <label for="apellido">Apellido: </label>
           <input type="text" name="apellido" id="apellido" required>
         </div>
 
         <div class="campo">
-          <label class="required" for="telefono">Teléfono: </label>
+          <label for="telefono">Teléfono: </label>
           <input
             type="number"
             name="telefono"
@@ -109,17 +121,17 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
         </div>
 
         <div class="campo">
-          <label class="required" for="direccion">Dirección: </label>
+          <label for="direccion">Dirección: </label>
           <input type="text" name="direccion" id="direccion" required>
         </div>
 
         <div class="campo" id="contenedorCorreo">
-          <label class="required" for="correo">Correo: </label>
+          <label for="correo">Correo: </label>
           <button type="button" id="btnAbrirModalCorreo">Verificar correo</button>
         </div>
 
         <div class="campo">
-          <label class="required" for="contrasena">Contraseña: </label>
+          <label for="contrasena">Contraseña: </label>
           <input type="password" name="contrasena" id="contrasena" required disabled>
           <i
             id="togglePassword"
@@ -138,7 +150,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
         </div>
 
         <div class="campo">
-          <label class="required" for="confirmar">Confirmar Contraseña: </label>
+          <label for="confirmar">Confirmar Contraseña: </label>
           <input type="password" name="confirmar" id="confirmar" required disabled>
           <i
             id="togglePassword2"
@@ -153,7 +165,8 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
     </div>
 
     <div class="button_container">
-      <button type="submit" name="registrar" class="boton">Registrar</button>
+      <button type="submit" name="registrar" id="btnRegistrar" class="boton">Registrar</button>
+
       <a href="../html/gestiondeusuarios.php" class="botonn">Volver</a>
     </div>
   </form>
@@ -195,12 +208,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: `<div class=\"custom-alert\">
+                            html: <div class=\"custom-alert\">
                                         <div class='contenedor-imagen'>
                                             <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                         </div>
                                         <p>Las contraseñas no coinciden.</p>
-                                    </div>`,
+                                    </div>,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -228,12 +241,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: `<div class=\"custom-alert\">
+                            html: <div class=\"custom-alert\">
                                         <div class='contenedor-imagen'>
                                             <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                         </div>
                                         <p>El correo ya está registrado. Intenta con otro.</p>
-                                    </div>`,
+                                    </div>,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -263,12 +276,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: `<div class=\"custom-alert\">
+                            html: <div class=\"custom-alert\">
                                         <div class='contenedor-imagen'>
                                             <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                         </div>
                                         <p>El número de teléfono ya está registrado. Intenta con otro.</p>
-                                    </div>`,
+                                    </div>,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -324,12 +337,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                 ($identificacion, 'PRODUCTO', 'Ubicacion', 0),
                 ($identificacion, 'PRODUCTO', 'Marca', 0),
                 ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
-                ($identificacion, 'INVENTARIO', 'Lista Productos', 0),
+                ($identificacion, 'INVENTARIO', 'Lista de Productos', 0),
                 ($identificacion, 'FACTURA', 'Ventas', 0),
                 ($identificacion, 'FACTURA', 'Reportes', 0),
                 ($identificacion, 'FACTURA', 'Lista Clientes', 0),
-                ($identificacion, 'FACTURA', 'Lista Notificaciones', 0),
-                ($identificacion, 'USUARIO', 'Informacion', 1)"
+                ($identificacion, 'FACTURA', 'Lista de Notificaciones', 0),
+                ($identificacion, 'USUARIO', 'Información', 1)"
       );
 
       if ($resultado) {
@@ -338,12 +351,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                         document.addEventListener('DOMContentLoaded', function() {
                             Swal.fire({
                                 title: '<span class=\"titulo-alerta confirmacion\">¡Registro exitoso!</span>',
-                                html: `<div class=\"custom-alert\">
+                                html: <div class=\"custom-alert\">
                                             <div class=\"contenedor-imagen\">
                                                 <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
                                             </div>
                                             <p>El usuario fue registrado y los permisos fueron guardados correctamente.</p>
-                                        </div>`,
+                                        </div>,
                                 background: '#ffffffdb',
                                 confirmButtonText: 'Aceptar',
                                 confirmButtonColor: '#007bff',
@@ -398,32 +411,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
   </div>
 
   <script>
-      // Función para verificar identificación en tiempo real
-    function verificarIdentificacion(identificacion) {
-      if (identificacion) {
-        fetch('../html/verificar_identificacion.php?identificacion=' + identificacion)
-          .then(response => response.json())
-          .then(data => {
-            const errorElement = document.getElementById('error-identificacion');
-            const inputElement = document.getElementById('identificacion');
-            
-            if (data.existe) {
-              errorElement.textContent = 'Esta identificación ya está registrada.';
-              errorElement.style.display = 'block';
-              inputElement.classList.add('input-error');
-            } else {
-              errorElement.style.display = 'none';
-              inputElement.classList.remove('input-error');
-            }
-          });
-      }
-    }
-
-    // Evento para verificar al salir del campo
-    document.getElementById('identificacion').addEventListener('blur', function() {
-      verificarIdentificacion(this.value);
-    });
-
     const togglePassword = document.querySelector('#togglePassword');
     const togglePassword2 = document.querySelector('#togglePassword2');
     const passwordInput = document.querySelector('#contrasena');
@@ -698,7 +685,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
       });
     });
 
-
+    /*validar que se cumplan los requisitos de la contraseña*/
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.querySelector('form[name="formulario"]');
       const pwd = document.getElementById('contrasena');
@@ -717,31 +704,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 
         // ¿Todas las reglas OK?
         const todas = Object.values(reglasCumplidas).every(v => v === true);
- // Verificar si hay error de identificación
-        const errorIdentificacion = document.getElementById('error-identificacion');
-        if (errorIdentificacion.style.display === 'block') {
-          e.preventDefault();
-          Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
-              <div class="custom-alert">
-                <div class="contenedor-imagen">
-                  <img src="../imagenes/llave.png" alt="Error" class="llave">
-                </div>
-                <p>La identificación ya está registrada.</p>
-              </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#dc3545',
-            customClass: {
-              popup: 'swal2-border-radius',
-              confirmButton: 'btn-aceptar',
-              container: 'fondo-oscuro'
-            }
-          });
-          return;
-        }
 
         if (!todas || valor !== valor2) {
           e.preventDefault();
@@ -765,7 +727,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
         </p>
         <ul style="
              font-family: Arial, sans-serif;
-             font-size: 13px;
+             font-size: 14px;
              color: black;
              text-align: left;
              padding-left: 1rem;
@@ -789,57 +751,63 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
     });
 
 
-   document.addEventListener('DOMContentLoaded', () => {
-  const inputIdentificacion = document.getElementById('identificacion');
-  const submitBtn = document.querySelector('button[type="submit"].boton');
-  const campo = inputIdentificacion.closest('.campo');
+    //verificar si identififcacion ya esta regsitrada 
+    document.addEventListener('DOMContentLoaded', () => {
+  const campoIdent = document.querySelector('.campo #identificacion').closest('.campo');
+  const inputIdent = campoIdent.querySelector('#identificacion');
+  const tooltip    = campoIdent.querySelector('.small-error-tooltip');
+  const btnReg     = document.getElementById('btnRegistrar');
+  let debounce;
 
-  let tooltip = campo.querySelector('.small-error-tooltip');
-  if (!tooltip) {
-    tooltip = document.createElement('div');
-    tooltip.className = 'small-error-tooltip';
-    tooltip.textContent = 'Esta identificación ya está registrada.';
-    campo.appendChild(tooltip);
-  }
+  // Al arrancar, bloquea el botón
+  btnReg.disabled = true;
 
-  inputIdentificacion.addEventListener('blur', () => {
-    const val = inputIdentificacion.value.trim();
-    if (!val) {
-      inputIdentificacion.classList.remove('error');
-      campo.classList.remove('error');
-      tooltip.style.display = 'none';
-      submitBtn.disabled = false;
-      return;
-    }
-
-    fetch('registro.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `accion=check_codigo&identificacion=${encodeURIComponent(val)}`
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.exists) {
-        inputIdentificacion.classList.add('error');
-        campo.classList.add('error');
-        tooltip.style.display = 'block';
-        submitBtn.disabled = true;
-      } else {
-        inputIdentificacion.classList.remove('error');
-        campo.classList.remove('error');
+  inputIdent.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const val = inputIdent.value.trim();
+      if (!val) {
+        // sin valor: quita estado de error
+        inputIdent.classList.remove('error');
+        campoIdent.classList.remove('error');
         tooltip.style.display = 'none';
-        submitBtn.disabled = false;
+        btnReg.disabled = true;
+        return;
       }
-    })
-    .catch(() => {
-      inputIdentificacion.classList.remove('error');
-      campo.classList.remove('error');
-      tooltip.style.display = 'none';
-      submitBtn.disabled = false;
-    });
+
+      fetch(`${location.pathname}?action=check_identificacion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identificacion: val })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.exists) {
+          // duplicado → marca input y .campo + muestra tooltip + deshabilita botón
+          inputIdent.classList.add('error');
+          campoIdent.classList.add('error');
+          tooltip.style.display = 'block';
+          btnReg.disabled = true;
+        } else {
+          // único → quita marcas + oculta tooltip + habilita botón
+          inputIdent.classList.remove('error');
+          campoIdent.classList.remove('error');
+          tooltip.style.display = 'none';
+          btnReg.disabled = false;
+        }
+      })
+      .catch(err => {
+        console.error('Fetch error:', err);
+        // en caso de fallo, mantenemos deshabilitado
+        inputIdent.classList.add('error');
+        campoIdent.classList.add('error');
+        tooltip.textContent = 'Error de conexión.';
+        tooltip.style.display = 'block';
+        btnReg.disabled = true;
+      });
+    }, 500);
   });
 });
-
   </script>
 </body>
 

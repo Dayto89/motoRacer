@@ -602,11 +602,7 @@ p {
     color: green;
 }
 
-/*---------------------------------------------------------------------------------*/
-
-
-/* si el codigo esta duplicado*/
-/* Input con borde y fondo rojo suave */
+/* venta de "identificacion ya esta registrada */
 input.error {
   border: 2px solid red;
   background-color: #ffe6e6;
@@ -617,15 +613,8 @@ input.error {
   position: relative;
 }
 
-input.error {
-  border: 2px solid red;
-  background-color: #ffe6e6;
-}
-
 /* Si quieres que TODO el componente .campo también se marque */
 .campo.error {
-  /* fondo claro para todo el bloque */
-  background-color: #ffe6e6;
   /* opcional: un pequeño padding extra para destacar */
   padding: 0.5rem;
   border-radius: 4px;
@@ -633,21 +622,21 @@ input.error {
 
 /* Estilo del tooltip emergente */
 .small-error-tooltip {
-  position: absolute;
-  top: 50%;
-  left: 100%;               /* justo a la derecha del .campo */
-  transform: translate(8px, -50%); /* +8px de separación */
-  background-color: #ffe6e6;
-  border: 1px solid red;
-  color: red;
-  padding: 0.4rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  display: none;
-  font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    top: 71%;
+    left: -137px;
+    transform: translateY(-50%);
+    background-color: #ffe6e6;
+    border: 1px solid red;
+    color: red;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    display: none;            /* inicialmente oculto */
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Flecha pequeña apuntando al input */
@@ -655,10 +644,9 @@ input.error {
   content: "";
   position: absolute;
   top: 50%;
-  left: -6px;               /* la flecha hacia la izquierda */
+  right: -6px;
   transform: translateY(-50%);
-  border-width: 6px 6px 6px 0;
+  border-width: 6px 0 6px 6px;
   border-style: solid;
-  border-color: transparent #ffe6e6 transparent transparent;
+  border-color: transparent transparent transparent #ffe6e6;
 }
-/*------------------------------------------------------------------*/

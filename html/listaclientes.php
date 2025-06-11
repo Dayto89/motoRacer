@@ -552,7 +552,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const rowsPerPage = 6;
+        const rowsPerPage = 7;
         let currentPage = 1;
         let filteredData = [...allData];
 
@@ -580,7 +580,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 // Acciones (usa exactamente tu HTML)
                 const tdAcc = document.createElement('td');
                 tdAcc.innerHTML = `<button class="edit-button" data-id="${row.codigo}"><i class="fa-solid fa-pen-to-square"></i></button>
-                         <button class="delete-button" onclick="eliminarProducto('${row.codigo}')"><i class="fa-solid fa-trash"></i></button>`;
+                         <button class="delete-button" onclick="eliminarCliente('${row.codigo}')"><i class="fa-solid fa-trash"></i></button>`;
                 tr.appendChild(tdAcc);
 
                 tableBody.appendChild(tr);

@@ -204,6 +204,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </details>
       </form>
       <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+      <!-- Botón para eliminar seleccionados -->
+      <button id="delete-selected" class="btn btn-danger" style="display: none;">
+        <i class="fa-solid fa-trash"></i>
+      </button>
     </div>
     <div style="margin-bottom: 25px;margin-left: 74%;size: 50%;font-family:Arial;">
       <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel icon-color"></i><label> Exportar a Excel</label></a>
@@ -218,7 +222,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <th data-col="2" data-type="string">Fecha<span class="sort-arrow"></span></th>
           <th data-col="3" data-type="string">Estado<span class="sort-arrow"></span></th>
           <th data-col="4" data-type="none">Acción</th>
-          <th></th>
+          <th data-col="5" data-type="none" class="acciones-multiples">
+            <input type="checkbox" id="select-all">
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -361,19 +367,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         tableBody.innerHTML = '';
         pageData.forEach(row => {
           const tr = document.createElement('tr');
-          ['mensaje', 'descripcion', 'fecha', 'leida'].forEach(f => {
+
+          ['mensaje', 'descripcion', 'fecha'].forEach(f => {
             const td = document.createElement('td');
             td.textContent = row[f];
             tr.appendChild(td);
           });
+
+          // 2. Botón Marcar Leída / No Leída
+          const tdEstado = document.createElement('td');
+          const btnEstado = document.createElement('button');
+          btnEstado.classList.add('boton-accion', 'marcar-toggle');
+          btnEstado.dataset.id = row.id;
+          if (row.leida) {
+            btnEstado.textContent = 'Marcar No Leída';
+            btnEstado.dataset.accion = 'marcar_no_leida';
+            btnEstado.classList.add('marcarN');
+          } else {
+            btnEstado.textContent = 'Marcar Leída';
+            btnEstado.dataset.accion = 'marcar_leida';
+            btnEstado.classList.add('marcarL');
+          }
+          tdEstado.appendChild(btnEstado);
+          tr.appendChild(tdEstado);
+
           // Acciones (usa exactamente tu HTML)
           const tdAcc = document.createElement('td');
-          tdAcc.innerHTML = `<button class="edit-button" data-id="${row.id}"><i class="fa-solid fa-pen-to-square"></i></button>
+          tdAcc.innerHTML = `
                          <button class="delete-button" onclick="eliminarProducto('${row.id}')"><i class="fa-solid fa-trash"></i></button>`;
           tr.appendChild(tdAcc);
           // Checkbox
           const tdChk = document.createElement('td');
-          tdChk.innerHTML = `<input type="checkbox" class="select-product" value="${row.id}">`;
+          tdChk.innerHTML = `<input type="checkbox" class="select-item" value="${row.id}">`;
           tr.appendChild(tdChk);
 
           tableBody.appendChild(tr);
@@ -454,6 +479,79 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       // Arranca
       renderTable();
+
+      const selectAllChk = document.getElementById('select-all');
+      const deleteBtn = document.getElementById('delete-selected');
+      const table = document.getElementById('notificacionesTable');
+
+      // Function to actualizar visibilidad del botón
+      function updateDeleteButton() {
+        const selectedCount = table.querySelectorAll('.select-item:checked').length;
+        deleteBtn.style.display = (selectedCount > 1) ? 'inline-block' : 'none';
+      }
+
+      // Evento “Seleccionar todos”
+      selectAllChk.addEventListener('change', () => {
+        const checked = selectAllChk.checked;
+        table.querySelectorAll('.select-item').forEach(chk => {
+          chk.checked = checked;
+        });
+        updateDeleteButton();
+      });
+
+      // Eventos en cada checkbox individual
+      table.querySelectorAll('.select-item').forEach(chk => {
+        chk.addEventListener('change', () => {
+          // Si alguno queda sin marcar, desmarcar el global
+          if (!chk.checked) selectAllChk.checked = false;
+          // Si todos están marcados, marcar el global
+          else if ([...table.querySelectorAll('.select-item')].every(c => c.checked)) {
+            selectAllChk.checked = true;
+          }
+          updateDeleteButton();
+        });
+      });
+
+      // Acción “Eliminar Seleccionados”
+      deleteBtn.addEventListener('click', () => {
+        const ids = [...table.querySelectorAll('.select-item:checked')]
+          .map(c => c.value);
+        if (!ids.length) return;
+        if (!confirm(`¿Seguro que deseas eliminar ${ids.length} notificaciones?`)) return;
+        // Envío por fetch a PHP (delete_multiple.php)
+        fetch('delete_multiple_notificaciones.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              ids
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) location.reload();
+            else alert('Error al eliminar');
+          });
+      });
+
+      function eliminarNotificacion(id) {
+        if (!confirm('¿Eliminar esta notificación?')) return;
+        fetch('delete_notificacion.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id
+            })
+          })
+          .then(r => r.json())
+          .then(resp => {
+            if (resp.success) location.reload();
+            else alert('No se pudo eliminar');
+          });
+      }
     });
   </script>
 
