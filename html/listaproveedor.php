@@ -176,7 +176,7 @@ if (isset($_POST['nit'])) {
         nombre = '$nombre', 
         telefono = '$telefono', 
         direccion = '$direccion', 
-        correo = '$correo', 
+        correo = '$correo'
         WHERE nit = '$nit'";
   if (mysqli_query($conexion, $consulta_update)) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
@@ -375,7 +375,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </form>
       </div>
 
-      <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
+
 
 
     </div>
@@ -389,7 +389,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <th data-col="2" data-type="string">Teléfono <span class="sort-arrow"></span></th>
               <th data-col="3" data-type="string">Dirección <span class="sort-arrow"></span></th>
               <th data-col="4" data-type="string">Correo <span class="sort-arrow"></span></th>
-              <th>Acciones</th>
+              <th data-col="5" data-type="none">Acciones</th>
+              <th data-col="6" data-type="none" class="acciones-multiples">
+                <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -405,6 +408,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                   <button class="delete-button" onclick="eliminarProducto('<?= $fila['nit'] ?>')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+                <td>
+                  <input type="checkbox" class="select-product" value="<?= $fila['nit'] ?>">
                 </td>
               </tr>
             <?php endwhile; ?>
@@ -526,8 +532,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <button type="button" id="btnCancelar">Cancelar</button>
           <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
         </div>
-      </form>
     </div>
+    </form>
+  </div>
   </div>
 
   <!-- Modal de edición -->
@@ -552,17 +559,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div class="campo"> <label for="editCorreo">Correo:</label>
           <input type="text" id="editCorreo" name="correo">
         </div>
+        <div class="modal-buttons">
+          <button type="button" id="btnCancelarEdit">Cancelar</button>
+          <button type="submit" id="modal-boton">Guardar </button>
+        </div>
       </form>
-      <div class="modal-buttons">
-        <button type="button" id="btnCancelarEdit">Cancelar</button>
-        <button type="submit" id="modal-boton">Guardar </button>
-      </div>
-
     </div>
   </div>
 
   <script>
-    const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
+    let allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
   </script>
 
   <script>
@@ -571,6 +577,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       const nuevoModal = document.getElementById("nuevoModal");
       const openNuevo = document.getElementById("btnAbrirModal");
       const cancelNuevo = document.getElementById("btnCancelar");
+      const editButtons = document.querySelectorAll(".edit-button");
+      const editModal = document.getElementById("editModal");
+      const cancelEdit = document.getElementById("btnCancelarEdit");
+
 
       if (openNuevo && nuevoModal && cancelNuevo) {
         // Abrir con clase .show
@@ -588,6 +598,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           }
         });
       }
+
+      if (cancelEdit && editModal) {
+        // Cerrar con botón
+        cancelEdit.addEventListener("click", () => {
+          editModal.classList.replace("show", "hide");
+        });
+        // Cerrar al clicar fuera
+        editModal.addEventListener("click", e => {
+          if (e.target === editModal) {
+            editModal.classList.replace("show", "hide");
+          }
+        });
+      }
+
+      // Abrir + rellenar datos
+      editButtons.forEach(btn => {
+        btn.addEventListener("click", e => {
+          const row = btn.closest("tr");
+          document.getElementById("editNit").value = row.cells[0].innerText.trim();
+          document.getElementById("editNitVisible").value = row.cells[0].innerText.trim();
+          document.getElementById("editNombre").value = row.cells[1].innerText.trim();
+          document.getElementById("editTelefono").value = row.cells[2].innerText.trim();
+          document.getElementById("editDireccion").value = row.cells[3].innerText.trim();
+          document.getElementById("editCorreo").value = row.cells[4].innerText.trim();
+          // Abrir con clase .show
+          editModal.classList.replace("hide", "show");
+        });
+      });
       document.addEventListener('click', function(event) {
         const filterDropdown = document.querySelector('.filter-dropdown');
 
@@ -599,39 +637,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
       });
     });
-    // 2) Abrir/Cerrar modal "Editar Proveedor"
-    const editButtons = document.querySelectorAll(".edit-button");
-    const editModal = document.getElementById("editModal");
-    const cancelEdit = document.getElementById("btnCancelarEdit");
-
-    if (cancelEdit && editModal) {
-      // Cerrar con botón
-      cancelEdit.addEventListener("click", () => {
-        editModal.classList.replace("show", "hide");
-      });
-      // Cerrar al clicar fuera
-      editModal.addEventListener("click", e => {
-        if (e.target === editModal) {
-          editModal.classList.replace("show", "hide");
-        }
-      });
-    }
-
-    // Abrir + rellenar datos
-    editButtons.forEach(btn => {
-      btn.addEventListener("click", e => {
-        const row = btn.closest("tr");
-        document.getElementById("editNit").value = row.cells[0].innerText.trim();
-        document.getElementById("editNitVisible").value = row.cells[0].innerText.trim();
-        document.getElementById("editNombre").value = row.cells[1].innerText.trim();
-        document.getElementById("editTelefono").value = row.cells[2].innerText.trim();
-        document.getElementById("editDireccion").value = row.cells[3].innerText.trim();
-        document.getElementById("editCorreo").value = row.cells[4].innerText.trim();
-        // Abrir con clase .show
-        editModal.classList.replace("hide", "show");
-      });
-    });
-
     // Función para eliminar un producto con SweetAlert2
     function eliminarProducto(nit) {
       Swal.fire({
@@ -930,10 +935,81 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
                          <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
           tr.appendChild(tdAcc);
-
           tableBody.appendChild(tr);
+
+          // Selección múltiple
+          const tdCheckbox = document.createElement('td');
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'select-product';
+          checkbox.value = row.nit;
+          tdCheckbox.appendChild(checkbox);
+          tr.appendChild(tdCheckbox);
         });
         renderPaginationControls();
+        attachCheckboxListeners();
+      }
+
+      function attachCheckboxListeners() {
+        // Recolectamos checkboxes y botón de cabecera
+        const checkboxes = document.querySelectorAll(".select-product");
+        const deleteBtn = document.getElementById("delete-selected");
+
+        // Cada vez que cambie cualquier checkbox, actualizamos visibilidad
+        checkboxes.forEach(cb => {
+          cb.addEventListener("change", toggleDeleteButtonVisibility);
+        });
+
+        // Inicializamos estado al cargar
+        toggleDeleteButtonVisibility();
+
+        // Al hacer clic en eliminar seleccionados...
+        deleteBtn.addEventListener("click", () => {
+          const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+          if (selected.length < 2) return; // redundante, pero seguro
+
+          Swal.fire({
+            title: '<span class="titulo-alerta advertencia">¿Eliminar seleccionados?</span>',
+            html: `<p>Se eliminarán ${selected.length} productos.</p>`,
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+            customClass: {
+              popup: "custom-alert",
+              confirmButton: "btn-eliminar",
+              cancelButton: "btn-cancelar"
+            }
+          }).then(result => {
+            if (!result.isConfirmed) return;
+            // tu fetch a eliminar_productos.php con { codigos: selected }
+            fetch("eliminar_productos.php", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  codigos: selected
+                })
+              })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  Swal.fire("Eliminados", `${selected.length} productos eliminados.`, "success")
+                    .then(() => location.reload());
+                } else {
+                  Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
+                }
+              })
+              .catch(() => Swal.fire("Error", "Fallo comunicación.", "error"));
+          });
+        });
+      }
+
+      function toggleDeleteButtonVisibility() {
+        const checkedCount = document.querySelectorAll(".select-product:checked").length;
+        const deleteBtn = document.getElementById("delete-selected");
+        // Mostramos solo si hay 2 o más
+        deleteBtn.style.display = checkedCount >= 2 ? "inline-block" : "none";
       }
       // Controles de paginación
       function renderPaginationControls() {
@@ -1008,6 +1084,57 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       // Arranca
       renderTable();
+
+      const editModal = document.getElementById("editModal");
+      const cancelEdit = document.getElementById("btnCancelarEdit");
+
+      // Cerrar modal
+      cancelEdit.addEventListener("click", () => {
+        editModal.classList.replace("show", "hide");
+      });
+      editModal.addEventListener("click", e => {
+        if (e.target === editModal) {
+          editModal.classList.replace("show", "hide");
+        }
+      });
+
+      // Abrir + rellenar datos
+      function bindEditButtons() {
+        document.querySelectorAll(".edit-button").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const row = btn.closest("tr");
+            document.getElementById("editNit").value = row.cells[0].innerText.trim();
+            document.getElementById("editNitVisible").value = row.cells[0].innerText.trim();
+            document.getElementById("editNombre").value = row.cells[1].innerText.trim();
+            document.getElementById("editTelefono").value = row.cells[2].innerText.trim();
+            document.getElementById("editDireccion").value = row.cells[3].innerText.trim();
+            document.getElementById("editCorreo").value = row.cells[4].innerText.trim();
+            editModal.classList.replace("hide", "show");
+          });
+        });
+      }
+
+      bindEditButtons(); // para los botones estáticos
+      // si usas paginación dinámica:
+      window.renderTable = function renderTable() {
+        bindEditButtons(); // vuelve a enlazar después de regenerar filas
+      };
+      renderTable();
+
+      document.getElementById("providerTable")
+        .addEventListener("click", e => {
+          const btn = e.target.closest(".edit-button");
+          if (!btn) return;
+          const cells = btn.closest("tr").cells;
+          document.getElementById("editNit").value = cells[0].innerText.trim();
+          document.getElementById("editNitVisible").value = cells[0].innerText.trim();
+          document.getElementById("editNombre").value = cells[1].innerText.trim();
+          document.getElementById("editTelefono").value = cells[2].innerText.trim();
+          document.getElementById("editDireccion").value = cells[3].innerText.trim();
+          document.getElementById("editCorreo").value = cells[4].innerText.trim();
+          document.getElementById("editModal").classList.replace("hide", "show");
+        });
+
     });
   </script>
 

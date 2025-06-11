@@ -116,12 +116,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     .pagination-dinamica {
       display: flex;
       justify-content: center;
-      margin-top: 20px;
-      gap: 5px;
+      margin-top: 23px;
+      gap: 12px;
+      font-family: arial;
       font-size: 11px;
     }
 
-    .pagination-dinamica a {
+    .pagination-dinamica button {
       padding: 8px 12px;
       background-color: #f0f0f0;
       border: 1px solid #ccc;
@@ -129,14 +130,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       color: #333;
       border-radius: 4px;
       transition: background-color 0.3s;
-      text-shadow: none;
+      cursor: pointer;
     }
 
-    .pagination-dinamica a:hover {
+    .pagination-dinamica button:hover {
       background-color: rgb(158, 146, 209);
     }
 
-    .pagination-dinamica a.active {
+    .pagination-dinamica button.active {
       background-color: #007bff;
       color: white;
       font-weight: bold;
@@ -217,6 +218,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <th data-col="2" data-type="string">Fecha<span class="sort-arrow"></span></th>
           <th data-col="3" data-type="string">Estado<span class="sort-arrow"></span></th>
           <th data-col="4" data-type="none">Acción</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -225,7 +227,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <td><?= htmlspecialchars($fila["mensaje"]) ?></td>
             <td><?= htmlspecialchars($fila["descripcion"]) ?></td>
             <td><?= htmlspecialchars($fila["fecha"]) ?></td>
-            <td><?= $fila["leida"] ? "Leída" : "No leída"; ?></td>
             <td>
               <form method="POST" action="listanotificaciones.php" style="display:inline;">
                 <input type="hidden" name="id" value="<?= $fila['id'] ?>">
@@ -237,6 +238,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                   <button class="boton-accion marcarL" type="submit">Marcar Leída</button>
                 <?php } ?>
               </form>
+            </td>
+            <td></td>
+            <td>
+
             </td>
           </tr>
         <?php } ?>

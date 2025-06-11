@@ -247,15 +247,18 @@ input.form-control {
 .modal-content {
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  max-width: 90%;
+  border-radius: 10px;
+  width: 500px;
+  max-width: 100%;
 }
-.modal.show {
-  display: flex;
-}
+/* Oculto por defecto */
 .modal.hide {
   display: none;
+}
+
+/* Mostrado cuando se aplica la clase .show */
+.modal.show {
+  display: flex;
 }
 .modal.hidden {
   display: none;
@@ -573,6 +576,53 @@ form input[type="text"],
   color: #ffffff; /* Mantiene el color del ícono */
   background-color: #d11212; /* Fondo rojo al hacer hover */
   border: 2px solid #ffffff; /* Borde blanco */
+}
+/*PAGINACION*/
+.required::after {
+  content: " *";
+  color: red;
+}
+
+.pagination-dinamica {
+  display: flex;
+  justify-content: center;
+  margin-top: 23px;
+  gap: 12px;
+  font-family: arial;
+  font-size: 11px;
+}
+
+.pagination-dinamica button {
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  text-decoration: none;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.pagination-dinamica button:hover {
+  background-color: rgb(158, 146, 209);
+}
+
+.pagination-dinamica button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  pointer-events: none;
+  border-color: #007bff;
+}
+
+/* Al arrancar, ocultamos la paginación PHP (queda como fallback) */
+.pagination {
+  display: none;
+}
+
+#providerTable tbody tr:hover,
+#providerTable tbody tr:hover td {
+  background-color: rgba(0, 123, 255, 0.15);
 }
 /*ANIMACIONES MODALES*/
 
