@@ -36,7 +36,6 @@ body::before {
 
 /* Contenedor principal */
 .container {
-  background-color: rgb(174 174 174 / 59%);
   padding: 44px;
   border-radius: 15px;
   max-width: 1079px;
@@ -74,7 +73,11 @@ h3 {
 
 /* Tabla de categorías */
 .category-table {
-  width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    margin-left: 60px;
+    font-family: Arial;
 }
 
 .category-table td {
@@ -83,20 +86,37 @@ h3 {
   width: 225px;
   padding: 5px;
 }
+th,
+td {
+    border: 1px solid #666;
+    padding: 10px;
+    text-align: left;
+}
 
-.category-table th {
+th {
+    background-color: #444;
+    font-weight: bold;
+    text-align: center;
+}
+
+#tabla-categorias td {
+    background-color: #222;
+    text-align: center;
+}
+
+.productos-table th {
   background-color: #98bde9;
   color: #0b111a;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.category-table tr:nth-child(even) {
-  background-color: #f9f9f9b7;
+#lista-productos .productos-table tr:nth-child(even) {
+  background-color: #f9f9f9b7 !important;
   color: black;
 }
 
-.category-table tr:nth-child(odd) {
-  background-color: rgb(33 32 32 / 59%);
+#lista-productos .productos-table tr:nth-child(odd) {
+  background-color: rgb(33 32 32 / 59%) !important;
   color: white;
 }
 
