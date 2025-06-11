@@ -91,6 +91,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function eliminarNotificacion(id) {
+      if (!confirm('¿Eliminar esta notificación?')) return;
+      fetch('delete_notificacion.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id
+          })
+        })
+        .then(r => r.json())
+        .then(resp => {
+          if (resp.success) location.reload();
+          else alert('No se pudo eliminar');
+        });
+    }
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
 
@@ -349,6 +368,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
 
   <script>
+    // 2) NORMALIZACIÓN: esto se ejecuta solo UNA VEZ
+    allData.forEach(r => {
+      // convierte "0"/"1" en booleano false/true
+      r.leida = (String(r.leida) === "1");
+    });
     document.addEventListener('DOMContentLoaded', () => {
       const rowsPerPage = 7;
       let currentPage = 1;
@@ -374,11 +398,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             tr.appendChild(td);
           });
 
-          // 2. Botón Marcar Leída / No Leída
+          // 4) Aquí ya solo va la lógica de creación de botón
           const tdEstado = document.createElement('td');
           const btnEstado = document.createElement('button');
           btnEstado.classList.add('boton-accion', 'marcar-toggle');
           btnEstado.dataset.id = row.id;
+
           if (row.leida) {
             btnEstado.textContent = 'Marcar No Leída';
             btnEstado.dataset.accion = 'marcar_no_leida';
@@ -394,7 +419,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           // Acciones (usa exactamente tu HTML)
           const tdAcc = document.createElement('td');
           tdAcc.innerHTML = `
-                         <button class="delete-button" onclick="eliminarProducto('${row.id}')"><i class="fa-solid fa-trash"></i></button>`;
+                         <button class="delete-button" onclick="eliminarNotificacion('${row.id}')"><i class="fa-solid fa-trash"></i></button>`;
           tr.appendChild(tdAcc);
           // Checkbox
           const tdChk = document.createElement('td');
@@ -405,7 +430,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
         renderPaginationControls();
       }
-
       // Controles de paginación
       function renderPaginationControls() {
         paginationContainer.innerHTML = '';
@@ -442,7 +466,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       inputBusqueda.addEventListener('input', () => {
         const q = inputBusqueda.value.trim().toLowerCase();
         filteredData = allData.filter(r =>
-          Object.values(r).some(v => v.toLowerCase().includes(q))
+          Object.values(r).some(v =>
+            String(v).toLowerCase().includes(q)
+          )
         );
         currentPage = 1;
         renderTable();
@@ -535,23 +561,46 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           });
       });
 
-      function eliminarNotificacion(id) {
-        if (!confirm('¿Eliminar esta notificación?')) return;
-        fetch('delete_notificacion.php', {
+      table.addEventListener('click', e => {
+
+        const btn = e.target.closest('.marcar-toggle');
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const accion = btn.dataset.accion;
+        btn.disabled = true;
+
+        fetch('toggle_estado_notificacion.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              id
+              id,
+              accion
             })
           })
           .then(r => r.json())
           .then(resp => {
-            if (resp.success) location.reload();
-            else alert('No se pudo eliminar');
-          });
-      }
+            console.log(resp);
+
+            if (resp.success) {
+              // Actualiza el propio botón sin recarga
+              if (accion === 'marcar_leida') {
+                btn.textContent = 'Marcar No Leída';
+                btn.dataset.accion = 'marcar_no_leida';
+                btn.classList.replace('marcarL', 'marcarN');
+              } else {
+                btn.textContent = 'Marcar Leída';
+                btn.dataset.accion = 'marcar_leida';
+                btn.classList.replace('marcarN', 'marcarL');
+              }
+            } else {
+              alert('No se pudo cambiar el estado');
+            }
+          })
+          .finally(() => btn.disabled = false);
+      });
     });
   </script>
 
