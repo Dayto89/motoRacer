@@ -46,9 +46,9 @@ $mensaje = [
             'Name' => "Soporte Moto Racer"
         ],
         'To' => [[ 'Email' => $correo ]],
-        'Subject' => "Código de verificación",
-        'TextPart' => "Tu código de verificación es: $codigo",
-        'HTMLPart' => "<h3>Tu código es: <strong>$codigo</strong></h3>"
+       'Subject' => "Tu código de verificación",
+'HTMLPart' => "<h3>Hola</h3><p>Tu código es: <strong>$codigo</strong></p>"
+
     ]]
 ];
 
@@ -62,11 +62,20 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
 
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curl_error = curl_error($ch);
 curl_close($ch);
 
-// 5. Verificar resultado del envío
+// Intenta decodificar la respuesta de Mailjet
+$mailjet_response = json_decode($response, true);
+
 if ($http_code == 200) {
     echo json_encode(['success' => true, 'message' => 'Código enviado correctamente']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Error al enviar el correo']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error al enviar el correo',
+        'http_code' => $http_code,
+        'curl_error' => $curl_error,
+        'mailjet_response' => $mailjet_response
+    ]);
 }

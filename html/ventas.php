@@ -41,6 +41,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,11 +56,26 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     <style>
-        :root { --icon-bg: #FFFFFF; }
-        body.modo-alto-contraste { --icon-bg: #000000; }
-        body.modo-claro { --icon-bg: #FFFFFF; }
+        :root {
+            --icon-bg: #FFFFFF;
+        }
+
+        body.modo-alto-contraste {
+            --icon-bg: #000000;
+        }
+
+        body.modo-claro {
+            --icon-bg: #FFFFFF;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            /* opcional: elimina el espacio donde estaban los puntos */
+        }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <div id="menu"></div>
@@ -78,8 +94,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 63px; display: flex; align-items: center; border-color:aqua 2px solid;">
             <button id="btnLeft" onclick="scrollCategorias(-200)">
-                <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda">
-            </button>
+    <img id="flechaIzquierda" src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda">
+</button>
             <ul id="categoriaScroll" class="breadcrumb" style="max-width: 1250px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; display: flex;">
                 <?php
                 $stmt = $conexion->prepare(
@@ -103,7 +119,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 ?>
             </ul>
             <button id="btnRight" onclick="scrollCategorias(200)">
-                <img src="../imagenes/material-symbols--east-rounded.svg" alt="Botón derecha">
             </button>
         </div>
 
@@ -151,7 +166,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <div class="sidebar-right">
         <h3>Resumen</h3>
-        <div class="resumen-scroll"><ul id="listaResumen" class="listaResumen"></ul></div>
+        <div class="resumen-scroll">
+            <ul id="listaResumen" class="listaResumen"></ul>
+        </div>
         <div class="total"><span>Total:</span> <span id="total-price">$0.00</span></div>
         <div class="resumen-botones"><button class="btn-cobrar" id="btnCobrar" onclick="cobrar()">Cobrar</button></div>
     </div>
@@ -166,6 +183,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             scrollContainer.scrollLeft += amount;
             updateButtonVisibility();
         }
+
         function updateButtonVisibility() {
             const max = scrollContainer.scrollWidth - scrollContainer.clientWidth;
             btnLeft.style.display = scrollContainer.scrollLeft > 0 ? 'block' : 'none';
@@ -178,7 +196,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         function cobrar() {
             const items = document.querySelectorAll("#listaResumen li");
             if (!items.length) {
-                Swal.fire({ title: '<span class="titulo-alerta error">Error</span>', html: `<p>No hay productos en la orden.</p>` });
+                Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `<p>No hay productos en la orden.</p>`
+                });
                 return;
             }
             let productos = [];
@@ -191,9 +212,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 });
             });
             let form = document.createElement('form');
-            form.method = 'POST'; form.action = 'ventas.php';
+            form.method = 'POST';
+            form.action = 'ventas.php';
             form.innerHTML = `<input type="hidden" name="cobrar" value="1">`;
-            productos.forEach((p,i) => {
+            productos.forEach((p, i) => {
                 form.innerHTML += `<input type="hidden" name="productos[${i}][id]" value="${p.id}">`;
                 form.innerHTML += `<input type="hidden" name="productos[${i}][nombre]" value="${p.nombre}">`;
                 form.innerHTML += `<input type="hidden" name="productos[${i}][precio]" value="${p.precio}">`;
@@ -211,29 +233,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             // stock
             let stock = parseInt(el.dataset.cantidad);
             if (!stock) return;
-            stock--; el.dataset.cantidad = stock;
+            stock--;
+            el.dataset.cantidad = stock;
             el.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
             if (!stock) {
-                el.classList.add('disabled'); el.style.pointerEvents='none';
-                const btnRem = el.querySelector('.btn-remove'); btnRem.style.pointerEvents='auto'; btnRem.style.opacity='1';
+                el.classList.add('disabled');
+                el.style.pointerEvents = 'none';
+                const btnRem = el.querySelector('.btn-remove');
+                btnRem.style.pointerEvents = 'auto';
+                btnRem.style.opacity = '1';
             }
             // contador
             const ctr = el.querySelector('.contador-producto');
-            let count = parseInt(ctr.textContent)||0; ctr.textContent = ++count; ctr.style.display='block';
+            let count = parseInt(ctr.textContent) || 0;
+            ctr.textContent = ++count;
+            ctr.style.display = 'block';
             // resumen
             const lista = document.getElementById('listaResumen');
-            let found=false;
+            let found = false;
             lista.querySelectorAll('li').forEach(li => {
-                if (li.dataset.id===id && parseFloat(li.dataset.precio)===precio) {
-                    let c = parseInt(li.dataset.cantidad)+1;
-                    li.dataset.cantidad=c;
+                if (li.dataset.id === id && parseFloat(li.dataset.precio) === precio) {
+                    let c = parseInt(li.dataset.cantidad) + 1;
+                    li.dataset.cantidad = c;
                     li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
-                    found=true;
+                    found = true;
                 }
             });
             if (!found) {
                 const li = document.createElement('li');
-                li.dataset.id=id; li.dataset.nombre=nombre; li.dataset.precio=precio; li.dataset.cantidad=1;
+                li.dataset.id = id;
+                li.dataset.nombre = nombre;
+                li.dataset.precio = precio;
+                li.dataset.cantidad = 1;
                 li.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
                 lista.appendChild(li);
             }
@@ -248,19 +279,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             const precio = parseFloat(el.querySelector('.price-selector').value);
             const lista = document.getElementById('listaResumen');
             lista.querySelectorAll('li').forEach(li => {
-                if (li.dataset.id===id) {
-                    let c = parseInt(li.dataset.cantidad)-1;
-                    if (c>0) {
-                        li.dataset.cantidad=c;
+                if (li.dataset.id === id) {
+                    let c = parseInt(li.dataset.cantidad) - 1;
+                    if (c > 0) {
+                        li.dataset.cantidad = c;
                         li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
                     } else li.remove();
                     total -= precio;
                     document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
                     // restock tarjeta
-                    let stock = parseInt(el.dataset.cantidad)||0;
-                    stock++; el.dataset.cantidad=stock;
+                    let stock = parseInt(el.dataset.cantidad) || 0;
+                    stock++;
+                    el.dataset.cantidad = stock;
                     el.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
-                    if (stock>0) { el.classList.remove('disabled'); el.style.pointerEvents='auto'; }
+                    if (stock > 0) {
+                        el.classList.remove('disabled');
+                        el.style.pointerEvents = 'auto';
+                    }
                 }
             });
             guardarEnLocalStorage();
@@ -280,24 +315,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         document.addEventListener('DOMContentLoaded', () => {
             const data = localStorage.getItem('carritoProductos');
             const tot = localStorage.getItem('carritoTotal');
-            if (data && tot!=null) {
+            if (data && tot != null) {
                 const items = JSON.parse(data);
-                total = parseFloat(tot)||0;
+                total = parseFloat(tot) || 0;
                 document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
                 const lista = document.getElementById('listaResumen');
                 items.forEach(item => {
                     const li = document.createElement('li');
-                    li.dataset.id=item.id; li.dataset.nombre=item.nombre; li.dataset.precio=item.precio; li.dataset.cantidad=item.cantidad;
+                    li.dataset.id = item.id;
+                    li.dataset.nombre = item.nombre;
+                    li.dataset.precio = item.precio;
+                    li.dataset.cantidad = item.cantidad;
                     li.innerHTML = `${item.nombre} x${item.cantidad} - $${(item.precio*item.cantidad).toLocaleString()}`;
                     lista.appendChild(li);
                     // ajustar tarjeta
                     const card = document.querySelector(`.products .card[data-id='${item.id}']`);
                     if (card) {
-                        const ctr = card.querySelector('.contador-producto'); ctr.textContent=item.cantidad; ctr.style.display='block';
-                        let stock = parseInt(card.dataset.cantidad)-item.cantidad;
-                        card.dataset.cantidad=stock;
+                        const ctr = card.querySelector('.contador-producto');
+                        ctr.textContent = item.cantidad;
+                        ctr.style.display = 'block';
+                        let stock = parseInt(card.dataset.cantidad) - item.cantidad;
+                        card.dataset.cantidad = stock;
                         card.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
-                        if (stock<=0) { card.classList.add('disabled'); card.style.pointerEvents='none'; const btnR = card.querySelector('.btn-remove'); btnR.style.pointerEvents='auto'; btnR.style.opacity='1'; }
+                        if (stock <= 0) {
+                            card.classList.add('disabled');
+                            card.style.pointerEvents = 'none';
+                            const btnR = card.querySelector('.btn-remove');
+                            btnR.style.pointerEvents = 'auto';
+                            btnR.style.opacity = '1';
+                        }
                     }
                 });
             }
@@ -325,4 +371,5 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <?php endif; ?>
     </div>
 </body>
+
 </html>

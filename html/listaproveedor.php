@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
+
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
@@ -15,6 +16,22 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+
+//verificar que nit no se repita con el input rojo
+
+if (isset($_GET['verificar_nit'])) {
+  header('Content-Type: application/json');
+  $nit = $conexion->real_escape_string($_GET['verificar_nit']);
+  $stmt = $conexion->prepare("SELECT COUNT(*) FROM proveedor WHERE nit = ?");
+  $stmt->bind_param("s", $nit);
+  $stmt->execute();
+  $stmt->bind_result($cnt);
+  $stmt->fetch();
+  $stmt->close();
+  echo json_encode(['existe' => $cnt > 0]);
+  exit;  // Termina la ejecución aquí para devolver sólo el JSON
+}
+//-----------------------------------------
 
 // Construcción de filtros
 $filtros = [];
@@ -264,6 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   exit;
 }
 
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
@@ -499,12 +517,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <form id="nuevoForm" method="POST" action="">
         <div class="form-grid">
 
-          <div class="campo">
+          <div class="campo" id="nit-campo">
             <label class="required">Nit:</label>
-            <input type="text" id="nit" name="nit" required
+            <input type="text"
+              id="nit"
+              name="nit"
+              required
               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+            <div id="nit-tooltip" class="small-error-tooltip">
+              Este NIT ya está registrado
+            </div>
           </div>
-
           <div class="campo">
             <label class="required">Nombre:</label>
             <input type="text" id="nombre" name="nombre" required />
@@ -1136,6 +1159,62 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
 
     });
+
+
+    //verificar que nit no se repita, campo se vuelav rojo
+    document.addEventListener('DOMContentLoaded', () => {
+  const nitInput = document.getElementById('nit');
+  const campoDiv = document.getElementById('nit-campo');
+  const tooltip  = document.getElementById('nit-tooltip');
+  const saveBtn  = document.querySelector('#btnGuardar');
+  let debounce;
+
+  // Oculta tooltip al cargar
+  tooltip.style.display = 'none';
+
+  nitInput.addEventListener('input', () => {
+    clearTimeout(debounce);
+    const val = nitInput.value.trim();
+
+    // 1) Si está vacío: quita errores y oculta todo
+    if (!val) {
+      nitInput.classList.remove('error');
+      campoDiv.classList.remove('error');
+      tooltip.style.display = 'none';
+      saveBtn.disabled = false;
+      return;
+    }
+
+    // 2) Espera 400ms para no saturar el servidor
+    debounce = setTimeout(() => {
+      fetch(`listaproveedor.php?verificar_nit=${encodeURIComponent(val)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.existe) {
+            // Muestra el error
+            nitInput.classList.add('error');
+            campoDiv.classList.add('error');
+            tooltip.style.display = 'block';
+            saveBtn.disabled = true;
+          } else {
+            // Oculta el error
+            nitInput.classList.remove('error');
+            campoDiv.classList.remove('error');
+            tooltip.style.display = 'none';
+            saveBtn.disabled = false;
+          }
+        })
+        .catch(err => {
+          console.error('Validación NIT fallida:', err);
+          // Ante fallo, mejor permitir guardar
+          nitInput.classList.remove('error');
+          campoDiv.classList.remove('error');
+          tooltip.style.display = 'none';
+          saveBtn.disabled = false;
+        });
+    }, 400);
+  });
+});
   </script>
 
 

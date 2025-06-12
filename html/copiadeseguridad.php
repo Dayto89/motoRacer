@@ -89,7 +89,7 @@ echo "</script>\n";
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        
+
     </script>
     <style>
         /* Estilos mejorados para backups */
@@ -110,7 +110,9 @@ echo "</script>\n";
         .backup-table {
             width: 100%;
             border-collapse: collapse;
+            color: white;
             margin-top: 1.5rem;
+            font-family: Arial;
         }
 
         .backup-table thead {
@@ -118,23 +120,31 @@ echo "</script>\n";
             justify-content: center;
         }
 
-        .backup-table th,
-        .backup-table td {
-            border: 1px solid #ccc;
-            padding: 1rem;
+        th,
+        td {
+            border: 1px solid #666;
+            padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #444;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #tabla-backups td {
+            background-color: #222;
+            text-align: center;
             color: white;
         }
 
-        .backup-table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
-            color: black;
-            font-size: 17px;
-            font-family: arial;
-            text-align: center;
+        .productos-table th {
+            background-color: #98bde9;
+            color: #0b111a;
+            font-family: Arial, Helvetica, sans-serif;
         }
+
 
         .backup-table td {
             font-size: 16px;
@@ -285,7 +295,7 @@ echo "</script>\n";
             background-color: rgb(158, 146, 209);
         }
 
-       .pagination-dinamica button.active {
+        .pagination-dinamica button.active {
             background-color: #007bff;
             color: white;
             font-weight: bold;
@@ -294,14 +304,6 @@ echo "</script>\n";
         }
 
         /*Alertas*/
-
-        /* Estilos generales de los párrafos */
-        p {
-            font-size: 16px;
-            color: black;
-            font-family: arial;
-            padding: 10px;
-        }
 
 
 
@@ -394,10 +396,16 @@ echo "</script>\n";
             border-radius: 20px;
         }
 
-            #backupTable tbody tr:hover,
-    #backupTable tbody tr:hover td {
-      background-color: rgba(0, 123, 255, 0.15);
-    }
+        #backupTable tbody tr:hover,
+        #backupTable tbody tr:hover td {
+            background-color: rgba(0, 123, 255, 0.15);
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            /* opcional: elimina el espacio donde estaban los puntos */
+        }
     </style>
 </head>
 
@@ -426,7 +434,7 @@ echo "</script>\n";
                         <th data-field="actions" data-type="none">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tabla-backups">
                     <?php foreach ($backups_pagina as $backup): ?>
                         <tr>
                             <td><?= htmlspecialchars($backup['name']) ?></td>
@@ -577,18 +585,20 @@ echo "</script>\n";
 
 
 <script>
-      async function agregarBackup() {
-    try {
-      const resp = await fetch('../includes/backup.php', { method: 'GET' });
-      const result = await resp.json();
+    async function agregarBackup() {
+        try {
+            const resp = await fetch('../includes/backup.php', {
+                method: 'GET'
+            });
+            const result = await resp.json();
 
-      if (!result.success) {
-        throw new Error(result.message || 'Error desconocido');
-      }
+            if (!result.success) {
+                throw new Error(result.message || 'Error desconocido');
+            }
 
-      Swal.fire({
-        title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
-        html: `
+            Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
+                html: `
           <div class="custom-alert">
             <div class="contenedor-imagen">
               <img src="../imagenes/moto.png" alt="Éxito" class="moto">
@@ -597,21 +607,21 @@ echo "</script>\n";
             <p>Tamaño: ${(result.size / 1024 / 1024).toFixed(2)} MB</p>
           </div>
         `,
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          popup: 'swal2-border-radius',
-          confirmButton: 'btn-aceptar',
-          container: 'fondo-oscuro'
-        }
-      }).then(() => {
-        // Opcional: recarga la página para ver el nuevo backup
-        location.reload();
-      });
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            }).then(() => {
+                // Opcional: recarga la página para ver el nuevo backup
+                location.reload();
+            });
 
-    } catch (err) {
-      Swal.fire({
-        title: '<span class="titulo-alerta error">Error</span>',
-        html: `
+        } catch (err) {
+            Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
           <div class="custom-alert">
             <div class="contenedor-imagen">
               <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -619,149 +629,170 @@ echo "</script>\n";
             <p>${err.message}</p>
           </div>
         `,
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          popup: 'swal2-border-radius',
-          confirmButton: 'btn-aceptar',
-          container: 'fondo-oscuro'
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
         }
-      });
     }
-  }
-document.addEventListener('DOMContentLoaded', () => {
-  const rowsPerPage = 8;
-  let currentPage = 1;
-  let filteredData = [...allData];
+    document.addEventListener('DOMContentLoaded', () => {
+        const rowsPerPage = 8;
+        let currentPage = 1;
+        let filteredData = [...allData];
 
-  const tableBody = document.querySelector('#backupTable tbody');
-  const paginationContainer = document.getElementById('jsPagination');
-  const inputBusqueda = document.getElementById('searchRealtime');
-  const headers = document.querySelectorAll('#backupTable thead th');
+        const tableBody = document.querySelector('#backupTable tbody');
+        const paginationContainer = document.getElementById('jsPagination');
+        const inputBusqueda = document.getElementById('searchRealtime');
+        const headers = document.querySelectorAll('#backupTable thead th');
 
-  // Render tabla:
-  function renderTable() {
-    const start = (currentPage - 1) * rowsPerPage;
-    const pageData = filteredData.slice(start, start + rowsPerPage);
+        // Render tabla:
+        function renderTable() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const pageData = filteredData.slice(start, start + rowsPerPage);
 
-    tableBody.innerHTML = '';
-    pageData.forEach(row => {
-      const tr = document.createElement('tr');
+            tableBody.innerHTML = '';
+            pageData.forEach(row => {
+                const tr = document.createElement('tr');
 
-      // Nombre
-      let td = document.createElement('td');
-      td.textContent = row.name;
-      tr.appendChild(td);
+                // Nombre
+                let td = document.createElement('td');
+                td.textContent = row.name;
+                tr.appendChild(td);
 
-      // Fecha
-      td = document.createElement('td');
-      td.textContent = row.date;
-      tr.appendChild(td);
+                // Fecha
+                td = document.createElement('td');
+                td.textContent = row.date;
+                tr.appendChild(td);
 
-      // Tipo
-      td = document.createElement('td');
-      const span = document.createElement('span');
-      span.className = `backup-type ${ row.type === 'Base de datos' ? 'type-db' : 'type-files' }`;
-      span.textContent = row.type;
-      td.appendChild(span);
-      tr.appendChild(td);
+                // Tipo
+                td = document.createElement('td');
+                const span = document.createElement('span');
+                span.className = `backup-type ${ row.type === 'Base de datos' ? 'type-db' : 'type-files' }`;
+                span.textContent = row.type;
+                td.appendChild(span);
+                tr.appendChild(td);
 
-      // Tamaño
-      td = document.createElement('td');
-      td.textContent = row.size;
-      tr.appendChild(td);
+                // Tamaño
+                td = document.createElement('td');
+                td.textContent = row.size;
+                tr.appendChild(td);
 
-      // Acciones
-      td = document.createElement('td');
-      td.innerHTML = `
+                // Acciones
+                td = document.createElement('td');
+                td.innerHTML = `
         <button class="btn-restore" onclick="restoreBackup('${row.name}')">
           <i class="fas fa-undo"></i>
         </button>
         <button class="btn-delete"  onclick="deleteBackup ('${row.name}')">
           <i class="fas fa-trash"></i>
         </button>`;
-      tr.appendChild(td);
+                tr.appendChild(td);
 
-      tableBody.appendChild(tr);
+                tableBody.appendChild(tr);
+            });
+
+            renderPaginationControls();
+            attachActionBindings();
+        }
+
+        // Busqueda en tiempo real
+        inputBusqueda.addEventListener('input', () => {
+            const q = inputBusqueda.value.trim().toLowerCase();
+            filteredData = allData.filter(r =>
+                Object.values(r).some(v =>
+                    String(v).toLowerCase().includes(q)
+                )
+            );
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Paginación
+        function renderPaginationControls() {
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            if (totalPages < 2) return;
+
+            const btn = (txt, pg) => {
+                const b = document.createElement('button');
+                b.textContent = txt;
+                if (pg === currentPage) b.classList.add('active');
+                b.onclick = () => {
+                    currentPage = pg;
+                    renderTable();
+                };
+                return b;
+            };
+
+            paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+
+            let start = Math.max(1, currentPage - 2),
+                end = Math.min(totalPages, currentPage + 2);
+            if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), {
+                textContent: '…'
+            }));
+            for (let i = start; i <= end; i++) paginationContainer.append(btn(i, i));
+            if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), {
+                textContent: '…'
+            }));
+
+            paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+        }
+
+        // Ordenamiento
+        const sortStates = {};
+        headers.forEach((th, idx) => {
+            const type = th.dataset.type;
+            if (type === 'none') return;
+            th.style.cursor = 'pointer';
+            sortStates[idx] = true;
+            th.onclick = () => {
+                sortStates[idx] = !sortStates[idx];
+                const asc = sortStates[idx];
+                const field = th.dataset.field;
+                filteredData.sort((a, b) => {
+                    let va = a[field],
+                        vb = b[field];
+                    if (type === 'number') {
+                        va = +a[field];
+                        vb = +b[field];
+                    }
+                    if (type === 'date') {
+                        va = new Date(a[field]);
+                        vb = new Date(b[field]);
+                    }
+                    return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
+                });
+                headers.forEach(h => {
+                    const sp = h.querySelector('.sort-arrow');
+                    if (sp) sp.textContent = ''
+                });
+                th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
+                currentPage = 1;
+                renderTable();
+            };
+        });
+
+        // Reenlazar botones de acción tras cada render
+        function attachActionBindings() {
+            document.querySelectorAll('.btn-restore').forEach(b =>
+                b.addEventListener('click', e => {
+                    /* tu restoreBackup */
+                })
+            );
+            document.querySelectorAll('.btn-delete').forEach(b =>
+                b.addEventListener('click', e => {
+                    /* tu deleteBackup  */
+                })
+            );
+        }
+
+        // Inicializar
+        renderTable();
     });
-
-    renderPaginationControls();
-    attachActionBindings();
-  }
-
-  // Busqueda en tiempo real
-  inputBusqueda.addEventListener('input', () => {
-    const q = inputBusqueda.value.trim().toLowerCase();
-    filteredData = allData.filter(r =>
-      Object.values(r).some(v =>
-        String(v).toLowerCase().includes(q)
-      )
-    );
-    currentPage = 1;
-    renderTable();
-  });
-
-  // Paginación
-  function renderPaginationControls() {
-    paginationContainer.innerHTML = '';
-    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-    if (totalPages < 2) return;
-
-    const btn = (txt, pg) => {
-      const b = document.createElement('button');
-      b.textContent = txt;
-      if (pg === currentPage) b.classList.add('active');
-      b.onclick = () => { currentPage = pg; renderTable(); };
-      return b;
-    };
-
-    paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
-
-    let start = Math.max(1, currentPage - 2),
-        end   = Math.min(totalPages, currentPage + 2);
-    if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), { textContent: '…' }));
-    for (let i = start; i <= end; i++) paginationContainer.append(btn(i, i));
-    if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), { textContent: '…' }));
-
-    paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
-  }
-
-  // Ordenamiento
-  const sortStates = {};
-  headers.forEach((th, idx) => {
-    const type = th.dataset.type;
-    if (type === 'none') return;
-    th.style.cursor = 'pointer';
-    sortStates[idx] = true;
-    th.onclick = () => {
-      sortStates[idx] = !sortStates[idx];
-      const asc = sortStates[idx];
-      const field = th.dataset.field;
-      filteredData.sort((a, b) => {
-        let va = a[field], vb = b[field];
-        if (type === 'number') { va = +a[field]; vb = +b[field]; }
-        if (type === 'date')   { va = new Date(a[field]); vb = new Date(b[field]); }
-        return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
-      });
-      headers.forEach(h => { const sp = h.querySelector('.sort-arrow'); if (sp) sp.textContent = '' });
-      th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
-      currentPage = 1;
-      renderTable();
-    };
-  });
-
-  // Reenlazar botones de acción tras cada render
-  function attachActionBindings() {
-    document.querySelectorAll('.btn-restore').forEach(b =>
-      b.addEventListener('click', e => { /* tu restoreBackup */ })
-    );
-    document.querySelectorAll('.btn-delete').forEach(b =>
-      b.addEventListener('click', e => { /* tu deleteBackup  */ })
-    );
-  }
-
-  // Inicializar
-  renderTable();
-});
 </script>
 
 <div class="userInfo">

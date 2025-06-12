@@ -68,6 +68,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
   </style>
   <script src="/js/index.js"></script>
   <script src="../js/header.js"></script>
+  <style>
+    .required::after {
+            content: " *";
+            color: red;
+        }
+  </style>
 </head>
 
 <body>
@@ -79,7 +85,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
     <div class="container">
       <div class="form-grid">
         <div class="campo">
-          <label for="identificacion">Identificación: </label>
+          <label class="required" for="identificacion">Identificación: </label>
           <input
             type="number"
             name="identificacion"
@@ -93,24 +99,24 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 
 
         <div class="campo">
-          <label for="rol">Rol: </label>
+          <label class="required" for="rol">Rol: </label>
           <select name="rol" id="rol" required>
             <option value="gerente" selected>Gerente</option>
           </select>
         </div>
 
         <div class="campo">
-          <label for="nombre">Nombre: </label>
+          <label class="required" for="nombre">Nombre: </label>
           <input type="text" name="nombre" id="nombre" required>
         </div>
 
         <div class="campo">
-          <label for="apellido">Apellido: </label>
+          <label class="required" for="apellido">Apellido: </label>
           <input type="text" name="apellido" id="apellido" required>
         </div>
 
         <div class="campo">
-          <label for="telefono">Teléfono: </label>
+          <label class="required" for="telefono">Teléfono: </label>
           <input
             type="number"
             name="telefono"
@@ -121,17 +127,17 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
         </div>
 
         <div class="campo">
-          <label for="direccion">Dirección: </label>
+          <label class="required" for="direccion">Dirección: </label>
           <input type="text" name="direccion" id="direccion" required>
         </div>
 
         <div class="campo" id="contenedorCorreo">
-          <label for="correo">Correo: </label>
+          <label class="required" for="correo">Correo: </label>
           <button type="button" id="btnAbrirModalCorreo">Verificar correo</button>
         </div>
 
         <div class="campo">
-          <label for="contrasena">Contraseña: </label>
+          <label class="required" for="contrasena">Contraseña: </label>
           <input type="password" name="contrasena" id="contrasena" required disabled>
           <i
             id="togglePassword"
@@ -150,7 +156,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
         </div>
 
         <div class="campo">
-          <label for="confirmar">Confirmar Contraseña: </label>
+          <label class="required" for="confirmar">Confirmar Contraseña: </label>
           <input type="password" name="confirmar" id="confirmar" required disabled>
           <i
             id="togglePassword2"
