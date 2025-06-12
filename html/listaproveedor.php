@@ -1163,58 +1163,54 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     //verificar que nit no se repita, campo se vuelav rojo
     document.addEventListener('DOMContentLoaded', () => {
-  const nitInput = document.getElementById('nit');
-  const campoDiv = document.getElementById('nit-campo');
-  const tooltip  = document.getElementById('nit-tooltip');
-  const saveBtn  = document.querySelector('#btnGuardar');
-  let debounce;
+      const nitInput = document.getElementById('nit');
+      const campoDiv = document.getElementById('nit-campo');
+      const tooltip = document.getElementById('nit-tooltip');
+      const saveBtn = document.querySelector('#btnGuardar');
+      let debounce;
 
-  // Oculta tooltip al cargar
-  tooltip.style.display = 'none';
-
-  nitInput.addEventListener('input', () => {
-    clearTimeout(debounce);
-    const val = nitInput.value.trim();
-
-    // 1) Si está vacío: quita errores y oculta todo
-    if (!val) {
-      nitInput.classList.remove('error');
-      campoDiv.classList.remove('error');
+      // Oculta tooltip al cargar
       tooltip.style.display = 'none';
-      saveBtn.disabled = false;
-      return;
-    }
 
-    // 2) Espera 400ms para no saturar el servidor
-    debounce = setTimeout(() => {
-      fetch(`listaproveedor.php?verificar_nit=${encodeURIComponent(val)}`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.existe) {
-            // Muestra el error
-            nitInput.classList.add('error');
-            campoDiv.classList.add('error');
-            tooltip.style.display = 'block';
-            saveBtn.disabled = true;
-          } else {
-            // Oculta el error
-            nitInput.classList.remove('error');
-            campoDiv.classList.remove('error');
-            tooltip.style.display = 'none';
-            saveBtn.disabled = false;
-          }
-        })
-        .catch(err => {
-          console.error('Validación NIT fallida:', err);
-          // Ante fallo, mejor permitir guardar
+      nitInput.addEventListener('input', () => {
+        clearTimeout(debounce);
+        const val = nitInput.value.trim();
+
+        // 1) Si está vacío: quita errores y oculta todo
+        if (!val) {
           nitInput.classList.remove('error');
-          campoDiv.classList.remove('error');
           tooltip.style.display = 'none';
           saveBtn.disabled = false;
-        });
-    }, 400);
-  });
-});
+          return;
+        }
+
+        // 2) Espera 400ms para no saturar el servidor
+        debounce = setTimeout(() => {
+          fetch(`listaproveedor.php?verificar_nit=${encodeURIComponent(val)}`)
+            .then(r => r.json())
+            .then(data => {
+              // Dentro de tu listener de input…
+              if (data.existe) {
+                nitInput.classList.add('error');
+                tooltip.style.display = 'block';
+                saveBtn.disabled = true;
+              } else {
+                nitInput.classList.remove('error');
+                tooltip.style.display = 'none';
+                saveBtn.disabled = false;
+              }
+            })
+            .catch(err => {
+              console.error('Validación NIT fallida:', err);
+              // Ante fallo, mejor permitir guardar
+              nitInput.classList.remove('error');
+              campoDiv.classList.remove('error');
+              tooltip.style.display = 'none';
+              saveBtn.disabled = false;
+            });
+        }, 400);
+      });
+    });
   </script>
 
 

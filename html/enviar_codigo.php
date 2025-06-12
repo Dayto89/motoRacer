@@ -29,7 +29,6 @@ try {
     // Insertar nuevo código
     $stmt = $pdo->prepare("INSERT INTO verificaciones (correo, codigo, fecha_envio) VALUES (?, ?, NOW())");
     $stmt->execute([$correo, $codigo]);
-
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'message' => 'Error en base de datos: ' . $e->getMessage()]);
     exit;
@@ -45,9 +44,13 @@ $mensaje = [
             'Email' => "almacenmotoracer@gmail.com",
             'Name' => "Soporte Moto Racer"
         ],
-        'To' => [[ 'Email' => $correo ]],
-       'Subject' => "Tu código de verificación",
-'HTMLPart' => "<h3>Hola</h3><p>Tu código es: <strong>$codigo</strong></p>"
+        'To' => [['Email' => $correo]],
+        'TemplateID' => 7066999,
+        'TemplateLanguage' => true,
+        'Subject' => "Verificación de tu cuenta en Moto Racer",
+        'Variables' => [
+        'codigo' => $codigo
+        ]
 
     ]]
 ];

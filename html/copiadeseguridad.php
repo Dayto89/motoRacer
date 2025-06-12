@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {
@@ -585,59 +585,52 @@ echo "</script>\n";
 
 
 <script>
-    async function agregarBackup() {
-        try {
-            const resp = await fetch('../includes/backup.php', {
-                method: 'GET'
-            });
-            const result = await resp.json();
+async function agregarBackup() {
+  try {
+    const resp   = await fetch('../includes/backup.php');
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.message);
 
-            if (!result.success) {
-                throw new Error(result.message || 'Error desconocido');
-            }
-
-            Swal.fire({
-                title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
-                html: `
-          <div class="custom-alert">
-            <div class="contenedor-imagen">
-              <img src="../imagenes/moto.png" alt="Éxito" class="moto">
-            </div>
-            <p>Backup “${result.filename}” generado correctamente.</p>
-            <p>Tamaño: ${(result.size / 1024 / 1024).toFixed(2)} MB</p>
+    Swal.fire({
+      title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/moto.png" alt="Éxito" class="moto">
           </div>
-        `,
-                confirmButtonText: 'Aceptar',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            }).then(() => {
-                // Opcional: recarga la página para ver el nuevo backup
-                location.reload();
-            });
+          <p>${result.message}</p>
+        </div>`,
+      confirmButtonText: 'Aceptar',
+      customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+      }
+    }).then(() => location.reload());
 
-        } catch (err) {
-            Swal.fire({
-                title: '<span class="titulo-alerta error">Error</span>',
-                html: `
-          <div class="custom-alert">
-            <div class="contenedor-imagen">
-              <img src="../imagenes/llave.png" alt="Error" class="llave">
-            </div>
-            <p>${err.message}</p>
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      title: '<span class="titulo-alerta error">Error</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/llave.png" alt="Error" class="llave">
           </div>
-        `,
-                confirmButtonText: 'Aceptar',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        }
-    }
+          <p>${err.message}</p>
+        </div>`,
+      confirmButtonText: 'Aceptar',
+      customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+      }
+    });
+  }
+}
+
+
+
     document.addEventListener('DOMContentLoaded', () => {
         const rowsPerPage = 8;
         let currentPage = 1;
