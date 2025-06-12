@@ -622,9 +622,9 @@ input.error {
 
 /* Estilo del tooltip emergente */
 .small-error-tooltip {
-    position: absolute;
-    top: 71%;
-    left: -137px;
+        position: absolute;
+    top: 56%;
+    left: -260px;
     transform: translateY(-50%);
     background-color: #ffe6e6;
     border: 1px solid red;
@@ -635,7 +635,7 @@ input.error {
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 10;
-    display: none;            /* inicialmente oculto */
+    display: none;
     font-family: Arial, Helvetica, sans-serif;
 }
 

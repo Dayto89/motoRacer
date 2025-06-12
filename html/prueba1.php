@@ -90,7 +90,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
           <!-- Tooltip de error -->
           <div class="small-error-tooltip">Este código ya está registrado.</div>
         </div>
-        
+
 
         <div class="campo">
           <label for="rol">Rol: </label>
@@ -346,28 +346,30 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
       );
 
       if ($resultado) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+
         echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            Swal.fire({
-                                title: '<span class=\"titulo-alerta confirmacion\">¡Registro exitoso!</span>',
-                                html: <div class=\"custom-alert\">
-                                            <div class=\"contenedor-imagen\">
-                                                <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                                            </div>
-                                            <p>El usuario fue registrado y los permisos fueron guardados correctamente.</p>
-                                        </div>,
-                                background: '#ffffffdb',
-                                confirmButtonText: 'Aceptar',
-                                confirmButtonColor: '#007bff',
-                                customClass: {
-                                    popup: 'swal2-border-radius',
-                                    confirmButton: 'btn-aceptar',
-                                    container: 'fondo-oscuro'
-                                }
-                            });
-                        });
-                    </script>";
+document.addEventListener('DOMContentLoaded', function() {
+  Swal.fire({
+    title: '<span class=\"titulo-alerta confirmacion\">¡Registro exitoso!</span>',
+    html: `
+      <div class=\"custom-alert\">
+        <div class=\"contenedor-imagen\">
+          <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+        </div>
+        <p>El usuario fue registrado y los permisos fueron guardados correctamente.</p>
+      </div>
+    `,
+    background: '#ffffffdb',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#007bff',
+    customClass: {
+      popup: 'swal2-border-radius',
+      confirmButton: 'btn-aceptar',
+      container: 'fondo-oscuro'
+    }
+  });
+});
+</script>";
       } else {
         echo "<script>alert('Registro exitoso, pero error al guardar permisos');</script>";
       }
@@ -753,61 +755,65 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 
     //verificar si identififcacion ya esta regsitrada 
     document.addEventListener('DOMContentLoaded', () => {
-  const campoIdent = document.querySelector('.campo #identificacion').closest('.campo');
-  const inputIdent = campoIdent.querySelector('#identificacion');
-  const tooltip    = campoIdent.querySelector('.small-error-tooltip');
-  const btnReg     = document.getElementById('btnRegistrar');
-  let debounce;
+      const campoIdent = document.querySelector('.campo #identificacion').closest('.campo');
+      const inputIdent = campoIdent.querySelector('#identificacion');
+      const tooltip = campoIdent.querySelector('.small-error-tooltip');
+      const btnReg = document.getElementById('btnRegistrar');
+      let debounce;
 
-  // Al arrancar, bloquea el botón
-  btnReg.disabled = true;
+      // Al arrancar, bloquea el botón
+      btnReg.disabled = true;
 
-  inputIdent.addEventListener('input', () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(() => {
-      const val = inputIdent.value.trim();
-      if (!val) {
-        // sin valor: quita estado de error
-        inputIdent.classList.remove('error');
-        campoIdent.classList.remove('error');
-        tooltip.style.display = 'none';
-        btnReg.disabled = true;
-        return;
-      }
+      inputIdent.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(() => {
+          const val = inputIdent.value.trim();
+          if (!val) {
+            // sin valor: quita estado de error
+            inputIdent.classList.remove('error');
+            campoIdent.classList.remove('error');
+            tooltip.style.display = 'none';
+            btnReg.disabled = true;
+            return;
+          }
 
-      fetch(`${location.pathname}?action=check_identificacion`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identificacion: val })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.exists) {
-          // duplicado → marca input y .campo + muestra tooltip + deshabilita botón
-          inputIdent.classList.add('error');
-          campoIdent.classList.add('error');
-          tooltip.style.display = 'block';
-          btnReg.disabled = true;
-        } else {
-          // único → quita marcas + oculta tooltip + habilita botón
-          inputIdent.classList.remove('error');
-          campoIdent.classList.remove('error');
-          tooltip.style.display = 'none';
-          btnReg.disabled = false;
-        }
-      })
-      .catch(err => {
-        console.error('Fetch error:', err);
-        // en caso de fallo, mantenemos deshabilitado
-        inputIdent.classList.add('error');
-        campoIdent.classList.add('error');
-        tooltip.textContent = 'Error de conexión.';
-        tooltip.style.display = 'block';
-        btnReg.disabled = true;
+          fetch(`${location.pathname}?action=check_identificacion`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                identificacion: val
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.exists) {
+                // duplicado → marca input y .campo + muestra tooltip + deshabilita botón
+                inputIdent.classList.add('error');
+                campoIdent.classList.add('error');
+                tooltip.style.display = 'block';
+                btnReg.disabled = true;
+              } else {
+                // único → quita marcas + oculta tooltip + habilita botón
+                inputIdent.classList.remove('error');
+                campoIdent.classList.remove('error');
+                tooltip.style.display = 'none';
+                btnReg.disabled = false;
+              }
+            })
+            .catch(err => {
+              console.error('Fetch error:', err);
+              // en caso de fallo, mantenemos deshabilitado
+              inputIdent.classList.add('error');
+              campoIdent.classList.add('error');
+              tooltip.textContent = 'Error de conexión.';
+              tooltip.style.display = 'block';
+              btnReg.disabled = true;
+            });
+        }, 500);
       });
-    }, 500);
-  });
-});
+    });
   </script>
 </body>
 

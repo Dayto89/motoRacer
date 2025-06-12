@@ -26,7 +26,8 @@ foreach ($files as $file) {
         $file_path = $backup_dir . $file;
         $file_info = pathinfo($file_path);
         $creation_date = date("Y-m-d H:i:s", filemtime($file_path));
-        $file_size = formatSizeUnits(filesize($file_path));
+        $bytes = filesize($file_path);
+        $file_size = formatSizeUnits($bytes);
         $file_type = ($file_info['extension'] === 'sql') ? 'Base de datos' : 'Archivos';
         $searchable_date = date("d/m/Y H:i:s", filemtime($file_path));
 
@@ -39,11 +40,12 @@ foreach ($files as $file) {
 
         if ($match) {
             $backups[] = [
-                'path' => $file_path,
-                'name' => $file,
-                'date' => $creation_date,
-                'size' => $file_size,
-                'type' => $file_type
+                'path'      => $file_path,
+                'name'      => $file,
+                'date'      => $creation_date,
+                'type'      => $file_type,
+                'size'      => $file_size,     // mantiene formato legible
+                'sizeValue' => $bytes
             ];
         }
     }
@@ -67,6 +69,10 @@ $inicio = ($pagina_actual - 1) * $por_pagina;
 $backups_pagina = array_slice($backups, $inicio, $por_pagina);
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
+
+echo "<script>\n";
+echo "  const allData = " . json_encode($backups, JSON_HEX_TAG | JSON_HEX_APOS) . ";\n";
+echo "</script>\n";
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -82,6 +88,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="/js/index.js"></script>
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        
+    </script>
     <style>
         /* Estilos mejorados para backups */
         .main-content {
@@ -249,6 +258,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
 
         .pagination {
+            display: none;
+        }
+
+        .pagination-dinamica {
             display: flex;
             justify-content: center;
             margin-top: 20px;
@@ -257,7 +270,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             font-size: 13px;
         }
 
-        .pagination a {
+        .pagination-dinamica button {
             padding: 8px 12px;
             background-color: #f0f0f0;
             border: 1px solid #ccc;
@@ -265,13 +278,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             color: #333;
             border-radius: 4px;
             transition: background-color 0.3s;
+            cursor: pointer;
         }
 
-        .pagination a:hover {
+        .pagination-dinamica button:hover {
             background-color: rgb(158, 146, 209);
         }
 
-        .pagination a.active {
+       .pagination-dinamica button.active {
             background-color: #007bff;
             color: white;
             font-weight: bold;
@@ -379,6 +393,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .swal2-popup {
             border-radius: 20px;
         }
+
+            #backupTable tbody tr:hover,
+    #backupTable tbody tr:hover td {
+      background-color: rgba(0, 123, 255, 0.15);
+    }
     </style>
 </head>
 
@@ -388,31 +407,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <h1>Gestión de Copias de Seguridad</h1>
 
         <div class="filter-bar">
-            <form method="GET" action="copiadeseguridad.php" class="search-form">
-                <div class="search-container">
-                    <input id="#search-input" type="text"
-                        name="busqueda"
-                        placeholder="Buscar por nombre, fecha, tipo o tamaño..."
-                        value="<?= htmlspecialchars($search_term) ?>"
-                        aria-label="Buscar backups">
-                    <button type="submit" class="search-button">
-                        <i class="fas fa-search"></i> Buscar
-                    </button>
-                </div>
-            </form>
+            <div class="search-container">
+                <input id="searchRealtime" type="text" placeholder="Buscar en tiempo real…" />
+
+            </div>
             <button class="boton boton-agregar" onclick="agregarBackup()">Nueva Copia de Seguridad</button>
 
         </div>
 
         <?php if (!empty($backups_pagina)): ?>
-            <table class="backup-table">
+            <table id="backupTable" class="backup-table">
                 <thead>
                     <tr>
-                        <th>Nombre del Backup</th>
-                        <th>Fecha de Creación</th>
-                        <th>Tipo</th>
-                        <th>Tamaño</th>
-                        <th>Acciones</th>
+                        <th data-field="name" data-type="text">Nombre del Backup <span class="sort-arrow"></span></th>
+                        <th data-field="date" data-type="date">Fecha de Creación <span class="sort-arrow"></span></th>
+                        <th data-field="type" data-type="text">Tipo <span class="sort-arrow"></span></th>
+                        <th data-field="sizeValue" data-type="number">Tamaño <span class="sort-arrow"></span></th>
+                        <th data-field="actions" data-type="none">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -442,6 +453,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            <div id="jsPagination" class="pagination-dinamica"></div>
 
             <!-- PAGINACIÓN -->
 
@@ -565,202 +577,194 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
 <script>
-    function agregarBackup() {
-        fetch('../includes/backup.php')
-            .then(response => response.text())
-            .then(data => {
-                // Ejecutar el contenido del PHP que contiene la alerta
-                const div = document.createElement('div');
-                div.innerHTML = data;
-                document.body.appendChild(div);
-                const scripts = div.querySelectorAll("script");
-                scripts.forEach(script => eval(script.innerText));
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: '<span class="titulo-alerta error">Error</span>',
-                    html: ` 
-                    <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    '<p>Ocurrió un error inesperado al generar el backup.</p>',
-                    </div>
-            `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
-                });
-            });
-    }
+      async function agregarBackup() {
+    try {
+      const resp = await fetch('../includes/backup.php', { method: 'GET' });
+      const result = await resp.json();
 
-    async function restoreBackup(filename) {
-        const result = await Swal.fire({
-            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
-            html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                <p>¿Restaurar ${filename}? ¡Esto sobrescribirá datos existentes!</p>
+      if (!result.success) {
+        throw new Error(result.message || 'Error desconocido');
+      }
+
+      Swal.fire({
+        title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
+        html: `
+          <div class="custom-alert">
+            <div class="contenedor-imagen">
+              <img src="../imagenes/moto.png" alt="Éxito" class="moto">
             </div>
+            <p>Backup “${result.filename}” generado correctamente.</p>
+            <p>Tamaño: ${(result.size / 1024 / 1024).toFixed(2)} MB</p>
+          </div>
         `,
-            showCancelButton: true,
-            confirmButtonText: 'Sí, restaurar',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            background: '#ffffffdb',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                cancelButton: 'btn-cancelar',
-                container: 'fondo-oscuro'
-            }
-        });
-
-        if (!result.isConfirmed) return;
-
-        // Aquí continúa tu lógica original de restauración
-        // ...
-        try {
-            // Tu código de restauración aquí
-            console.log(`Restaurando backup: ${filename}`);
-            // await tuFuncionDeRestauracion(filename);
-
-            // Opcional: Mostrar mensaje de éxito
-            await Swal.fire({
-                title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-                html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                         <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                    </div>
-                    <p>El backup ${filename} se restauró correctamente</p>
-                </div>
-            `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        } catch (error) {
-            // Manejo de errores
-            await Swal.fire({
-                title: '<span class="titulo-alerta error">Error</span>',
-                html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                         <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al restaurar el backup: ${error.message}</p>
-                </div>
-            `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
         }
-    }
+      }).then(() => {
+        // Opcional: recarga la página para ver el nuevo backup
+        location.reload();
+      });
 
-    async function deleteBackup(filename) {
-        const confirmation = await Swal.fire({
-            title: '<span class="titulo-alerta advertencia">¿Estás seguro?</span>',
-            html: `
-            <div class="custom-alert">
-                <div class="contenedor-imagen">
-                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                </div>
-                <p>¿Eliminar ${filename} permanentemente? Esta acción no se puede deshacer.</p>
+    } catch (err) {
+      Swal.fire({
+        title: '<span class="titulo-alerta error">Error</span>',
+        html: `
+          <div class="custom-alert">
+            <div class="contenedor-imagen">
+              <img src="../imagenes/llave.png" alt="Error" class="llave">
             </div>
+            <p>${err.message}</p>
+          </div>
         `,
-            showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            background: '#ffffffdb',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                cancelButton: 'btn-cancelar',
-                container: 'fondo-oscuro'
-            }
-        });
-
-        if (!confirmation.isConfirmed) return;
-
-        try {
-            const response = await fetch('../includes/delete_backup.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    file: filename
-                }),
-            });
-
-            const result = await response.text();
-
-            await Swal.fire({
-                title: `<span class='titulo'>Éxito</span>`,
-                html: `
-                            <div class='alerta'>
-                                <div class='contenedor-imagen'>
-                                    <img src='../imagenes/moto.png' class='moto'>
-                                </div>
-                                <p>${result}</p>
-                            </div>
-                        `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#28a745',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    container: 'fondo-oscuro'
-                }
-            });
-
-            location.reload();
-        } catch (error) {
-            await Swal.fire({
-                title: '<span class="titulo-alerta error">Error</span>',
-                html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al eliminar el backup: ${error.message}</p>
-                </div>
-            `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
         }
+      });
     }
+  }
+document.addEventListener('DOMContentLoaded', () => {
+  const rowsPerPage = 8;
+  let currentPage = 1;
+  let filteredData = [...allData];
+
+  const tableBody = document.querySelector('#backupTable tbody');
+  const paginationContainer = document.getElementById('jsPagination');
+  const inputBusqueda = document.getElementById('searchRealtime');
+  const headers = document.querySelectorAll('#backupTable thead th');
+
+  // Render tabla:
+  function renderTable() {
+    const start = (currentPage - 1) * rowsPerPage;
+    const pageData = filteredData.slice(start, start + rowsPerPage);
+
+    tableBody.innerHTML = '';
+    pageData.forEach(row => {
+      const tr = document.createElement('tr');
+
+      // Nombre
+      let td = document.createElement('td');
+      td.textContent = row.name;
+      tr.appendChild(td);
+
+      // Fecha
+      td = document.createElement('td');
+      td.textContent = row.date;
+      tr.appendChild(td);
+
+      // Tipo
+      td = document.createElement('td');
+      const span = document.createElement('span');
+      span.className = `backup-type ${ row.type === 'Base de datos' ? 'type-db' : 'type-files' }`;
+      span.textContent = row.type;
+      td.appendChild(span);
+      tr.appendChild(td);
+
+      // Tamaño
+      td = document.createElement('td');
+      td.textContent = row.size;
+      tr.appendChild(td);
+
+      // Acciones
+      td = document.createElement('td');
+      td.innerHTML = `
+        <button class="btn-restore" onclick="restoreBackup('${row.name}')">
+          <i class="fas fa-undo"></i>
+        </button>
+        <button class="btn-delete"  onclick="deleteBackup ('${row.name}')">
+          <i class="fas fa-trash"></i>
+        </button>`;
+      tr.appendChild(td);
+
+      tableBody.appendChild(tr);
+    });
+
+    renderPaginationControls();
+    attachActionBindings();
+  }
+
+  // Busqueda en tiempo real
+  inputBusqueda.addEventListener('input', () => {
+    const q = inputBusqueda.value.trim().toLowerCase();
+    filteredData = allData.filter(r =>
+      Object.values(r).some(v =>
+        String(v).toLowerCase().includes(q)
+      )
+    );
+    currentPage = 1;
+    renderTable();
+  });
+
+  // Paginación
+  function renderPaginationControls() {
+    paginationContainer.innerHTML = '';
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    if (totalPages < 2) return;
+
+    const btn = (txt, pg) => {
+      const b = document.createElement('button');
+      b.textContent = txt;
+      if (pg === currentPage) b.classList.add('active');
+      b.onclick = () => { currentPage = pg; renderTable(); };
+      return b;
+    };
+
+    paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+
+    let start = Math.max(1, currentPage - 2),
+        end   = Math.min(totalPages, currentPage + 2);
+    if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), { textContent: '…' }));
+    for (let i = start; i <= end; i++) paginationContainer.append(btn(i, i));
+    if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), { textContent: '…' }));
+
+    paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+  }
+
+  // Ordenamiento
+  const sortStates = {};
+  headers.forEach((th, idx) => {
+    const type = th.dataset.type;
+    if (type === 'none') return;
+    th.style.cursor = 'pointer';
+    sortStates[idx] = true;
+    th.onclick = () => {
+      sortStates[idx] = !sortStates[idx];
+      const asc = sortStates[idx];
+      const field = th.dataset.field;
+      filteredData.sort((a, b) => {
+        let va = a[field], vb = b[field];
+        if (type === 'number') { va = +a[field]; vb = +b[field]; }
+        if (type === 'date')   { va = new Date(a[field]); vb = new Date(b[field]); }
+        return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
+      });
+      headers.forEach(h => { const sp = h.querySelector('.sort-arrow'); if (sp) sp.textContent = '' });
+      th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
+      currentPage = 1;
+      renderTable();
+    };
+  });
+
+  // Reenlazar botones de acción tras cada render
+  function attachActionBindings() {
+    document.querySelectorAll('.btn-restore').forEach(b =>
+      b.addEventListener('click', e => { /* tu restoreBackup */ })
+    );
+    document.querySelectorAll('.btn-delete').forEach(b =>
+      b.addEventListener('click', e => { /* tu deleteBackup  */ })
+    );
+  }
+
+  // Inicializar
+  renderTable();
+});
 </script>
-  <div class="userInfo">
+
+<div class="userInfo">
     <!-- Nombre y apellido del usuario y rol -->
     <!-- Consultar datos del usuario -->
     <?php
@@ -780,14 +784,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
     <p class="rol">Rol: <?php echo $rol; ?></p>
 
-  </div>
-  <div class="profilePic">
+</div>
+<div class="profilePic">
     <?php if (!empty($rowUsuario['foto'])): ?>
-      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
     <?php else: ?>
-      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
     <?php endif; ?>
-  </div>
+</div>
 </body>
 
 </html>
