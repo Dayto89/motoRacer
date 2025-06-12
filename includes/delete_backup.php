@@ -1,33 +1,26 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 if (!isset($_SESSION['usuario_id'])) {
-    die('Acceso no autorizado');
+  http_response_code(401);
+  echo json_encode(['success'=>false,'message'=>'No autorizado']);
+  exit;
 }
 
-$backup_dir = 'C:/xampp/htdocs/Proyecto SIMR/backups/';
 $data = json_decode(file_get_contents('php://input'), true);
-$filename = $data['file'];
+$file = basename($data['file']);  // basename para evitar traversal
+$path = __DIR__ . '/../backups/' . $file;
 
-// Validación corregida (agregar "_db" en el patrón)
-if (!preg_match('/^backup_db_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.sql$/', $filename)) {
-    die('Archivo no válido');
+if (!file_exists($path)) {
+  http_response_code(404);
+  echo json_encode(['success'=>false,'message'=>"Archivo no encontrado"]);
+  exit;
 }
 
-$file_path = $backup_dir . $filename;
-
-// Verificar que el archivo existe antes de eliminar
-if (!file_exists($file_path)) {
-    die('El archivo no existe');
+if (!unlink($path)) {
+  http_response_code(500);
+  echo json_encode(['success'=>false,'message'=>"No se pudo eliminar {$file}"]);
+  exit;
 }
 
-// Verificar permisos de escritura
-if (!is_writable($file_path)) {
-    die('Sin permisos para eliminar');
-}
-
-if (unlink($file_path)) {
-    echo "Backup eliminado correctamente";
-} else {
-    echo "Error al eliminar (Verifica permisos)";
-}
-?>
+echo json_encode(['success'=>true,'message'=>"{$file} eliminado correctamente"]);

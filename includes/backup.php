@@ -44,7 +44,11 @@ if (! $fp = fopen($filePath, 'w')) {
 // 6) Cabecera del volcado
 fwrite($fp, "-- Volcado de la base de datos `{$dbName}`\n");
 fwrite($fp, "-- Fecha: ". date('Y-m-d H:i:s') ."\n\n");
+// ** INI : asegurar UTF-8 **
+fwrite($fp, "/*!40101 SET NAMES utf8mb4 */;\n");
+fwrite($fp, "/*!40101 SET CHARACTER SET utf8mb4 */;\n\n");
 fwrite($fp, "SET FOREIGN_KEY_CHECKS=0;\n\n");
+
 
 // 7) Obtener todas las tablas
 $tables = [];

@@ -159,7 +159,7 @@ echo "</script>\n";
         }
 
         .btn-restore {
-            background: #4CAF50;
+            background: #326534;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 4px;
@@ -585,6 +585,149 @@ echo "</script>\n";
 
 
 <script>
+
+    /**
+ * Restaura un backup: llama a restore_backup.php
+ */
+async function restoreBackup(filename) {
+  const { isConfirmed } = await Swal.fire({
+    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+    html: `
+      <div class="custom-alert">
+        <div class="contenedor-imagen">
+          <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+        </div>
+        <p>¿Seguro que deseas restaurar <strong>${filename}</strong>? Se sobrescribirán datos existentes.</p>
+      </div>`,
+    showCancelButton: true,
+    confirmButtonText: 'Sí, restaurar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      popup: 'swal2-border-radius',
+      confirmButton: 'btn-aceptar',
+      cancelButton: 'btn-cancelar',
+      container: 'fondo-oscuro'
+    }
+  });
+
+  if (!isConfirmed) return;
+
+  try {
+    const resp = await fetch('../includes/restore_backup.php', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ file: filename })
+    });
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.message);
+
+    await Swal.fire({
+      title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
+          </div>
+          <p>${result.message}</p>
+        </div>`,
+      customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+      }
+    });
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      title: '<span class="titulo-alerta error">Error</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/llave.png" alt="Error" class="llave">
+          </div>
+          <p>${err.message}</p>
+        </div>`,
+      customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+      }
+    });
+  }
+}
+
+/**
+ * Elimina un backup: llama a delete_backup.php
+ */
+async function deleteBackup(filename) {
+  const { isConfirmed } = await Swal.fire({
+    title: '<span class="titulo-alerta advertencia">¿Eliminar?</span>',
+    html: `
+      <div class="custom-alert">
+        <div class="contenedor-imagen">
+          <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+        </div>
+        <p>¿Eliminar permanentemente <strong>${filename}</strong>? Esta acción no se puede deshacer.</p>
+      </div>`,
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      popup: 'swal2-border-radius',
+      confirmButton: 'btn-aceptar',
+      cancelButton: 'btn-cancelar',
+      container: 'fondo-oscuro'
+    }
+  });
+
+  if (!isConfirmed) return;
+
+  try {
+    const resp = await fetch('../includes/delete_backup.php', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ file: filename })
+    });
+    const result = await resp.json();
+    if (!result.success) throw new Error(result.message);
+
+    await Swal.fire({
+      title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
+          </div>
+          <p>${result.message}</p>
+        </div>`,
+      customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+      }
+    });
+    location.reload();
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      title: '<span class="titulo-alerta error">Error</span>',
+      html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/llave.png" alt="Error" class="llave">
+          </div>
+          <p>${err.message}</p>
+        </div>`,
+      customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+      }
+    });
+  }
+}
+
 async function agregarBackup() {
   try {
     const resp   = await fetch('../includes/backup.php');
@@ -632,7 +775,7 @@ async function agregarBackup() {
 
 
     document.addEventListener('DOMContentLoaded', () => {
-        const rowsPerPage = 8;
+        const rowsPerPage = 7;
         let currentPage = 1;
         let filteredData = [...allData];
 
