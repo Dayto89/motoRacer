@@ -244,7 +244,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <!-- Modal -->
-    <div id="modal" class="modal_nueva_ubicacion">
+    <div id="modalNuevo" class="modal_nueva_ubicacion">
         <div class="modal-content-nueva">
             <h2>Nueva ubicación</h2>
             <form method="POST" action="">
@@ -273,7 +273,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </div>
-        <div class="userInfo">
+    <div class="userInfo">
         <!-- Nombre y apellido del usuario y rol -->
         <!-- Consultar datos del usuario -->
         <?php
@@ -339,25 +339,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 });
                 renderPagination();
             }
+            // —ANIMACIONES Modal de Nueva Categoría —
+            const modalNuevaUbicacion = document.getElementById('modalNuevo'); // Asegúrate de que el ID sea 'modal'
+            const btnAbrirNuevaUbicacion = document.getElementById('btnAbrirModal'); // Asume este ID para el botón de abrir
+            const btnCancelarNuevaUbicacion = modalNuevaUbicacion.querySelector('#btnCancelar');
 
+            if (btnAbrirNuevaUbicacion) {
+                btnAbrirNuevaUbicacion.addEventListener('click', () => {
+                    modalNuevaUbicacion.classList.add('show');
+                });
+            }
+
+            if (btnCancelarNuevaUbicacion) {
+                btnCancelarNuevaUbicacion.addEventListener('click', () => {
+                    modalNuevaUbicacion.classList.remove('show');
+                });
+            }
+
+            if (modalNuevaUbicacion) {
+                modalNuevaUbicacion.addEventListener('click', (e) => {
+                    if (e.target === modalNuevaUbicacion) {
+                        modalNuevaUbicacion.classList.remove('show');
+                    }
+                });
+            }
             // — cierre del modal de productos —
             const modalProductos = document.getElementById('modalProductos');
-            const closeBtn = modalProductos.querySelector('.close');
-
+            const closeBtnModalProductos = modalProductos.querySelector('.close');
             // Función para ocultar
             function hideProductosModal() {
                 modalProductos.classList.remove('show');
             }
-
             // Cerrar al pulsar la X
-            closeBtn.addEventListener('click', hideProductosModal);
-
+            if (closeBtnModalProductos) {
+                closeBtnModalProductos.addEventListener('click', hideProductosModal);
+            }
             // Cerrar al hacer clic fuera del contenido
-            modalProductos.addEventListener('click', (e) => {
-                if (e.target === modalProductos) {
-                    hideProductosModal();
-                }
-            });
+            if (modalProductos) {
+                modalProductos.addEventListener('click', (e) => {
+                    if (e.target === modalProductos) {
+                        hideProductosModal();
+                    }
+                });
+            }
 
             function renderPagination() {
                 paginationEl.innerHTML = '';

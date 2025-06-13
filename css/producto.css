@@ -897,6 +897,37 @@ input.error {
   border-color: transparent transparent transparent #ffe6e6;
 }
 
+
+/*Modal para crear categoria*/
+ .modal_nueva_categoria {
+      display: none;
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center; align-items: center;
+      opacity: 0; transform: translateY(-50px);
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 1000;
+    }
+    .modal_nueva_categoria.show {
+      display: flex; opacity: 1; transform: translateY(0);
+    }
+    .modal-content-nueva {
+      background: rgba(200,200,200,0.76);
+      padding: 20px; border-radius: 10px;
+      width: 400px; text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease-out;
+    }
+    .modal-content-nueva h2 {
+      font-size: 32px; color: white;
+      text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0;
+      letter-spacing: 5px; padding: 28px 0 10px;
+    }
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; }
+
+
 /*---------------------------------------------------------------------------------------------------------*/
 
 /* MÓVILES */

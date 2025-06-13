@@ -40,27 +40,15 @@ function enviarCodigo(string $correo, string $codigo): array {
             'Email' => $correo,
             'Name'  => 'Usuario'
         ]],
+       'TemplateID' => 7068805,  // ← PON AQUÍ EL ID DE TU PLANTILLA
+        'TemplateLanguage' => true,
         'Subject' => 'Código de recuperación de contraseña',
-        'TextPart' => "Hola,\n\nHemos recibido una solicitud para restablecer tu contraseña en Moto Racer.\n\nTu código de recuperación es: $codigo\n\nIngresa este código en la página de recuperación para continuar.\n\nSi no realizaste esta solicitud, puedes ignorar este mensaje.",
-        'HTMLPart' => "
-            <html>
-            <body style='font-family: Arial, sans-serif;'>
-                <h2>Recuperación de contraseña - Moto Racer</h2>
-                <p>Hola,</p>
-                <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
-                <p>Tu código de recuperación es:</p>
-                <h3 style='color:rgb(12, 51, 77);'>$codigo</h3>
-                <p>Ingresa este código en la página correspondiente para continuar con el proceso.</p>
-                <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
-                <br>
-                <p>Atentamente,<br><strong>Soporte Almacén Moto Racer</strong></p>
-            </body>
-            </html>
-        ",
+        'Variables' => [
+            'codigo' => $codigo
+        ],
         'CustomID' => 'RecuperacionSIMR'
     ]]
 ];
-
     try {
         // Envía la petición a Mailjet
         $response = $mj->post(Resources::$Email, ['body' => $body]);

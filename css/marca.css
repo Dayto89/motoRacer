@@ -158,37 +158,32 @@ th {
 .btn-delete:hover {
   background-color: #a71d2a;
 }
-/* Modal nueva marca */
+/* Modal ANIMACIONES */
+/* Modal nueva categoria */
 .modal_nueva_marca {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  justify-content: center;
+  display: flex; /* Usamos flexbox para centrar el contenido */
   align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
   z-index: 1000;
-  opacity: 0; /* Inicialmente oculto */
-  transform: translateY(-50px); /* Inicia desplazado hacia arriba */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
-}
 
-/* Mostrar el modal con animación */
-.modal_nueva_marca.show {
-  display: flex;
-  opacity: 1;
-  transform: translateY(0); /* Se desliza a su posición */
-}
-
-/* Ocultar el modal con animación */
-.modal_nueva_marca.hide {
+  /* Animación del fondo */
+  visibility: hidden;
   opacity: 0;
-  transform: translateY(-50px); /* Se desliza hacia arriba */
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: visibility 0.35s ease, opacity 0.35s ease;
 }
-/* Contenido del modal */
+
+.modal_nueva_marca.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Contenido del modal Nueva Categoría */
 .modal-content-nueva {
   background-color: rgba(200, 200, 200, 0.76);
   padding: 20px;
@@ -196,7 +191,16 @@ th {
   width: 400px;
   text-align: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  animation: slideIn 0.3s ease-out;
+
+  /* Animación de arrastre del contenido */
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+}
+
+.modal_nueva_marca.show .modal-content-nueva {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .modal-content-nueva h2 {
@@ -210,54 +214,59 @@ th {
   padding: 28px;
 }
 
-/* Ocultar el modal por defecto */
-.modal {
-  display: none;
+/* Modal lista de productos */
+#modalProductos.modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  justify-content: center;
+  display: flex; /* Usamos flexbox para centrar el contenido */
   align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
   z-index: 1000;
-  opacity: 0; /* Inicialmente oculto */
-  transform: translateY(-50px); /* Inicia desplazado hacia arriba */
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
-}
 
-/* Mostrar el modal con animación */
-.modal.show {
-  display: flex;
-  opacity: 1;
-  transform: translateY(0); /* Se desliza a su posición */
-}
-
-/* Ocultar el modal con animación */
-.modal.hide {
+  /* Animación del fondo */
+  visibility: hidden;
   opacity: 0;
-  transform: translateY(-50px); /* Se desliza hacia arriba */
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: visibility 0.3s ease, opacity 0.3s ease;
 }
-/* Contenido del modal */
-.modal-content {
-  background-color:rgb(200 200 200 / 75%);
+
+#modalProductos.modal.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Contenido del modal Lista de Productos */
+#modalProductos .modal-content {
+  background-color: rgb(200 200 200 / 75%);
   padding: 20px;
   border-radius: 10px;
-  width: 700px;        /* Tamaño fijo */
-  height: 486px;       /* Tamaño fijo */
+  width: 700px;
+  height: 486px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   text-align: center;
-  overflow: hidden;    /* Oculta scroll dentro del modal */
+  overflow: hidden;
+
+  /* Animación de arrastre del contenido */
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: transform 0.35s ease-out, opacity 0.3s ease-out;
+}
+
+#modalProductos.modal.show .modal-content {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 #lista-productos {
-    max-height: 361px;
-    overflow-y: auto;
-    padding-right: 20px;
+  max-height: 361px;
+  overflow-y: auto;
+  padding-right: 20px;
 }
+
 .modal-content h2 {
   font-size: 32px;
   margin-top: -7px;

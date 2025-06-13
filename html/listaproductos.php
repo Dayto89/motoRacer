@@ -1054,6 +1054,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         applyFilter();
       });
     });
+    /*ANIMACIONES*/ 
+    
   </script>
 
   <div class="userInfo">

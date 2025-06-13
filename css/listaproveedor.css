@@ -238,32 +238,42 @@ input.form-control {
   left: 0;
   width: 100%;
   height: 100%;
-  display: none;
+  display: flex; /* Usamos flexbox para centrar el contenido */
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 1000;
+  /* Ocultamos el modal por defecto, la animación de entrada se hará con la clase .show */
+  visibility: hidden; /* Esto oculta el modal sin quitarlo del flujo, para que se pueda animar */
+  opacity: 0;
+  transition: visibility 0.3s ease, opacity 0.3s ease; /* Transición para la visibilidad y opacidad del fondo */
 }
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 500px;
-  max-width: 100%;
+.modal-content,
+.modal-content-nuevo {
+  width: 35%;
+  max-width: 500px;
+  text-align: center;
+  background-color: rgba(174, 174, 174, 0.61);
+  padding: 23px;
+  border-radius: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: auto;
+  /* Animación de arrastre */
+  transform: translateY(-50px); /* Inicialmente un poco arriba */
+  opacity: 0; /* Inicialmente transparente */
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out; /* Transición para el contenido */
 }
-/* Oculto por defecto */
-.modal.hide {
-  display: none;
-}
-
 /* Mostrado cuando se aplica la clase .show */
 .modal.show {
-  display: flex;
-}
-.modal.hidden {
-  display: none;
+  visibility: visible;
+  opacity: 1; /* Fondo se vuelve visible */
 }
 
+.modal.show .modal-content,
+.modal.show .modal-content-nuevo {
+  transform: translateY(0); /* Vuelve a su posición original */
+  opacity: 1; /* Contenido se vuelve visible */
+}
 #exportar-boton {
   background-color: #0f6103;
 }
@@ -349,17 +359,7 @@ button[type="submit"]:hover {
   border-radius: 9px;
 }
 /*-----------------------------------------------------------------*/
-.modal-content-nuevo,
-.modal-content {
-  width: 35%;
-  max-width: 500px;
-  text-align: center;
-  background-color: rgba(174, 174, 174, 0.61);
-  padding: 23px;
-  border-radius: 18px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: auto;
-}
+
 .modal-content h2,
 .modal-content-nuevo h2 {
   font-size: 38px;
@@ -626,7 +626,6 @@ form input[type="text"],
 }
 /*ANIMACIONES MODALES*/
 
-
 /*diseño que nit no se repita*/
 /* Input con borde y fondo rojo suave */
 /* CONTENEDOR RELATIVO */
@@ -641,14 +640,13 @@ input.error {
   background-color: #e47878 !important;
 }
 
-
 .small-error-tooltip {
   position: absolute;
-  top: 50%;             /* centrar vertical */
-  right: 100%;          /* justo a la izquierda del input */
-  margin-right: 8px;    /* pequeño espacio desde el input */
+  top: 50%; /* centrar vertical */
+  right: 100%; /* justo a la izquierda del input */
+  margin-right: 8px; /* pequeño espacio desde el input */
   transform: translateY(-50%);
-  
+
   background-color: #ffe6e6;
   border: 1px solid red;
   color: red;
@@ -656,7 +654,7 @@ input.error {
   border-radius: 4px;
   font-size: 0.9rem;
   white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 10;
   display: none;
   font-family: Arial, Helvetica, sans-serif;
@@ -667,7 +665,7 @@ input.error {
   content: "";
   position: absolute;
   top: 50%;
-  left: 100%;        /* se pega al borde derecho del tooltip */
+  left: 100%; /* se pega al borde derecho del tooltip */
   margin-left: -1px; /* para que no quede hueco */
   transform: translateY(-50%);
   border-width: 6px 6px 6px 0;
@@ -794,4 +792,60 @@ input.error {
 
 /* Vertical */
 @media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+}
+/* Modal ANIMACIONES */
+/* Modal nueva categoria */
+.modal_nueva_categoria {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex; /* Usamos flexbox para centrar el contenido */
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  z-index: 1000;
+
+  /* Animación del fondo */
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.3s ease, opacity 0.3s ease;
+}
+
+.modal_nueva_categoria.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Contenido del modal Nueva Categoría */
+.modal_nueva_categoria {
+  background-color: rgba(200, 200, 200, 0.76);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  height: 486px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  /* Animación de arrastre del contenido */
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+}
+
+.modal_nueva_categoria.show .modal-content-nueva {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.modal-content-nueva h2 {
+  font-size: 32px;
+  margin-top: -7px;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 28px;
 }

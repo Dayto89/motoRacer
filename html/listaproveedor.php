@@ -650,7 +650,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
       });
       document.addEventListener('click', function(event) {
-        const filterDropdown = document.querySelector('.filter-dropdown');
+        const filterDropdown = document.querySelector('.filter-dropdow  n');
 
         if (
           filterDropdown.hasAttribute('open') &&

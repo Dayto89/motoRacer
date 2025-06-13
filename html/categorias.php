@@ -254,7 +254,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
 
   <!-- Modal -->
-  <div id="modal" class="modal_nueva_categoria">
+  <div id="modalNuevo" class="modal_nueva_categoria">
     <div class="modal-content-nueva">
       <h2>Nueva categoría</h2>
       <form method="POST" action="">
@@ -346,25 +346,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
         renderPagination();
       }
+      // —ANIMACIONES Modal de Nueva Categoría —
+      const modalNuevaCategoria = document.getElementById('modalNuevo'); // Asegúrate de que el ID sea 'modal'
+      const btnAbrirNuevaCategoria = document.getElementById('btnAbrirModal'); // Asume este ID para el botón de abrir
+      const btnCancelarNuevaCategoria = modalNuevaCategoria.querySelector('#btnCancelar');
 
+      if (btnAbrirNuevaCategoria) {
+        btnAbrirNuevaCategoria.addEventListener('click', () => {
+          modalNuevaCategoria.classList.add('show');
+        });
+      }
+
+      if (btnCancelarNuevaCategoria) {
+        btnCancelarNuevaCategoria.addEventListener('click', () => {
+          modalNuevaCategoria.classList.remove('show');
+        });
+      }
+
+      if (modalNuevaCategoria) {
+        modalNuevaCategoria.addEventListener('click', (e) => {
+          if (e.target === modalNuevaCategoria) {
+            modalNuevaCategoria.classList.remove('show');
+          }
+        });
+      }
       // — cierre del modal de productos —
-const modalProductos = document.getElementById('modalProductos');
-const closeBtn      = modalProductos.querySelector('.close');
-
-// Función para ocultar
-function hideProductosModal() {
-  modalProductos.classList.remove('show');
-}
-
-// Cerrar al pulsar la X
-closeBtn.addEventListener('click', hideProductosModal);
-
-// Cerrar al hacer clic fuera del contenido
-modalProductos.addEventListener('click', (e) => {
-  if (e.target === modalProductos) {
-    hideProductosModal();
-  }
-});
+      const modalProductos = document.getElementById('modalProductos');
+      const closeBtnModalProductos = modalProductos.querySelector('.close');
+      // Función para ocultar
+      function hideProductosModal() {
+        modalProductos.classList.remove('show');
+      }
+      // Cerrar al pulsar la X
+      if (closeBtnModalProductos) {
+        closeBtnModalProductos.addEventListener('click', hideProductosModal);
+      }
+      // Cerrar al hacer clic fuera del contenido
+      if (modalProductos) {
+        modalProductos.addEventListener('click', (e) => {
+          if (e.target === modalProductos) {
+            hideProductosModal();
+          }
+        });
+      }
 
       function renderPagination() {
         paginationEl.innerHTML = '';
