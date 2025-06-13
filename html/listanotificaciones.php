@@ -213,13 +213,30 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <details class="filter-dropdown">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
-          <form method="GET" action="../html/listanotificaciones.php" class="search-form">
-            <div class="criteria-group">
-              <label><input type="checkbox" name="criterios[]" value="codigo"> Fecha</label>
-              <label><input type="checkbox" name="criterios[]" value="identificacion">Nombre</label>
-              <label><input type="checkbox" name="criterios[]" value="nombre">Estado</label>
-              <label><input type="checkbox" name="criterios[]" value="apellido">Stock</label>
+          <form id="filterForm">
+            <!-- Fecha desde/hasta -->
+            <div class="form-group">
+              <label for="filterFrom">Desde:</label>
+              <input type="date" id="filterFrom" name="filterFrom">
             </div>
+            <div class="form-group">
+              <label for="filterTo">Hasta:</label>
+              <input type="date" id="filterTo" name="filterTo">
+            </div>
+            <!-- Estado -->
+            <div class="form-group">
+              <label for="filterState">Estado:</label>
+              <select id="filterState" name="filterState">
+                <option value="all">Todas</option>
+                <option value="read">Leídas</option>
+                <option value="unread">No leídas</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <button type="button" id="clearFilters" class="filter-button">Limpiar Filtros</button>
+            </div>
+          </form>
+        </div>
       </details>
       </form>
       <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
@@ -273,69 +290,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </tbody>
     </table>
     <div id="jsPagination" class="pagination-dinamica"></div>
-    <!-- Paginación -->
-    <?php if ($total_paginas > 1): ?>
-      <div class="pagination">
-        <?php
-        $base_params = $_GET;
-        ?>
-        <!-- Primera -->
-        <?php
-        $base_params['pagina'] = 1;
-        $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">« Primera</a>
-
-        <!-- Anterior -->
-        <?php if ($pagina_actual > 1): ?>
-          <?php
-          $base_params['pagina'] = $pagina_actual - 1;
-          $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">‹ Anterior</a>
-        <?php endif; ?>
-
-        <?php
-        $start = max(1, $pagina_actual - 2);
-        $end   = min($total_paginas, $pagina_actual + 2);
-
-        if ($start > 1) {
-          echo '<span class="ellips">…</span>';
-        }
-
-        for ($i = $start; $i <= $end; $i++):
-          $base_params['pagina'] = $i;
-          $url = '?' . http_build_query($base_params);
-        ?>
-          <a href="<?= $url ?>" class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-            <?= $i ?>
-          </a>
-        <?php endfor;
-
-        if ($end < $total_paginas) {
-          echo '<span class="ellips">…</span>';
-        }
-        ?>
-
-        <!-- Siguiente -->
-        <?php if ($pagina_actual < $total_paginas): ?>
-          <?php
-          $base_params['pagina'] = $pagina_actual + 1;
-          $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">Siguiente ›</a>
-        <?php endif; ?>
-
-        <!-- Última -->
-        <?php
-        $base_params['pagina'] = $total_paginas;
-        $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">Última »</a>
-      </div>
-    <?php endif; ?>
-
-
   </div>
   <div class="userInfo">
     <!-- Nombre y apellido del usuario y rol -->
@@ -374,6 +328,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       r.leida = (String(r.leida) === "1");
     });
     document.addEventListener('DOMContentLoaded', () => {
+
+
+      const inputText = document.getElementById('searchRealtime');
+      const btnClear    = document.getElementById('clearFilters');
+      const dateFrom = document.getElementById('filterFrom');
+      const dateTo = document.getElementById('filterTo');
+      const selectState = document.getElementById('filterState');
+
       const rowsPerPage = 7;
       let currentPage = 1;
       let filteredData = [...allData];
@@ -382,6 +344,52 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       const paginationContainer = document.getElementById('jsPagination');
       const inputBusqueda = document.getElementById('searchRealtime');
       const headers = document.querySelectorAll('#notificacionesTable thead th');
+
+
+      function applyFilters() {
+        const q = inputText.value.trim().toLowerCase();
+        const from = dateFrom.value;
+        const to = dateTo.value;
+        const state = selectState.value;
+
+        filteredData = allData.filter(item => {
+          // Texto
+          const txtMatch = [item.mensaje, item.descripcion, item.fecha]
+            .some(f => f.toLowerCase().includes(q));
+          if (!txtMatch) return false;
+
+          // Estado
+          if (state === 'read' && !item.leida) return false;
+          if (state === 'unread' && item.leida) return false;
+
+          // Fecha
+          if (from && !to) {
+            if (item.fecha !== from) return false;
+          } else if (from && to) {
+            if (item.fecha < from || item.fecha > to) return false;
+          }
+          return true;
+        });
+
+        currentPage = 1;
+        renderTable();
+      }
+
+      inputText.addEventListener('input', applyFilters);
+      dateFrom.addEventListener('input', applyFilters);
+      dateTo.addEventListener('input', applyFilters);
+      selectState.addEventListener('change', applyFilters);
+
+      btnClear.addEventListener('click', () => {
+        // 1) Vaciamos todos los inputs
+        inputText.value = '';
+        dateFrom.value = '';
+        dateTo.value = '';
+        selectState.value = 'all';
+
+        // 2) Volvemos a filtrar (mostrará todo)
+        applyFilters();
+      });
 
       // Render tabla
       function renderTable() {
@@ -601,6 +609,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           })
           .finally(() => btn.disabled = false);
       });
+      applyFilters();
+
     });
   </script>
 

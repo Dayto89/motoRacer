@@ -265,19 +265,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <details class="filter-dropdown">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
-          <div class="criteria-group">
-            <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
-            <label><input type="checkbox" name="criterios[]" value="fechaGeneracion"> Fecha</label>
-            <label><input type="checkbox" name="criterios[]" value="metodoPago"> Método pago</label>
-            <label><input type="checkbox" name="criterios[]" value="vendedor"> Vendedor</label>
-            <label><input type="checkbox" name="criterios[]" value="cliente"> Cliente</label>
-            <label><input type="checkbox" name="criterios[]" value="precioTotal"> Total</label>
-          </div>
-          <div class="date-filters">
-            <label>Desde: <input type="date" name="fecha_desde"></label>
-            <label>Hasta: <input type="date" name="fecha_hasta"></label>
-          </div>
-          <!-- Barra de búsqueda principal -->
+          <form id="filterForm">
+            <!-- Fecha desde/hasta -->
+            <div class="form-group">
+              <label>Desde: <input type="date" id="fDesde"></label>
+              <label>Hasta: <input type="date" id="fHasta"></label>
+            </div>
+
+            <!-- Estado activo/inactivo -->
+            <div class="form-group">
+              <label>Estado:
+                <select id="fActivo">
+                  <option value="all">Todos</option>
+                  <option value="1">Activo</option>
+                  <option value="0">Inactivo</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label for="fPago">Método Pago:</label>
+              <select id="fPago" name="fPago">
+                <option value="all">Todos</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+              </select>
+            </div>
+
+            <!-- Botón limpiar -->
+            <div class="form-group">
+              <button type="button" id="btnClear">Limpiar</button>
+            </div>
         </div>
       </details>
       <input type="text" id="barraReportes" name="valor" placeholder="Ingrese el valor a buscar">
@@ -330,7 +349,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <table id="facturaTable">
           <thead>
             <tr>
-              <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
+              <th>Código</th>
               <th data-col="1" data-type="string">Fecha<span class="sort-arrow"></span></th>
               <th data-col="2" data-type="string">Usuario<span class="sort-arrow"></span></th>
               <th data-col="3" data-type="string">Cliente<span class="sort-arrow"></span></th>
@@ -369,74 +388,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <p>No se encontraron resultados con los criterios seleccionados.</p>
       <?php endif; ?>
     </div>
-
-
-    <?php if ($total_paginas > 1): ?>
-      <div class="pagination">
-        <?php
-        // Construir query base conservando filtros
-        $base_params = $_GET;
-        ?>
-        <!-- Primera -->
-        <?php
-        $base_params['pagina'] = 1;
-        $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">« Primera</a>
-
-        <!-- Anterior -->
-        <?php if ($pagina_actual > 1): ?>
-          <?php
-          $base_params['pagina'] = $pagina_actual - 1;
-          $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">‹ Anterior</a>
-        <?php endif; ?>
-
-        <?php
-        // Rango de páginas: dos antes y dos después
-        $start = max(1, $pagina_actual - 2);
-        $end   = min($total_paginas, $pagina_actual + 2);
-
-        // Si hay hueco antes, muestra ellipsis
-        if ($start > 1) {
-          echo '<span class="ellips" style="color:white">…</span>';
-        }
-
-        // Botones de páginas
-        for ($i = $start; $i <= $end; $i++):
-          $base_params['pagina'] = $i;
-          $url = '?' . http_build_query($base_params);
-        ?>
-          <a href="<?= $url ?>"
-            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-            <?= $i ?>
-          </a>
-        <?php endfor;
-
-        // Si hay hueco después, muestra ellipsis
-        if ($end < $total_paginas) {
-          echo '<span class="ellips" style="color:white">…</span>';
-        }
-        ?>
-
-        <!-- Siguiente -->
-        <?php if ($pagina_actual < $total_paginas): ?>
-          <?php
-          $base_params['pagina'] = $pagina_actual + 1;
-          $url = '?' . http_build_query($base_params);
-          ?>
-          <a href="<?= $url ?>">Siguiente ›</a>
-        <?php endif; ?>
-
-        <!-- Última -->
-        <?php
-        $base_params['pagina'] = $total_paginas;
-        $url = '?' . http_build_query($base_params);
-        ?>
-        <a href="<?= $url ?>">Última »</a>
-      </div>
-    <?php endif; ?>
     <script>
       // funcion de los checkboxes
       document.getElementById("select-all").addEventListener("change", function() {
@@ -594,7 +545,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script>
       document.addEventListener('DOMContentLoaded', () => {
 
-        console.log("allData:", allData);
+        // Referencias
+        const inpDesde = document.getElementById('fDesde');
+        const inpHasta = document.getElementById('fHasta');
+        const selActivo = document.getElementById('fActivo');
+        const selPago = document.getElementById('fPago');
+
+        const btnClear = document.getElementById('btnClear');
+
+
         // Configuración
         const rowsPerPage = 7;
         let currentPage = 1;
@@ -625,21 +584,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           'metodoPago'
         ];
 
-        // Helper: obtiene valor (string o number) listo para comparar
-        function getFieldValue(obj, fld) {
-          let val;
-          if (typeof fld === 'string') {
-            val = obj[fld];
-          } else {
-            val = fld.composite.map(k => obj[k]).join(' ');
-          }
-          // Normalizamos a cadena y pasamos a minúsculas:
-          return String(val ?? '').toLowerCase();
-        }
-
-
-
-        // 2) Renderiza la tabla según filteredData y currentPage
         function renderTable() {
           const start = (currentPage - 1) * rowsPerPage;
           const page = filteredData.slice(start, start + rowsPerPage);
@@ -707,20 +651,90 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
 
         // 4) Búsqueda en tiempo real (filtra en todos los campos, incluidos composite)
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.trim().toLowerCase();
-  filteredData = allData.filter(row =>
-    fields.some((fld, idx) => {
-      const th = headers[idx];
-      const type = th.dataset.type;
-      if (!type || type === 'none') return false;
-      // Ahora getFieldValue ya devuelve siempre string:
-      return getFieldValue(row, fields[idx]).includes(q);
-    })
-  );
-  currentPage = 1;
-  renderTable();
-});
+        searchInput.addEventListener('input', () => {
+          const q = searchInput.value.trim().toLowerCase();
+          filteredData = allData.filter(row =>
+            fields.some((fld, idx) => {
+              const th = headers[idx];
+              const type = th.dataset.type;
+              if (!type || type === 'none') return false;
+              // Ahora getFieldValue ya devuelve siempre string:
+              return getFieldValue(row, fields[idx]).includes(q);
+            })
+          );
+          currentPage = 1;
+          renderTable();
+        });
+
+        function applyFilters() {
+          const desde = inpDesde.value;
+          const hasta = inpHasta.value;
+          const act = selActivo.value; // "all", "1", "0"
+          const pagoSel = selPago.value;
+
+
+          filteredData = allData.filter(item => {
+            // — Fecha
+            if (desde && !hasta) {
+              if (item.fechaGeneracion.substring(0, 10) !== desde) return false;
+            } else if (desde && hasta) {
+              const f = item.fechaGeneracion.substring(0, 10);
+              if (f < desde || f > hasta) return false;
+            }
+            // — Activo
+            if (act !== 'all' && String(item.activo) !== act) return false;
+            // Método de pago
+            if (pagoSel !== 'all') {
+              // construye array ['tarjeta','efectivo',...]
+              const met = item.metodoPago
+                .toLowerCase()
+                .split(/\s*,\s*/);
+              if (!met.includes(pagoSel)) return false;
+            }
+
+            return true;
+          });
+
+          currentPage = 1;
+          renderTable();
+        }
+
+        // Listeners
+        [inpDesde, inpHasta].forEach(i => i.addEventListener('input', applyFilters));
+        selActivo.addEventListener('change', applyFilters);
+        selPago.addEventListener('change', applyFilters);
+
+
+
+        // Limpiar filtros
+        btnClear.addEventListener('click', () => {
+          inpDesde.value = '';
+          inpHasta.value = '';
+          selActivo.value = 'all';
+          selPago.value = 'all';
+
+          applyFilters();
+        });
+
+        // Arranque
+        applyFilters();
+
+        // Helper: obtiene valor (string o number) listo para comparar
+        function getFieldValue(obj, fld) {
+          let val;
+          if (typeof fld === 'string') {
+            val = obj[fld];
+          } else {
+            val = fld.composite.map(k => obj[k]).join(' ');
+          }
+          // Normalizamos a cadena y pasamos a minúsculas:
+          return String(val ?? '').toLowerCase();
+        }
+
+
+
+        // 2) Renderiza la tabla según filteredData y currentPage
+
 
 
         // Ordenamiento por click en <th>

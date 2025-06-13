@@ -329,7 +329,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <table id="productTable">
         <thead>
           <tr>
-            <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
+            <th>Código</th>
             <th data-col="1" data-type="string">Código 2<span class="sort-arrow"></span></th>
             <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
             <th data-col="3" data-type="number">Precio 1<span class="sort-arrow"></span></th>

@@ -30,14 +30,13 @@ if (!empty($_GET['criterios']) && isset($_GET['valor'])) {
             'telefono' => "p.telefono LIKE '%$valor%'",
             'direccion' => "p.direccion LIKE '%$valor%'",
             'correo' => "p.correo LIKE '%$valor%'",
-            'estado' => "p.estado LIKE '%$valor%'",
             default => null
         };
     }
 }
 
 // Consulta principal
-$sql = "SELECT nit, nombre, telefono, direccion, correo, estado FROM proveedor";
+$sql = "SELECT nit, nombre, telefono, direccion, correo FROM proveedor";
 if ($filtros) {
     $sql .= " WHERE " . implode(' OR ', array_filter($filtros));
 }
@@ -51,7 +50,7 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
 // Encabezados
-$headers = ['NIT', 'Nombre', 'Teléfono', 'Dirección', 'Correo', 'Estado'];
+$headers = ['NIT', 'Nombre', 'Teléfono', 'Dirección', 'Correo'];
 $sheet->fromArray($headers, null, 'A1');
 
 // Estilos encabezado
@@ -61,7 +60,7 @@ $style = [
     'borders' => ['allBorders'=>['borderStyle'=>Border::BORDER_THIN]],
     'alignment' => ['horizontal'=>Alignment::HORIZONTAL_CENTER]
 ];
-$sheet->getStyle('A1:F1')->applyFromArray($style);
+$sheet->getStyle('A1:E1')->applyFromArray($style);
 
 // Volcar datos
 $row = 2;
@@ -71,15 +70,14 @@ while ($prov = mysqli_fetch_assoc($res)) {
     $sheet->setCellValue("C{$row}", $prov['telefono']);
     $sheet->setCellValue("D{$row}", $prov['direccion']);
     $sheet->setCellValue("E{$row}", $prov['correo']);
-    $sheet->setCellValue("F{$row}", $prov['estado']);
     $row++;
 }
 
 // Auto-width y bordes
-foreach (range('A', 'F') as $col) {
+foreach (range('A', 'E') as $col) {
     $sheet->getColumnDimension($col)->setAutoSize(true);
 }
-$sheet->getStyle("A1:F".($row-1))
+$sheet->getStyle("A1:E".($row-1))
       ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
 // Enviar al navegador

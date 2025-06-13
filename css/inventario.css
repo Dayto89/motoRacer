@@ -19,8 +19,7 @@ body::before {
     background: black;
     opacity: 0.6;
 }
-
-… .main-content {
+.main-content {
     padding: 20px;
 
     height: 100vh;
@@ -31,7 +30,6 @@ body::before {
     filter: drop-shadow(0px 0px 10px #bebfc5);
     margin-bottom: 20px;
 }
-
 
 .main-content h1 {
     color: white;
@@ -250,8 +248,6 @@ input.form-control {
     /* Espacio entre el checkbox y el texto */
 }
 
-
-
 /* Estilos básicos para el modal */
 .modal {
     display: none;
@@ -263,8 +259,6 @@ input.form-control {
     height: 100%;
     background: rgb(0 0 0 / 78%);
 }
-
-
 
 .close {
     position: absolute;
@@ -290,8 +284,6 @@ input.form-control {
     background: #c00a0a;
     /* Cambia a rojo cuando pasas el mouse */
 }
-
-
 
 form#editForm {
     display: grid;
@@ -374,7 +366,6 @@ form input[type="text"],
     white-space: nowrap;
 }
 
-
 .modal-boton {
     margin-left: 19%;
     margin-top: 4%;
@@ -404,7 +395,6 @@ form input[type="text"],
 #modal-boton:hover {
     background-color: #0056b3;
 }
-
 
 /* Barra lateral (Menú) */
 .sidebar {
@@ -619,7 +609,6 @@ form input[type="text"],
     border: 2px solid #ffffff;
     /* Borde blanco */
 }
-
 
 .table-wrapper {
   display: block;           /* forzar bloque para overflow */

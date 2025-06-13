@@ -402,7 +402,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <table id="providerTable">
           <thead>
             <tr>
-              <th data-col="0" data-type="string">Nit <span class="sort-arrow"></span></th>
+              <th>Nit </th>
               <th data-col="1" data-type="string">Nombre <span class="sort-arrow"></span></th>
               <th data-col="2" data-type="string">Teléfono <span class="sort-arrow"></span></th>
               <th data-col="3" data-type="string">Dirección <span class="sort-arrow"></span></th>

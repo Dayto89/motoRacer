@@ -230,7 +230,7 @@ input.form-control {
   align-items: center;
   gap: 5px; /* Espacio entre el checkbox y el texto */
 }
-
+/*ANIMACIONES*/
 /* Estilos básicos para el modal */
 .modal {
   position: fixed;

@@ -242,7 +242,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <table id="clientesTable">
                 <thead>
                     <tr>
-                        <th data-col="0" data-type="string">Código<span class="sort-arrow"></span></th>
+                        <th>Código</th>
                         <th data-col="1" data-type="string">Identificación<span class="sort-arrow"></span></th>
                         <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
                         <th data-col="3" data-type="string">Apellido<span class="sort-arrow"></span></th>
@@ -274,7 +274,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </table>
             <div id="jsPagination" class="pagination-dinamica"></div>
             <!-- Modal de edición -->
-            <div id="editModal" class="modal">
+            <div id="editModal" class="modal hide">
                 <div class="modal-content">
                     <span class="close">
                         <i class="fa-solid fa-x"></i>
@@ -386,11 +386,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <?php endif; ?>
 
 <script>
-    // JavaScript para el modal de edición
+     // JavaScript para el modal de edición
     document.addEventListener('DOMContentLoaded', function() {
         const editButtons = document.querySelectorAll('.edit-button');
         const modal = document.getElementById('editModal');
         const closeModal = modal.querySelector('.close');
+          function closeEditModal() {
+        if (modal) { // Asegurarse de que el modal exista antes de intentar cerrarlo
+            modal.classList.remove('show'); // Quita la clase 'show' para iniciar la animación de salida
+            modal.classList.add('hide');   // Añade 'hide' para asegurar que se oculte completamente
+        }
+    }
 
         editButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -416,7 +422,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
         });
     });
-
     // Función para eliminar cliente
     function eliminarCliente(codigo) {
         Swal.fire({

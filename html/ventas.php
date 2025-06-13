@@ -93,32 +93,45 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
 
         <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 63px; display: flex; align-items: center; border-color:aqua 2px solid;">
+            <!-- Botón izquierda -->
             <button id="btnLeft" onclick="scrollCategorias(-200)">
-    <img id="flechaIzquierda" src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda">
-</button>
+                <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda" id="icono-flecha-izquierda">
+            </button>
+            <!-- Categorías con scroll horizontal -->
             <ul id="categoriaScroll" class="breadcrumb" style="max-width: 1250px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; display: flex;">
                 <?php
                 $stmt = $conexion->prepare(
-                    "SELECT c.codigo, c.nombre
-                     FROM categoria c
-                     JOIN producto p ON p.Categoria_codigo = c.codigo
-                     GROUP BY c.codigo, c.nombre
-                     HAVING COUNT(p.codigo1) > 0"
-                );
+    "SELECT c.codigo, c.nombre
+     FROM categoria c
+     JOIN producto p ON p.Categoria_codigo = c.codigo
+     GROUP BY c.codigo, c.nombre
+     HAVING COUNT(p.codigo1) > 0"
+);
                 $stmt->execute();
-                $resultado = $stmt->get_result();
+$resultado = $stmt->get_result();
 
-                if ($resultado->num_rows > 0) {
-                    while ($fila = $resultado->fetch_assoc()) {
-                        echo "<li><a class='brand' href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>" . htmlspecialchars($fila['nombre']) . "</a></li>";
-                    }
-                } else {
-                    echo "<li>No hay categorías con productos disponibles</li>";
-                }
-                $stmt->close();
+if ($resultado->num_rows > 0) {
+    while ($fila = $resultado->fetch_assoc()) {
+        echo "<li>
+                <a class='brand' 
+                   name='categoria' 
+                   href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>
+                  " . htmlspecialchars($fila['nombre']) . "
+                </a>
+              </li>";
+    }
+} else {
+    echo "<li>No hay categorías con productos disponibles</li>";
+}
+$stmt->close();
+
                 ?>
             </ul>
+             
+    
+            <!-- Botón derecha -->
             <button id="btnRight" onclick="scrollCategorias(200)">
+                <img src="../imagenes/material-symbols--east-rounded.svg" alt="Botón derecha" id="icono-flecha-derecha">
             </button>
         </div>
 
@@ -274,32 +287,44 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
 
         function quitarDelResumen(el) {
-            const id = el.dataset.id;
-            const nombre = el.dataset.nombre;
-            const precio = parseFloat(el.querySelector('.price-selector').value);
-            const lista = document.getElementById('listaResumen');
-            lista.querySelectorAll('li').forEach(li => {
-                if (li.dataset.id === id) {
-                    let c = parseInt(li.dataset.cantidad) - 1;
-                    if (c > 0) {
-                        li.dataset.cantidad = c;
-                        li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
-                    } else li.remove();
-                    total -= precio;
-                    document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
-                    // restock tarjeta
-                    let stock = parseInt(el.dataset.cantidad) || 0;
-                    stock++;
-                    el.dataset.cantidad = stock;
-                    el.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
-                    if (stock > 0) {
-                        el.classList.remove('disabled');
-                        el.style.pointerEvents = 'auto';
-                    }
-                }
-            });
-            guardarEnLocalStorage();
+    const id = el.dataset.id;
+    const nombre = el.dataset.nombre;
+    const precio = parseFloat(el.querySelector('.price-selector').value);
+    const lista = document.getElementById('listaResumen');
+    lista.querySelectorAll('li').forEach(li => {
+        if (li.dataset.id === id) {
+            let c = parseInt(li.dataset.cantidad) - 1;
+            if (c > 0) {
+                li.dataset.cantidad = c;
+                li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
+            } else li.remove();
+
+            total -= precio;
+            document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
+
+            // restock tarjeta
+            let stock = parseInt(el.dataset.cantidad) || 0;
+            stock++;
+            el.dataset.cantidad = stock;
+            el.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
+            if (stock > 0) {
+                el.classList.remove('disabled');
+                el.style.pointerEvents = 'auto';
+            }
+
+            // 👇 ACTUALIZAR CONTADOR VERDE
+            const ctr = el.querySelector('.contador-producto');
+            let count = parseInt(ctr.textContent) || 0;
+            count = Math.max(count - 1, 0);
+            ctr.textContent = count;
+            ctr.style.display = count > 0 ? 'block' : 'none';
         }
+    });
+
+    guardarEnLocalStorage();
+}
+
+        
 
         function guardarEnLocalStorage() {
             const items = Array.from(document.querySelectorAll('#listaResumen li')).map(li => ({
@@ -348,7 +373,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 });
             }
         });
+         document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('btn-remove')) {
+                const card = e.target.closest('.card');
+                quitarDelResumen(card);
+
+                // Actualizar el contador verde
+                const ctr = card.querySelector('.contador-producto');
+                let count = parseInt(ctr.textContent) || 0;
+                count = Math.max(count - 1, 0); // evitar que baje de 0
+                ctr.textContent = count;
+                if (count <= 0) {
+                    ctr.style.display = 'none';
+                }
+            }
+            
+        });
     </script>
+    
 
     <div class="userInfo">
         <?php

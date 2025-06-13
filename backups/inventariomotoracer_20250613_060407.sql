@@ -1,5 +1,5 @@
 -- Volcado de la base de datos `inventariomotoracer`
--- Fecha: 2025-06-12 16:30:30
+-- Fecha: 2025-06-13 06:04:07
 
 /*!40101 SET NAMES utf8mb4 */;
 /*!40101 SET CHARACTER SET utf8mb4 */;
@@ -90,7 +90,7 @@ CREATE TABLE `categoria` (
   `codigo` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) NOT NULL,
   PRIMARY KEY (`codigo`)
-) ENGINE=InnoDB AUTO_INCREMENT=888 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=891 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- -----------------------------
 -- Datos de la tabla `categoria`
@@ -109,6 +109,7 @@ INSERT INTO `categoria` (`codigo`,`nombre`) VALUES ('564','hola');
 INSERT INTO `categoria` (`codigo`,`nombre`) VALUES ('879','xd');
 INSERT INTO `categoria` (`codigo`,`nombre`) VALUES ('884','hola mundo ');
 INSERT INTO `categoria` (`codigo`,`nombre`) VALUES ('885','soporte');
+INSERT INTO `categoria` (`codigo`,`nombre`) VALUES ('890','marlen');
 
 -- -----------------------------
 -- Estructura de la tabla `cliente`
@@ -1680,6 +1681,7 @@ CREATE TABLE `producto` (
 INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('1','0','Tornillo','19','50000','30000','0','30','885','4','2','10','9298');
 INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('2','0','Tornillo','19','0','0','0','2','885','2','1','3','2147483647');
 INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('3','0','Tornillo','19','50000','30000','0','30','885','4','2','10','9298');
+INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('12','012','lalalallaala','19','100000','120000','130000','45','890','1','1','1','0');
 INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('73','0','Martillo','19','7000','30000','60000','58','2','6','2','1','43534');
 INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('158','12','Prueba','19','12000','124000','147000','34','99','3','2','3','0');
 INSERT INTO `producto` (`codigo1`,`codigo2`,`nombre`,`iva`,`precio1`,`precio2`,`precio3`,`cantidad`,`Categoria_codigo`,`Marca_codigo`,`UnidadMedida_codigo`,`Ubicacion_codigo`,`proveedor_nit`) VALUES ('452','011','BOLSAS','19','12000','124000','147000','15','2','1','1','1','753');
@@ -1817,7 +1819,7 @@ CREATE TABLE `ubicacion` (
   `codigo` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) NOT NULL,
   PRIMARY KEY (`codigo`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- -----------------------------
 -- Datos de la tabla `ubicacion`
@@ -1828,6 +1830,7 @@ INSERT INTO `ubicacion` (`codigo`,`nombre`) VALUES ('3','cajon 3');
 INSERT INTO `ubicacion` (`codigo`,`nombre`) VALUES ('4','columna 23');
 INSERT INTO `ubicacion` (`codigo`,`nombre`) VALUES ('5','prueba');
 INSERT INTO `ubicacion` (`codigo`,`nombre`) VALUES ('10','PISO 5');
+INSERT INTO `ubicacion` (`codigo`,`nombre`) VALUES ('16','pasilo cinco');
 
 -- -----------------------------
 -- Estructura de la tabla `unidadmedida`
@@ -1869,7 +1872,7 @@ CREATE TABLE `usuario` (
 -- -----------------------------
 -- Datos de la tabla `usuario`
 -- -----------------------------
-INSERT INTO `usuario` (`identificacion`,`tipoDocumento`,`rol`,`nombre`,`apellido`,`telefono`,`direccion`,`correo`,`contrasena`,`estado`,`foto`,`codigo_recuperacion`) VALUES ('123','cedula de ciudadania','administrador','estiven','Lopez','4543545','123','deicy.caro.v@gmail.com','$2y$10$Vfp52DNVcxYASdGsMoWkpOCIAwDlWoqoh7CmesYMr8JJObfZrgN/K','activo','ÿØÿà\0JFIF\0\0\0\0\0\0ÿÛ\0„\0	\Z*#\Z%!1!1)+./.383-7(-.+\n\n\n\r\Z7%%/-7.2277.5-51--+8-5//--755-05,-+5+7/55+5+..+-.7--/ÿÀ\0\0·\"\0ÿÄ\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÿÄ\0A\0\0\0\0\0\0!1AQaq‘¡±Á\"2BRbrÑ#4²áðs’¢Â&6C‚âÿÄ\0\Z\0\0\0\0\0\0\0\0\0\0\0\0\0ÿÄ\0)\0\0\0\0\0\0\0\0\0!1AQÁaá2q‘ÑÿÚ\0\0\0?\0î \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\Z>šñ§ƒèåZñIÍZ0¾Ùäì›ð½ü€Ý·evXÃc©T“TêBmn£$íèÏ›—«[ûÚõy,ÎR“º½›ÞÖßCªáz©¥K\Z”quéÉ;æŽL×îi/ƒ!™ôJk§D7Ïû\"U%žq¼e+[3\\íÊêÌÉ&ˆ\0\0\0\0\0\0|~)RÀÔ«-¡I÷¨¦þGÎ|O¤˜ŒG•Z•fœ¶Q”²Á=rÆ)Ùió#ki*×o¢ã¤ñÍTƒŸÝRŽoK™\')àÝWÐ­Âhâ#‰«Î1›iFÉ¾ÍÓÄèœ\rR•F¥iVq³Œæ’›ƒZ)[vš–½–3,LCd\02À\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0EzÏÃçèN#ð¨Íë$ÿ\0RTFºÄ›ÿ\0”1ŠnSŠŠŒUÛÍ$´KVb{3Üß«ŽPÄÔ§RSYéÕr9Y©Ãx¥{hÎ·‰ÃÉqWÛIG.UOìÊ|›wÛºÞd#ª®\rRŽ½z‹$ª8B9’m$÷’ä›’Ó°W”¥ô-(ÍYÞ2ú:óoK®ë¦¦»†mÝç„—Nss“rnMe»mýžI++wšPQ¦’äTM\0\0\0\0\0/ÃûNZ›ûPœ}bÑÀ:À©c*T¥:žÎ«Qpmé§Öºæícè}l˜*’ìŒšïi3’uSÀ*®2ñi¸Æ•9[2´¥9+i®‹7¸×mn!:ö—OÅðÛQ¢©ÕtiÒµã¤ –‹M¹k©WÌñUç)æ¼’Š²JKD»w½ûû‹’¬Ý%&ó-%IÛ7>ß¢Uû<—”SyšÕÞîï{7ÎÚy\\§§*™TÓ}»íÛ³2\r{ÃÂÐ”yÊ-z··†c`\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÍzZ1úÏnåÍ¿\0<©6êd‹·Þw¹w¿q]:[%ã»~-êÊo\Zt¹ü\\›ø³”§-%õU=ó_ê»ù]Û±ïb6´V&ÓÚˆ™C\nœ¡)Z›n4å%f”edìù[V¼‘³Æáj8)SªEit²Ïºk±û·#©i®­Þíóorå:Õ\"’I$¶Z4¼.¶î<ÿ\0ÆiYµo7:×²õø“:˜ž©ÇûJQmZ÷^_Z2\\¤¬ýÒ+‚®á]Ýé7vßßNê^vkÐ”·¡ÙârkÈÇçª¦\\sŽÞYz\rø½Hã-$¬Òj:&âÕî¥îñ7‘•âšç©e­è\0\0\0Zpo9;Z6Š]ŽÉ·ï^†6\'\0£‹öÐº½ÕHÅµ;j­´“KÄÈ¬­ZW–TÖl×µœw½ôÚÞŒÇÁqU‹„´|¹*‰lãñ¶è…­H˜‹O_Fb\'S0ºð¹ð‰F£KxÊ6ºì×ŸöŠ0øÙJ›§-*§’ImµóÇðµªïÐq<7*3p–öV´üSZKñ|J°8Of¥V¬³T’Y¥¢QŠÚ*Ü—¼n|ÚÑè¿¯Ú[A{ßè—¼È,ábýÞòyŸuö^JÈ¼M€\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÄÃ6Ôåe›4•›å—wõ2ÌlF\ZõTãõ—}”—c„Y–w¬¶ü±_¯3¤t¿q\Z‰]ÅÛK]©x÷ÛÞfæýãqÒ_jÓ7õ0¸Ö\"OãeäãÉße-´ï4rq~.SÞ%<vòÚ%¥„ïöZñ·êS95>îÅß©U)Þš{_´¬ð}¥ÛWÃcí1‘I;&¥,É«$û÷½¬HiÖËG.òMÅ.nÛ_ºÖmšŽ\r&±S—ÙË·÷[nÏÃKy›jn)Z¥\'»ßÎO³ûG°ðŒqN4Lzî~>žU¦rL{,B†y(5u,ÍjŸáù>KÄÙF6ŠKe¡M\ZyiÛÕö·»+:jà\0\0\05EK‡OKåY—ŒuýW™SºÖ/Îß©/ÅÉ,,Ü¶Êïáb#A¿d³oeÍøìDZ–Žý~ô˜eRâU©µifdÓ“ò’wø•b8¤ñö¦ãŸG¾«ž­->W1ÌŽ+qhÞ’v^Ô­Âçg½ë‚ÖÜOO¯öÙ›\r\"&ña&Z$HïŒý¥7®ªNMj£-×.VktoèIºmY´›]ŽÚžµËV\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0Ýj1”m%—ƒ4\\w:š†kÞ/[j–Ü´¾ú’žu•Å*ÑÇÓ6¢§¹ZíY½#}û•ùQ–Ø¦1t´§ŽkÝ»3ªbaä—˜Ž*\ri$û“Múº¬Ü¥y7\'Û\'‰LUž—^\r¯Äý§ïëü}×?;ôv®Jõ¦šµã‹ýMÝ:j+D—ÃxÄÑ©ši\'k}+M[Âw$œ?¬ŠñiV§\n‹¶7„¾hípðÛ\Zã´ï_ê¦[Åï6‡QâÔñ\\>5©ÞÏFžñ’Ý>ó<²Ö\0\0\0\0Öñê–Á%÷¤—–­üõJñÖ’^&GX˜ÙÑá4êB×ö™uÖÙ£-mÛô}ç\'Åb\'RwœÜŸ~¾í‘ÆæøvNV4Î«·‡‘\\tÖººt1p{N>¨Éá±SÇA;¤ó.ZýüŽG×?5¡™†âµéÍ8VœmªúM¥äÍX|Ør×%m½JWåÅë5˜wXá ¾Ï«oâ_8µ.™ã¢ÿ\0ˆoóB›øÄÚ`ºÆÄÅþòê.äàýÚ{Žò“ªƒEÑ~“ÓÆS–X¸N6Í	YèùÅ­Ñ½\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0DúÁàÄðøÎ’½Jm»sœéwÝ\'êK\0<Î3q’i­ÓM5â™áÔzÖ¡ÀiÉÅ]UŠ½•í–|ÎWì—`l4êMªp”ÚWj	».×m‘Ü;/î&½áò©Áq±§,’©’’—$í)Jöîø‘¬O¯g²)©ÞÖQm>ôÖwÓz²ÁÊŸFóKÿ\0$å5ùl¢½rÜ––°”0°„U”c¥Ø’².€\0\0\0ë.–n‹IýÙÓ—¾ßî9ÚúmK7E±²ôiüŽ(>¯‹Hªä¯«L>n”F\\¡	ËÖÑ_ÌÎ£_…Pœ¯:4äû\\\"ßÀ\rFœ§QFr“åÛ~Höµ)B«Œâã%£RVi÷£½Æ„)P—³„cdßÑŠ[xo¤|CˆËÚFSS“’©ÚÝõ¶Ò×`$]Ta$ñÕªý˜ÅCÆMßÜ—½,tìú1I8å”³M¦¬îÛµü¬H@\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ˆu¢ÿ\0é¥þ,-é/•ÎNtÞ¶+Û†P‡mG/òÅ¯÷ë‡`Ýl}:QÞrQðOwä®ü€éÝáÎŸEi}ê³•OXIGý1D««Œ{]ß„u%æS*J¥«(´’ìJ2H­û¢­æÝþÀ\0\0\0\0\05=+ÿ\0¶±?áÏàpã³tû“¢•ÿ\0Xÿ\0šId‘Õ>ØzõßÚjšðŽ¯Þ×¡?5}áß³ð*4­f£y~ik/{6€YÅÿ\0\r/[ƒpÀë¾«Å·§ÅqÃOÁü\njëRšï¿¢v÷ü\0¹Ji%Ø’ô+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0mÖÕEûV\Z<òÔ~\nñKçèaõS…Rã•*5¬)Ùw9;]y\'ê^ë„âjñ©V7:iFpÕ«+»Ç}Ûägu]ÃêÓ«^U!(\'%5}e{\'¨.#‹ÉZš³z¹;w&’ómjkpxÉGyß3½ÕÛMn²~]tÜ÷áqá½Œ £iF«’mÝ»¦»¬j§Wªà—m*´æ¯á&šgN¢”‹º|ÑQÁ`ñõ89äŽ”dœ“’”ê®jJ:X˜€\0\0\0ëJª]\ZKœªÁ/,Íû‘è^TéMµ¢–nç•7ñDÛ¬®^¼){g<Ò’‹Y“–‰Ùï³Û]MWü.´zM	Î”ã©ÝÎ.*ùmmwÜ®\0‰ÖËƒvWoè¥ÛéwäjñøÉÊ¤eµ;¥ª“}¶ìÝ[¼Éé&S	†œ!5+þñ]5f­·y¡Xn)­<=_Ë9AûôWÆÆ­+Åø®i™$#Ûã.òðùªœš«IFý®JW±*àÞÛþÚrû[},›níçkš\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0;×†møÞ\Z7¸¹CZ“—}—„®cÊrJ¥VöM7å•`ÿ\0…‹Þêúv½X€\0\0\0\0\0\0\0bW§š»]±¢“¹w|gåó?þOñ‹ò¿Š<ÁÍIJI§y=µÛO•üÀÈ\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`SR7¦ÕítÕÖêý€GÝz“§4Ý£S[­Ô\\RËf½åîtåìê/£«R[w«rùx\Zª]­j|B²Ke8©¯G\"çüˆCE^…UÛ:rƒÿ\0K`K!$ãtÓ]¨ôÐô…b)bêT¯Z2Ì’TéÅ¨BÜõÝ›à\0\0\0\0\0\04<B­IcjE4¡—%ù­›ñÝ¢Œ1Ó­i-ê+Gø£ßÛíÛÇtj¬±õ*ÒÆT§ÝÂPH\'d´NÖØ±Äžß/Å*sOÑ;\'¡‰„þ¬“îæ¼VèºG¸FåGˆËZ¼«UqÉ¶HF7NÊ7}„„\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÿÙ','891215');
+INSERT INTO `usuario` (`identificacion`,`tipoDocumento`,`rol`,`nombre`,`apellido`,`telefono`,`direccion`,`correo`,`contrasena`,`estado`,`foto`,`codigo_recuperacion`) VALUES ('123','cedula de ciudadania','administrador','estiven','Lopez','4543545','123','deicy.caro.v@gmail.com','$2y$10$Vfp52DNVcxYASdGsMoWkpOCIAwDlWoqoh7CmesYMr8JJObfZrgN/K','activo','ÿØÿà\0JFIF\0\0\0\0\0\0ÿÛ\0„\0	\Z*#\Z%!1!1)+./.383-7(-.+\n\n\n\r\Z7%%/-7.2277.5-51--+8-5//--755-05,-+5+7/55+5+..+-.7--/ÿÀ\0\0·\"\0ÿÄ\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÿÄ\0A\0\0\0\0\0\0!1AQaq‘¡±Á\"2BRbrÑ#4²áðs’¢Â&6C‚âÿÄ\0\Z\0\0\0\0\0\0\0\0\0\0\0\0\0ÿÄ\0)\0\0\0\0\0\0\0\0\0!1AQÁaá2q‘ÑÿÚ\0\0\0?\0î \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\Z>šñ§ƒèåZñIÍZ0¾Ùäì›ð½ü€Ý·evXÃc©T“TêBmn£$íèÏ›—«[ûÚõy,ÎR“º½›ÞÖßCªáz©¥K\Z”quéÉ;æŽL×îi/ƒ!™ôJk§D7Ïû\"U%žq¼e+[3\\íÊêÌÉ&ˆ\0\0\0\0\0\0|~)RÀÔ«-¡I÷¨¦þGÎ|O¤˜ŒG•Z•fœ¶Q”²Á=rÆ)Ùió#ki*×o¢ã¤ñÍTƒŸÝRŽoK™\')àÝWÐ­Âhâ#‰«Î1›iFÉ¾ÍÓÄèœ\rR•F¥iVq³Œæ’›ƒZ)[vš–½–3,LCd\02À\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0EzÏÃçèN#ð¨Íë$ÿ\0RTFºÄ›ÿ\0”1ŠnSŠŠŒUÛÍ$´KVb{3Üß«ŽPÄÔ§RSYéÕr9Y©Ãx¥{hÎ·‰ÃÉqWÛIG.UOìÊ|›wÛºÞd#ª®\rRŽ½z‹$ª8B9’m$÷’ä›’Ó°W”¥ô-(ÍYÞ2ú:óoK®ë¦¦»†mÝç„—Nss“rnMe»mýžI++wšPQ¦’äTM\0\0\0\0\0/ÃûNZ›ûPœ}bÑÀ:À©c*T¥:žÎ«Qpmé§Öºæícè}l˜*’ìŒšïi3’uSÀ*®2ñi¸Æ•9[2´¥9+i®‹7¸×mn!:ö—OÅðÛQ¢©ÕtiÒµã¤ –‹M¹k©WÌñUç)æ¼’Š²JKD»w½ûû‹’¬Ý%&ó-%IÛ7>ß¢Uû<—”SyšÕÞîï{7ÎÚy\\§§*™TÓ}»íÛ³2\r{ÃÂÐ”yÊ-z··†c`\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÍzZ1úÏnåÍ¿\0<©6êd‹·Þw¹w¿q]:[%ã»~-êÊo\Zt¹ü\\›ø³”§-%õU=ó_ê»ù]Û±ïb6´V&ÓÚˆ™C\nœ¡)Z›n4å%f”edìù[V¼‘³Æáj8)SªEit²Ïºk±û·#©i®­Þíóorå:Õ\"’I$¶Z4¼.¶î<ÿ\0ÆiYµo7:×²õø“:˜ž©ÇûJQmZ÷^_Z2\\¤¬ýÒ+‚®á]Ýé7vßßNê^vkÐ”·¡ÙârkÈÇçª¦\\sŽÞYz\rø½Hã-$¬Òj:&âÕî¥îñ7‘•âšç©e­è\0\0\0Zpo9;Z6Š]ŽÉ·ï^†6\'\0£‹öÐº½ÕHÅµ;j­´“KÄÈ¬­ZW–TÖl×µœw½ôÚÞŒÇÁqU‹„´|¹*‰lãñ¶è…­H˜‹O_Fb\'S0ºð¹ð‰F£KxÊ6ºì×ŸöŠ0øÙJ›§-*§’ImµóÇðµªïÐq<7*3p–öV´üSZKñ|J°8Of¥V¬³T’Y¥¢QŠÚ*Ü—¼n|ÚÑè¿¯Ú[A{ßè—¼È,ábýÞòyŸuö^JÈ¼M€\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÄÃ6Ôåe›4•›å—wõ2ÌlF\ZõTãõ—}”—c„Y–w¬¶ü±_¯3¤t¿q\Z‰]ÅÛK]©x÷ÛÞfæýãqÒ_jÓ7õ0¸Ö\"OãeäãÉße-´ï4rq~.SÞ%<vòÚ%¥„ïöZñ·êS95>îÅß©U)Þš{_´¬ð}¥ÛWÃcí1‘I;&¥,É«$û÷½¬HiÖËG.òMÅ.nÛ_ºÖmšŽ\r&±S—ÙË·÷[nÏÃKy›jn)Z¥\'»ßÎO³ûG°ðŒqN4Lzî~>žU¦rL{,B†y(5u,ÍjŸáù>KÄÙF6ŠKe¡M\ZyiÛÕö·»+:jà\0\0\05EK‡OKåY—ŒuýW™SºÖ/Îß©/ÅÉ,,Ü¶Êïáb#A¿d³oeÍøìDZ–Žý~ô˜eRâU©µifdÓ“ò’wø•b8¤ñö¦ãŸG¾«ž­->W1ÌŽ+qhÞ’v^Ô­Âçg½ë‚ÖÜOO¯öÙ›\r\"&ña&Z$HïŒý¥7®ªNMj£-×.VktoèIºmY´›]ŽÚžµËV\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0Ýj1”m%—ƒ4\\w:š†kÞ/[j–Ü´¾ú’žu•Å*ÑÇÓ6¢§¹ZíY½#}û•ùQ–Ø¦1t´§ŽkÝ»3ªbaä—˜Ž*\ri$û“Múº¬Ü¥y7\'Û\'‰LUž—^\r¯Äý§ïëü}×?;ôv®Jõ¦šµã‹ýMÝ:j+D—ÃxÄÑ©ši\'k}+M[Âw$œ?¬ŠñiV§\n‹¶7„¾hípðÛ\Zã´ï_ê¦[Åï6‡QâÔñ\\>5©ÞÏFžñ’Ý>ó<²Ö\0\0\0\0Öñê–Á%÷¤—–­üõJñÖ’^&GX˜ÙÑá4êB×ö™uÖÙ£-mÛô}ç\'Åb\'RwœÜŸ~¾í‘ÆæøvNV4Î«·‡‘\\tÖººt1p{N>¨Éá±SÇA;¤ó.ZýüŽG×?5¡™†âµéÍ8VœmªúM¥äÍX|Ør×%m½JWåÅë5˜wXá ¾Ï«oâ_8µ.™ã¢ÿ\0ˆoóB›øÄÚ`ºÆÄÅþòê.äàýÚ{Žò“ªƒEÑ~“ÓÆS–X¸N6Í	YèùÅ­Ñ½\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0DúÁàÄðøÎ’½Jm»sœéwÝ\'êK\0<Î3q’i­ÓM5â™áÔzÖ¡ÀiÉÅ]UŠ½•í–|ÎWì—`l4êMªp”ÚWj	».×m‘Ü;/î&½áò©Áq±§,’©’’—$í)Jöîø‘¬O¯g²)©ÞÖQm>ôÖwÓz²ÁÊŸFóKÿ\0$å5ùl¢½rÜ––°”0°„U”c¥Ø’².€\0\0\0ë.–n‹IýÙÓ—¾ßî9ÚúmK7E±²ôiüŽ(>¯‹Hªä¯«L>n”F\\¡	ËÖÑ_ÌÎ£_…Pœ¯:4äû\\\"ßÀ\rFœ§QFr“åÛ~Höµ)B«Œâã%£RVi÷£½Æ„)P—³„cdßÑŠ[xo¤|CˆËÚFSS“’©ÚÝõ¶Ò×`$]Ta$ñÕªý˜ÅCÆMßÜ—½,tìú1I8å”³M¦¬îÛµü¬H@\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ˆu¢ÿ\0é¥þ,-é/•ÎNtÞ¶+Û†P‡mG/òÅ¯÷ë‡`Ýl}:QÞrQðOwä®ü€éÝáÎŸEi}ê³•OXIGý1D««Œ{]ß„u%æS*J¥«(´’ìJ2H­û¢­æÝþÀ\0\0\0\0\05=+ÿ\0¶±?áÏàpã³tû“¢•ÿ\0Xÿ\0šId‘Õ>ØzõßÚjšðŽ¯Þ×¡?5}áß³ð*4­f£y~ik/{6€YÅÿ\0\r/[ƒpÀë¾«Å·§ÅqÃOÁü\njëRšï¿¢v÷ü\0¹Ji%Ø’ô+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0mÖÕEûV\Z<òÔ~\nñKçèaõS…Rã•*5¬)Ùw9;]y\'ê^ë„âjñ©V7:iFpÕ«+»Ç}Ûägu]ÃêÓ«^U!(\'%5}e{\'¨.#‹ÉZš³z¹;w&’ómjkpxÉGyß3½ÕÛMn²~]tÜ÷áqá½Œ £iF«’mÝ»¦»¬j§Wªà—m*´æ¯á&šgN¢”‹º|ÑQÁ`ñõ89äŽ”dœ“’”ê®jJ:X˜€\0\0\0ëJª]\ZKœªÁ/,Íû‘è^TéMµ¢–nç•7ñDÛ¬®^¼){g<Ò’‹Y“–‰Ùï³Û]MWü.´zM	Î”ã©ÝÎ.*ùmmwÜ®\0‰ÖËƒvWoè¥ÛéwäjñøÉÊ¤eµ;¥ª“}¶ìÝ[¼Éé&S	†œ!5+þñ]5f­·y¡Xn)­<=_Ë9AûôWÆÆ­+Åø®i™$#Ûã.òðùªœš«IFý®JW±*àÞÛþÚrû[},›níçkš\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0;×†møÞ\Z7¸¹CZ“—}—„®cÊrJ¥VöM7å•`ÿ\0…‹Þêúv½X€\0\0\0\0\0\0\0bW§š»]±¢“¹w|gåó?þOñ‹ò¿Š<ÁÍIJI§y=µÛO•üÀÈ\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0`SR7¦ÕítÕÖêý€GÝz“§4Ý£S[­Ô\\RËf½åîtåìê/£«R[w«rùx\Zª]­j|B²Ke8©¯G\"çüˆCE^…UÛ:rƒÿ\0K`K!$ãtÓ]¨ôÐô…b)bêT¯Z2Ì’TéÅ¨BÜõÝ›à\0\0\0\0\0\04<B­IcjE4¡—%ù­›ñÝ¢Œ1Ó­i-ê+Gø£ßÛíÛÇtj¬±õ*ÒÆT§ÝÂPH\'d´NÖØ±Äžß/Å*sOÑ;\'¡‰„þ¬“îæ¼VèºG¸FåGˆËZ¼«UqÉ¶HF7NÊ7}„„\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ÿÙ','763375');
 INSERT INTO `usuario` (`identificacion`,`tipoDocumento`,`rol`,`nombre`,`apellido`,`telefono`,`direccion`,`correo`,`contrasena`,`estado`,`foto`,`codigo_recuperacion`) VALUES ('222','cedula de ciudadania','gerente','mariana','castillo','3222231035','cra 11 n 19 - 31','castillorodriguezmariana2@gmail.com','$2y$10$9yq9.LUjO9IDFeQgapOpf.8.3qsAkeBUXT7Jmv3vGM5MKYRD4sHcS','activo','','187048');
 INSERT INTO `usuario` (`identificacion`,`tipoDocumento`,`rol`,`nombre`,`apellido`,`telefono`,`direccion`,`correo`,`contrasena`,`estado`,`foto`,`codigo_recuperacion`) VALUES ('321','cedula de ciudadania','gerente','Marlen','Salcedo','413235','Calle 5','marlen.salcedo.09@gmail.com','$2y$10$YzMHD71DatwGRMBpfL6cOuqf6c4aXzOoIBxZ.ORcQY3gyh24dMk0K','activo','',NULL);
 INSERT INTO `usuario` (`identificacion`,`tipoDocumento`,`rol`,`nombre`,`apellido`,`telefono`,`direccion`,`correo`,`contrasena`,`estado`,`foto`,`codigo_recuperacion`) VALUES ('777','cedula de ciudadania','gerente','Gabriel','Rodriguez','3102659825','sogamoso','mejorarmlg@gmail.com','$2y$10$zJ7lKau1ZEJbLv2SC9GS3um0GhTpH1W6iPDNbbOEs1M3.zxYMwgaK','activo','',NULL);
@@ -1920,20 +1923,22 @@ CREATE TABLE `verificaciones` (
   `codigo` varchar(6) NOT NULL,
   `fecha_envio` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=210 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=216 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- -----------------------------
 -- Datos de la tabla `verificaciones`
 -- -----------------------------
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('3','diuejh45','168482','2025-05-28 10:03:38');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('4','diuejh45@gmail.com','334895','2025-05-28 10:03:51');
-INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('17','danielabron297@gmail.com','376459','2025-05-30 06:13:06');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('50','ctskiller89gmailcom','711675','2025-06-04 10:56:08');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('51','ctskiller@89gmail.com','710289','2025-06-04 10:59:11');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('52','marlen.salcedo.09@gail.com','670445','2025-06-04 11:06:42');
-INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('90','danielbaron297@gmail.com','759424','2025-06-06 08:01:05');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('120','deicy.cao.v@gmail.com','667401','2025-06-06 21:16:04');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('146','alexluqueear@gmail.com','881140','2025-06-07 23:01:05');
 INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('204','marlen.salcedo.09@gmail.com','588178','2025-06-12 07:57:16');
+INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('211','deicycarovargas@gmail.com','795862','2025-06-12 16:50:25');
+INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('213','danielabron297@gmail.com','543333','2025-06-12 17:04:56');
+INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('214','danielbaron297@gmail.com','284106','2025-06-12 17:05:31');
+INSERT INTO `verificaciones` (`id`,`correo`,`codigo`,`fecha_envio`) VALUES ('215','deicy.caro.v@gmail.com','907141','2025-06-12 17:08:31');
 
 SET FOREIGN_KEY_CHECKS=1;

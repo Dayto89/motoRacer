@@ -188,14 +188,8 @@ body::before {
     z-index: 1000;
     display: flex;
     align-items: center;
-    transition: width 1s ease;
-    width: 90px;
     overflow: hidden;
     height: 185px;
-}
-
-.search-bar:hover {
-    width: 400px;
 }
 
 .search-bar form {
@@ -221,10 +215,6 @@ body::before {
     margin-bottom: 10px;
 }
 
-.search-bar:hover input {
-    width: 400px;
-    padding: 5px 10px;
-}
 
 .search-bar input::placeholder {
     color: #aaa;

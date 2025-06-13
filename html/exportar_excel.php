@@ -31,7 +31,6 @@ $consulta = "
         p.`precio2`,
         p.`precio3`,
         p.cantidad,
-        p.descripcion,
         c.nombre AS categoria,
         m.nombre AS marca,
         u.nombre AS unidadmedida,
@@ -62,7 +61,7 @@ $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
 // Encabezados
-$encabezados = ['Código', 'Código 2', 'Nombre', 'IVA', 'Precio 1', 'Precio 2', 'Precio 3', 'Cantidad', 'Descripción', 'Categoría', 'Marca', 'Clase', 'Ubicación', 'Proveedor'];
+$encabezados = ['Código', 'Código 2', 'Nombre', 'IVA', 'Precio 1', 'Precio 2', 'Precio 3', 'Cantidad', 'Categoría', 'Marca', 'Clase', 'Clase', 'Proveedor'];
 $sheet->fromArray($encabezados, NULL, 'A1');
 
 // Estilos para encabezados
@@ -72,7 +71,7 @@ $styleEncabezado = [
     'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
 ];
-$sheet->getStyle('A1:N1')->applyFromArray($styleEncabezado);
+$sheet->getStyle('A1:M1')->applyFromArray($styleEncabezado);
 
 // Insertar datos desde la base de datos
 $filaExcel = 2; // Empieza en la fila 2
@@ -85,22 +84,21 @@ while ($fila = mysqli_fetch_assoc($resultado)) {
     $sheet->setCellValue('F' . $filaExcel, $fila['precio2'] ?? 'N/A');
     $sheet->setCellValue('G' . $filaExcel, $fila['precio3'] ?? 'N/A');
     $sheet->setCellValue('H' . $filaExcel, $fila['cantidad'] ?? 'N/A');
-    $sheet->setCellValue('I' . $filaExcel, $fila['descripcion'] ?? 'N/A');
-    $sheet->setCellValue('J' . $filaExcel, $fila['categoria'] ?? 'N/A');
-    $sheet->setCellValue('K' . $filaExcel, $fila['marca'] ?? 'N/A');
-    $sheet->setCellValue('L' . $filaExcel, $fila['unidadmedida'] ?? 'N/A');
-    $sheet->setCellValue('M' . $filaExcel, $fila['ubicacion'] ?? 'N/A');
-    $sheet->setCellValue('N' . $filaExcel, $fila['proveedor'] ?? 'N/A');
+    $sheet->setCellValue('I' . $filaExcel, $fila['categoria'] ?? 'N/A');
+    $sheet->setCellValue('J' . $filaExcel, $fila['marca'] ?? 'N/A');
+    $sheet->setCellValue('K' . $filaExcel, $fila['unidadmedida'] ?? 'N/A');
+    $sheet->setCellValue('L' . $filaExcel, $fila['ubicacion'] ?? 'N/A');
+    $sheet->setCellValue('M' . $filaExcel, $fila['proveedor'] ?? 'N/A');
     $filaExcel++;
 }
 
 // Ajuste automático de ancho de columnas
-foreach (range('A', 'N') as $col) {
+foreach (range('A', 'M') as $col) {
     $sheet->getColumnDimension($col)->setAutoSize(true);
 }
 
 // Bordes para todo el contenido
-$sheet->getStyle('A1:N' . ($filaExcel - 1))
+$sheet->getStyle('A1:M' . ($filaExcel - 1))
     ->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
 // Descargar el archivo
