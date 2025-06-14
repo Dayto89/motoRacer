@@ -45,43 +45,16 @@ if ($rol === 'administrador') {
   $stmtPermisos->close();
 }
 
-$animatedIcons = [
-  'PRODUCTO' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Product&style=minimalistic&token=64f0cb11-7ef5-4030-8e65-e6b4975a0256',
-    'trigger' => 'loop',
-    'attributes' => '{"variationThumbColour":"#4CAF50","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 53.5
-  ],
-  'PROVEEDOR' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Warehouse&style=minimalistic&token=cd5fc961-b158-4062-bac4-bc62dc29ca43',
-    'trigger' => 'loop',
-    'attributes' => '{"variationThumbColour":"#FF9800","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 53.5
-  ],
-  'INVENTARIO' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Research&style=minimalistic&token=debf6854-a861-4155-b483-b1a147f1f3ec',
-    'trigger' => 'loop',
-    'attributes' => '{"variationThumbColour":"#9C27B0","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 53.5
-  ],
-  'FACTURA' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Invoice&style=minimalistic&token=89c130bf-0940-48c2-92e3-16b6ffe3b232',
-    'trigger' => 'loop',
-    'attributes' => '{"variationThumbColour":"#E91E63","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 53.5
-  ],
-  'USUARIO' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Individual&style=minimalistic&token=ae97ee7c-56cc-4490-90bd-ecd3fc81466e',
-    'trigger' => 'loop',
-    'attributes' => '{"variationThumbColour":"#607D8B","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 53.5
-  ],
-  'CONFIGURACION' => [
-    'src' => 'https://animatedicons.co/get-icon?name=Setup&style=minimalistic&token=eb758eaf-90cb-43dc-9be6-dcfdc8296167',
-    'trigger' => 'loop',
-    'attributes' => '{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}',
-    'size' => 53.5
-  ]
+// Mapeo sección → nombre de archivo GIF en /imagenes/icons/
+$iconGifs = [
+  'PRODUCTO'      => 'product.gif',
+  'PROVEEDOR'     => 'warehouse.gif',
+  'INVENTARIO'    => 'research.gif',
+  'FACTURA'       => 'factura.gif',
+  'USUARIO'       => 'user.gif',
+  'CONFIGURACION' => 'setup.gif',
+  // Logout
+  'SALIR'         => 'exit.gif',
 ];
 
 // Detectar la página actual (sin .php)
@@ -147,58 +120,41 @@ $sectionColors = [
       <a href="../html/inicio.php"><img src="../imagenes/LOGO.webp" alt="Logo" class="logo" /></a>
     </div>
 
-    <ul class="menu">
-      <?php foreach ($permisos as $seccion => $subsecciones):
-        $iconData  = $animatedIcons[$seccion] ?? null;
-        $isActive  = ($seccion === $activeSection);
-        // estilo inline para el icono (fondo + algo de padding y borde redondeado)
-        $iconStyle = $isActive
-          ? "background-color: {$sectionColors[$seccion]}; padding:4px; border-radius:8px;"
-          : "";
-      ?>
-        <li>
-          <a id="icon-<?php echo $seccion; ?>" href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')" style="<?php echo $iconStyle; ?>">
-            <?php if ($iconData): ?>
-              <animated-icons
-                
-                src="<?php echo $iconData['src']; ?>"
-                trigger="<?php echo $iconData['trigger']; ?>"
-                attributes='<?php echo $iconData['attributes']; ?>'
-                height="<?php echo $iconData['size']; ?>"
-                width="<?php echo $iconData['size']; ?>"></animated-icons>
-            <?php else: ?>
-              <i class="bx bx-folder" style="<?php echo $iconStyle; ?>"></i>
-            <?php endif; ?>
-            <span><?php echo $seccion; ?></span>
-            <i class="bx bx-chevron-down icon2"></i>
-          </a>
-          <!-- resto idéntico -->
-          <ul id="dropdown<?php echo $seccion; ?>" class="dropdown">
-            <?php foreach ($subsecciones as $subseccion): ?>
-              <li>
-                <a href="../html/<?php echo strtolower(str_replace(' ', '', $subseccion)); ?>.php">
-                  <?php echo $subseccion; ?>
-                </a>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
-      <?php endforeach; ?>
-
-
+ <ul class="menu">
+    <?php foreach ($permisos as $seccion => $subsecciones):
+      $isActive = ($seccion === $activeSection);
+      $iconStyle = $isActive
+        ? "background-color: {$sectionColors[$seccion]}; padding:4px; border-radius:8px;"
+        : "";
+      $gifFile = $iconGifs[$seccion] ?? 'default.gif';
+      $gifPath = "../imagenes/icons/" . $gifFile;
+    ?>
       <li>
-        <a href="../componentes/logout.php">
-          <animated-icons
-            src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
-            trigger="loop"
-            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#FFFFFFFF","group-2":"#FFFFFFFF","background":"#FFFFFF00"}}'
-            height="52"
-            width="52"></animated-icons>
-          <span>Salir</span>
+        <a href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')" style="<?php echo $iconStyle; ?>">
+          <img src="<?php echo $gifPath; ?>"
+               alt="<?php echo strtolower($seccion); ?> icon"
+               style="<?php echo $iconStyle; ?>"
+               height="54"
+               width="54">
+          <span><?php echo $seccion; ?></span>
+          <i class="bx bx-chevron-down icon2"></i>
         </a>
+        <!-- … submenu … -->
       </li>
-    </ul>
-  </div>
-</body>
+    <?php endforeach; ?>
 
+    <!-- Botón Salir -->
+    <?php $gifSalir = "../imagenes/icons/" . $iconGifs['SALIR']; ?>
+    <li>
+      <a href="../componentes/logout.php">
+        <img src="<?php echo $gifSalir; ?>"
+             alt="salir icon"
+             style="<?php echo $iconStyle; ?>"
+             height="52"
+             width="52">
+        <span>Salir</span>
+      </a>
+    </li>
+  </ul>
+</body>
 </html>

@@ -276,6 +276,95 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       pointer-events: none;
       border-color: #007bff;
     }
+
+    /* contenedor flex de filtros */
+    .filtros-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: #f9f9f9;
+      padding: 0.75rem;
+      border-radius: 8px;
+    }
+
+    /* búsqueda */
+    .search-box input {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 180px;
+    }
+
+    /* cada filtro */
+    .filtro {
+      position: relative;
+      min-width: 140px;
+    }
+
+    /* título desplegable */
+    .filtro-titulo {
+      width: 100%;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .filtro-titulo i {
+      transition: transform 0.2s;
+    }
+
+    /* opciones ocultas */
+    .filtro-opciones {
+      display: none;
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      z-index: 50;
+    }
+
+    /* mostrar cuando .active */
+    .filtro.active .filtro-opciones {
+      display: block;
+    }
+
+    .filtro.active .filtro-titulo i {
+      transform: rotate(180deg);
+    }
+
+    /* estilo de labels */
+    .filtro-opciones label {
+      display: block;
+      margin: 4px 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* botón limpiar */
+    .clear-btn button {
+      background: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .clear-btn button:hover {
+      background: #5a6268;
+    }
   </style>
 </head>
 
@@ -290,24 +379,74 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!-- 6) FILTROS / BÚSQUEDA CLIENTE  -->
     <!-- ============================== -->
     <div class="filter-bar">
-      <details class="filter-dropdown">
-        <summary class="filter-button">Filtrar</summary>
-        <div class="filter-options">
-          <!-- Checkboxes para el filtrado JS (sin “Descripción”) -->
-          <div class="criteria-group">
-            <label><input type="checkbox" name="criteriosJS[]" value="codigo1"> Código</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="codigo2"> Código 2</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="nombre"> Nombre</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="precio1"> Precio 1</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="precio2"> Precio 2</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="precio3"> Precio 3</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="categoria"> Categoría</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="marca"> Marca</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="ubicacion"> Clase</label>
-            <label><input type="checkbox" name="criteriosJS[]" value="proveedor"> Proveedor</label>
+      <div class="filtros-container">
+
+        <!-- Sub‑dropdown Categorías -->
+        <div class="filtro">
+          <button class="filtro-titulo">Categorías <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resCat = mysqli_query($conexion, "SELECT codigo, nombre FROM categoria");
+            while ($cat = mysqli_fetch_assoc($resCat)): ?>
+              <label>
+                <input type="checkbox" name="filtrosCat[]" value="<?= htmlspecialchars($cat['codigo']) ?>">
+                <?= htmlspecialchars($cat['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
           </div>
         </div>
-      </details>
+
+        <!-- Sub‑dropdown Marcas -->
+        <div class="filtro">
+          <button class="filtro-titulo">Marcas <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resMar = mysqli_query($conexion, "SELECT codigo, nombre FROM marca");
+            while ($mar = mysqli_fetch_assoc($resMar)): ?>
+              <label>
+                <input type="checkbox" name="filtrosMarca[]" value="<?= htmlspecialchars($mar['codigo']) ?>">
+                <?= htmlspecialchars($mar['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Sub‑dropdown Ubicaciones -->
+        <div class="filtro">
+          <button class="filtro-titulo">Ubicaciones <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resUb = mysqli_query($conexion, "SELECT codigo, nombre FROM ubicacion");
+            while ($ub = mysqli_fetch_assoc($resUb)): ?>
+              <label>
+                <input type="checkbox" name="filtrosUbic[]" value="<?= htmlspecialchars($ub['codigo']) ?>">
+                <?= htmlspecialchars($ub['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Sub‑dropdown Proveedores -->
+        <div class="filtro">
+          <button class="filtro-titulo">Proveedores <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resProv = mysqli_query($conexion, "SELECT nit, nombre FROM proveedor");
+            while ($prov = mysqli_fetch_assoc($resProv)): ?>
+              <label>
+                <input type="checkbox" name="filtrosProv[]" value="<?= htmlspecialchars($prov['nit']) ?>">
+                <?= htmlspecialchars($prov['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Botón Limpiar -->
+        <div class="filtro clear-btn">
+          <button id="btnClear">Limpiar filtros</button>
+        </div>
+
+      </div>
 
       <!-- Caja de búsqueda en tiempo real (cliente) -->
       <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
@@ -492,6 +631,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <!-- 3) SCRIPT DE JAVASCRIPT: paginación / filtrado / ordenamiento -->
   <!-- —————————————————————————————————————————————————————————— -->
   <script>
+    // — sub‑dropdown toggle
+    document.querySelectorAll('.filtro-titulo').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const parent = btn.parentElement;
+        parent.classList.toggle('active');
+        // cierra los demás
+        document.querySelectorAll('.filtro').forEach(f => {
+          if (f !== parent) f.classList.remove('active');
+        });
+      });
+    });
+
+    // cierra si clic fuera
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.filtro')) {
+        document.querySelectorAll('.filtro').forEach(f => f.classList.remove('active'));
+      }
+    });
     // Convertimos el array PHP $todosLosDatos a JSON para JS
     const allData = <?php echo json_encode($todosLosDatos, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 
@@ -776,47 +933,61 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       paginationContainer.appendChild(btnLast);
     }
 
-    // Filtrado en tiempo real según criterios marcados
-    function applyFilter() {
-      const query = inputBusqueda.value.trim().toLowerCase();
-      // Tomamos los checkboxes marcados
-      const checkedBoxes = document.querySelectorAll('input[name="criteriosJS[]"]:checked');
-      const selectedCriteria = Array.from(checkedBoxes).map(cb => cb.value);
+    // función de filtrado (tú ya la tienes, aquí solo agregas lectura de checks)
+function applyFilter() {
+  const q = document.getElementById('searchRealtime').value.trim().toLowerCase();
+  const selCats   = Array.from(document.querySelectorAll('input[name="filtrosCat[]"]:checked')).map(cb=>cb.value);
+  const selMarcas = Array.from(document.querySelectorAll('input[name="filtrosMarca[]"]:checked')).map(cb=>cb.value);
+  const selUbics  = Array.from(document.querySelectorAll('input[name="filtrosUbic[]"]:checked')).map(cb=>cb.value);
+  const selProvs  = Array.from(document.querySelectorAll('input[name="filtrosProv[]"]:checked')).map(cb=>cb.value);
 
-      if (query === '') {
-        filteredData = [...allData];
-      } else if (selectedCriteria.length === 0) {
-        // Búsqueda global en todas las columnas si no hay criterios
-        filteredData = allData.filter(row => {
-          const composite =
-            row.codigo1 + ' ' +
-            row.codigo2 + ' ' +
-            row.nombre + ' ' +
-            row.precio1 + ' ' +
-            row.precio2 + ' ' +
-            row.precio3 + ' ' +
-            row.cantidad + ' ' +
-            row.categoria + ' ' +
-            row.marca + ' ' +
-            row.unidadmedida + ' ' +
-            row.ubicacion + ' ' +
-            row.proveedor;
-          return composite.toString().toLowerCase().includes(query);
-        });
-      } else {
-        // Si hay criterios, buscamos solo en esos campos
-        filteredData = allData.filter(row => {
-          return selectedCriteria.some(crit => {
-            const fieldValue = getFieldValue(row, crit);
-            return fieldValue.includes(query);
-          });
-        });
-      }
+  filteredData = allData.filter(item => {
+    // búsqueda global
+    const comp = (
+      item.codigo1 + ' '+
+      item.codigo2 + ' '+
+      item.nombre + ' '+
+      item.categoria + ' '+
+      item.marca + ' '+
+      item.ubicacion + ' '+
+      item.proveedor
+    ).toLowerCase();
+    if (!comp.includes(q)) return false;
 
-      currentPage = 1;
-      renderTable();
-    }
+    if (selCats.length && !selCats.includes(item.categoria_id)) return false;
+    if (selMarcas.length && !selMarcas.includes(item.marca_id))   return false;
+    if (selUbics.length  && !selUbics.includes(item.ubicacion_id))return false;
+    if (selProvs.length  && !selProvs.includes(item.proveedor_id))return false;
 
+    return true;
+  });
+
+  currentPage = 1;
+  renderTable();
+}
+
+// listeners
+document.getElementById('searchRealtime')
+        .addEventListener('input', applyFilter);
+
+document.querySelectorAll(
+  'input[name="filtrosCat[]"], '+
+  'input[name="filtrosMarca[]"], '+
+  'input[name="filtrosUbic[]"], '+
+  'input[name="filtrosProv[]"]'
+).forEach(cb=>cb.addEventListener('change', applyFilter));
+
+// limpiar
+document.getElementById('btnClear').addEventListener('click', () => {
+  document.querySelectorAll(
+    'input[name="filtrosCat[]"], '+
+    'input[name="filtrosMarca[]"], '+
+    'input[name="filtrosUbic[]"], '+
+    'input[name="filtrosProv[]"]'
+  ).forEach(cb=>cb.checked=false);
+  document.getElementById('searchRealtime').value = '';
+  applyFilter();
+});
     // ============================================================
     // 4) ORDENAMIENTO POR COLUMNAS: clic en <th>
     // ============================================================
@@ -1054,8 +1225,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         applyFilter();
       });
     });
-    /*ANIMACIONES*/ 
-    
+    /*ANIMACIONES*/
   </script>
 
   <div class="userInfo">

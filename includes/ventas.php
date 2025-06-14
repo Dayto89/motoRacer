@@ -3,7 +3,7 @@ session_start();
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
-} 
+}
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
@@ -11,6 +11,11 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+
+$result = mysqli_query($conexion, "SELECT p.codigo1, p.nombre, p.cantidad, p.precio2, p.precio3, p.Categoria_codigo
+                                  FROM producto p");
+$allProducts = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
 
 // Procesar "Cobrar": guardar carrito en sesión y redirigir sin emitir salida
 if (isset($_POST['cobrar'])) {
@@ -73,10 +78,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             padding-left: 0;
             /* opcional: elimina el espacio donde estaban los puntos */
         }
+
+        #categoriaScroll a.brand.active {
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+        }
+
+        #categoriaScroll a.brand:hover {
+            background-color: #e0e0e0;
+        }
     </style>
 </head>
 
 <body>
+    <script>
+        // Esto estará disponible para filtrar en cliente:
+        const allProducts = <?php echo json_encode($allProducts, JSON_HEX_TAG); ?>;
+    </script>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
@@ -84,12 +103,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="main">
         <h1 class="titulo">Ventas</h1>
         <div class="search-bar">
-            <form method="GET" action="ventas.php">
-                <button class="search-icon" type="submit" aria-label="Buscar" title="Buscar">
-                    <i class="bx bx-search-alt-2 icon"></i>
-                </button>
-                <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
-            </form>
+
+            <i class="bx bx-search-alt-2 icon"></i>
+            </button>
+            <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
+
         </div>
 
         <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 63px; display: flex; align-items: center; border-color:aqua 2px solid;">
@@ -99,82 +117,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </button>
             <!-- Categorías con scroll horizontal -->
             <ul id="categoriaScroll" class="breadcrumb" style="max-width: 1250px; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; display: flex;">
+                <li>
+                    <a href="#" id="btnTodas" class="brand">Todos</a>
+                </li>
                 <?php
                 $stmt = $conexion->prepare(
-    "SELECT c.codigo, c.nombre
+                    "SELECT c.codigo, c.nombre
      FROM categoria c
      JOIN producto p ON p.Categoria_codigo = c.codigo
      GROUP BY c.codigo, c.nombre
      HAVING COUNT(p.codigo1) > 0"
-);
+                );
                 $stmt->execute();
-$resultado = $stmt->get_result();
+                $resultado = $stmt->get_result();
 
-if ($resultado->num_rows > 0) {
-    while ($fila = $resultado->fetch_assoc()) {
-        echo "<li>
-                <a class='brand' 
+                if ($resultado->num_rows > 0) {
+                    while ($fila = $resultado->fetch_assoc()) {
+                        echo "<li>
+                <a data-categoria='" . htmlspecialchars($fila['codigo']) . "' class='brand'
                    name='categoria' 
                    href='ventas.php?categoria=" . htmlspecialchars($fila['codigo']) . "'>
                   " . htmlspecialchars($fila['nombre']) . "
                 </a>
               </li>";
-    }
-} else {
-    echo "<li>No hay categorías con productos disponibles</li>";
-}
-$stmt->close();
+                    }
+                } else {
+                    echo "<li>No hay categorías con productos disponibles</li>";
+                }
+                $stmt->close();
 
                 ?>
             </ul>
-             
-    
+
+
             <!-- Botón derecha -->
             <button id="btnRight" onclick="scrollCategorias(200)">
                 <img src="../imagenes/material-symbols--east-rounded.svg" alt="Botón derecha" id="icono-flecha-derecha">
             </button>
         </div>
 
-        <div class="products">
-            <?php
-            if (isset($_GET['busqueda'])) {
-                $buscar = "%" . $_GET['busqueda'] . "%";
-                $stmt = $conexion->prepare("SELECT * FROM producto WHERE nombre LIKE ? OR codigo1 LIKE ?");
-                $stmt->bind_param("ss", $buscar, $buscar);
-                $stmt->execute();
-                $resultado = $stmt->get_result();
-            } elseif (isset($_GET['categoria'])) {
-                $categoria = $_GET['categoria'];
-                $stmt = $conexion->prepare("SELECT * FROM producto WHERE Categoria_codigo = ?");
-                $stmt->bind_param("s", $categoria);
-                $stmt->execute();
-                $resultado = $stmt->get_result();
-            } else {
-                $resultado = mysqli_query($conexion, "SELECT * FROM producto");
-            }
-
-            if ($resultado->num_rows > 0) {
-                while ($fila = mysqli_fetch_assoc($resultado)) {
-                    $disabledClass = $fila['cantidad'] <= 0 ? 'disabled' : '';
-                    echo "<div class='card $disabledClass' data-id='{$fila['codigo1']}' data-nombre='" . htmlspecialchars($fila['nombre']) . "' data-cantidad='{$fila['cantidad']}' data-precio2='{$fila['precio2']}' data-precio3='{$fila['precio3']}'>";
-                    echo "<span class='contador-producto'>0</span>";
-                    echo "<div class='card-header'><p class='product-id'>" . htmlspecialchars($fila['nombre']) . "</p></div>";
-                    echo "<select id='select-precio-{$fila['codigo1']}' class='price-selector'>";
-                    echo "<option value='{$fila['precio2']}'>Precio Taller – $" . number_format($fila['precio2']) . "</option>";
-                    echo "<option value='{$fila['precio3']}'>Precio Público – $" . number_format($fila['precio3']) . "</option>";
-                    echo "</select>";
-                    echo "<p class='product-cantidad'>Cantidad: {$fila['cantidad']}</p>";
-                    echo "<div class='iconos-container'>";
-                    echo "<div class='icono-accion btn-add' onclick='agregarAlResumen(this.parentNode.parentNode)'><img class='plus' src='../imagenes/material-symbols--add-2.svg' alt='Agregar'></div>";
-                    echo "<div class='icono-accion btn-remove' onclick='quitarDelResumen(this.parentNode.parentNode)'><img class='minus' src='../imagenes/material-symbols--check-indeterminate-small-rounded.svg' alt='Quitar'></div>";
-                    echo "</div></div>";
-                }
-            } else {
-                echo "<script>Swal.fire({ title: '<span class=\"titulo-alerta error\">Error</span>', html: `<p>No se encontraron resultados.</p>`, confirmButtonText: 'Aceptar' }).then(()=> window.location.href='ventas.php');</script>";
-            }
-            mysqli_close($conexion);
-            ?>
+        <div class="products" id="productsContainer">
+            <!-- aquí metemos los cards via JS -->
         </div>
+
     </div>
 
     <div class="sidebar-right">
@@ -191,6 +176,86 @@ $stmt->close();
         const scrollContainer = document.getElementById('categoriaScroll');
         const btnLeft = document.getElementById('btnLeft');
         const btnRight = document.getElementById('btnRight');
+        // estado actual
+        let currentCategory = null;
+        let currentSearch = '';
+
+        // referencia al contenedor
+        const productsContainer = document.getElementById('productsContainer');
+
+        // función que dibuja un card
+        function renderProduct(p) {
+            const div = document.createElement('div');
+            div.className = 'card' + (p.cantidad <= 0 ? ' disabled' : '');
+            div.dataset.id = p.codigo1;
+            div.dataset.nombre = p.nombre;
+            div.dataset.cantidad = p.cantidad;
+            div.dataset.precio2 = p.precio2;
+            div.dataset.precio3 = p.precio3;
+            div.innerHTML = `
+      <span class="contador-producto">0</span>
+      <div class="card-header">
+        <p class="product-id">${p.nombre}</p>
+      </div>
+      <select class="price-selector">
+        <option value="${p.precio2}">Precio Taller – $${Number(p.precio2).toLocaleString()}</option>
+        <option value="${p.precio3}">Precio Público – $${Number(p.precio3).toLocaleString()}</option>
+      </select>
+      <p class="product-cantidad">Cantidad: ${p.cantidad}</p>
+      <div class="iconos-container">
+        <div class="icono-accion btn-add"><img class="plus" src="../imagenes/material-symbols--add-2.svg" alt="Agregar"></div>
+        <div class="icono-accion btn-remove"><img class="minus" src="../imagenes/material-symbols--check-indeterminate-small-rounded.svg" alt="Quitar"></div>
+      </div>`;
+            // aquí vuelves a enganchar tus event listeners de agregar/quitar...
+            // enganchar “Agregar”
+            const btnAdd = div.querySelector('.btn-add');
+            btnAdd.addEventListener('click', () => agregarAlResumen(div));
+
+            // enganchar “Quitar”
+            const btnRemove = div.querySelector('.btn-remove');
+            btnRemove.addEventListener('click', () => quitarDelResumen(div));
+            return div;
+        }
+
+        // función global de render
+        function renderProducts() {
+            productsContainer.innerHTML = '';
+            // filtrar por categoría y texto
+            const filtered = allProducts.filter(p => {
+                if (currentCategory && p.Categoria_codigo !== currentCategory) return false;
+                if (currentSearch) {
+                    const q = currentSearch.toLowerCase();
+                    return p.nombre.toLowerCase().includes(q) || p.codigo1.toLowerCase().includes(q);
+                }
+                return true;
+            });
+            if (filtered.length === 0) {
+                productsContainer.innerHTML = `<p>No hay productos para mostrar.</p>`;
+            } else {
+                filtered.forEach(p => productsContainer.appendChild(renderProduct(p)));
+            }
+            // (volver a inicializar contador, stock, listeners, etc.)
+        }
+
+        // ========== manejo del input de búsqueda ==========
+        document.querySelector('.search-bar input[name="busqueda"]')
+            .addEventListener('input', e => {
+                currentSearch = e.target.value.trim();
+                renderProducts();
+            });
+
+        // ========== manejo de categorías ==========
+        document.querySelectorAll('#categoriaScroll a.brand').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                // quitar active de todas
+                document.querySelectorAll('#categoriaScroll a.brand').forEach(x => x.classList.remove('active'));
+                // marcar la pulsada
+                a.classList.add('active');
+                currentCategory = a.getAttribute('data-categoria');
+                renderProducts();
+            });
+        });
 
         function scrollCategorias(amount) {
             scrollContainer.scrollLeft += amount;
@@ -287,44 +352,48 @@ $stmt->close();
         }
 
         function quitarDelResumen(el) {
-    const id = el.dataset.id;
-    const nombre = el.dataset.nombre;
-    const precio = parseFloat(el.querySelector('.price-selector').value);
-    const lista = document.getElementById('listaResumen');
-    lista.querySelectorAll('li').forEach(li => {
-        if (li.dataset.id === id) {
-            let c = parseInt(li.dataset.cantidad) - 1;
-            if (c > 0) {
-                li.dataset.cantidad = c;
-                li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
-            } else li.remove();
+            const id = el.dataset.id;
+            const nombre = el.dataset.nombre;
+            const precio = parseFloat(
+                document
+                .querySelector(`#listaResumen li[data-id="${el.dataset.id}"][data-precio]`)
+                .dataset.precio
+            );
+            const lista = document.getElementById('listaResumen');
+            lista.querySelectorAll('li').forEach(li => {
+                if (li.dataset.id === id) {
+                    let c = parseInt(li.dataset.cantidad) - 1;
+                    if (c > 0) {
+                        li.dataset.cantidad = c;
+                        li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
+                    } else li.remove();
 
-            total -= precio;
-            document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
+                    total -= precio;
+                    document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
 
-            // restock tarjeta
-            let stock = parseInt(el.dataset.cantidad) || 0;
-            stock++;
-            el.dataset.cantidad = stock;
-            el.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
-            if (stock > 0) {
-                el.classList.remove('disabled');
-                el.style.pointerEvents = 'auto';
-            }
+                    // restock tarjeta
+                    let stock = parseInt(el.dataset.cantidad) || 0;
+                    stock++;
+                    el.dataset.cantidad = stock;
+                    el.querySelector('.product-cantidad').textContent = `Cantidad: ${stock}`;
+                    if (stock > 0) {
+                        el.classList.remove('disabled');
+                        el.style.pointerEvents = 'auto';
+                    }
 
-            // 👇 ACTUALIZAR CONTADOR VERDE
-            const ctr = el.querySelector('.contador-producto');
-            let count = parseInt(ctr.textContent) || 0;
-            count = Math.max(count - 1, 0);
-            ctr.textContent = count;
-            ctr.style.display = count > 0 ? 'block' : 'none';
+                    // 👇 ACTUALIZAR CONTADOR VERDE
+                    const ctr = el.querySelector('.contador-producto');
+                    let count = parseInt(ctr.textContent) || 0;
+                    count = Math.max(count - 1, 0);
+                    ctr.textContent = count;
+                    ctr.style.display = count > 0 ? 'block' : 'none';
+                }
+            });
+
+            guardarEnLocalStorage();
         }
-    });
 
-    guardarEnLocalStorage();
-}
 
-        
 
         function guardarEnLocalStorage() {
             const items = Array.from(document.querySelectorAll('#listaResumen li')).map(li => ({
@@ -373,7 +442,7 @@ $stmt->close();
                 });
             }
         });
-         document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             if (e.target.classList.contains('btn-remove')) {
                 const card = e.target.closest('.card');
                 quitarDelResumen(card);
@@ -387,10 +456,11 @@ $stmt->close();
                     ctr.style.display = 'none';
                 }
             }
-            
+
         });
+        renderProducts();
     </script>
-    
+
 
     <div class="userInfo">
         <?php
