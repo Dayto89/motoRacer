@@ -123,7 +123,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmtFac = $conn->prepare($sqlFac);
     $usuario_id = $_SESSION["usuario_id"];
-    $stmtFac->bind_param("ississssdd",
+    $stmtFac->bind_param(
+        "ississssdd",
         $usuario_id,
         $nameUser,
         $apellidoUser,
@@ -154,7 +155,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                   (Factura_codigo, Producto_codigo, nombreProducto, cantidad, precioUnitario) 
                   VALUES (?, ?, ?, ?, ?)";
         $stmtPF = $conn->prepare($sqlPF);
-        $stmtPF->bind_param("issid",
+        $stmtPF->bind_param(
+            "issid",
             $factura_id,
             $prod["id"],
             $prod["nombre"],
@@ -197,7 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     "Producto %s bajo mínimo! Stock actual: %d",
                     $prodBajo['nombre'],
                     $prodBajo['cantidad']
-    
+
                 );
                 try {
                     $prodBajo5 = "nose";
@@ -232,6 +234,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -251,6 +254,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <div id="menu"></div>
@@ -347,7 +351,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     <li data-id="<?php echo $producto['id']; ?>">
                                         <p>
                                             <?php echo $producto['cantidad'] . " x " . $producto['nombre']; ?>
-                                            – 
+                                            –
                                             <span class="precio">
                                                 $<?php echo number_format($producto['precio'], 2); ?>
                                             </span>
@@ -382,44 +386,72 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <script>
         function guardarFactura() {
             // 5.1) Recopilar información del cliente
-            let codigo   = document.getElementById("codigo").value;
-            let tipoDoc  = document.getElementById("tipo_doc").value;
-            let nombre   = document.getElementById("nombre").value;
+            let codigo = document.getElementById("codigo").value;
+            let tipoDoc = document.getElementById("tipo_doc").value;
+            let nombre = document.getElementById("nombre").value;
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
-            let correo   = document.getElementById("correo").value;
+            let correo = document.getElementById("correo").value;
+
+            if (!codigo || !tipoDoc || !nombre || !apellido || !telefono || !correo) {
+                Swal.fire({
+                    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+                    html: `
+        <div class="custom-alert">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+          </div>
+          <p>Faltan datos del cliente. Por favor completa todos los campos.</p>
+        </div>
+      `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
+                return; // detenemos el proceso
+            }
 
             // 5.2) Reconstruir arreglo de productos desde el resumen
             let productos = [];
             document.querySelectorAll(".summary-section ul li").forEach(li => {
-                let partes        = li.textContent.split(" x ");
-                let cantidad      = parseInt(partes[0].trim());
-                let nombreProd    = partes[1].split(" – ")[0].trim();
-                let precioString  = partes[1].split("$")[1].replace(/,/g, "");
-                let precioUn      = parseFloat(precioString);
-                let id            = li.getAttribute("data-id");
+                let partes = li.textContent.split(" x ");
+                let cantidad = parseInt(partes[0].trim());
+                let nombreProd = partes[1].split(" – ")[0].trim();
+                let precioString = partes[1].split("$")[1].replace(/,/g, "");
+                let precioUn = parseFloat(precioString);
+                let id = li.getAttribute("data-id");
 
                 productos.push({
-                    id:       id,
-                    nombre:   nombreProd,
+                    id: id,
+                    nombre: nombreProd,
                     cantidad: cantidad,
-                    precio:   precioUn
+                    precio: precioUn
                 });
             });
 
             // 5.3) Reconstruir métodos de pago
-            let metodos_pago = [];
-            // Efectivo
-            let valEfectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            const valEfectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
+            const metodos_pago = [];
             if (valEfectivo > 0) {
-                metodos_pago.push({ tipo: "efectivo", valor: valEfectivo });
+                metodos_pago.push({
+                    tipo: "efectivo",
+                    valor: valEfectivo
+                });
             }
             // Tarjetas
             document.querySelectorAll("input[name='valor_tarjeta']").forEach(input => {
                 let val = parseFloat(input.value) || 0;
                 if (val > 0) {
                     let tipoTarjeta = input.parentNode.querySelector("select[name='tipo_tarjeta']").value || "tarjeta";
-                    metodos_pago.push({ tipo: tipoTarjeta, valor: val });
+                    metodos_pago.push({
+                        tipo: tipoTarjeta,
+                        valor: val
+                    });
                 }
             });
             // Otros
@@ -449,13 +481,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         });
                         return;
                     }
-                    metodos_pago.push({ tipo: tipoOtro, valor: val });
+                    metodos_pago.push({
+                        tipo: tipoOtro,
+                        valor: val
+                    });
                 }
             });
 
             // 5.4) Cálculo de total y cambio
             let total = parseFloat("<?php echo $total; ?>");
-            let totalPagado = metodos_pago.reduce((acc, m) => acc + m.valor, 0) + valEfectivo;
+            const totalPagado = metodos_pago.reduce((acc, m) => acc + m.valor, 0);
             let saldoPendiente = total - totalPagado;
             let cambio = 0;
             if (saldoPendiente < 0) {
@@ -486,32 +521,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // 5.5) Preparar body que enviaremos por fetch
             let body = {
-                codigo:       codigo,
-                tipoDoc:      tipoDoc,
-                nombre:       nombre,
-                apellido:     apellido,
-                telefono:     telefono,
-                correo:       correo,
-                productos:    productos,
+                codigo: codigo,
+                tipoDoc: tipoDoc,
+                nombre: nombre,
+                apellido: apellido,
+                telefono: telefono,
+                correo: correo,
+                productos: productos,
                 metodos_pago: metodos_pago,
-                total:        total,
-                cambio:       cambio
+                total: total,
+                cambio: cambio
             };
+
 
             // 5.6) Enviar petición AJAX a este mismo archivo (prueba.php)
             fetch("prueba.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-                        html: `
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                            html: `
                             <div class="custom-alert">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
@@ -519,21 +555,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <p>Factura registrada correctamente con ID: <strong>${data.factura_id}</strong>.</p>
                             </div>
                         `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#007bff',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                    }).then(() => {
-                        window.location.href = "recibo.php?factura_id=" + data.factura_id;
-                    });
-                } else {
-                    Swal.fire({
-                        title: '<span class="titulo-alerta error">Error</span>',
-                        html: `
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        }).then(() => {
+                            window.location.href = "recibo.php?factura_id=" + data.factura_id;
+                        });
+                    } else {
+                        Swal.fire({
+                            title: '<span class="titulo-alerta error">Error</span>',
+                            html: `
                             <div class="custom-alert">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -541,6 +577,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <p>Error al registrar factura.<br><small>${data.error || "Ocurrió un problema."}</small></p>
                             </div>
                         `,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al registrar:", error);
+                    Swal.fire({
+                        title: '<span class="titulo-alerta error">Error</span>',
+                        html: `
+                        <div class="custom-alert">
+                            <div class="contenedor-imagen">
+                                <img src="../imagenes/llave.png" alt="Error" class="llave">
+                            </div>
+                            <p>Error al registrar factura. Intenta de nuevo.<br><small>${error.message}</small></p>
+                        </div>
+                    `,
                         background: '#ffffffdb',
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#007bff',
@@ -550,34 +609,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             container: 'fondo-oscuro'
                         }
                     });
-                }
-            })
-            .catch(error => {
-                console.error("Error al registrar:", error);
-                Swal.fire({
-                    title: '<span class="titulo-alerta error">Error</span>',
-                    html: `
-                        <div class="custom-alert">
-                            <div class="contenedor-imagen">
-                                <img src="../imagenes/llave.png" alt="Error" class="llave">
-                            </div>
-                            <p>Error al registrar factura. Intenta de nuevo.<br><small>${error.message}</small></p>
-                        </div>
-                    `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
                 });
-            });
         }
 
         function actualizarSaldoPendiente() {
-            let total = <?php echo $total; ?>; 
+            let total = <?php echo $total; ?>;
             let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
             let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
             let otros = document.querySelectorAll("input[name='valor_otro']");
@@ -595,9 +631,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         function AgregarOtraTarjeta() {
+            const contenedor = document.querySelector("#tarjeta");
             let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
-            let clone = tarjeta.cloneNode(true);
-
+            let clone = tarjeta.cloneNode(false);
+            clone.innerHTML = tarjeta.innerHTML;
+            clone.querySelectorAll("input").forEach(i => i.value = "");
+            clone.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
             let eliminar = document.createElement("i");
             eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
             eliminar.alt = "Eliminar";
@@ -607,12 +646,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             };
 
             clone.appendChild(eliminar);
-            tarjeta.insertAdjacentElement("afterend", clone);
+            contenedor.appendChild(clone);
         }
 
         function AgregarOtroPago() {
+            const contenedor = document.querySelector("#otro");
             let otro = document.querySelector("#otro .otro-content");
-            let clone = otro.cloneNode(true);
+            let clone = otro.cloneNode(false);
+            clone.innerHTML = otro.innerHTML;
+            clone.querySelectorAll("input").forEach(i => i.value = "");
+            clone.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
 
             let eliminar = document.createElement("i");
             eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
@@ -623,13 +666,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             };
 
             clone.appendChild(eliminar);
-            otro.insertAdjacentElement("afterend", clone);
+            contenedor.appendChild(clone);
         }
 
         function llenarValor(tipoPago, valor) {
             let input = document.querySelector(`input[name='valor_${tipoPago}']`);
             input.value = valor;
-            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("input", {
+                bubbles: true
+            }));
         }
 
         function buscarCodigo() {
@@ -674,8 +719,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 let otros = document.querySelectorAll("input[name='valor_otro']");
 
                 sumaPagos += efectivo;
-                tarjetas.forEach(input => { sumaPagos += parseFloat(input.value) || 0; });
-                otros.forEach(input => { sumaPagos += parseFloat(input.value) || 0; });
+                tarjetas.forEach(input => {
+                    sumaPagos += parseFloat(input.value) || 0;
+                });
+                otros.forEach(input => {
+                    sumaPagos += parseFloat(input.value) || 0;
+                });
 
                 if (sumaPagos >= totalPagar) {
                     document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
@@ -700,11 +749,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (this.value.trim() === "") {
                         let saldoRestante = <?php echo $total; ?> - (
                             (parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0) +
-                            Array.from(document.querySelectorAll("input[name='valor_tarjeta']")).reduce((a,b)=>a+(parseFloat(b.value)||0),0) +
-                            Array.from(document.querySelectorAll("input[name='valor_otro']")).reduce((a,b)=>a+(parseFloat(b.value)||0),0)
+                            Array.from(document.querySelectorAll("input[name='valor_tarjeta']")).reduce((a, b) => a + (parseFloat(b.value) || 0), 0) +
+                            Array.from(document.querySelectorAll("input[name='valor_otro']")).reduce((a, b) => a + (parseFloat(b.value) || 0), 0)
                         );
                         this.value = saldoRestante;
-                        this.dispatchEvent(new Event("input", { bubbles: true }));
+                        this.dispatchEvent(new Event("input", {
+                            bubbles: true
+                        }));
                     }
                 });
             });
@@ -738,4 +789,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
     </div>
 </body>
+
 </html>

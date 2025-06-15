@@ -455,6 +455,12 @@ input#observaciones {
   box-sizing: border-box;
 }
 
+#tarjeta, #otro {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+
 button {
     flex-shrink: 0;
     background-color: #5496c3;
