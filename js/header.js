@@ -86,19 +86,28 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarHeader();
 
     // Función global para los dropdowns
-    window.toggleDropdown = function(dropdownId, iconId) {
-        const dropdown = document.getElementById(dropdownId);
-        const icon = document.getElementById(iconId);
-        const isVisible = dropdown.classList.contains('open');
+window.toggleDropdown = function(dropdownId, iconId) {
+    const dropdown = document.getElementById(dropdownId);
+    const icon     = document.getElementById(iconId);
 
-        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
-        document.querySelectorAll('.icon2').forEach(i => i.classList.remove('open'));
+    if (!dropdown || !icon) {
+        console.warn(`toggleDropdown: elementos no encontrados →`, dropdownId, iconId);
+        return;
+    }
 
-        if (!isVisible) {
-            dropdown.classList.add('open');
-            icon.classList.add('open');
-        }
-    };
+    const isVisible = dropdown.classList.contains('open');
+
+    // cerrar todo
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+    document.querySelectorAll('.icon2').   forEach(i => i.classList.remove('open'));
+
+    // abrir solo el actual
+    if (!isVisible) {
+        dropdown.classList.add('open');
+        icon.classList.add('open');
+    }
+};
+
 });
 
 // 1. Mapeo página → sección

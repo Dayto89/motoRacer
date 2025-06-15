@@ -4,49 +4,145 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
-
-//Almacenar informacion producto en la base de datos
-
+// Conexión
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-
 if (!$conexion) {
     die("alert('No se pudo conectar a la base de datos');");
-};
+}
 
-// === 1) Petición AJAX para check de código ===
-if ($_SERVER['REQUEST_METHOD'] === 'POST'
-    && isset($_POST['accion']) 
-    && $_POST['accion'] === 'check_codigo') 
-{
+// 1) AJAX check código
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'check_codigo'
+) {
     header('Content-Type: application/json');
-
     $codigo = $_POST['codigo1'] ?? '';
     $stmt = $conexion->prepare("SELECT 1 FROM producto WHERE codigo1 = ?");
     $stmt->bind_param("s", $codigo);
     $stmt->execute();
     $stmt->store_result();
     $existe = $stmt->num_rows > 0;
-
     echo json_encode(['exists' => $existe]);
     $stmt->close();
     $conexion->close();
-    exit;  // TERMINA aquí la petición AJAX
+    exit;
 }
 
-$marcas      = $conexion->query("SELECT codigo, nombre FROM marca");
+// 2a) AJAX handler para agregar categoría y devolver JSON
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_categoria'
+) {
+    header('Content-Type: application/json');
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $query  = "INSERT INTO categoria (nombre) VALUES ('$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = mysqli_insert_id($conexion);
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
+    }
+    exit;
+}
+// 2b) AJAX handler para agregar ubicación
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_ubicacion'
+) {
+    header('Content-Type: application/json');
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $query  = "INSERT INTO ubicacion (nombre) VALUES ('$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = mysqli_insert_id($conexion);
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
+    }
+    exit;
+}
 
-$marcas = $conexion->query("SELECT codigo, nombre FROM marca");
-$categorias = $conexion->query("SELECT codigo, nombre FROM categoria");
+// 2c) AJAX handler para agregar marca
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_marca'
+) {
+    header('Content-Type: application/json');
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $query  = "INSERT INTO marca (nombre) VALUES ('$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = mysqli_insert_id($conexion);
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
+    }
+    exit;
+}
+
+// 2d) AJAX handler para agregar proveedor
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_proveedor'
+) {
+    header('Content-Type: application/json');
+    // Escapa el nombre y demás campos que quieras capturar:
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $nit    = mysqli_real_escape_string($conexion, $_POST['nit']);
+    // Puedes capturar más campos si tu tabla los tiene
+    $query  = "INSERT INTO proveedor (nit, nombre) VALUES ('$nit', '$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = $nit; // aquí tu clave primaria es nit
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
+    }
+    exit;
+}
+
+// Consultas de selects
+$marcas      = $conexion->query("SELECT codigo, nombre FROM marca");
+$categorias  = $conexion->query("SELECT codigo, nombre FROM categoria");
 $proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
 $ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
-$unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
-
+$unidades    = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
-
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -189,24 +285,41 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
             <div class="campo">
-                <label class="required" for="categoria">Categoria:</label>
+                <div class="label-with-button" style="display:flex;align-items:center;">
+                    <label class="required" for="categoria">Categoría:</label>
+                    <button type="button"
+                        class="add-button"
+                        onclick="openModalCategoria()"
+                        aria-label="Agregar categoría">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
                 <select id="categoria" name="categoria" required>
                     <?php while ($fila = $categorias->fetch_assoc()) { ?>
-                        <option value="<?php echo $fila['codigo']; ?>">
-                            <?php echo $fila['nombre']; ?>
+                        <option value="<?= $fila['codigo'] ?>">
+                            <?= $fila['nombre'] ?>
                         </option>
                     <?php } ?>
-                </select><br>
+                </select>
             </div>
             <div class="campo">
-                <label class="required" for="marca">Marca:</label>
+                <div class="label-with-button">
+                    <label class="required" for="marca">Marca:</label>
+                    <button type="button"
+                        class="add-button"
+                        onclick="openModalMarca()"
+                        aria-label="Agregar marca">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
                 <select name="marca" id="marca" required>
                     <?php while ($fila = $marcas->fetch_assoc()) { ?>
                         <option value="<?php echo $fila['codigo']; ?>">
                             <?php echo $fila['nombre']; ?>
                         </option>
                     <?php } ?>
-                </select><br>
+                </select>
+                <br>
             </div>
             <div class="campo">
                 <label class="required" for="unidadMedida">Clase:</label>
@@ -219,14 +332,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 </select><br>
             </div>
             <div class="campo">
-                <label for="ubicacion">Ubicación:</label>
+                <div class="label-with-button">
+                    <label for="ubicacion">Ubicación:</label>
+                    <button
+                        type="button"
+                        class="add-button"
+                        onclick="openModalUbicacion()"
+                        aria-label="Agregar ubicación"
+                        title="Agregar ubicación">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
                 <select name="ubicacion" id="ubicacion">
                     <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
                         <option value="<?php echo $fila['codigo']; ?>">
                             <?php echo $fila['nombre']; ?>
                         </option>
                     <?php } ?>
-                </select><br>
+                </select>
+                <br>
             </div>
 
             <div class="campo">
@@ -252,6 +376,73 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     </div>
 
+    <!--Modal categoria dentro de <body> … -->
+    <div id="modalCategoria" class="modal_nueva_categoria">
+        <div class="modal-content-nueva">
+            <h2>Nueva categoría</h2>
+            <form id="formAddCategoria" action="" method="POST">
+                <div class="form-group">
+                    <label for="nombre">Ingrese el nombre de la categoría:</label>
+                    <input
+                        type="text"
+                        id="inputNombreCategoria"
+                        name="nombre"
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelarCategoria">Cancelar</button>
+                    <button type="submit" id="btnGuardarCategoria">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Ubicación -->
+    <div id="modalUbicacion" class="modal_nueva_categoria">
+        <div class="modal-content-nueva">
+            <h2>Nueva ubicación</h2>
+            <form id="formAddUbicacion" method="POST" action="">
+                <div class="form-group">
+                    <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
+                    <input
+                        type="text"
+                        id="inputNombreUbicacion"
+                        name="nombre"
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelarUbicacion">Cancelar</button>
+                    <button type="submit" id="btnGuardarUbicacion">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Marca -->
+    <div id="modalMarca" class="modal_nueva_categoria">
+        <div class="modal-content-nueva">
+            <h2>Nueva marca</h2>
+            <form id="formAddMarca" method="POST" action="">
+                <div class="form-group">
+                    <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
+                    <input
+                        type="text"
+                        id="inputNombreMarca"
+                        name="nombre"
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelarMarca">Cancelar</button>
+                    <button type="submit" id="btnGuardarMarca">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 
     <?php
 
@@ -274,7 +465,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         if ($cantidad < 0 || $cantidad > CANTIDAD_MAX) {
             die("<script>alert('La cantidad debe estar entre 0 y " . CANTIDAD_MAX . "'); window.history.back();</script>");
         }
-        
+
         $categoria = $_POST['categoria'];
         $marca = $_POST['marca'];
         $unidadMedida = $_POST['unidadMedida'];
@@ -283,7 +474,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         $query = "INSERT INTO producto (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit) VALUES ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$categoria', '$marca', '$unidadMedida', '$ubicacion', '$proveedor')";
 
-        
+
 
         $resultado = mysqli_query($conexion, $query);
 
@@ -295,6 +486,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     ?>
+
+
 
     <script>
         // Función para abrir el modal de subir archivo
@@ -360,54 +553,222 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             });
         }
 
-       document.addEventListener('DOMContentLoaded', () => {
-  const inputCodigo = document.getElementById('codigo1');
-  const submitBtn   = document.querySelector('#product-form button[type="submit"]');
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputCodigo = document.getElementById('codigo1');
+            const submitBtn = document.querySelector('#product-form button[type="submit"]');
 
-  // Generar el tooltip dentro de .campo
-  const campo = inputCodigo.closest('.campo');
-  let tooltip = campo.querySelector('.small-error-tooltip');
-  if (!tooltip) {
-    tooltip = document.createElement('div');
-    tooltip.className = 'small-error-tooltip';
-    tooltip.textContent = 'Este código ya está registrado.';
-    campo.appendChild(tooltip);
-  }
+            // Generar el tooltip dentro de .campo
+            const campo = inputCodigo.closest('.campo');
+            let tooltip = campo.querySelector('.small-error-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'small-error-tooltip';
+                tooltip.textContent = 'Este código ya está registrado.';
+                campo.appendChild(tooltip);
+            }
 
-  inputCodigo.addEventListener('blur', () => {
-    const val = inputCodigo.value.trim();
-    if (!val) {
-      inputCodigo.classList.remove('error');
-      tooltip.style.display = 'none';
-      submitBtn.disabled = false;
-      return;
-    }
+            inputCodigo.addEventListener('blur', () => {
+                const val = inputCodigo.value.trim();
+                if (!val) {
+                    inputCodigo.classList.remove('error');
+                    tooltip.style.display = 'none';
+                    submitBtn.disabled = false;
+                    return;
+                }
 
-    fetch('crearproducto.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.exists) {
-        inputCodigo.classList.add('error');
-        tooltip.style.display = 'block';
-        submitBtn.disabled = true;
-      } else {
-        inputCodigo.classList.remove('error');
-        tooltip.style.display = 'none';
-        submitBtn.disabled = false;
-      }
-    })
-    .catch(() => {
-      // en error de red, ocultamos el tooltip y permitimos envío
-      inputCodigo.classList.remove('error');
-      tooltip.style.display = 'none';
-      submitBtn.disabled = false;
-    });
-  });
-});
+                fetch('crearproducto.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.exists) {
+                            inputCodigo.classList.add('error');
+                            tooltip.style.display = 'block';
+                            submitBtn.disabled = true;
+                        } else {
+                            inputCodigo.classList.remove('error');
+                            tooltip.style.display = 'none';
+                            submitBtn.disabled = false;
+                        }
+                    })
+                    .catch(() => {
+                        // en error de red, ocultamos el tooltip y permitimos envío
+                        inputCodigo.classList.remove('error');
+                        tooltip.style.display = 'none';
+                        submitBtn.disabled = false;
+                    });
+            });
+        });
+
+
+        //Modal para crear categoria
+        // Referencias
+        const modalCat = document.getElementById('modalCategoria');
+        const formCat = document.getElementById('formAddCategoria');
+        const selCategoria = document.getElementById('categoria');
+        const btnCancelCat = document.getElementById('btnCancelarCategoria');
+
+        // Abrir modal
+        function openModalCategoria() {
+            modalCat.classList.add('show');
+            document.getElementById('inputNombreCategoria').focus();
+        }
+        // Cerrar modal
+        btnCancelCat.addEventListener('click', () => modalCat.classList.remove('show'));
+        modalCat.addEventListener('click', e => {
+            if (e.target === modalCat) modalCat.classList.remove('show');
+        });
+
+        // Manejar submit AJAX
+        formCat.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombreCategoria').value.trim();
+            if (!nombre) return;
+            fetch('', { // misma URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        accion: 'add_categoria',
+                        nombre: nombre
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // 1) Agregar nueva opción al select
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.text = data.nombre;
+                        opt.selected = true;
+                        selCategoria.appendChild(opt);
+                        // 2) Cerrar modal y limpiar input
+                        modalCat.classList.remove('show');
+                        formCat.reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                })
+                .catch(err => console.error(err));
+        });
+
+        // Referencias para Ubicación
+        const modalUbic = document.getElementById('modalUbicacion');
+        const formUbic = document.getElementById('formAddUbicacion');
+        const selUbicacion = document.getElementById('ubicacion');
+        const btnCancelUbic = document.getElementById('btnCancelarUbicacion');
+
+        // Funciones abrir/cerrar el modal de Ubicación
+        function openModalUbicacion() {
+            modalUbic.classList.add('show');
+            document.getElementById('inputNombreUbicacion').focus();
+        }
+        btnCancelUbic.addEventListener('click', () => modalUbic.classList.remove('show'));
+        modalUbic.addEventListener('click', e => {
+            if (e.target === modalUbic) modalUbic.classList.remove('show');
+        });
+
+        // AJAX para agregar Ubicación
+        formUbic.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombreUbicacion').value.trim();
+            if (!nombre) return;
+            fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        accion: 'add_ubicacion',
+                        nombre: nombre
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Crear y seleccionar la nueva opción
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.text = data.nombre;
+                        opt.selected = true;
+                        selUbicacion.appendChild(opt);
+                        // Cerrar y resetear modal
+                        modalUbic.classList.remove('show');
+                        formUbic.reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                })
+                .catch(err => console.error(err));
+        });
+
+        // Referencias para Marca
+        const modalMarca = document.getElementById('modalMarca');
+        const formMarca = document.getElementById('formAddMarca');
+        const selMarca = document.getElementById('marca');
+        const btnCancelMarca = document.getElementById('btnCancelarMarca');
+
+        // Abrir / cerrar modal Marca
+        function openModalMarca() {
+            modalMarca.classList.add('show');
+            document.getElementById('inputNombreMarca').focus();
+        }
+        btnCancelMarca.addEventListener('click', () => modalMarca.classList.remove('show'));
+        modalMarca.addEventListener('click', e => {
+            if (e.target === modalMarca) modalMarca.classList.remove('show');
+        });
+
+        // AJAX para agregar Marca
+        formMarca.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombreMarca').value.trim();
+            if (!nombre) return;
+
+            fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        accion: 'add_marca',
+                        nombre: nombre
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Crear y seleccionar la nueva opción
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.text = data.nombre;
+                        opt.selected = true;
+                        selMarca.appendChild(opt);
+                        // Cerrar y limpiar modal
+                        formMarca.reset();
+                        modalMarca.classList.remove('show');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                })
+                .catch(err => console.error(err));
+        });
     </script>
     <div class="userInfo">
         <!-- Nombre y apellido del usuario y rol -->

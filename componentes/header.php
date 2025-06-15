@@ -121,27 +121,40 @@ $sectionColors = [
     </div>
 
  <ul class="menu">
-    <?php foreach ($permisos as $seccion => $subsecciones):
-      $isActive = ($seccion === $activeSection);
-      $iconStyle = $isActive
-        ? "background-color: {$sectionColors[$seccion]}; padding:4px; border-radius:8px;"
-        : "";
-      $gifFile = $iconGifs[$seccion] ?? 'default.gif';
-      $gifPath = "../imagenes/icons/" . $gifFile;
-    ?>
-      <li>
-        <a href="#" onclick="toggleDropdown('dropdown<?php echo $seccion; ?>')" style="<?php echo $iconStyle; ?>">
-          <img src="<?php echo $gifPath; ?>"
-               alt="<?php echo strtolower($seccion); ?> icon"
-               style="<?php echo $iconStyle; ?>"
-               height="54"
-               width="54">
-          <span><?php echo $seccion; ?></span>
-          <i class="bx bx-chevron-down icon2"></i>
-        </a>
-        <!-- … submenu … -->
-      </li>
-    <?php endforeach; ?>
+<?php foreach ($permisos as $seccion => $subsecciones):
+  $isActive = ($seccion === $activeSection);
+  $iconStyle = $isActive
+    ? "background-color: {$sectionColors[$seccion]}; padding:4px; border-radius:8px;"
+    : "";
+  $gifFile = $iconGifs[$seccion] ?? 'default.gif';
+  $gifPath = "../imagenes/icons/" . $gifFile;
+?>
+  <li>
+    <a id="icon-<?= $seccion ?>"
+       href="#"
+       onclick="toggleDropdown('dropdown<?= $seccion ?>','icon-<?= $seccion ?>')"
+       style="<?= $iconStyle ?>">
+      <img src="<?= $gifPath ?>"
+           alt="<?= strtolower($seccion) ?> icon"
+           style="<?= $iconStyle ?>"
+           height="54"
+           width="54">
+      <span><?= $seccion ?></span>
+      <i class="bx bx-chevron-down icon2"></i>
+    </a>
+
+    <!-- ← Aquí va el bloque que falta: -->
+    <ul id="dropdown<?= $seccion ?>" class="dropdown">
+      <?php foreach ($subsecciones as $sub): ?>
+        <li>
+          <a href="../html/<?= strtolower(str_replace(' ', '', $sub)) ?>.php">
+            <?= $sub ?>
+          </a>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </li>
+<?php endforeach; ?>
 
     <!-- Botón Salir -->
     <?php $gifSalir = "../imagenes/icons/" . $iconGifs['SALIR']; ?>

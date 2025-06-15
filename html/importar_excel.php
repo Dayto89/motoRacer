@@ -4,164 +4,194 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
 require '../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-if (!$conexion) {
-    die("Error al conectar con la base de datos: " . mysqli_connect_error());
+// Conexión a la base de datos
+$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+if ($conexion->connect_error) {
+    die("Error al conectar con la base de datos: " . $conexion->connect_error);
+}
+
+/**
+ * Obtiene el código de la clave foránea a partir de su nombre.
+ */
+function obtenerCodigo(mysqli $conexion, string $tabla, string $columnaNombre, string $valor, string $columnaCodigo)
+{
+    $sql = "SELECT `$columnaCodigo` FROM `$tabla` WHERE `$columnaNombre` = ? LIMIT 1";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param('s', $valor);
+    $stmt->execute();
+    $stmt->bind_result($codigo);
+    $stmt->fetch();
+    $stmt->close();
+    return $codigo ?: null;
 }
 
 if (isset($_POST['importar'])) {
-    $archivo = $_FILES['archivoExcel']['tmp_name'];
+    $archivo      = $_FILES['archivoExcel']['tmp_name'];
     $nombreArchivo = $_FILES['archivoExcel']['name'];
 
+    // Verificar que se haya subido un archivo
     if (empty($archivo)) {
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
         echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                     title: `<span class='titulo-alerta advertencia'>Advertencia</span>`,
-                    html: `
-                        <div class='alerta'>
-                           <div class=\"contenedor-imagen\">
-                              <img src=\"../imagenes/tornillo.png\" alt=\"advertencia\" class=\"tornillo\">
-                          </div>
-                            <p>No se ha seleccionado nungún archivo.</p>
+            Swal.fire({
+                title: `<span class='titulo-alerta advertencia'>Advertencia</span>`,
+                html: `
+                    <div class='alerta'>
+                        <div class=\"contenedor-imagen\">
+                            <img src=\"../imagenes/tornillo.png\" alt=\"advertencia\" class=\"tornillo\">
                         </div>
-                    `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
-                })
+                        <p>No se ha seleccionado ningún archivo.</p>
+                    </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
             });
         </script>";
         exit;
     }
 
     // Verifica la extensión del archivo
-    $ext = pathinfo($nombreArchivo, PATHINFO_EXTENSION);
-    if (!in_array(strtolower($ext), ['xlsx', 'xls'])) {
-        echo "❌ Formato de archivo no válido. Solo se permiten .xlsx o .xls";
-        exit;
+    $ext = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
+    if (!in_array($ext, ['xlsx', 'xls'])) {
+        die("❌ Formato de archivo no válido. Solo se permiten .xlsx o .xls");
     }
 
     try {
         // Cargar el archivo Excel
         $spreadsheet = IOFactory::load($archivo);
-        $hoja = $spreadsheet->getActiveSheet();
-        $datos = $hoja->toArray(null, true, true, true);
+        $hoja        = $spreadsheet->getActiveSheet();
+        $datos       = $hoja->toArray(null, true, true, true);
 
-        // Encabezados esperados
-        $encabezadosEsperados = ['codigo1', 'codigo2', 'nombre', 'iva', 'precio1', 'precio2', 'precio3', 'cantidad', 'descripcion', 'categoria', 'marca', 'unidadmedida', 'ubicacion', 'proveedor'];
-
-        $encabezadosExcel = array_map('strtolower', array_values($datos[1])); // Ajuste de índice
-        if ($encabezadosExcel !== $encabezadosEsperados) {
-            echo "❌ Los encabezados del archivo no coinciden con los esperados.";
-            exit;
+        // Encabezados esperados (solo 'clase' para unidad de medida)
+        $encEsperados = [
+            'codigo1', 'codigo2', 'nombre', 'iva',
+            'precio1', 'precio2', 'precio3', 'cantidad',
+            'descripcion', 'categoria', 'marca', 'clase',
+            'ubicacion', 'proveedor'
+        ];
+        $encExcel = array_map('strtolower', array_values($datos[1]));
+        if ($encExcel !== $encEsperados) {
+            die("❌ Los encabezados del archivo no coinciden con los esperados.");
         }
 
-        // Función para obtener códigos correctos de claves foráneas
-        function obtenerCodigo($conexion, $tabla, $columnaNombre, $valor, $columnaCodigo) {
-            $valor = mysqli_real_escape_string($conexion, $valor);
-            $query = "SELECT $columnaCodigo FROM $tabla WHERE $columnaNombre = '$valor' LIMIT 1";
-            $resultado = mysqli_query($conexion, $query);
-            if ($fila = mysqli_fetch_assoc($resultado)) {
-                return $fila[$columnaCodigo];
-            }
-            return null;
-        }
+        // Preparar sentencias para INSERT y UPDATE
+        $sqlInsert = "INSERT INTO producto
+            (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad,
+            descripcion, Categoria_codigo, Marca_codigo, UnidadMedida_codigo,
+            Ubicacion_codigo, proveedor_nit)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Procesar filas
+        $sqlUpdate = "UPDATE producto SET
+            nombre = ?, iva = ?, precio1 = ?, precio2 = ?, precio3 = ?, cantidad = ?,
+            descripcion = ?, Categoria_codigo = ?, Marca_codigo = ?,
+            UnidadMedida_codigo = ?, Ubicacion_codigo = ?, proveedor_nit = ?
+            WHERE codigo1 = ? AND codigo2 = ?";
+
+        $stmtInsert = $conexion->prepare($sqlInsert);
+        $stmtUpdate = $conexion->prepare($sqlUpdate);
+
+        // Recorrer filas de datos
         for ($i = 2; $i <= count($datos); $i++) {
             $fila = array_map('trim', array_values($datos[$i]));
+            list(
+                $codigo1, $codigo2, $nombre, $iva,
+                $precio1, $precio2, $precio3, $cantidad,
+                $descripcion, $categoria, $marca, $clase,
+                $ubicacion, $proveedor
+            ) = $fila;
 
-            list($codigo1, $codigo2, $nombre, $iva, $precio1, $precio2, $precio3, $cantidad, $descripcion, $categoria, $marca, $unidadmedida, $ubicacion, $proveedor) = $fila;
+            // Obtener códigos foráneos
+            $catCod   = obtenerCodigo($conexion, 'categoria', 'nombre', $categoria, 'codigo');
+            $marCod   = obtenerCodigo($conexion, 'marca', 'nombre', $marca, 'codigo');
+            $uniCod   = obtenerCodigo($conexion, 'unidadmedida', 'nombre', $clase, 'codigo');
+            $ubiCod   = obtenerCodigo($conexion, 'ubicacion', 'nombre', $ubicacion, 'codigo');
+            $provNit  = obtenerCodigo($conexion, 'proveedor', 'nombre', $proveedor, 'nit');
 
-            // Obtener códigos correctos
-            $categoriaCodigo = obtenerCodigo($conexion, 'categoria', 'nombre', $categoria, 'codigo');
-            $marcaCodigo = obtenerCodigo($conexion, 'marca', 'nombre', $marca, 'codigo');
-            $unidadMedidaCodigo = obtenerCodigo($conexion, 'unidadmedida', 'nombre', $unidadmedida, 'codigo');
-            $ubicacionCodigo = obtenerCodigo($conexion, 'ubicacion', 'nombre', $ubicacion, 'codigo');
-            $proveedorNit = obtenerCodigo($conexion, 'proveedor', 'nombre', $proveedor, 'nit'); // Parece correcto
-
-            // Verificar si todas las claves foráneas existen antes de continuar
-            if (!$categoriaCodigo || !$marcaCodigo || !$unidadMedidaCodigo || !$ubicacionCodigo || !$proveedorNit) {
-                echo "⚠️ Advertencia: Alguna clave foránea no existe en la base de datos en la fila $i. Registro omitido.<br>";
+            if (!$catCod || !$marCod || !$uniCod || !$ubiCod || !$provNit) {
+                error_log("Fila $i: clave foránea no encontrad.");
+                echo "⚠️ Fila $i omitida: clave foránea inexistente.<br>";
                 continue;
             }
 
-            // Verifica si el producto ya existe
-            $query = "SELECT * FROM producto WHERE codigo1 = '$codigo1' AND codigo2 = '$codigo2'";
-            $resultado = mysqli_query($conexion, $query);
+            // Decide INSERT o UPDATE
+            $check = $conexion->prepare(
+                "SELECT 1 FROM producto WHERE codigo1 = ? AND codigo2 = ? LIMIT 1"
+            );
+            $check->bind_param('ss', $codigo1, $codigo2);
+            $check->execute();
+            $check->store_result();
 
-            if (mysqli_num_rows($resultado) > 0) {
-                // Actualizar si existe
-                $update = "
-                    UPDATE producto SET
-                        nombre = '$nombre',
-                        iva = '$iva',
-                        precio1 = '$precio1',
-                        precio2 = '$precio2',
-                        precio3 = '$precio3',
-                        cantidad = '$cantidad',
-                        descripcion = '$descripcion',
-                        Categoria_codigo = '$categoriaCodigo',
-                        Marca_codigo = '$marcaCodigo',
-                        UnidadMedida_codigo = '$unidadMedidaCodigo',
-                        Ubicacion_codigo = '$ubicacionCodigo',
-                        proveedor_nit = '$proveedorNit'
-                    WHERE codigo1 = '$codigo1' AND codigo2 = '$codigo2'
-                ";
-                mysqli_query($conexion, $update);
+            if ($check->num_rows > 0) {
+                // UPDATE
+                $stmtUpdate->bind_param(
+                    'diiisiiiiiisss',
+                    $nombre, $iva, $precio1, $precio2, $precio3,
+                    $cantidad, $descripcion,
+                    $catCod, $marCod, $uniCod,
+                    $ubiCod, $provNit,
+                    $codigo1, $codigo2
+                );
+                if (!$stmtUpdate->execute()) {
+                    error_log("Error UPDATE fila $i: " . $stmtUpdate->error);
+                }
             } else {
-                // Insertar si no existe
-                $insert = "
-                    INSERT INTO producto 
-                        (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, descripcion, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit)
-                    VALUES 
-                        ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$descripcion', 
-                         '$categoriaCodigo', '$marcaCodigo', '$unidadMedidaCodigo', '$ubicacionCodigo', '$proveedorNit')
-                ";
-                mysqli_query($conexion, $insert);
+                // INSERT
+                $stmtInsert->bind_param(
+                    'sssdiiissiiiis',
+                    $codigo1, $codigo2, $nombre, $iva,
+                    $precio1, $precio2, $precio3, $cantidad,
+                    $descripcion, $catCod, $marCod, $uniCod,
+                    $ubiCod, $provNit
+                );
+                if (!$stmtInsert->execute()) {
+                    error_log("Error INSERT fila $i: " . $stmtInsert->error);
+                }
             }
+            $check->close();
         }
 
+        // Cerrar sentencias
+        $stmtInsert->close();
+        $stmtUpdate->close();
+
+        // Feedback al usuario
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
         echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                     title: `<span class='titulo-alerta confirmacion'>Exito</span>`,
-                    html: `
-                        <div class='alerta'>
-                           <div class=\"contenedor-imagen\">
-                              <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                          </div>
-                            <p>Archivo importado y datos actualizados correctamente.'.</p>
+            Swal.fire({
+                title: `<span class='titulo-alerta confirmacion'>Éxito</span>`,
+                html: `
+                    <div class='alerta'>
+                        <div class=\"contenedor-imagen\">
+                            <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
                         </div>
-                    `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                    }
-                }).then(() => {
-                    window.location.href = 'información.php'; // Redirige después de cerrar el alert
-                });
+                        <p>Archivo importado y datos actualizados correctamente.</p>
+                    </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            }).then(() => {
+                window.location.href = '../html/crearproducto.php';
             });
         </script>";
-        echo "<script>location.href='../html/crearproducto.php';</script>";
-        exit();
+        exit;
+
     } catch (Exception $e) {
-        echo "❌ Error al leer el archivo Excel: " . $e->getMessage();
+        die("❌ Error al procesar Excel: " . $e->getMessage());
     }
 }
-?>

@@ -322,30 +322,129 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
 
   <script>
-    // 2) NORMALIZACIÓN: esto se ejecuta solo UNA VEZ
-    allData.forEach(r => {
-      // convierte "0"/"1" en booleano false/true
-      r.leida = (String(r.leida) === "1");
-    });
-    document.addEventListener('DOMContentLoaded', () => {
+    // -------------------
+    // Helper Alerts
+    // -------------------
+    function mostrarAlertaEliminado(tipo, identificador) {
+      const titulo = tipo === 'producto' ?
+        'Producto Eliminado' :
+        'Notificación Eliminada';
+      const imgSrc = tipo === 'producto' ?
+        '../imagenes/moto.png' :
+        '../imagenes/tornillo.png';
 
+      Swal.fire({
+        title: `<span class="titulo-alerta confirmacion">Exito</span>`,
+        html: `
+        <div class="alerta">
+          <div class="contenedor-imagen">
+            <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
+          </div>
+          <p>La ${tipo} <strong>${identificador}</strong> ha sido eliminada correctamente.</p>
+        </div>
+      `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
+        }
+      }).then(() => {
+        location.reload();
+      });
+    }
+
+    function mostrarError(mensaje) {
+      Swal.fire({
+        icon: 'error',
+        title: '<span class="titulo-alerta error">Error</span>',
+        html: `<p>${mensaje}</p>`,
+        background: '#ffffffdb',
+        confirmButtonText: 'Cerrar',
+        confirmButtonColor: '#dc3545',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
+        }
+      });
+    }
+
+
+    // -----------------------------------
+    // Función para eliminar 1 notificación
+    // -----------------------------------
+    function eliminarNotificacion(id) {
+      Swal.fire({
+              title: `<span class='titulo-alerta advertencia'>¿Estas seguro?</span>`,
+              html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/tornillo.png" class="moto">
+                                </div>
+                                <p>Estas seguro que quieres eliminar esta notificacion.</p>
+                            </div>
+                        `,
+              background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar",
+          container: 'fondo-oscuro'
+        }
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        fetch('delete_notificacion.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id
+            })
+          })
+          .then(r => r.json())
+          .then(resp => {
+            if (resp.success) {
+              mostrarAlertaEliminado('notificación', id);
+            } else {
+              mostrarError('No se pudo eliminar la notificación.');
+            }
+          })
+          .catch(() => {
+            mostrarError('Error de red al intentar eliminar.');
+          });
+      });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Normalización de datos
+      allData.forEach(r => r.leida = (String(r.leida) === "1"));
 
       const inputText = document.getElementById('searchRealtime');
-      const btnClear    = document.getElementById('clearFilters');
+      const btnClear = document.getElementById('clearFilters');
       const dateFrom = document.getElementById('filterFrom');
       const dateTo = document.getElementById('filterTo');
       const selectState = document.getElementById('filterState');
-
-      const rowsPerPage = 7;
-      let currentPage = 1;
-      let filteredData = [...allData];
-
       const tableBody = document.querySelector('#notificacionesTable tbody');
       const paginationContainer = document.getElementById('jsPagination');
-      const inputBusqueda = document.getElementById('searchRealtime');
+      const deleteBtn = document.getElementById('delete-selected');
+      const table = document.getElementById('notificacionesTable');
       const headers = document.querySelectorAll('#notificacionesTable thead th');
 
+      let filteredData = [...allData];
+      let currentPage = 1;
+      const rowsPerPage = 7;
 
+      // -------------------
+      // Filtrado y búsqueda
+      // -------------------
       function applyFilters() {
         const q = inputText.value.trim().toLowerCase();
         const from = dateFrom.value;
@@ -370,7 +469,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           }
           return true;
         });
-
         currentPage = 1;
         renderTable();
       }
@@ -379,19 +477,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       dateFrom.addEventListener('input', applyFilters);
       dateTo.addEventListener('input', applyFilters);
       selectState.addEventListener('change', applyFilters);
-
       btnClear.addEventListener('click', () => {
-        // 1) Vaciamos todos los inputs
         inputText.value = '';
         dateFrom.value = '';
         dateTo.value = '';
         selectState.value = 'all';
-
-        // 2) Volvemos a filtrar (mostrará todo)
         applyFilters();
       });
 
+      // -------------------
       // Render tabla
+      // -------------------
       function renderTable() {
         const start = (currentPage - 1) * rowsPerPage;
         const pageData = filteredData.slice(start, start + rowsPerPage);
@@ -399,19 +495,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         tableBody.innerHTML = '';
         pageData.forEach(row => {
           const tr = document.createElement('tr');
-
           ['mensaje', 'descripcion', 'fecha'].forEach(f => {
             const td = document.createElement('td');
             td.textContent = row[f];
             tr.appendChild(td);
           });
 
-          // 4) Aquí ya solo va la lógica de creación de botón
+          // Botón estado
           const tdEstado = document.createElement('td');
           const btnEstado = document.createElement('button');
           btnEstado.classList.add('boton-accion', 'marcar-toggle');
           btnEstado.dataset.id = row.id;
-
           if (row.leida) {
             btnEstado.textContent = 'Marcar No Leída';
             btnEstado.dataset.accion = 'marcar_no_leida';
@@ -424,11 +518,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           tdEstado.appendChild(btnEstado);
           tr.appendChild(tdEstado);
 
-          // Acciones (usa exactamente tu HTML)
+          // Botón eliminar
           const tdAcc = document.createElement('td');
-          tdAcc.innerHTML = `
-                         <button class="delete-button" onclick="eliminarNotificacion('${row.id}')"><i class="fa-solid fa-trash"></i></button>`;
+          tdAcc.innerHTML = `<button class="delete-button" onclick="eliminarNotificacion('${row.id}')">
+                             <i class="fa-solid fa-trash"></i>
+                           </button>`;
           tr.appendChild(tdAcc);
+
           // Checkbox
           const tdChk = document.createElement('td');
           tdChk.innerHTML = `<input type="checkbox" class="select-item" value="${row.id}">`;
@@ -437,14 +533,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           tableBody.appendChild(tr);
         });
         renderPaginationControls();
+        attachRowCheckboxEvents();
       }
-      // Controles de paginación
+
+      // -------------------
+      // Paginación
+      // -------------------
       function renderPaginationControls() {
         paginationContainer.innerHTML = '';
         const totalPages = Math.ceil(filteredData.length / rowsPerPage);
         if (totalPages <= 1) return;
 
-        const btn = (txt, pg) => {
+        function btn(txt, pg) {
           const b = document.createElement('button');
           b.textContent = txt;
           if (pg === currentPage) b.classList.add('active');
@@ -453,10 +553,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             renderTable();
           };
           return b;
-        };
+        }
 
         paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
-
         let start = Math.max(1, currentPage - 2),
           end = Math.min(totalPages, currentPage + 2);
         if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), {
@@ -466,23 +565,143 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), {
           textContent: '…'
         }));
-
         paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
       }
 
-      // Búsqueda en tiempo real (global)
-      inputBusqueda.addEventListener('input', () => {
-        const q = inputBusqueda.value.trim().toLowerCase();
+      // -------------------
+      // Selección múltiple
+      // -------------------
+      const selectAllChk = document.getElementById('select-all');
+
+      function attachRowCheckboxEvents() {
+        selectAllChk.checked = false;
+        selectAllChk.addEventListener('change', () => {
+          const checked = selectAllChk.checked;
+          table.querySelectorAll('.select-item').forEach(chk => chk.checked = checked);
+          updateDeleteButton();
+        });
+        table.querySelectorAll('.select-item').forEach(chk => {
+          chk.addEventListener('change', () => {
+            if (!chk.checked) selectAllChk.checked = false;
+            else if ([...table.querySelectorAll('.select-item')].every(c => c.checked)) {
+              selectAllChk.checked = true;
+            }
+            updateDeleteButton();
+          });
+        });
+      }
+
+      function updateDeleteButton() {
+        const count = table.querySelectorAll('.select-item:checked').length;
+        deleteBtn.style.display = count > 1 ? 'inline-block' : 'none';
+      }
+
+      deleteBtn.addEventListener('click', () => {
+        const ids = [...table.querySelectorAll('.select-item:checked')].map(c => c.value);
+        if (!ids.length) return;
+
+        Swal.fire({
+        title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
+        html: `
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                </div>
+                <p>¿Seguro que quieres eliminar las notificaciones </strong>?</p>
+            </div>
+        `,
+        background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar",
+          container: 'fondo-oscuro'
+        }
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          fetch('delete_multiple_notificaciones.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                ids
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                mostrarAlertaEliminado('notificación', ids.join(', '));
+              } else {
+                mostrarError('No se pudo eliminar las notificaciones seleccionadas.');
+              }
+            })
+            .catch(() => {
+              mostrarError('Error de red al intentar eliminar varias notificaciones.');
+            });
+        });
+      });
+
+      // -------------------
+      // Toggle lectura
+      // -------------------
+      table.addEventListener('click', e => {
+        const btn = e.target.closest('.marcar-toggle');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        const accion = btn.dataset.accion;
+        btn.disabled = true;
+
+        fetch('toggle_estado_notificacion.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id,
+              accion
+            })
+          })
+          .then(r => r.json())
+          .then(resp => {
+            if (resp.success) {
+              if (accion === 'marcar_leida') {
+                btn.textContent = 'Marcar No Leída';
+                btn.dataset.accion = 'marcar_no_leida';
+                btn.classList.replace('marcarL', 'marcarN');
+              } else {
+                btn.textContent = 'Marcar Leída';
+                btn.dataset.accion = 'marcar_leida';
+                btn.classList.replace('marcarN', 'marcarL');
+              }
+            } else {
+              mostrarError('No se pudo cambiar el estado de lectura.');
+            }
+          })
+          .catch(() => {
+            mostrarError('Error de red al cambiar estado.');
+          })
+          .finally(() => btn.disabled = false);
+      });
+
+      // -------------------
+      // Búsqueda global
+      // -------------------
+      document.getElementById('searchRealtime').addEventListener('input', () => {
+        const q = inputText.value.trim().toLowerCase();
         filteredData = allData.filter(r =>
-          Object.values(r).some(v =>
-            String(v).toLowerCase().includes(q)
-          )
+          Object.values(r).some(v => String(v).toLowerCase().includes(q))
         );
         currentPage = 1;
         renderTable();
       });
 
-      // Ordenamiento por click en <th>
+      // -------------------
+      // Ordenamiento columnas
+      // -------------------
       const sortStates = {};
       headers.forEach((th, idx) => {
         const type = th.dataset.type;
@@ -501,7 +720,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
             return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
           });
-          // Actualiza flechas
           headers.forEach(h => {
             const sp = h.querySelector('.sort-arrow');
             if (sp) sp.textContent = '';
@@ -511,108 +729,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         };
       });
 
-      // Arranca
+      // Inicia
       renderTable();
-
-      const selectAllChk = document.getElementById('select-all');
-      const deleteBtn = document.getElementById('delete-selected');
-      const table = document.getElementById('notificacionesTable');
-
-      // Function to actualizar visibilidad del botón
-      function updateDeleteButton() {
-        const selectedCount = table.querySelectorAll('.select-item:checked').length;
-        deleteBtn.style.display = (selectedCount > 1) ? 'inline-block' : 'none';
-      }
-
-      // Evento “Seleccionar todos”
-      selectAllChk.addEventListener('change', () => {
-        const checked = selectAllChk.checked;
-        table.querySelectorAll('.select-item').forEach(chk => {
-          chk.checked = checked;
-        });
-        updateDeleteButton();
-      });
-
-      // Eventos en cada checkbox individual
-      table.querySelectorAll('.select-item').forEach(chk => {
-        chk.addEventListener('change', () => {
-          // Si alguno queda sin marcar, desmarcar el global
-          if (!chk.checked) selectAllChk.checked = false;
-          // Si todos están marcados, marcar el global
-          else if ([...table.querySelectorAll('.select-item')].every(c => c.checked)) {
-            selectAllChk.checked = true;
-          }
-          updateDeleteButton();
-        });
-      });
-
-      // Acción “Eliminar Seleccionados”
-      deleteBtn.addEventListener('click', () => {
-        const ids = [...table.querySelectorAll('.select-item:checked')]
-          .map(c => c.value);
-        if (!ids.length) return;
-        if (!confirm(`¿Seguro que deseas eliminar ${ids.length} notificaciones?`)) return;
-        // Envío por fetch a PHP (delete_multiple.php)
-        fetch('delete_multiple_notificaciones.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              ids
-            })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) location.reload();
-            else alert('Error al eliminar');
-          });
-      });
-
-      table.addEventListener('click', e => {
-
-        const btn = e.target.closest('.marcar-toggle');
-        if (!btn) return;
-
-        const id = btn.dataset.id;
-        const accion = btn.dataset.accion;
-        btn.disabled = true;
-
-        fetch('toggle_estado_notificacion.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              id,
-              accion
-            })
-          })
-          .then(r => r.json())
-          .then(resp => {
-            console.log(resp);
-
-            if (resp.success) {
-              // Actualiza el propio botón sin recarga
-              if (accion === 'marcar_leida') {
-                btn.textContent = 'Marcar No Leída';
-                btn.dataset.accion = 'marcar_no_leida';
-                btn.classList.replace('marcarL', 'marcarN');
-              } else {
-                btn.textContent = 'Marcar Leída';
-                btn.dataset.accion = 'marcar_leida';
-                btn.classList.replace('marcarN', 'marcarL');
-              }
-            } else {
-              alert('No se pudo cambiar el estado');
-            }
-          })
-          .finally(() => btn.disabled = false);
-      });
-      applyFilters();
-
     });
   </script>
+
 
 </body>
 

@@ -304,6 +304,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+
     .required::after {
       content: " *";
       color: red;
@@ -567,20 +568,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <form id="editForm" method="post">
         <!-- Campo oculto para enviar el código 1 -->
         <input type="hidden" id="editNit" name="nit">
-        <div class="campo"><label for="editNitVisible">Nit:</label>
-          <input type="text" id="editNitVisible" readonly>
+        <div class="campo"><label class="required" for="editNitVisible">Nit:</label>
+          <input type="text" id="editNitVisible" readonly
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
-        <div class="campo"><label for="editNombre">Nombre:</label>
-          <input type="text" id="editNombre" name="nombre">
+        <div class="campo"><label class="required" for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" name="nombre"
+          oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
         </div>
-        <div class="campo"> <label for="editTelefono">Teléfono:</label>
-          <input type="text" id="editTelefono" name="telefono">
+        <div class="campo"> <label class="required" for="editTelefono">Teléfono:</label>
+          <input type="text" id="editTelefono" name="telefono"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
-        <div class="campo"><label for="editDireccion">Dirección:</label>
+        <div class="campo"><label class="required" for="editDireccion">Dirección:</label>
           <input type="text" id="editDireccion" name="direccion">
         </div>
-        <div class="campo"> <label for="editCorreo">Correo:</label>
-          <input type="text" id="editCorreo" name="correo">
+        <div class="campo"> <label class="required" for="editCorreo">Correo:</label>
+          <input type="text" id="editCorreo" name="correo"
+           pattern=".+@.+"
+          placeholder="ejemplo@correo.com">
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelarEdit">Cancelar</button>

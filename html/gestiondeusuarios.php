@@ -466,7 +466,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       form.appendChild(saveButton);
     }
   </script>
-    <div class="userInfo">
+  <div class="userInfo">
     <!-- Nombre y apellido del usuario y rol -->
     <!-- Consultar datos del usuario -->
     <?php

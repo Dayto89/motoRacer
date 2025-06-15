@@ -998,6 +998,33 @@ font-size: 32px;
   opacity: 0;
   transition: transform 0.35s ease-out, opacity 0.35s ease-out;
 }
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin-left: 0.5rem;        /* separa un poco del label */
+  border: 2px solid #306b2f;  /* color verde oscuro */
+  border-radius: 4px;         /* bordes levemente redondeados */
+  background-color: white;
+  color: #306b2f;             /* mismo verde para el icono */
+  font-size: 1rem;            /* tamaño del icono */
+  cursor: pointer;
+  transition: background-color .2s, color .2s;
+}
+
+.add-button:hover {
+  background-color: #306b2f;  /* al pasar el ratón, fondo verde */
+  color: white;               /* “+” en blanco */
+}
+
+/* Opcional: quitar outline feo al hacer focus */
+.add-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(48,107,47,0.4);
+}
 /*---------------------------------------------------------------------------------------------------------*/
 
 /* MÓVILES */

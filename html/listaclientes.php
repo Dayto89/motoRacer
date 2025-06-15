@@ -149,6 +149,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="/js/index.js"></script>
 
     <style>
+
+        .required::after {
+            content: " *";
+            color: red;
+        }
         .export-container {
             margin-bottom: 15px;
         }
@@ -283,24 +288,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <form id="editForm" method="post">
                         <input type="hidden" id="editId" name="id">
                         <div class="campo">
-                            <label for="editIdentificacion">Identificación:</label>
-                            <input type="text" id="editIdentificacion" name="identificacion">
+                            <label class="required" for="editIdentificacion">Identificación:</label>
+                            <input type="text" id="editIdentificacion" name="identificacion"
+                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
                         </div>
                         <div class="campo">
-                            <label for="editNombre">Nombre:</label>
-                            <input type="text" id="editNombre" name="nombre">
+                            <label class="required" for="editNombre">Nombre:</label>
+                            <input type="text" id="editNombre" name="nombre"
+                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
                         </div>
                         <div class="campo">
-                            <label for="editApellido">Apellido:</label>
-                            <input type="text" id="editApellido" name="apellido">
+                            <label class="required" for="editApellido">Apellido:</label>
+                            <input type="text" id="editApellido" name="apellido"
+                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
                         </div>
                         <div class="campo">
-                            <label for="editTelefono">Teléfono:</label>
-                            <input type="text" id="editTelefono" name="telefono">
+                            <label class="required" for="editTelefono">Teléfono:</label>
+                            <input type="text" id="editTelefono" name="telefono" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         <div class="campo">
-                            <label for="editCorreo">Correo:</label>
-                            <input type="email" id="editCorreo" name="correo">
+                            <label class="required" for="editCorreo">Correo:</label>
+                            <input type="email" id="editCorreo" name="correo"
+                                pattern=".+@.+"
+                                placeholder="ejemplo@correo.com">
                         </div>
                         <div class="modal-boton">
                             <button type="submit" id="modal-boton">Guardar Cambios</button>
@@ -386,17 +396,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <?php endif; ?>
 
 <script>
-     // JavaScript para el modal de edición
+    // JavaScript para el modal de edición
     document.addEventListener('DOMContentLoaded', function() {
         const editButtons = document.querySelectorAll('.edit-button');
         const modal = document.getElementById('editModal');
         const closeModal = modal.querySelector('.close');
-          function closeEditModal() {
-        if (modal) { // Asegurarse de que el modal exista antes de intentar cerrarlo
-            modal.classList.remove('show'); // Quita la clase 'show' para iniciar la animación de salida
-            modal.classList.add('hide');   // Añade 'hide' para asegurar que se oculte completamente
+
+        function closeEditModal() {
+            if (modal) { // Asegurarse de que el modal exista antes de intentar cerrarlo
+                modal.classList.remove('show'); // Quita la clase 'show' para iniciar la animación de salida
+                modal.classList.add('hide'); // Añade 'hide' para asegurar que se oculte completamente
+            }
         }
-    }
 
         editButtons.forEach(button => {
             button.addEventListener('click', function() {
