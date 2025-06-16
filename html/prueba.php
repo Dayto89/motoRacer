@@ -12,6 +12,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
+
 // 2) Conexión a la base de datos
 $servername = "localhost";
 $username  = "root";
@@ -256,6 +257,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body>
+    <script>
+        // Al cargar la pantalla de pago, borramos el carrito de ventas del sessionStorage
+        sessionStorage.removeItem('carritoProductos');
+        sessionStorage.removeItem('carritoTotal');
+    </script>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
@@ -488,6 +494,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
             });
 
+            // Contar métodos
+            const conteo = {};
+            metodos_pago.forEach(m => {
+                conteo[m.tipo] = (conteo[m.tipo] || 0) + 1;
+            });
+
+            // Mostrar en pantalla (puedes ajustarlo al contenedor que prefieras)
+            const resumenDiv = document.getElementById("resumenPagos");
+            if (resumenDiv) resumenDiv.remove();
+            const div = document.createElement("div");
+            div.id = "resumenPagos";
+            div.innerHTML = `<h4>Resumen de pagos:</h4>` +
+                Object.entries(conteo)
+                .map(([tipo, cant]) => `<p>${cant} pago(s) de <strong>${tipo}</strong></p>`)
+                .join("");
+            document.querySelector(".summary-section").prepend(div);
+
             // 5.4) Cálculo de total y cambio
             let total = parseFloat("<?php echo $total; ?>");
             const totalPagado = metodos_pago.reduce((acc, m) => acc + m.valor, 0);
@@ -564,6 +587,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 container: 'fondo-oscuro'
                             }
                         }).then(() => {
+                            sessionStorage.removeItem('carritoProductos');
+                            sessionStorage.removeItem('carritoTotal');
+
                             window.location.href = "recibo.php?factura_id=" + data.factura_id;
                         });
                     } else {
@@ -643,6 +669,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             eliminar.style.cursor = "pointer";
             eliminar.onclick = function() {
                 clone.remove();
+                actualizarSaldoPendiente();
+                actualizarEstadoInputs();
             };
 
             clone.appendChild(eliminar);
@@ -663,6 +691,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             eliminar.style.cursor = "pointer";
             eliminar.onclick = function() {
                 clone.remove();
+                actualizarSaldoPendiente();
+                actualizarEstadoInputs();
             };
 
             clone.appendChild(eliminar);
@@ -710,34 +740,56 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         document.addEventListener("DOMContentLoaded", function() {
+            const totalPagar = <?php echo $total; ?>;
+
             function actualizarEstadoInputs() {
-                let totalPagar = <?php echo $total; ?>;
-                let sumaPagos = 0;
+                // 1) Todos los inputs de pago
+                const inputs = Array.from(document.querySelectorAll(
+                    "input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']"
+                ));
 
-                let efectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
-                let tarjetas = document.querySelectorAll("input[name='valor_tarjeta']");
-                let otros = document.querySelectorAll("input[name='valor_otro']");
+                // 2) Habilítalos todos
+                inputs.forEach(i => i.disabled = false);
 
-                sumaPagos += efectivo;
-                tarjetas.forEach(input => {
-                    sumaPagos += parseFloat(input.value) || 0;
-                });
-                otros.forEach(input => {
-                    sumaPagos += parseFloat(input.value) || 0;
-                });
+                // 3) Suma de pagos
+                const sumaPagos = inputs.reduce((sum, i) => sum + (parseFloat(i.value) || 0), 0);
 
+                // 4) Actualiza el texto de saldo pendiente
+                const saldoPendiente = totalPagar - sumaPagos;
+                document.getElementById("saldoPendiente").textContent =
+                    "Saldo pendiente: $" + saldoPendiente.toFixed(2);
+
+                // 5) Si ya cubriste el total, bloquea sólo los inputs vacíos
                 if (sumaPagos >= totalPagar) {
-                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                        if (input.value.trim() === "") {
-                            input.disabled = true;
-                        }
-                    });
-                } else {
-                    document.querySelectorAll("input[name='valor_efectivo'], input[name='valor_tarjeta'], input[name='valor_otro']").forEach(input => {
-                        input.disabled = false;
+                    inputs.forEach(i => {
+                        if (!i.value.trim()) i.disabled = true;
                     });
                 }
+
+                // 6) Iconos “➕”
+                const canAdd = sumaPagos < totalPagar;
+                document.querySelectorAll(".plus-icon img").forEach(img => {
+                    img.style.opacity = canAdd ? "1" : "0.5";
+                    img.style.pointerEvents = canAdd ? "auto" : "none";
+                });
             }
+            document.addEventListener("focusin", function(e) {
+                // detecta si el foco entró en un input de precio de tarjeta u 'otro'
+                if (e.target.matches("input[name='valor_tarjeta'], input[name='valor_otro']")) {
+                    // si está vacío, lo llenamos con el saldo pendiente actual
+                    if (e.target.value.trim() === "") {
+                        // extraemos el número del saldo pendiente de la sección resumen
+                        let textoSaldo = document.getElementById("saldoPendiente").textContent;
+                        // "Saldo pendiente: $12345.67" → 12345.67
+                        let saldo = parseFloat(textoSaldo.replace(/[^0-9.-]/g, ""));
+                        e.target.value = saldo.toFixed(2);
+                        // disparar input event para recalcular todo
+                        e.target.dispatchEvent(new Event("input", {
+                            bubbles: true
+                        }));
+                    }
+                }
+            });
 
             document.addEventListener("input", actualizarEstadoInputs);
             document.addEventListener("change", actualizarEstadoInputs);
@@ -759,6 +811,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     }
                 });
             });
+            // Función genérica para agregar clon + handler de eliminar
+            function creaClon(contenedorSelector, contenidoSelector) {
+                const cont = document.querySelector(contenedorSelector);
+                const plantilla = cont.querySelector(contenidoSelector);
+                const clone = plantilla.cloneNode(true);
+                // limpiar valores
+                clone.querySelectorAll("input").forEach(i => i.value = "");
+                clone.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+                // crear botón de borrar
+                const eliminar = document.createElement("i");
+                eliminar.className = "fa-solid fa-trash icono-eliminar-circular";
+                eliminar.style.cursor = "pointer";
+                eliminar.addEventListener("click", () => {
+                    clone.remove();
+                    // sólo llamamos a ESTA función:
+                    actualizarEstadoInputs();
+                });
+                clone.appendChild(eliminar);
+                cont.appendChild(clone);
+            }
+
+            // Tus funciones de “➕” ahora llaman a creaClon:
+            window.AgregarOtraTarjeta = () => creaClon("#tarjeta", ".tarjeta-content");
+            window.AgregarOtroPago = () => creaClon("#otro", ".otro-content");
+
+            // Vincula el recálculo a cambios en cualquier input
+            document.addEventListener("input", actualizarEstadoInputs);
+            document.addEventListener("change", actualizarEstadoInputs);
+
+            // Arranca el estado correcto al cargar
+            actualizarEstadoInputs();
         });
     </script>
 

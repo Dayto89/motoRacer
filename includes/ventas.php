@@ -172,6 +172,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <script>
+        sessionStorage.clear(); // limpiar sessionStorage
         let total = 0;
         const scrollContainer = document.getElementById('categoriaScroll');
         const btnLeft = document.getElementById('btnLeft');
@@ -308,6 +309,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             const id = el.dataset.id;
             const nombre = el.dataset.nombre;
             const precio = parseFloat(el.querySelector('.price-selector').value);
+            const select = el.querySelector('.price-selector');
+            const tipoActual = select.selectedIndex === 0 ? 'taller' : 'publico';
+            const precioSel = parseFloat(select.value);
+
+            // ③ Si ya hay productos, comprueba contra precioTipo
+            const list = document.getElementById('listaResumen');
+            if (list.children.length > 0) {
+                if (tipoActual !== precioTipo) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Tipos de precio mixtos',
+                        text: 'No puedes mezclar Precio Taller y Precio Público en la misma venta.'
+                    });
+                    return;
+                }
+            } else {
+                // ④ Si es el primer producto, inicializa precioTipo
+                precioTipo = tipoActual;
+            }
             // stock
             let stock = parseInt(el.dataset.cantidad);
             if (!stock) return;
@@ -348,20 +368,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
             total += precio;
             document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
-            guardarEnLocalStorage();
+            guardarEnSessionStorage();
         }
 
         function quitarDelResumen(el) {
             const id = el.dataset.id;
             const nombre = el.dataset.nombre;
-            const precio = parseFloat(
-                document
-                .querySelector(`#listaResumen li[data-id="${el.dataset.id}"][data-precio]`)
-                .dataset.precio
-            );
+            const select = el.querySelector('.price-selector');
+            const tipoActual = select.selectedIndex === 0 ? 'taller' : 'publico';
+            const precio = parseFloat(select.value);
             const lista = document.getElementById('listaResumen');
             lista.querySelectorAll('li').forEach(li => {
-                if (li.dataset.id === id) {
+                if (li.dataset.id === el.dataset.id && parseFloat(li.dataset.precio) === precio) {
                     let c = parseInt(li.dataset.cantidad) - 1;
                     if (c > 0) {
                         li.dataset.cantidad = c;
@@ -390,25 +408,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 }
             });
 
-            guardarEnLocalStorage();
+            total -= precio;
+            document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
+
+            // Si ya no quedan productos, reinicia precioTipo
+            if (lista.children.length === 0) {
+                precioTipo = null;
+            }
+
+            guardarEnSessionStorage();
         }
 
 
-
-        function guardarEnLocalStorage() {
+        function guardarEnSessionStorage() {
             const items = Array.from(document.querySelectorAll('#listaResumen li')).map(li => ({
                 id: li.dataset.id,
                 nombre: li.dataset.nombre,
                 precio: parseFloat(li.dataset.precio),
                 cantidad: parseInt(li.dataset.cantidad)
             }));
-            localStorage.setItem('carritoProductos', JSON.stringify(items));
-            localStorage.setItem('carritoTotal', total);
+            sessionStorage.setItem('carritoProductos', JSON.stringify(items));
+            sessionStorage.setItem('carritoTotal', total);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const data = localStorage.getItem('carritoProductos');
-            const tot = localStorage.getItem('carritoTotal');
+            const data = sessionStorage.getItem('carritoProductos');
+            const tot = sessionStorage.getItem('carritoTotal');
             if (data && tot != null) {
                 const items = JSON.parse(data);
                 total = parseFloat(tot) || 0;

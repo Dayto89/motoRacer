@@ -122,12 +122,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </button>
         <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     </form>
-
-    <!-- >>> Botón para descargar como imagen <<< -->
-    <button id="btnDescargarImagen" class="btn-descargar-imagen">
-        Descargar como Imagen
-    </button>
-
     <div class="factura">
         <div class="factura-header">
             <img src="../imagenes/LOGO.png" alt="Logo Empresa">

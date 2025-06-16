@@ -379,7 +379,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!--Modal categoria dentro de <body> … -->
     <div id="modalCategoria" class="modal_nueva_categoria">
         <div class="modal-content-nueva">
-            <span class="close-button" id="closeCategoria">&times;</span>
             <h2>Nueva categoría</h2>
             <form id="formAddCategoria" action="" method="POST">
                 <div class="form-group">
@@ -388,7 +387,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="inputNombreCategoria"
                         name="nombre"
-                        required>
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
                 </div>
                 <div class="modal-buttons">
                     <button type="button" id="btnCancelarCategoria">Cancelar</button>
@@ -401,7 +401,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!-- Modal Nueva Ubicación -->
     <div id="modalUbicacion" class="modal_nueva_categoria">
         <div class="modal-content-nueva">
-            <span class="close-button" id="closeCategoria">&times;</span>
             <h2>Nueva ubicación</h2>
             <form id="formAddUbicacion" method="POST" action="">
                 <div class="form-group">
@@ -410,7 +409,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="inputNombreUbicacion"
                         name="nombre"
-                        required>
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
                 </div>
                 <div class="modal-buttons">
                     <button type="button" id="btnCancelarUbicacion">Cancelar</button>
@@ -423,7 +423,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!-- Modal Nueva Marca -->
     <div id="modalMarca" class="modal_nueva_categoria">
         <div class="modal-content-nueva">
-            <span class="close-button" id="closeCategoria">&times;</span>
             <h2>Nueva marca</h2>
             <form id="formAddMarca" method="POST" action="">
                 <div class="form-group">
@@ -432,7 +431,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="inputNombreMarca"
                         name="nombre"
-                        required>
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
                 </div>
                 <div class="modal-buttons">
                     <button type="button" id="btnCancelarMarca">Cancelar</button>
@@ -768,49 +768,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     }
                 })
                 .catch(err => console.error(err));
-        });
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            ['Categoria', 'Ubicacion', 'Marca'].forEach(name => {
-                const modalId = 'modal' + name;
-                const closeId = 'close' + name;
-                const openFn = 'openModal' + name;
-
-                const modal = document.getElementById(modalId);
-                const content = modal.querySelector('.modal-content-nueva');
-                const btnClose = document.getElementById(closeId);
-
-                // Definir función global de apertura
-                window[openFn] = function() {
-                    // 1) Mostrar el overlay
-                    modal.classList.add('show');
-                    // 2) Forzar reflow para separar frames
-                    void modal.offsetWidth;
-                    // 3) Iniciar animación de entrada
-                    modal.classList.add('opening');
-                };
-
-                // Función de cierre común
-                function closeModal() {
-                    // Quitar estado de entrada
-                    modal.classList.remove('opening');
-                    // Añadir estado de salida
-                    modal.classList.add('closing');
-                    // Al acabar la transición, limpiar clases
-                    content.addEventListener('transitionend', function handler() {
-                        modal.classList.remove('show', 'closing');
-                        content.removeEventListener('transitionend', handler);
-                    });
-                }
-
-                // Cerrar con la “X”
-                if (btnClose) btnClose.addEventListener('click', closeModal);
-                // Cerrar al pulsar fuera del contenido
-                modal.addEventListener('click', e => {
-                    if (e.target === modal) closeModal();
-                });
-            });
         });
     </script>
     <div class="userInfo">

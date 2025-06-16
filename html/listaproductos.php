@@ -60,7 +60,6 @@ while ($fila = mysqli_fetch_assoc($resultado)) {
 // 2) ACTUALIZAR (POST) Y ELIMINAR (AJAX) SIN CAMBIOS
 // ——————————————————————————————————————————————————————————
 
-// Actualización desde el modal (igual que antes)
 if (isset($_POST['codigo1'])) {
   $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
   $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
@@ -89,33 +88,10 @@ if (isset($_POST['codigo1'])) {
         Ubicacion_codigo = '$ubicacion', 
         Proveedor_nit = '$proveedor' 
         WHERE codigo1 = '$codigo1'";
+  
   if (mysqli_query($conexion, $consulta_update)) {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-    echo "<script>
-              document.addEventListener('DOMContentLoaded', function() {
-                  Swal.fire({
-                      title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
-                      html: \`
-                          <div class='alerta'>
-                              <div class='contenedor-imagen'>
-                                  <img src='../imagenes/moto.png' alt=\"Éxito\" class='moto'>
-                              </div>
-                              <p>Los datos se actualizaron con éxito.</p>
-                          </div>
-                      \`,
-                      background: '#ffffffdb',
-                      confirmButtonText: 'Aceptar',
-                      confirmButtonColor: '#007bff',
-                      customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                      }
-                  }).then(() => {
-                      window.location.href = 'listaproductos.php'; 
-                  });
-              });
-          </script>";
+    header("Location: listaproductos.php?actualizado=1");
+    exit;
   } else {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
     echo "<script>
@@ -144,7 +120,7 @@ if (isset($_POST['codigo1'])) {
   }
 }
 
-// Eliminación individual por AJAX (igual que antes)
+// Eliminación individual por AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
   header('Content-Type: application/json');
 
@@ -173,6 +149,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
+
+<?php if (isset($_GET['actualizado']) && $_GET['actualizado'] == 1): ?>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      Swal.fire({
+        title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+        html: `
+          <div class='alerta'>
+              <div class='contenedor-imagen'>
+                  <img src='../imagenes/moto.png' alt="Éxito" class='moto'>
+              </div>
+              <p>Los datos se actualizaron con éxito.</p>
+          </div>
+        `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
+        }
+      });
+    });
+  </script>
+<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="es">

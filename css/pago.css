@@ -20,14 +20,18 @@ body::before {
   opacity: 0.6;
 }
 
+/* Estado inicial: margin-left en px */
 .container {
-  /* background-color: rgba(174, 174, 174, 0.59); */
-  /* border-radius: 10px; */
-  justify-content: space-between;
+  /* en lugar de margin:auto, asigna el margin-left explícito */
+  margin: 0 auto 0 100px;  /* top right bottom left */
   width: 1698px;
-  /* height: 901px; */
-  margin: auto;
-  transition: margin-left 0.3s ease, background-color 0.3s ease;
+  transition: margin-left 0.2s ease, background-color 0.3s ease;
+}
+
+/* Al hacer hover en .sidebar, movemos el container */
+.sidebar:hover ~ .container {
+  margin-left: 270px;      /* de 100px → 270px animará correctamente */
+  transition: margin-left 0.3s ease;
 }
 
 .sidebar {
@@ -45,21 +49,9 @@ body::before {
   width: 270px;
 }
 
-/* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .container {
-  margin-left: 270px !important;
-}
-
-/* Ajuste cuando el menú se expande */
-.sidebar:hover ~ .main-content {
-  padding-left: 290px;
-  /* Mantiene la misma distancia cuando el menú se despliega */
-  transition: padding-left 0.3s ease;
-}
-
 /* Mantener la distancia de los lados */
 .main-content {
-  transition: padding-left 0.3s ease;
+
   width: calc(100% - 150px);
   margin: auto;
   margin-top: 72px;
