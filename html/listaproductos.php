@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -59,7 +59,6 @@ while ($fila = mysqli_fetch_assoc($resultado)) {
 // ——————————————————————————————————————————————————————————
 // 2) ACTUALIZAR (POST) Y ELIMINAR (AJAX) SIN CAMBIOS
 // ——————————————————————————————————————————————————————————
-
 
 if (isset($_POST['codigo1'])) {
   $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
@@ -236,14 +235,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     /* Input para búsqueda en tiempo real */
-  #searchRealtime {
-    width: 18%;
-    padding: 5px 8px;
-    margin-bottom: 12px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    height: 34px;
-}
+    #searchRealtime {
+      width: 200px;
+      padding: 5px 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
 
     /* Botón eliminar múltiple */
     #delete-selected {
@@ -1101,41 +1099,65 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     // ============================================================
-    // 7) MÓDULO DE EDICIÓN: adjuntar listeners a botones editar
-    // ============================================================
-    function attachEditButtonListeners() {
-      const editButtons = document.querySelectorAll('.edit-button');
-      const modal = document.getElementById('editModal');
-      const closeModal = modal.querySelector('.close');
+  // 7) MÓDULO DE EDICIÓN: animación drop-in / drop-out
+  // ============================================================
 
-      editButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          // Evitamos que el clic en el botón lance el toggle de resaltado
-          e.stopPropagation();
+  // — Funciones genéricas para animar modales —
+  function openModal(modalEl) {
+    modalEl.classList.add('show');
+    void modalEl.offsetWidth;      // fuerza reflow
+    modalEl.classList.add('opening');
+  }
+  function closeModal(modalEl) {
+    modalEl.classList.remove('opening');
+    modalEl.classList.add('closing');
+    const content = modalEl.querySelector('.modal-content');
+    content.addEventListener('transitionend', function handler() {
+      content.removeEventListener('transitionend', handler);
+      modalEl.classList.remove('show','closing');
+    });
+  }
 
-          const row = this.closest('tr');
-          document.getElementById('editCodigo1').value = row.cells[0].innerText.trim();
-          document.getElementById('editCodigo1Visible').value = row.cells[0].innerText.trim();
-          document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
-          document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-          document.getElementById('editPrecio1').value = row.cells[3].innerText.trim();
-          document.getElementById('editPrecio2').value = row.cells[4].innerText.trim();
-          document.getElementById('editPrecio3').value = row.cells[5].innerText.trim();
-          document.getElementById('editCantidad').value = row.cells[6].innerText.trim();
-          document.getElementById('editCategoria').value = row.cells[7].getAttribute('data-categoria-id');
-          document.getElementById('editMarca').value = row.cells[8].getAttribute('data-marca-id');
-          document.getElementById('editUnidadMedida').value = row.cells[9].getAttribute('data-unidadmedida-id');
-          document.getElementById('editUbicacion').value = row.cells[10].getAttribute('data-ubicacion-id');
-          document.getElementById('editProveedor').value = row.cells[11].getAttribute('data-proveedor-id');
-          modal.style.display = 'block';
-        });
+  // — Selección del modal de edición y su botón “×” —
+  const editModal    = document.getElementById('editModal');
+  const editCloseBtn = editModal.querySelector('.close');
+
+  // Cerrar al hacer clic en la “X”
+  editCloseBtn.addEventListener('click', () => closeModal(editModal));
+
+  // Cerrar al hacer clic fuera del contenido
+  editModal.addEventListener('click', e => {
+    if (e.target === editModal) closeModal(editModal);
+  });
+
+  // — Adjuntar listeners a los botones editar —
+  function attachEditButtonListeners() {
+    const editButtons = document.querySelectorAll('.edit-button');
+
+    editButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const row = this.closest('tr');
+        // Rellenas los campos…
+        document.getElementById('editCodigo1').value            = row.cells[0].innerText.trim();
+        document.getElementById('editCodigo1Visible').value     = row.cells[0].innerText.trim();
+        document.getElementById('editCodigo2').value            = row.cells[1].innerText.trim();
+        document.getElementById('editNombre').value             = row.cells[2].innerText.trim();
+        document.getElementById('editPrecio1').value            = row.cells[3].innerText.trim();
+        document.getElementById('editPrecio2').value            = row.cells[4].innerText.trim();
+        document.getElementById('editPrecio3').value            = row.cells[5].innerText.trim();
+        document.getElementById('editCantidad').value           = row.cells[6].innerText.trim();
+        document.getElementById('editCategoria').value          = row.cells[7].getAttribute('data-categoria-id');
+        document.getElementById('editMarca').value              = row.cells[8].getAttribute('data-marca-id');
+        document.getElementById('editUnidadMedida').value       = row.cells[9].getAttribute('data-unidadmedida-id');
+        document.getElementById('editUbicacion').value          = row.cells[10].getAttribute('data-ubicacion-id');
+        document.getElementById('editProveedor').value          = row.cells[11].getAttribute('data-proveedor-id');
+
+        // EN LUGAR DE modal.style.display = 'block';
+        openModal(editModal);
       });
-
-      closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-      });
-    }
-
+    });
+  }
     // ============================================================
     // 8) ELIMINACIÓN INDIVIDUAL: SweetAlert2 + AJAX
     // ============================================================
@@ -1232,7 +1254,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     });
     /*ANIMACIONES*/
   </script>
-<div class="userContainer">
+
+  <div class="userContainer">
     <div class="userInfo">
       <!-- Nombre y apellido del usuario y rol -->
       <!-- Consultar datos del usuario -->
@@ -1253,7 +1276,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       ?>
       <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
       <p class="rol">Rol: <?php echo $rol; ?></p>
-
     </div>
     <div class="profilePic">
       <?php if (!empty($rowUsuario['foto'])): ?>

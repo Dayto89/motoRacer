@@ -279,7 +279,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </table>
             <div id="jsPagination" class="pagination-dinamica"></div>
             <!-- Modal de edición -->
-            <div id="editModal" class="modal hide">
+            <div id="editModal" class="modal">
                 <div class="modal-content">
                     <span class="close">
                         <i class="fa-solid fa-x"></i>
@@ -396,43 +396,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <?php endif; ?>
 
 <script>
-    // JavaScript para el modal de edición
-    document.addEventListener('DOMContentLoaded', function() {
-        const editButtons = document.querySelectorAll('.edit-button');
-        const modal = document.getElementById('editModal');
-        const closeModal = modal.querySelector('.close');
+ document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('editModal');
+    const openButtons = document.querySelectorAll('.edit-button');
+    const closeBtn = modal.querySelector('.close');
+    const animationDuration = 600; // 0.6s en ms (debe coincidir con el CSS)
 
-        function closeEditModal() {
-            if (modal) { // Asegurarse de que el modal exista antes de intentar cerrarlo
-                modal.classList.remove('show'); // Quita la clase 'show' para iniciar la animación de salida
-                modal.classList.add('hide'); // Añade 'hide' para asegurar que se oculte completamente
-            }
-        }
+    function openModal() {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+    }
 
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const row = this.closest('tr');
-                document.getElementById('editId').value = row.cells[0].innerText.trim();
-                document.getElementById('editIdentificacion').value = row.cells[1].innerText.trim();
-                document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-                document.getElementById('editApellido').value = row.cells[3].innerText.trim();
-                document.getElementById('editTelefono').value = row.cells[4].innerText.trim();
-                document.getElementById('editCorreo').value = row.cells[5].innerText.trim();
-                modal.style.display = 'block';
-            });
-        });
-
-        closeModal.addEventListener('click', function() {
+    function closeModal() {
+        modal.classList.remove('show');
+        setTimeout(() => {
             modal.style.display = 'none';
-        });
+        }, animationDuration); // Ahora coincide con la duración CSS
+    }
 
-        // Cerrar modal al hacer clic fuera
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
+    // Abrir modal al hacer clic en botón de edición
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.edit-button')) {
+            const btn = e.target.closest('.edit-button');
+            const row = btn.closest('tr');
+            
+            document.getElementById('editId').value = row.cells[0].textContent.trim();
+            document.getElementById('editIdentificacion').value = row.cells[1].textContent.trim();
+            document.getElementById('editNombre').value = row.cells[2].textContent.trim();
+            document.getElementById('editApellido').value = row.cells[3].textContent.trim();
+            document.getElementById('editTelefono').value = row.cells[4].textContent.trim();
+            document.getElementById('editCorreo').value = row.cells[5].textContent.trim();
+            
+            openModal();
+        }
     });
+
+    // Cerrar modal
+    closeBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+});
     // Función para eliminar cliente
     function eliminarCliente(codigo) {
         Swal.fire({
@@ -535,39 +543,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
         });
     }
-</script>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
-    </div>
-<script>
     document.addEventListener('DOMContentLoaded', () => {
         const rowsPerPage = 7;
         let currentPage = 1;
@@ -696,6 +672,37 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         renderTable();
     });
 </script>
+<div class="userContainer">
+    <div class="userInfo">
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
+
+    </div>
+    <div class="profilePic">
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
+    </div>
 </body>
 
 </html>

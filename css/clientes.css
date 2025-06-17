@@ -260,36 +260,44 @@ input.form-control {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgb(0 0 0 / 78%);
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.6s ease; /* Aumentado de 0.3s a 0.6s */
 }
 
-
+.modal.show {
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal.hide {
+    opacity: 0;
+}
 
 .close {
     position: absolute;
-    right: 31%;
-    top: 28%;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
     cursor: pointer;
-    font-size: 44px;
-    color: white;
-    margin-left: 13px;
+    color: #aaa;
 }
 
 .close i {
-    font-size: 15px;
+    font-size: 20px;
     color: #ffffff;
     cursor: pointer;
-    transition: color 0.3sease-in-out;
+    transition: all 0.3s ease;
     border: 2px solid #ffffff;
-    padding: 8px;
+    padding: 5px 7px;
     border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
-.close i:hover {
-    background: #c00a0a;
-    /* Cambia a rojo cuando pasas el mouse */
+.close:hover {
+    color: red;
 }
-
 
 
 form#editForm {
@@ -347,14 +355,20 @@ form input[type="text"],
 }
 
 .modal-content {
-    width: 35%;
-    text-align: center;
-    background-color: rgb(191 191 191 / 67%);
-    padding: 23px;
-    border-radius: 18px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 13%;
-    margin-left: 35%;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+    background-color: rgba(174, 174, 174, 0.61);
+    max-width: 500px;
+    transform: translateY(-20px);
+     transition: transform 0.38s ease, opacity 0.38s ease;/* Aumentado de 0.3s a 0.6s */
+      opacity: 0;
+    position: relative;
+
+    
+
 }
 
 .modal-content h2 {
@@ -368,54 +382,72 @@ form input[type="text"],
 }
 
 .campo {
-    display: flex;
-    flex-direction: column;
-    width: 316px;
-    max-width: 101%;
-    padding: 10px;
-    margin-bottom: 1.5px;
+    margin-bottom: 15px;
+    width: 100%;
 }
 
 .campo label {
-    margin-bottom: 5px;
+    display: block;
+    margin-bottom: 8px;
     color: white;
-    font-size: 19px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: 2px 0 #1c51a0;
-    white-space: nowrap;
+    font-size: 16px;
+    text-align: left;
+}
+.campo input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 23px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+.campo input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #1c51a0;
 }
 
 
 .modal-boton {
-    margin-left: 19%;
-    margin-top: 4%;
+    margin-top: 20px;
+    text-align: center;
 }
-
-#modal-boton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #007BFF;
-    font-weight: bold;
+/* Estilos del formulario dentro del modal */
+.modal-boton button {
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 3px 4px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+.modal-boton button:hover {
+    background-color: #0056b3;
+}
+#modal-boton {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 12px 25px;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 18px;
-    transition: background-color 0.3sease;
-    margin-right: 6%;
-    width: 157px;
-    height: 47px;
-    display: flex;
-    text-decoration: none;
-    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    width: auto;
+    min-width: 160px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 #modal-boton:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
 
 /* Barra lateral (Menú) */
 .sidebar {
@@ -600,115 +632,25 @@ form input[type="text"],
 }
 
 
-/*Alertas*/
 
-
-/* Estilos generales de los párrafos */
-p {
-    font-size: 16px;
-    color: black;
-    font-family: arial;
-    padding: 10px;
+/* Estado base: contenido arriba y transparente */
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+.modal.hide .modal-content {
+    transform: translateY(-50px);
+    opacity: 0;
+}
+/* Al abrir: bajo y visible */
+.modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
 }
 
-
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%;
-    /* Se ajusta automáticamente */
-    max-width: 350px;
-    /* Define un límite de ancho */
-}
-
-
-
-.custom-alert .tornillo,
-.custom-alert .moto,
-.custom-alert .llave {
-    width: 201px;
-    height: 145px;
-}
-
-
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-    position: relative;
-    display: inline-block;
-}
-
-
-
-.titulo-alerta {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
-}
-
-.titulo-alerta.confirmacion {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #9b9496;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-.titulo-alerta.error {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #af3b3b;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-.titulo-alerta.advertencia {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #e09804;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-
-.btn-aceptar {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-.swal2-border-radius {
-    border-radius: 5px !important;
-}
-
-
-
-.fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    /* Fondo oscuro */
-    backdrop-filter: blur(2px);
-    /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-    border-radius: 20px;
-}
-
-.btn-eliminar {
-    background-color: #bd2d3b;
-    border-radius: 10px;
-}
-
-.btn-cancelar {
-    background-color: #537c5a;
-    border-radius: 10px;
+/* Al cerrar: asciende y se oculta */
+.modal.hide .modal-content {
+    transform: translateY(-50px);
+    opacity: 0;
 }
 
 /* MÓVILES */

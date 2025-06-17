@@ -72,6 +72,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+   <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
   <div class="fondo-opaco"></div>
 

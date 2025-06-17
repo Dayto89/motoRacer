@@ -77,6 +77,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 </head>
 
 <body>
+   <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
 
   <h1>CREAR USUARIO</h1>

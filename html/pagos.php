@@ -257,11 +257,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body>
+    <?php include 'boton-ayuda.php'; ?>
     <script>
         // Al cargar la pantalla de pago, borramos el carrito de ventas del sessionStorage
         sessionStorage.removeItem('carritoProductos');
         sessionStorage.removeItem('carritoTotal');
-        </script>
+    </script>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
@@ -286,7 +287,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             this.value = this.value.replace(/[^0-9]/g, '');
                             buscarCodigo();"
                             inputmode="numeric"
-                             autocomplete="off">
+                            autocomplete="off">
                         <div id="suggestions" class="suggestions"></div>
                     </div>
 
@@ -351,19 +352,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="summary-section">
                     <h3>Información de pago</h3>
-                    
+
                     <?php
                     // 4) Recuperar productos y total desde sesión (sin borrarlos)
                     $productos = $_SESSION['productos'] ?? [];
                     $total     = $_SESSION['total'] ?? 0;
                     ?>
 
-<?php if (!empty($productos)): ?>
-    <div class="summary-container">
-        <h2>Productos:</h2>
+                    <?php if (!empty($productos)): ?>
+                        <div class="summary-container">
+                            <h2>Productos:</h2>
                             <ul>
                                 <?php foreach ($productos as $producto): ?>
                                     <li data-id="<?php echo $producto['id']; ?>">
@@ -375,43 +376,44 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                             </span>
                                         </p>
                                     </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                                
-                                <p id="saldoPendiente">Saldo pendiente: $0.00</p>
-                                <h2>Total a pagar:</h2>
-                                <div class="contenedor-precio">
-                                    <p>$<?php echo number_format($total, 2); ?></p>
+                                <?php endforeach; ?>
+                            </ul>
+
+                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
+                            <h2>Total a pagar:</h2>
+                            <div class="contenedor-precio">
+                                <p>$<?php echo number_format($total, 2); ?></p>
                             </div>
-                            
+
                             <!-- BOTÓN “Editar” -->
                             <button class="btn-editar" onclick="window.location.href='ventas.php'">
                                 ✏️ Editar productos
                             </button>
-                            
+
                             <!-- BOTÓN “Pagar” -->
                             <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
                         </div>
-                        <?php else: ?>
-                            <p>No hay productos en el resumen.</p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+                    <?php else: ?>
+                        <p>No hay productos en el resumen.</p>
+                    <?php endif; ?>
                 </div>
             </div>
-            
-            <!-- 5) Scripts JavaScript -->
-            <script>
-                function guardarFactura() {
-                    // 5.1) Recopilar información del cliente
-                    let codigo = document.getElementById("codigo").value;
-                    let tipoDoc = document.getElementById("tipo_doc").value;
-                    let nombre = document.getElementById("nombre").value;
-                    let apellido = document.getElementById("apellido").value;
-                    let telefono = document.getElementById("telefono").value;
-                    let correo = document.getElementById("correo").value;
-                    
-                    if (!codigo || !tipoDoc || !nombre || !apellido || !telefono || !correo) {
+        </div>
+    </div>
+
+    <!-- 5) Scripts JavaScript -->
+    <script>
+
+        function guardarFactura() {
+            // 5.1) Recopilar información del cliente
+            let codigo = document.getElementById("codigo").value;
+            let tipoDoc = document.getElementById("tipo_doc").value;
+            let nombre = document.getElementById("nombre").value;
+            let apellido = document.getElementById("apellido").value;
+            let telefono = document.getElementById("telefono").value;
+            let correo = document.getElementById("correo").value;
+
+            if (!codigo || !tipoDoc || !nombre || !apellido || !telefono || !correo) {
                 Swal.fire({
                     title: '<span class="titulo-alerta advertencia">Advertencia</span>',
                     html: `
@@ -422,7 +424,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <p>Faltan datos del cliente. Por favor completa todos los campos.</p>
         </div>
         `,
-        background: '#ffffffdb',
+                    background: '#ffffffdb',
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#007bff',
                     customClass: {
@@ -433,8 +435,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 });
                 return; // detenemos el proceso
             }
-            
-            
+
+
             // 5.2) Reconstruir arreglo de productos desde el resumen
             let productos = [];
             document.querySelectorAll(".summary-section ul li").forEach(li => {
@@ -571,7 +573,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
             // 5.6) Enviar petición AJAX a este mismo archivo (prueba.php)
-            fetch("prueba.php", {
+            fetch("pagos.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -857,36 +859,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             actualizarEstadoInputs();
         });
     </script>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 

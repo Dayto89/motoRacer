@@ -988,3 +988,25 @@ background-color: red ;
 .modo-alto-contraste #icono-flecha-derecha {  
   filter: invert(1); /* Modo contraste: blanco si la imagen es negra */
 }
+
+.modo-claro .menu li a img{
+  /* filtro para iconos se pongan en color negro */
+  filter: invert(1);
+}
+.modo-alto-contraste .boton-ayuda{
+  background-color: black;
+  border: 2px solid #ffffff
+}
+.modo-claro .boton-ayuda{
+  background-color: white;
+  color:black;
+  border: 2px solid #000000
+}
+.modo-alto-contraste .stock{
+  border:none;
+  background-color: rgba(0, 0, 0, 0);
+}
+.modo-claro .stock{
+  border:none;
+  background-color: rgba(0, 0, 0, 0);
+}

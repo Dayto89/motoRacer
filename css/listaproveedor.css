@@ -253,7 +253,7 @@ input.form-control {
   width: 35%;
   max-width: 500px;
   text-align: center;
-  background-color: rgba(174, 174, 174, 0.61);
+  background-color: rgba(200, 200, 200, 0.76);
   padding: 23px;
   border-radius: 18px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -843,12 +843,13 @@ input.error {
   font-size: 32px;
   margin-top: -7px;
   color: white;
-  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
   margin-left: 13px;
   letter-spacing: 5px;
   padding: 28px;
 }
-#searchRealtime{
+#searchRealtime {
   font-size: 16px;
   padding: 8px 23px;
   border-radius: 9px;

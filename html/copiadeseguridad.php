@@ -410,6 +410,7 @@ echo "</script>\n";
 </head>
 
 <body>
+    <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
     <div class="main-content">
         <h1>Gestión de Copias de Seguridad</h1>

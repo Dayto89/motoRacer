@@ -181,7 +181,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-
+<?php include 'boton-ayuda.php'; ?>
 
 
   <script>
@@ -512,36 +512,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
       });
     </script>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
+    <div class="userContainer">
+      <div class="userInfo">
+        <!-- Nombre y apellido del usuario y rol -->
+        <!-- Consultar datos del usuario -->
+        <?php
+        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $id_usuario = $_SESSION['usuario_id'];
+        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario->bind_param("i", $id_usuario);
+        $stmtUsuario->execute();
+        $resultUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $nombreUsuario = $rowUsuario['nombre'];
+        $apellidoUsuario = $rowUsuario['apellido'];
+        $rol = $rowUsuario['rol'];
+        $foto = $rowUsuario['foto'];
+        $stmtUsuario->close();
+        ?>
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
+      </div>
+      <div class="profilePic">
+        <?php if (!empty($rowUsuario['foto'])): ?>
+          <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+          <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
+      </div>
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
@@ -580,42 +580,152 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           },
           'Cliente_codigo',
           'precioTotal',
-          'activo',
           'observacion',
           'metodoPago'
         ];
+        async function cambiarEstado(codigo, nuevoEstado, observacion) {
+          const res = await fetch('../html/actualizar_estado_factura.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              codigo,
+              activo: nuevoEstado,
+              observacion
+            })
+          });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.error || 'Falló actualización');
+        }
+
+      async function manejarCambioEstado(btn) {
+  const codigo   = btn.dataset.codigo;
+  const esActivo = btn.dataset.estado === '1';
+
+  try {
+    let nuevoEstado, observacion = '';
+
+    if (esActivo) {
+      // Pedimos la observación
+      const { value: obs, isConfirmed } = await Swal.fire({
+        title: '¿Por qué inactivar la factura?',
+        input: 'textarea',
+        inputPlaceholder: 'Escribe tu observación...',
+        showCancelButton: true,
+        confirmButtonText: 'Inactivar'
+      });
+      if (!isConfirmed || !obs.trim()) return;
+      nuevoEstado = 0;
+      observacion = obs.trim();
+    } else {
+      // Confirmamos la activación
+      const { isConfirmed } = await Swal.fire({
+        title: '¿Seguro que quieres activar esta factura?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, activar'
+      });
+      if (!isConfirmed) return;
+      nuevoEstado = 1;
+    }
+
+    // Enviamos el AJAX
+    const resp = await fetch('../html/actualizar_estado_factura.php', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ codigo, activo: nuevoEstado, observacion })
+    });
+    const data = await resp.json();
+
+    if (!data.success) {
+      return Swal.fire('Error', data.error || 'No se pudo actualizar', 'error');
+    }
+
+    // **** Aquí actualizamos el DOM ****
+    // 1) Cambiamos el botón
+    btn.dataset.estado = String(nuevoEstado);
+    if (nuevoEstado === 1) {
+      btn.innerHTML = '🟢 Activo';
+    } else {
+      btn.innerHTML = '🔴 Inactivo';
+    }
+
+    // 2) Actualizamos la celda de observación
+    //   - Suponiendo que la celda de observación es la 8ª (índice 7)
+    //     fila: [0: código, …, 5: total, 6: Estado, 7: Observación, 8: Método, 9: Acciones]
+    const fila = btn.closest('tr');
+    const celdaObs = fila.cells[7];
+    celdaObs.textContent = nuevoEstado === 0 ? observacion : '';
+
+    // 3) Feedback al usuario
+    Swal.fire(
+      esActivo ? 'Inactivada' : 'Activada',
+      esActivo
+        ? 'Se guardó tu observación.'
+        : 'Se borró la observación.',
+      'success'
+    );
+
+  } catch (e) {
+    console.error(e);
+    Swal.fire('Error', 'Algo falló en la comunicación', 'error');
+  }
+}
+
+
 
         function renderTable() {
           const start = (currentPage - 1) * rowsPerPage;
           const page = filteredData.slice(start, start + rowsPerPage);
-
           tableBody.innerHTML = '';
+
           page.forEach(row => {
             const tr = document.createElement('tr');
-            fields.forEach((fld, idx) => {
+
+            fields.forEach((fld, colIdx) => {
+              // 1) tus celdas normales
               const td = document.createElement('td');
-              if (typeof fld === 'string') {
-                td.textContent = row[fld];
-              } else {
-                td.textContent = fld.composite.map(k => row[k]).join(' ');
-              }
+              td.textContent = typeof fld === 'string' ?
+                row[fld] :
+                fld.composite.map(k => row[k]).join(' ');
               tr.appendChild(td);
+
+              // 2) justo después de la columna 'precioTotal' (colIdx === 5), inyectamos botón 'Activo'
+              if (colIdx === 5) {
+                const tdAct = document.createElement('td');
+                const btn = document.createElement('button');
+                btn.className = 'btn-estado';
+                btn.dataset.codigo = row.codigo;
+                btn.dataset.estado = row.activo;
+                btn.innerHTML = row.activo === '1' ?
+                  '🟢 Activo' :
+                  '🔴 Inactivo';
+                tdAct.appendChild(btn);
+                tr.appendChild(tdAct);
+
+                // listener sobre ese botón
+                btn.addEventListener('click', () => manejarCambioEstado(btn));
+              }
             });
-            // Columna de acciones (manten tu HTML)
-            const tdA = document.createElement('td');
-            tdA.innerHTML = `
-        <form method="POST">
-          <input type="hidden" name="factura_id" value="${row.codigo}">
-          <button type="submit" class="recibo-button">
-            <i class='bx bx-search-alt'></i>
-          </button>
-        </form>`;
-            tr.appendChild(tdA);
+
+            // 3) y luego tus Acciones al final
+            const tdAcc = document.createElement('td');
+            tdAcc.innerHTML = `
+      <form method="POST">
+        <input type="hidden" name="factura_id" value="${row.codigo}">
+        <button type="submit" class="recibo-button">
+          <i class='bx bx-search-alt'></i>
+        </button>
+      </form>`;
+            tr.appendChild(tdAcc);
 
             tableBody.appendChild(tr);
           });
+
           renderPaginationControls();
         }
+
 
         // 3) Paginación dinámica
         function renderPaginationControls() {

@@ -225,8 +225,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div class="container">
             <div class="actions">
                 <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva ubicación</button>
+                <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
             </div>
-            <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
             <table class="category-table">
                 <thead>
                     <tr>
@@ -254,29 +254,28 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <!-- Modal Nueva Ubicación -->
-<div id="modalNuevo" class="modal_nueva_ubicacion">
-  <div class="modal-content-nueva">
-    <h2>Nueva ubicación</h2>
-    <form method="POST" action="">
-      <div class="form-group" style="position: relative;">
-        <label>Ingrese el nombre de la ubicación:</label>
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          required
-        />
-        <span id="nombre-error" class="input-error-message">
-          Esta ubicación ya está registrada.
-        </span>
-      </div>
-      <div class="modal-buttons">
-        <button type="button" id="btnCancelar">Cancelar</button>
-        <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
+    <div id="modalNuevo" class="modal_nueva_ubicacion">
+        <div class="modal-content-nueva">
+            <h2>Nueva ubicación</h2>
+            <form method="POST" action="">
+                <div class="form-group" style="position: relative;">
+                    <label>Ingrese el nombre de la ubicación:</label>
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        required />
+                    <span id="nombre-error" class="input-error-message">
+                        Esta ubicación ya está registrada.
+                    </span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelar">Cancelar</button>
+                    <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal de productos - Mismo estilo que el modal principal -->
     <!-- Modal de productos -->
@@ -291,36 +290,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </div>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -475,20 +474,53 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 document.getElementById('lista-productos').innerHTML = html;
                                 document.getElementById('modalProductos').classList.add('show');
                             } else {
-                                Swal.fire('Sin productos', 'No hay productos en esta categoría.', 'info');
+                                Swal.fire({
+                                    title: '<span class="titulo-alerta advertencia">Sin productos</span>',
+                                    html: `
+                  <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                      <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
+                    </div>
+                    <p>No hay productos en esta ubicación.</p>
+                  </div>
+                `,
+                                    background: '#ffffffdb',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#007bff',
+                                    customClass: {
+                                        popup: 'swal2-border-radius',
+                                        confirmButton: 'btn-aceptar',
+                                        container: 'fondo-oscuro'
+                                    }
+                                });
                             }
                         })
-                        .catch(() => Swal.fire('Error', 'No se pudieron cargar los productos.', 'error'));
-
+                        .catch(error => {
+                            console.error("Error al obtener productos:", error);
+                        });
                 } else if (btn.classList.contains('btn-delete')) {
                     // Eliminar categoría
                     Swal.fire({
-                        title: '¿Está seguro?',
-                        text: 'Se eliminará esta categoría.',
-                        icon: 'warning',
+                        title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
+                        html: `
+            <div class="custom-alert">
+              <div class="contenedor-imagen">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+              </div>
+              <p>Esta acción eliminará la ubicación.<br>¿Desea continuar?</p>
+            </div>
+          `,
                         showCancelButton: true,
                         confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar'
+                        cancelButtonText: 'Cancelar',
+                        background: '#ffffffdb',
+
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-eliminar',
+                            cancelButton: 'btn-cancelar',
+                            container: 'fondo-oscuro'
+                        }
                     }).then(res => {
                         if (res.isConfirmed) {
                             fetch('../html/ubicacion.php', {
@@ -501,7 +533,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 .then(r => r.json())
                                 .then(resp => {
                                     if (resp.success) {
-                                        Swal.fire('Eliminado', 'Categoría eliminada.', 'success')
+                                        Swal.fire({
+                                                title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                                                html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                        </div>
+                        <p>Ubicación eliminada correctamente.</p>
+                      </div>
+                    `,
+                                                background: '#ffffffdb',
+                                                confirmButtonText: 'Aceptar',
+                                                confirmButtonColor: '#007bff',
+                                                customClass: {
+                                                    popup: 'swal2-border-radius',
+                                                    confirmButton: 'btn-aceptar',
+                                                    container: 'fondo-oscuro'
+                                                }
+                                            })
                                             .then(() => {
                                                 // refrescar datos en cliente
                                                 const idx = allCategories.findIndex(c => c.codigo === id);
@@ -510,14 +560,50 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                                 renderTable();
                                             });
                                     } else {
-                                        Swal.fire('Error', 'No se pudo eliminar.', 'error');
-                                    }
-                                })
-                                .catch(() => Swal.fire('Error', 'No se pudo eliminar.', 'error'));
-                        }
-                    });
+                                       Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/llave.png" alt="Error" class="llave">
+                        </div>
+                        <p>No se pudo eliminar la ubicación porque hay productos asociados..</p>
+                      </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  });
                 }
-            });
+              })
+                                .catch(() =>   Swal.fire({
+                  title: '<span class="titulo-alerta error">Error</span>',
+                  html: `
+                    <div class="custom-alert">
+                      <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                      </div>
+                      <p>No se pudo eliminar la ubicación porque hay productos asociados..</p>
+                    </div>
+                  `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+            }
+              }));
+            }
+          });
+        }
+      });
 
             // inicializar
             renderTable();
@@ -526,49 +612,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         //ventana para que no se repita ubicacion
         // Referencias
-const nombreInput = document.getElementById('nombre');
-const btnGuardar  = document.getElementById('btnGuardar');
-const btnAbrir    = document.getElementById('btnAbrirModal');
-let   nombreValido = false;
+        const nombreInput = document.getElementById('nombre');
+        const btnGuardar = document.getElementById('btnGuardar');
+        const btnAbrir = document.getElementById('btnAbrirModal');
+        let nombreValido = false;
 
-// AJAX de validación
-async function validarUbicacion(nombre) {
-  try {
-    const form = new URLSearchParams();
-    form.append('check_ubicacion', '1');
-    form.append('nombre', nombre.trim());
-    const res  = await fetch('', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: form.toString()
-    });
-    const json = await res.json();
-    return !json.exists;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
+        // AJAX de validación
+        async function validarUbicacion(nombre) {
+            try {
+                const form = new URLSearchParams();
+                form.append('check_ubicacion', '1');
+                form.append('nombre', nombre.trim());
+                const res = await fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: form.toString()
+                });
+                const json = await res.json();
+                return !json.exists;
+            } catch (e) {
+                console.error(e);
+                return false;
+            }
+        }
 
-// Listener en tiempo real
-nombreInput.addEventListener('input', async () => {
-  const val = nombreInput.value.trim();
-  nombreValido = val ? await validarUbicacion(val) : false;
+        // Listener en tiempo real
+        nombreInput.addEventListener('input', async () => {
+            const val = nombreInput.value.trim();
+            nombreValido = val ? await validarUbicacion(val) : false;
 
-  if (!nombreValido) {
-    nombreInput.classList.add('invalid');
-  } else {
-    nombreInput.classList.remove('invalid');
-  }
-  btnGuardar.disabled = !nombreValido;
-});
+            if (!nombreValido) {
+                nombreInput.classList.add('invalid');
+            } else {
+                nombreInput.classList.remove('invalid');
+            }
+            btnGuardar.disabled = !nombreValido;
+        });
 
-// Al abrir el modal, resetear estado
-btnAbrir.addEventListener('click', () => {
-  nombreInput.value = '';
-  nombreInput.classList.remove('invalid');
-  btnGuardar.disabled = true;
-});
+        // Al abrir el modal, resetear estado
+        btnAbrir.addEventListener('click', () => {
+            nombreInput.value = '';
+            nombreInput.classList.remove('invalid');
+            btnGuardar.disabled = true;
+        });
     </script>
 
 </body>

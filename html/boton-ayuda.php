@@ -17,9 +17,11 @@ $mapaAyuda = [
   'reportes'           => '/ayuda/reportes.pdf',
   'listaclientes'      => '/ayuda/listaclientes.pdf',
   'listanotificaciones'=> '/ayuda/listanotificaciones.pdf',
-  'informacion'        => '/ayuda/informacion.pdf',
+  'información'        => '/ayuda/informacion.pdf',
   'gestiondeusuarios'  => '/ayuda/gestiondeusuarios.pdf',
   'copiadeseguridad'   => '/ayuda/copiadeseguridad.pdf',
+  'pagos'              => '/ayuda/pagos.pdf',
+  'registro'              => '/ayuda/registro.pdf',
 ];
 
 // 3. ¿Hay PDF para esta página?

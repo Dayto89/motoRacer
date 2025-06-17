@@ -11,6 +11,7 @@ body {
   background-size: cover;
   background-position: center;
 }
+
 body::before {
   position: fixed;
   width: 200%;
@@ -27,7 +28,7 @@ body::before {
   color: white;
   text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
     3px 5px 0 #1c51a0;
-  margin-left: 921px;
+  margin-left: 45%;
   letter-spacing: 5px;
   padding: 18px;
   letter-spacing: 5px;
@@ -35,7 +36,6 @@ body::before {
 
 /* Contenedor principal */
 .container {
-
   padding: 44px;
   border-radius: 15px;
   max-width: 1079px;
@@ -46,11 +46,11 @@ body::before {
 .btn-nueva-categoria {
   background-color: #1167cc;
   color: white;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: bold;
   padding: 13px 21px;
   border: none;
-  border-radius: 11px;
+  border-radius: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-bottom: 15px;
@@ -59,6 +59,7 @@ body::before {
 .btn-nueva-categoria:hover {
   background-color: #0056b3;
 }
+
 h3 {
   color: black;
   color: rgb(0, 0, 0);
@@ -69,13 +70,31 @@ h3 {
   font-size: 32px;
   text-shadow: 2.8px -1px 0 #007bff;
 }
+.actions {
+  margin-left: 14%;
+  display: flex;
+  gap: 60px;
+  align-content: center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
 /* Tabla de categorías */
 .category-table {
-    width: 100%;
-    border-collapse: collapse;
-    color: white;
-    margin-left: 60px;
-    font-family: Arial;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+  font-family: Arial;
+  box-shadow: 0 0 15px white;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 32%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .category-table td {
@@ -84,40 +103,27 @@ h3 {
   width: 225px;
   padding: 5px;
 }
-
 th,
 td {
-    border: 1px solid #666;
-    padding: 10px;
-    text-align: left;
+  border: 1px solid #666;
+  padding: 10px;
+  text-align: left;
 }
 
 th {
-    background-color: #444;
-    font-weight: bold;
-    text-align: center;
+  background-color: #444;
+  font-weight: bold;
+  text-align: center;
 }
 
 #tabla-marcas td {
-    background-color: #222;
-    text-align: center;
-    color: white;
+  background-color: #222;
+  text-align: start;
+  padding: 12px 0px 5px 22px;
 }
-
-.productos-table th {
-  background-color: #98bde9;
-  color: #0b111a;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-#lista-productos .productos-table tr:nth-child(even) {
-  background-color: #f9f9f9b7 !important;
-  color: black;
-}
-
-#lista-productos .productos-table tr:nth-child(odd) {
-  background-color: rgb(33 32 32 / 59%) !important;
-  color: white;
+#tabla-marcas td .btn-list,
+#tabla-marcas td .btn-delete {
+  margin: 0 20px; /* 5px de espacio horizontal entre botones */
 }
 
 .options {
@@ -136,6 +142,7 @@ th {
   font-size: 14px;
   white-space: nowrap;
   text-align: center;
+  margin: 0 2px;
 }
 
 .btn-list {
@@ -146,7 +153,8 @@ th {
 }
 
 .btn-list:hover {
-  background-color: #0056b3; /* Color de fondo al pasar el mouse sobre una fila */
+  background-color: #0056b3;
+  /* Color de fondo al pasar el mouse sobre una fila */
 }
 
 .btn-delete {
@@ -158,9 +166,10 @@ th {
 .btn-delete:hover {
   background-color: #a71d2a;
 }
+
 /* Modal ANIMACIONES */
 /* Modal nueva categoria */
-.modal_nueva_marca {
+.modal_nueva_categoria {
   position: fixed;
   top: 0;
   left: 0;
@@ -178,7 +187,7 @@ th {
   transition: visibility 0.35s ease, opacity 0.35s ease;
 }
 
-.modal_nueva_marca.show {
+.modal_nueva_categoria.show {
   opacity: 1;
   visibility: visible;
 }
@@ -198,7 +207,7 @@ th {
   transition: transform 0.35s ease-out, opacity 0.35s ease-out;
 }
 
-.modal_nueva_marca.show .modal-content-nueva {
+.modal_nueva_categoria.show .modal-content-nueva {
   transform: translateY(0);
   opacity: 1;
 }
@@ -243,12 +252,13 @@ th {
   background-color: rgb(200 200 200 / 75%);
   padding: 20px;
   border-radius: 10px;
-  width: 700px;
-  height: 486px;
+  width: 36%;
+  height: 50%;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   text-align: center;
   overflow: hidden;
+  box-shadow: 0 0 15px black;
 
   /* Animación de arrastre del contenido */
   transform: translateY(-50px);
@@ -275,7 +285,7 @@ th {
     -2px 3px 0 #1c51a0;
   margin-left: 13px;
   letter-spacing: 5px;
-  padding: 28px;
+  padding: 16px;
 }
 
 /* Botones del modal */
@@ -298,6 +308,10 @@ th {
   font-size: 16px;
 }
 
+thead {
+  font-size: 20px;
+}
+
 #btnCancelar:hover {
   background-color: #a71d2a;
 }
@@ -316,24 +330,35 @@ button[type="submit"] {
 button[type="submit"]:hover {
   background-color: #0056b3;
 }
+
 .form-group label {
   font-family: Arial, Helvetica, sans-serif;
   color: black;
   size: 50px;
   font-weight: bold;
 }
+
 /* Estilo para los inputs del formulario */
 input[type="text"] {
-  width: 89%;
+  width: 59%;
   padding: 8px;
-  font-size: 16px; /* Tamaño del texto */
-  border: 1px solid #ccc; /* Borde del input */
-  border-radius: 23px; /* Bordes redondeados */
-  box-sizing: border-box; /* Asegura que padding no afecte el ancho total */
-  margin-top: 26px;
-  margin-bottom: 18px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 25px;
+  padding: 11px 21px;
 }
-
+input#nombre {
+  width: 92%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-top: 8%;
+  height: 3.8%;
+}
 .bx-tada {
   color: #fdfcfc;
   transition: color 0.3s;
@@ -343,12 +368,8 @@ input[type="text"] {
 .productos-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
   font-family: Arial, sans-serif;
-}
-
-thead {
-  font-size: 20px;
+  table-layout: fixed;
 }
 
 .productos-table th,
@@ -362,6 +383,7 @@ thead {
   background-color: #98bde9;
   color: #0b111a;
   font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .productos-table tr:nth-child(even) {
@@ -374,6 +396,25 @@ thead {
   color: white;
 }
 
+#lista-productos .productos-table tr:nth-child(even) {
+  background-color: #f9f9f9b7 !important;
+  color: black;
+}
+
+#lista-productos .productos-table tr:nth-child(odd) {
+  background-color: rgb(33 32 32 / 59%) !important;
+  color: white;
+}
+.productos-table th:nth-child(1),
+.productos-table td:nth-child(1) {
+  width: 30% !important;
+  max-width: 50% !important;
+  min-width: 60px !important;
+  padding: 5px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .close {
   position: absolute;
   top: 15px;
@@ -399,12 +440,14 @@ thead {
   background: #c00a0a;
 }
 
-/*vantana para verificar que marca no se repita */
+/* contenedor ya debe tener position: relative */
+
 input.invalid {
   border: 2px solid #dc3545 !important;
   background-color: #f8d7da;
 }
 
+/* tooltip de error, oculto por defecto */
 .input-error-message {
   display: none;
   position: absolute;
@@ -421,6 +464,7 @@ input.invalid {
   z-index: 10;
 }
 
+/* triángulo apuntando al input */
 .input-error-message::after {
   content: "";
   position: absolute;
@@ -432,13 +476,33 @@ input.invalid {
   border-color: transparent #f8d7da transparent transparent;
 }
 
+/* cuando el input tiene la clase invalid, mostramos el tooltip */
 input.invalid + .input-error-message {
   display: block;
 }
+/* Aplica a todo el sitio */
+::-webkit-scrollbar {
+  width: 6px; /* ancho del scroll vertical */
+  height: 6px; /* alto del scroll horizontal */
+}
 
-#btnGuardar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+::-webkit-scrollbar-track {
+  background: transparent; /* fondo del track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.884
+  ); /* color del "pulgar" que se arrastra */
+  border-radius: 10px; /* bordes redondeados */
+  border: 1px solid #ccc; /* opcional: contorno */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ddd; /* color al pasar el mouse */
 }
 
 /* MÓVILES */
@@ -472,7 +536,6 @@ input.invalid + .input-error-message {
     padding: 15px;
   }
 
-
   input[type="text"] {
     margin-top: 10px;
   }
@@ -482,12 +545,10 @@ input.invalid + .input-error-message {
     height: 80%;
     margin-top: 0;
   }
-
 }
 
 /* Vertical */
 @media screen and (max-width: 767px) and (orientation: portrait) {
-
   .container {
     margin-left: 15%;
   }
@@ -496,20 +557,21 @@ input.invalid + .input-error-message {
     margin-left: 2%;
   }
 
-  #categorias h1{
+  #categorias h1 {
     margin-left: 35%;
     margin-top: 5%;
   }
 
-    .btn-delete {
+  .btn-delete {
     margin-top: 10px;
   }
-
 }
 
 /* TABLETS */
 /* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {}
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+}
 
 /* Vertical */
-@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {}
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+}

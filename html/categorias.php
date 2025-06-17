@@ -236,9 +236,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="container">
       <div class="actions">
         <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nueva categoría</button>
-
+        <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
       </div>
-      <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
       <table class="category-table">
         <thead>
           <tr>
@@ -485,20 +484,53 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 document.getElementById('lista-productos').innerHTML = html;
                 document.getElementById('modalProductos').classList.add('show');
               } else {
-                Swal.fire('Sin productos', 'No hay productos en esta categoría.', 'info');
+                Swal.fire({
+                  title: '<span class="titulo-alerta advertencia">Sin productos</span>',
+                  html: `
+                  <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                      <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
+                    </div>
+                    <p>No hay productos en esta categoria.</p>
+                  </div>
+                `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+                });
               }
             })
-            .catch(() => Swal.fire('Error', 'No se pudieron cargar los productos.', 'error'));
-
+            .catch(error => {
+              console.error("Error al obtener productos:", error);
+            });
         } else if (btn.classList.contains('btn-delete')) {
           // Eliminar categoría
           Swal.fire({
-            title: '¿Está seguro?',
-            text: 'Se eliminará esta categoría.',
-            icon: 'warning',
+            title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
+            html: `
+            <div class="custom-alert">
+              <div class="contenedor-imagen">
+                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+              </div>
+              <p>Esta acción eliminará la categoría.<br>¿Desea continuar?</p>
+            </div>
+          `,
             showCancelButton: true,
             confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            background: '#ffffffdb',
+
+            customClass: {
+              popup: 'swal2-border-radius',
+              confirmButton: 'btn-eliminar',
+              cancelButton: 'btn-cancelar',
+              container: 'fondo-oscuro'
+            }
           }).then(res => {
             if (res.isConfirmed) {
               fetch('../html/categorias.php', {
@@ -511,7 +543,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 .then(r => r.json())
                 .then(resp => {
                   if (resp.success) {
-                    Swal.fire('Eliminado', 'Categoría eliminada.', 'success')
+                    Swal.fire({
+                        title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                        html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                        </div>
+                        <p>Categoría eliminada correctamente.</p>
+                      </div>
+                    `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                          popup: 'swal2-border-radius',
+                          confirmButton: 'btn-aceptar',
+                          container: 'fondo-oscuro'
+                        }
+                      })
                       .then(() => {
                         // refrescar datos en cliente
                         const idx = allCategories.findIndex(c => c.codigo === id);
@@ -520,10 +570,46 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         renderTable();
                       });
                   } else {
-                    Swal.fire('Error', 'No se pudo eliminar.', 'error');
-                  }
-                })
-                .catch(() => Swal.fire('Error', 'No se pudo eliminar.', 'error'));
+                    Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/llave.png" alt="Error" class="llave">
+                        </div>
+                        <p>No se pudo eliminar la categoría porque hay productos asociados.</p>
+                      </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  });
+                }
+              })
+                .catch(() =>  Swal.fire({
+                  title: '<span class="titulo-alerta error">Error</span>',
+                  html: `
+                    <div class="custom-alert">
+                      <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                      </div>
+                      <p>No se pudo eliminar la categoría porque hay productos asociados..</p>
+                    </div>
+                  `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+            }
+              }));
             }
           });
         }
@@ -534,60 +620,60 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-    // Obtener referencias
-    const nombreInput = document.getElementById('nombre');
-    const btnGuardar = document.getElementById('btnGuardar');
-    const btnAbrirNuevaCategoria = document.getElementById('btnAbrirModal');
-    let nombreValido = false;
+      // Obtener referencias
+      const nombreInput = document.getElementById('nombre');
+      const btnGuardar = document.getElementById('btnGuardar');
+      const btnAbrirNuevaCategoria = document.getElementById('btnAbrirModal');
+      let nombreValido = false;
 
-    // Función para validar en el servidor
-    async function validarNombre(nombre) {
-      try {
-        const form = new URLSearchParams();
-        form.append('check_nombre', '1');
-        form.append('nombre', nombre.trim());
-        const res = await fetch('', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: form.toString()
-        });
-        const json = await res.json();
-        return !json.exists; // true si NO existe aún
-      } catch (e) {
-        console.error(e);
-        return false;
-      }
-    }
-
-    // Listener en tiempo real
-    nombreInput.addEventListener('input', async () => {
-      const valor = nombreInput.value.trim();
-      if (!valor) {
-        nombreValido = false;
-      } else {
-        nombreValido = await validarNombre(valor);
+      // Función para validar en el servidor
+      async function validarNombre(nombre) {
+        try {
+          const form = new URLSearchParams();
+          form.append('check_nombre', '1');
+          form.append('nombre', nombre.trim());
+          const res = await fetch('', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: form.toString()
+          });
+          const json = await res.json();
+          return !json.exists; // true si NO existe aún
+        } catch (e) {
+          console.error(e);
+          return false;
+        }
       }
 
-      if (!nombreValido) {
-        nombreInput.classList.add('invalid');
-      } else {
+      // Listener en tiempo real
+      nombreInput.addEventListener('input', async () => {
+        const valor = nombreInput.value.trim();
+        if (!valor) {
+          nombreValido = false;
+        } else {
+          nombreValido = await validarNombre(valor);
+        }
+
+        if (!nombreValido) {
+          nombreInput.classList.add('invalid');
+        } else {
+          nombreInput.classList.remove('invalid');
+        }
+
+        btnGuardar.disabled = !nombreValido;
+      });
+
+      // Al abrir el modal, asegúrate de resetear estado
+      btnAbrirNuevaCategoria.addEventListener('click', () => {
+        nombreInput.value = '';
         nombreInput.classList.remove('invalid');
-      }
+        btnGuardar.disabled = true;
+      });
 
-      btnGuardar.disabled = !nombreValido;
+      // ... (aquí iría el resto de tu código de modales, paginación, etc.)
     });
-
-    // Al abrir el modal, asegúrate de resetear estado
-    btnAbrirNuevaCategoria.addEventListener('click', () => {
-      nombreInput.value = '';
-      nombreInput.classList.remove('invalid');
-      btnGuardar.disabled = true;
-    });
-
-    // ... (aquí iría el resto de tu código de modales, paginación, etc.)
-  });
   </script>
 
 </body>

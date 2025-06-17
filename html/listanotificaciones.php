@@ -189,6 +189,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+  <?php include 'boton-ayuda.php'; ?>
   <?php
   // Justo después de tu conexión y filtros:
   $allQ = "SELECT id,mensaje,descripcion,fecha,leida FROM notificaciones n";
@@ -291,7 +292,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </table>
     <div id="jsPagination" class="pagination-dinamica"></div>
   </div>
- <div class="userContainer">
+  <div class="userContainer">
     <div class="userInfo">
       <!-- Nombre y apellido del usuario y rol -->
       <!-- Consultar datos del usuario -->
@@ -321,9 +322,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
     </div>
-    </div>
+  </div>
 
   <script>
+    const selectedIds = new Set();
+
     // -------------------
     // Helper Alerts
     // -------------------
@@ -380,8 +383,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     // -----------------------------------
     function eliminarNotificacion(id) {
       Swal.fire({
-              title: `<span class='titulo-alerta advertencia'>¿Estas seguro?</span>`,
-              html: `
+        title: `<span class='titulo-alerta advertencia'>¿Estas seguro?</span>`,
+        html: `
                             <div class="alerta">
                                 <div class="contenedor-imagen">
                                     <img src="../imagenes/tornillo.png" class="moto">
@@ -389,7 +392,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <p>Estas seguro que quieres eliminar esta notificacion.</p>
                             </div>
                         `,
-              background: '#ffffffdb',
+        background: '#ffffffdb',
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar",
         cancelButtonText: "Cancelar",
@@ -579,11 +582,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         selectAllChk.checked = false;
         selectAllChk.addEventListener('change', () => {
           const checked = selectAllChk.checked;
-          table.querySelectorAll('.select-item').forEach(chk => chk.checked = checked);
+          table.querySelectorAll('.select-item').forEach(chk => {
+            chk.checked = checked;
+            const id = chk.value;
+            if (checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+          });
           updateDeleteButton();
         });
         table.querySelectorAll('.select-item').forEach(chk => {
+          const id = chk.value;
+          chk.checked = selectedIds.has(id);
           chk.addEventListener('change', () => {
+            if (chk.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
             if (!chk.checked) selectAllChk.checked = false;
             else if ([...table.querySelectorAll('.select-item')].every(c => c.checked)) {
               selectAllChk.checked = true;
@@ -595,16 +607,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       function updateDeleteButton() {
         const count = table.querySelectorAll('.select-item:checked').length;
-        deleteBtn.style.display = count > 1 ? 'inline-block' : 'none';
+         deleteBtn.style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
       }
 
       deleteBtn.addEventListener('click', () => {
-        const ids = [...table.querySelectorAll('.select-item:checked')].map(c => c.value);
+        const ids = Array.from(selectedIds);
         if (!ids.length) return;
 
         Swal.fire({
-        title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
-        html: `
+          title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
+          html: `
             <div class="custom-alert">
                 <div class="contenedor-imagen">
                     <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
@@ -612,16 +624,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <p>¿Seguro que quieres eliminar las notificaciones </strong>?</p>
             </div>
         `,
-        background: '#ffffffdb',
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-        customClass: {
-          popup: "custom-alert",
-          confirmButton: "btn-eliminar",
-          cancelButton: "btn-cancelar",
-          container: 'fondo-oscuro'
-        }
+          background: '#ffffffdb',
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+          customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",
+            cancelButton: "btn-cancelar",
+            container: 'fondo-oscuro'
+          }
         }).then(result => {
           if (!result.isConfirmed) return;
           fetch('delete_multiple_notificaciones.php', {
@@ -734,6 +746,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       // Inicia
       renderTable();
     });
+      // Cerrar el filtro (details) si se hace clic fuera
+      document.addEventListener('click', function(e) {
+        const filterDropdown = document.querySelector('.filter-dropdown');
+        // Si el <details> está abierto y se hizo clic fuera de él
+        if (filterDropdown && filterDropdown.open && !filterDropdown.contains(e.target)) {
+          filterDropdown.removeAttribute('open');
+        }
+      });
   </script>
 
 

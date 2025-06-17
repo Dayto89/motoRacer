@@ -8,7 +8,7 @@ if (!isset($_SESSION['usuario_id'])) {
 $ref = $_SERVER['HTTP_REFERER'] ?? '';
 if (
     !isset($_POST['cobrar']) &&
-    strpos($ref, 'prueba.php') === false &&
+    strpos($ref, 'pagos.php') === false &&
     strpos($ref, 'ventas.php') === false
 ) {
     // Llegaste desde fuera del flujo Ventas↔Pago → limpia el carrito
@@ -50,7 +50,7 @@ if (isset($_POST['cobrar'])) {
     }
     $_SESSION['productos'] = $productos;
     $_SESSION['total']     = $total;
-    header("Location: prueba.php");
+    header("Location: pagos.php");
     exit();
 }
 
@@ -189,7 +189,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         // 1) Si vienes de ventas.php o de prueba.php, NO borres; 
         //    en cualquier otro caso, sí.
         const ref = document.referrer;
-        const fromVentasOrPago = ref.includes('ventas.php') || ref.includes('prueba.php');
+        const fromVentasOrPago = ref.includes('ventas.php') || ref.includes('pagos.php');
         if (!fromVentasOrPago) {
             sessionStorage.clear();
         }

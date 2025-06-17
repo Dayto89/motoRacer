@@ -2,14 +2,11 @@
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
-
-
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -314,8 +311,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   echo json_encode(['success' => true]);
   exit;
 }
-
-
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
@@ -423,14 +418,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endif; ?>
           <?php endforeach; ?>
           <button type="submit" id="exportar-boton" class="icon-button" title="Exportar proveedores a Excel">
-            <i class="fas fa-file-excel"></i> Exportar a Excel
+            <i class="fas fa-file-excel fa-lg"></i>
           </button>
         </form>
       </div>
-
-
-
-
     </div>
     <div class="table-wrapper">
       <?php if (mysqli_num_rows($resultado) > 0): ?>
@@ -1256,8 +1247,5 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
     });
   </script>
-
-
 </body>
-
 </html>

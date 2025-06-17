@@ -190,10 +190,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+    <?php include 'boton-ayuda.php'; ?>
+    
     <div id="menu"></div>
     <!-- Información del usuario -->
     <div class="fondo-opaco"></div>
     <div class="container">
+        
 
         <h1>Usuario</h1>
         <div class="profile-pic">
@@ -568,5 +571,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
     </div>
 </body>
+
 
 </html>
