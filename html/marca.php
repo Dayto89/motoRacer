@@ -12,6 +12,16 @@ if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 
+// --- AJAX: validar nombre de marca único ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_marca'])) {
+    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $sql    = "SELECT COUNT(*) AS cnt FROM marca WHERE nombre = '$nombre'";
+    $res    = mysqli_query($conexion, $sql);
+    $row    = mysqli_fetch_assoc($res);
+    echo json_encode(['exists' => ($row['cnt'] > 0)]);
+    exit;
+}
+
 // justo tras conectar a BD
 $allQ = "SELECT codigo,nombre FROM marca";
 if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
@@ -244,23 +254,30 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="modal" class="modal_nueva_marca">
-        <div class="modal-content-nueva">
-            <h2>Nueva marca</h2>
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label>Ingrese el nombre de la marca:</label>
-                    <input type="text" id="nombre" name="nombre" required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelar">Cancelar</button>
-                    <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+   <!-- Modal Nueva Marca -->
+<div id="modal" class="modal_nueva_marca">
+  <div class="modal-content-nueva">
+    <h2>Nueva marca</h2>
+    <form method="POST" action="">
+      <div class="form-group" style="position: relative;">
+        <label>Ingrese el nombre de la marca:</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          required
+        />
+        <span id="nombre-error" class="input-error-message">
+          Esta marca ya está registrada.
+        </span>
+      </div>
+      <div class="modal-buttons">
+        <button type="button" id="btnCancelar">Cancelar</button>
+        <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
     <!-- Modal de productos - Mismo estilo que el modal principal -->
@@ -484,6 +501,48 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             // inicializar
             renderTable();
         });
+
+        //verificacion que marca no se repita 
+        // Referencias
+const nombreInput = document.getElementById('nombre');
+const btnGuardar  = document.getElementById('btnGuardar');
+const btnAbrir    = document.getElementById('btnAbrirModal');
+let   nombreValido = false;
+
+// AJAX de validación
+async function validarMarca(nombre) {
+  try {
+    const form = new URLSearchParams();
+    form.append('check_marca', '1');
+    form.append('nombre', nombre.trim());
+    const res  = await fetch('', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: form.toString()
+    });
+    const json = await res.json();
+    return !json.exists;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+// Listener en tiempo real
+nombreInput.addEventListener('input', async () => {
+  const val = nombreInput.value.trim();
+  nombreValido = val ? await validarMarca(val) : false;
+
+  nombreInput.classList.toggle('invalid', !nombreValido);
+  btnGuardar.disabled = !nombreValido;
+});
+
+// Al abrir el modal, resetear estado
+btnAbrir.addEventListener('click', () => {
+  nombreInput.value = '';
+  nombreInput.classList.remove('invalid');
+  btnGuardar.disabled = true;
+}); 
     </script>
 
 </body>

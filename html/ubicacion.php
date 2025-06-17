@@ -11,6 +11,15 @@ $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
+// --- AJAX: validar nombre de ubicación único ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_ubicacion'])) {
+    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $sql = "SELECT COUNT(*) AS cnt FROM ubicacion WHERE nombre = '$nombre'";
+    $res = mysqli_query($conexion, $sql);
+    $row = mysqli_fetch_assoc($res);
+    echo json_encode(['exists' => ($row['cnt'] > 0)]);
+    exit;
+}
 
 // justo tras conectar a BD
 $allQ = "SELECT codigo,nombre FROM ubicacion c";
@@ -244,22 +253,30 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="modalNuevo" class="modal_nueva_ubicacion">
-        <div class="modal-content-nueva">
-            <h2>Nueva ubicación</h2>
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label>Ingrese el nombre de la ubicación:</label>
-                    <input type="text" id="nombre" name="nombre" required />
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelar">Cancelar</button>
-                    <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- Modal Nueva Ubicación -->
+<div id="modalNuevo" class="modal_nueva_ubicacion">
+  <div class="modal-content-nueva">
+    <h2>Nueva ubicación</h2>
+    <form method="POST" action="">
+      <div class="form-group" style="position: relative;">
+        <label>Ingrese el nombre de la ubicación:</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          required
+        />
+        <span id="nombre-error" class="input-error-message">
+          Esta ubicación ya está registrada.
+        </span>
+      </div>
+      <div class="modal-buttons">
+        <button type="button" id="btnCancelar">Cancelar</button>
+        <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
     <!-- Modal de productos - Mismo estilo que el modal principal -->
     <!-- Modal de productos -->
@@ -505,6 +522,53 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             // inicializar
             renderTable();
         });
+
+
+        //ventana para que no se repita ubicacion
+        // Referencias
+const nombreInput = document.getElementById('nombre');
+const btnGuardar  = document.getElementById('btnGuardar');
+const btnAbrir    = document.getElementById('btnAbrirModal');
+let   nombreValido = false;
+
+// AJAX de validación
+async function validarUbicacion(nombre) {
+  try {
+    const form = new URLSearchParams();
+    form.append('check_ubicacion', '1');
+    form.append('nombre', nombre.trim());
+    const res  = await fetch('', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: form.toString()
+    });
+    const json = await res.json();
+    return !json.exists;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+// Listener en tiempo real
+nombreInput.addEventListener('input', async () => {
+  const val = nombreInput.value.trim();
+  nombreValido = val ? await validarUbicacion(val) : false;
+
+  if (!nombreValido) {
+    nombreInput.classList.add('invalid');
+  } else {
+    nombreInput.classList.remove('invalid');
+  }
+  btnGuardar.disabled = !nombreValido;
+});
+
+// Al abrir el modal, resetear estado
+btnAbrir.addEventListener('click', () => {
+  nombreInput.value = '';
+  nombreInput.classList.remove('invalid');
+  btnGuardar.disabled = true;
+});
     </script>
 
 </body>

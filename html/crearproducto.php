@@ -133,6 +133,33 @@ if (
     exit;
 }
 
+// 1a) Check nombre de categoría
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion']==='check_categoria') {
+    header('Content-Type: application/json');
+    $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $r = mysqli_query($conexion, "SELECT 1 FROM categoria WHERE nombre='$n' LIMIT 1");
+    echo json_encode(['exists'=> (mysqli_num_rows($r)>0)]);
+    exit;
+}
+
+// 1b) Check nombre de ubicación
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion']==='check_ubicacion') {
+    header('Content-Type: application/json');
+    $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $r = mysqli_query($conexion, "SELECT 1 FROM ubicacion WHERE nombre='$n' LIMIT 1");
+    echo json_encode(['exists'=> (mysqli_num_rows($r)>0)]);
+    exit;
+}
+
+// 1c) Check nombre de marca
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion']==='check_marca') {
+    header('Content-Type: application/json');
+    $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $r = mysqli_query($conexion, "SELECT 1 FROM marca WHERE nombre='$n' LIMIT 1");
+    echo json_encode(['exists'=> (mysqli_num_rows($r)>0)]);
+    exit;
+}
+
 // Consultas de selects
 $marcas      = $conexion->query("SELECT codigo, nombre FROM marca");
 $categorias  = $conexion->query("SELECT codigo, nombre FROM categoria");
@@ -376,84 +403,86 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     </div>
 
-    <!-- Botón que abre el modal -->
-
-
-<!-- Modal con animación -->
+    <!-- Modal Nueva Categoría -->
 <div id="modalCategoria" class="modal_nueva_categoria">
-    <div class="modal-content-nueva">
-        <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
-        <h2>Nueva categoría</h2>
-        <form id="formAddCategoria" action="" method="POST">
-            <div class="form-group">
-                <label for="nombre">Ingrese el nombre de la categoría:</label>
-                <input
-                    type="text"
-                    id="inputNombreCategoria"
-                    name="nombre"
-                    required
-                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            </div>
-            <div class="modal-buttons">
-                <button type="button" id="btnCancelarCategoria">Cancelar</button>
-                <button type="submit" id="btnGuardarCategoria">Guardar</button>
-            </div>
-        </form>
-    </div>
+  <div class="modal-content-nueva">
+    <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
+    <h2>Nueva categoría</h2>
+    <form id="formAddCategoria" action="" method="POST">
+      <div class="form-group" style="position: relative;">
+        <label for="inputNombreCategoria">Ingrese el nombre de la categoría:</label>
+        <input
+          type="text"
+          id="inputNombreCategoria"
+          name="nombre"
+          required
+          oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+        />
+        <span class="input-error-message">
+          Este nombre ya está registrado.
+        </span>
+      </div>
+      <div class="modal-buttons">
+        <button type="button" id="btnCancelarCategoria">Cancelar</button>
+        <button type="submit" id="btnGuardarCategoria" disabled>Guardar</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-    <!-- Modal Nueva Ubicación -->
-     <!-- Botón para abrir el modal de Ubicación -->
-
-
-   <!-- Modal Nueva Ubicación -->
+<!-- Modal Nueva Ubicación -->
 <div id="modalUbicacion" class="modal_nueva_categoria">
-    <div class="modal-content-nueva">
-        <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
-        <h2>Nueva ubicación</h2>
-        <form id="formAddUbicacion" method="POST" action="">
-            <div class="form-group">
-                <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
-                <input
-                    type="text"
-                    id="inputNombreUbicacion"
-                    name="nombre"
-                    required
-                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            </div>
-            <div class="modal-buttons">
-                <button type="button" id="btnCancelarUbicacion">Cancelar</button>
-                <button type="submit" id="btnGuardarUbicacion">Guardar</button>
-            </div>
-        </form>
-    </div>
+  <div class="modal-content-nueva">
+    <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
+    <h2>Nueva ubicación</h2>
+    <form id="formAddUbicacion" method="POST" action="">
+      <div class="form-group" style="position: relative;">
+        <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
+        <input
+          type="text"
+          id="inputNombreUbicacion"
+          name="nombre"
+          required
+          oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+        />
+        <span class="input-error-message">
+          Este nombre ya está registrado.
+        </span>
+      </div>
+      <div class="modal-buttons">
+        <button type="button" id="btnCancelarUbicacion">Cancelar</button>
+        <button type="submit" id="btnGuardarUbicacion" disabled>Guardar</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-    <!-- Modal Nueva Marca -->
-   
-    <!-- Modal Nueva Marca -->
+<!-- Modal Nueva Marca -->
 <div id="modalMarca" class="modal_nueva_categoria">
-    <div class="modal-content-nueva">
-        <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
-        <h2>Nueva marca</h2>
-        <form id="formAddMarca" method="POST" action="">
-            <div class="form-group">
-                <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
-                <input
-                    type="text"
-                    id="inputNombreMarca"
-                    name="nombre"
-                    required
-                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            </div>
-            <div class="modal-buttons">
-                <button type="button" id="btnCancelarMarca">Cancelar</button>
-                <button type="submit" id="btnGuardarMarca">Guardar</button>
-            </div>
-        </form>
-    </div>
+  <div class="modal-content-nueva">
+    <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
+    <h2>Nueva marca</h2>
+    <form id="formAddMarca" method="POST" action="">
+      <div class="form-group" style="position: relative;">
+        <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
+        <input
+          type="text"
+          id="inputNombreMarca"
+          name="nombre"
+          required
+          oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+        />
+        <span class="input-error-message">
+          Este nombre ya está registrado.
+        </span>
+      </div>
+      <div class="modal-buttons">
+        <button type="button" id="btnCancelarMarca">Cancelar</button>
+        <button type="submit" id="btnGuardarMarca" disabled>Guardar</button>
+      </div>
+    </form>
+  </div>
 </div>
-
 
     <?php
 
@@ -730,6 +759,48 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
         });
     });
+    // Helper genérico
+async function checkExists(accion, nombre) {
+  const body = new URLSearchParams({ accion, nombre: nombre.trim() });
+  const resp = await fetch('', {
+    method: 'POST',
+    headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: body.toString()
+  });
+  const json = await resp.json();
+  return json.exists;
+}
+
+// Crea un listener para un modal dado:
+function setupModalValidation({ inputId, btnGuardarId, accion }) {
+  const inp   = document.getElementById(inputId);
+  const btn   = document.getElementById(btnGuardarId);
+  const span  = inp.nextElementSibling; // asume el span justo después
+  inp.addEventListener('input', async () => {
+    const val = inp.value.trim();
+    const exists = val ? await checkExists(accion, val) : false;
+    inp.classList.toggle('invalid', exists);
+    btn.disabled = exists || !val;
+  });
+}
+
+// Inicializa las tres validaciones
+setupModalValidation({
+  inputId: 'inputNombreCategoria',
+  btnGuardarId: 'btnGuardarCategoria',
+  accion: 'check_categoria'
+});
+setupModalValidation({
+  inputId: 'inputNombreUbicacion',
+  btnGuardarId: 'btnGuardarUbicacion',
+  accion: 'check_ubicacion'
+});
+setupModalValidation({
+  inputId: 'inputNombreMarca',
+  btnGuardarId: 'btnGuardarMarca',
+  accion: 'check_marca'
+});
+
 </script>
 
    <div class="userContainer">

@@ -517,6 +517,48 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 .close i:hover {
   background: #c00a0a;
 }
+ /*modal para que no se repita */
+input.invalid {
+  border: 2px solid #dc3545 !important;
+  background-color: #f8d7da;
+}
+
+.input-error-message {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translate(8px, -50%);
+  background: #f8d7da;
+  color: #721c24;
+  padding: 4px 8px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-size: 0.85em;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.input-error-message::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #f8d7da transparent transparent;
+}
+
+/* Mostrar el tooltip cuando el input sea invalid */
+input.invalid + .input-error-message {
+  display: block;
+}
+
+#btnGuardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* MÓVILES */
 /* Horizontal */

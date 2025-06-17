@@ -338,110 +338,6 @@ input[type="text"] {
   color: #fdfcfc;
   transition: color 0.3s;
 }
-/*Alertas*/
-
-/* Estilos generales de los párrafos */
-p {
-  font-size: 16px;
-  color: black;
-  font-family: arial;
-  padding: 10px;
-}
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center > .swal2-popup {
-  width: 28%; /* Se ajusta automáticamente */
-  max-width: 350px; /* Define un límite de ancho */
-}
-
-.custom-alert .tornillo,
-.custom-alert .moto,
-.custom-alert .llave {
-  width: 201px;
-  height: 145px;
-}
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-  position: relative;
-  display: inline-block;
-}
-
-.titulo-alerta {
-  font-size: 28px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10px;
-  font-family: "Arial Black", sans-serif;
-  letter-spacing: 1px;
-}
-
-.titulo-alerta.confirmacion {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #9b9496;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-.titulo-alerta.error {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #af3b3b;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-.titulo-alerta.advertencia {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #e09804;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.btn-aceptar {
-  background-color: #007bff !important;
-  color: white !important;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-}
-
-/* Botón de "Sí, eliminar" */
-.btn-eliminar {
-  border: 0;
-  border-radius: 1em;
-  background-color: #a10505; /* Rojo */
-  color: #fff;
-  font-size: 1em;
-}
-
-/* Botón de "Cancelar" */
-.btn-cancelar {
-  border: 0;
-  border-radius: 1em;
-  background-color: #54728d; /* Azul */
-  color: #fff;
-  font-size: 1em;
-}
-
-.swal2-border-radius {
-  border-radius: 5px !important;
-}
-
-.fondo-oscuro {
-  background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
-  backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-  border-radius: 20px;
-}
 
 /* Estilos específicos para la tabla de productos dentro del modal */
 .productos-table {
@@ -501,6 +397,48 @@ thead {
 
 .close i:hover {
   background: #c00a0a;
+}
+
+/*vantana para verificar que marca no se repita */
+input.invalid {
+  border: 2px solid #dc3545 !important;
+  background-color: #f8d7da;
+}
+
+.input-error-message {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translate(8px, -50%);
+  background: #f8d7da;
+  color: #721c24;
+  padding: 4px 8px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  font-size: 0.85em;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.input-error-message::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #f8d7da transparent transparent;
+}
+
+input.invalid + .input-error-message {
+  display: block;
+}
+
+#btnGuardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* MÓVILES */

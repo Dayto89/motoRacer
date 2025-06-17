@@ -15,13 +15,13 @@ if (!$conexion) {
 
 // --- Validación AJAX de nombre de categoría ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_nombre'])) {
-    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
-    $sql = "SELECT COUNT(*) as cnt FROM categoria WHERE nombre = '$nombre'";
-    $res = mysqli_query($conexion, $sql);
-    $row = mysqli_fetch_assoc($res);
-    // Si cnt > 0, ya existe
-    echo json_encode(['exists' => ($row['cnt'] > 0)]);
-    exit();
+  $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+  $sql = "SELECT COUNT(*) as cnt FROM categoria WHERE nombre = '$nombre'";
+  $res = mysqli_query($conexion, $sql);
+  $row = mysqli_fetch_assoc($res);
+  // Si cnt > 0, ya existe
+  echo json_encode(['exists' => ($row['cnt'] > 0)]);
+  exit();
 }
 
 // justo tras conectar a BD
@@ -270,14 +270,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="modal-content-nueva">
       <h2>Nueva categoría</h2>
       <form method="POST" action="">
-        <div class="form-group">
+        <div class="form-group" style="position: relative;">
           <label>Ingrese el nombre de la categoría:</label>
-          <input type="text" id="nombre" name="nombre" required
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            required
             oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+          <span id="nombre-error" class="input-error-message">
+            Esta categoría ya está registrada.
+          </span>
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelar">Cancelar</button>
-          <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
+          <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
         </div>
       </form>
     </div>
@@ -294,7 +301,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </div>
     </div>
   </div>
- <div class="userContainer">
+  <div class="userContainer">
     <div class="userInfo">
       <!-- Nombre y apellido del usuario y rol -->
       <!-- Consultar datos del usuario -->
@@ -324,7 +331,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
     </div>
-    </div>
+  </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // — Datos iniciales inyectados por PHP —
@@ -526,54 +533,61 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       renderTable();
     });
 
+    document.addEventListener('DOMContentLoaded', () => {
     // Obtener referencias
-const nombreInput = document.getElementById('nombre');
-const btnGuardar = document.getElementById('btnGuardar');
-let nombreValido = false;
+    const nombreInput = document.getElementById('nombre');
+    const btnGuardar = document.getElementById('btnGuardar');
+    const btnAbrirNuevaCategoria = document.getElementById('btnAbrirModal');
+    let nombreValido = false;
 
-// Función para validar en el servidor
-async function validarNombre(nombre) {
-  try {
-    const form = new URLSearchParams();
-    form.append('check_nombre', '1');
-    form.append('nombre', nombre.trim());
-    const res = await fetch('', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: form.toString()
+    // Función para validar en el servidor
+    async function validarNombre(nombre) {
+      try {
+        const form = new URLSearchParams();
+        form.append('check_nombre', '1');
+        form.append('nombre', nombre.trim());
+        const res = await fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: form.toString()
+        });
+        const json = await res.json();
+        return !json.exists; // true si NO existe aún
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+    }
+
+    // Listener en tiempo real
+    nombreInput.addEventListener('input', async () => {
+      const valor = nombreInput.value.trim();
+      if (!valor) {
+        nombreValido = false;
+      } else {
+        nombreValido = await validarNombre(valor);
+      }
+
+      if (!nombreValido) {
+        nombreInput.classList.add('invalid');
+      } else {
+        nombreInput.classList.remove('invalid');
+      }
+
+      btnGuardar.disabled = !nombreValido;
     });
-    const json = await res.json();
-    return !json.exists; // true si NO existe aún
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
 
-// Listener en tiempo real
-nombreInput.addEventListener('input', async () => {
-  const valor = nombreInput.value;
-  if (valor.trim().length === 0) {
-    nombreValido = false;
-  } else {
-    nombreValido = await validarNombre(valor);
-  }
-  // Aplica estilo
-  if (!nombreValido) {
-    nombreInput.classList.add('invalid');
-  } else {
-    nombreInput.classList.remove('invalid');
-  }
-  // Habilita/deshabilita botón
-  btnGuardar.disabled = !nombreValido;
-});
+    // Al abrir el modal, asegúrate de resetear estado
+    btnAbrirNuevaCategoria.addEventListener('click', () => {
+      nombreInput.value = '';
+      nombreInput.classList.remove('invalid');
+      btnGuardar.disabled = true;
+    });
 
-// Al abrir el modal, asegúrate de resetear estado
-btnAbrirNuevaCategoria.addEventListener('click', () => {
-  nombreInput.value = '';
-  nombreInput.classList.remove('invalid');
-  btnGuardar.disabled = true;
-});
+    // ... (aquí iría el resto de tu código de modales, paginación, etc.)
+  });
   </script>
 
 </body>
