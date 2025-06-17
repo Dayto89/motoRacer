@@ -1,765 +1,761 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: "Metal Mania", system-ui;
-    background-image: url('fondoMotoRacer.png');
-    background-size: cover;
-    background-position: center;
+  font-family: "Metal Mania", system-ui;
+  background-image: url("fondoMotoRacer.png");
+  background-size: cover;
+  background-position: center;
 }
 
 body::before {
-    position: fixed;
-    width: 200%;
-    height: 200%;
-    z-index: -1;
-    background: black;
-    opacity: 0.6;
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  z-index: -1;
+  background: black;
+  opacity: 0.6;
 }
 .main-content {
-    padding: 20px;
+  padding: 20px;
 
-    height: 100vh;
-    margin-right: 100px;
+  height: 95vh;
+  margin-right: 100px;
 }
 
 .main-content table {
-    filter: drop-shadow(0px 0px 10px #bebfc5);
-    margin-bottom: 20px;
+  filter: drop-shadow(0px 0px 10px #bebfc5);
+  margin-bottom: 20px;
 }
 
 .main-content h1 {
-    color: white;
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    font-family: "Metal Mania", system-ui;
-    font-size: 70px;
-    text-shadow:
-        7px -1px 0 #1c51a0,
-        1px -1px 0 #1c51a0,
-        -1px 1px 0 #1c51a0,
-        3px 5px 0 #1c51a0;
+  color: white;
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-family: "Metal Mania", system-ui;
+  font-size: 70px;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
 }
 
 .form-section {
-    padding: 0 10%;
+  padding: 0 10%;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    color: white;
-    margin-left: 60px;
-    font-family: Arial;
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+  margin-left: 60px;
+  font-family: Arial;
 }
 
 th,
 td {
-    border: 1px solid #666;
-    padding: 10px;
-    text-align: left;
+  border: 1px solid #666;
+  padding: 10px;
+  text-align: left;
 }
 
 th {
-    background-color: #444;
-    font-weight: bold;
-    text-align: center;
+  background-color: #444;
+  font-weight: bold;
+  text-align: center;
 }
 
 td {
-    background-color: #222;
-    text-align: center;
+  background-color: #222;
+  text-align: center;
 }
 
 .text-center {
-    font-size: 18px;
-    display: flex;
-    justify-content: center;
-    padding: 30px;
-    width: 100%;
-    height: 100%;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  width: 100%;
+  height: 100%;
 }
 
 .text-center i {
-    padding: 5px;
+  padding: 5px;
 }
 
 #eliminar {
-    color: rgb(255, 72, 72);
+  color: rgb(255, 72, 72);
 }
 
 input[type="checkbox"] {
-    transform: scale(1.5);
-    margin: 5px;
-    accent-color: rgb(31, 138, 226);
+  transform: scale(1.5);
+  margin: 5px;
+  accent-color: rgb(31, 138, 226);
 }
 
 #inventario {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ffffff;
-    text-shadow:
-        -1px -1px 0 #000,
-        1px -1px 0 #000,
-        -1px 1px 0 #000,
-        3px 3px 0 #000;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #ffffff;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
 }
 
 /* Ajustes para el título */
 .main-content h1 {
-    color: white;
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    font-family: "Metal Mania", system-ui;
-    font-size: 70px;
-    text-shadow:
-        7px -1px 0 #1c51a0,
-        1px -1px 0 #1c51a0,
-        -1px 1px 0 #1c51a0,
-        3px 5px 0 #1c51a0;
-
+  color: white;
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-family: "Metal Mania", system-ui;
+  font-size: 70px;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
 }
 
 /* Ajustes para el filter-bar */
 .filter-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    max-width: 74%;
-    margin-left: 12%;
-    padding: 10px;
-    border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-width: 74%;
+  margin-left: 12%;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 /* Ajustes para los elementos dentro del filter-bar */
 .filter-dropdown {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .filter-button {
-    padding: 8px 16px;
-    background-color:#0f6103;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
+  padding: 8px 16px;
+  background-color: #0f6103;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
 }
 
 .filter-button:hover {
-    background-color: #0d3f06;
+  background-color: #0d3f06;
 }
 
 .filter-options {
-    position: absolute;
-    background-color: #ffffffd4;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    padding: 10px;
-    border-radius: 4px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
+  position: absolute;
+  background-color: #ffffffd4;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
 }
 
 .search-form {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
 }
 
 input.form-control {
-    color: #0b111a;
-    font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
-    height: 34px;
-    border-radius: 12px;
-    width: 50%;
-    text-align: center;
-    border: none;
+  color: #0b111a;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 34px;
+  border-radius: 12px;
+  width: 50%;
+  text-align: center;
+  border: none;
 }
 
 .search-button {
-
-    background-color: #007BFF;
-    font-weight: bold;
-    color: white;
-    border: none;
-    padding: 8px 23px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 9px;
+  background-color: #007bff;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 9px;
 }
 
 .search-button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 .export-button {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .icon-button {
-    display: flex;
-    align-items: center;
-    padding: 7px 16px;
-    background-color: #0f6103;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #0f6103;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
 }
 .icon-button:hover {
-    background-color: #0d3f06;
+  background-color: #0d3f06;
 }
 
-
 .icon-button label:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .icon-button i {
-    margin-right: 10px;
-    /* Ajusta según necesites */
+  margin-right: 10px;
+  /* Ajusta según necesites */
 }
 
-
 .criteria-group {
-    display: flex;
-    flex-direction: column;
-    /* Alinea los elementos en columna */
-    gap: 5px;
-    /* Espacio entre los elementos */
+  display: flex;
+  flex-direction: column;
+  /* Alinea los elementos en columna */
+  gap: 5px;
+  /* Espacio entre los elementos */
 }
 
 .criteria-group label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    /* Espacio entre el checkbox y el texto */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  /* Espacio entre el checkbox y el texto */
 }
 
 /* Estilos básicos para el modal */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgb(0 0 0 / 78%);
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+.modal.show { display: flex; }
+.modal .modal-content {
+  transform: translateY(-50px);
+  opacity: 0;
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+}
+.modal.opening .modal-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+.modal.closing .modal-content {
+  transform: translateY(-50px);
+  opacity: 0;
 }
 
+
 .close {
-    position: absolute;
-    right: 31%;
-    top: 14%;
-    cursor: pointer;
-    font-size: 44px;
-    color: white;
-    margin-left: 13px;
+  position: absolute;
+  right: 31%;
+  top: 14%;
+  cursor: pointer;
+  font-size: 44px;
+  color: white;
+  margin-left: 13px;
 }
 
 .close i {
-    font-size: 15px;
-    color: #ffffff;
-    cursor: pointer;
-    transition: color 0.3sease-in-out;
-    border: 2px solid #ffffff;
-    padding: 8px;
-    border-radius: 50%;
+  font-size: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: color 0.3sease-in-out;
+  border: 2px solid #ffffff;
+  padding: 8px;
+  border-radius: 50%;
 }
 
 .close i:hover {
-    background: #c00a0a;
-    /* Cambia a rojo cuando pasas el mouse */
+  background: #c00a0a;
+  /* Cambia a rojo cuando pasas el mouse */
 }
 
 form#editForm {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 20px;
-    /* Ajusta el espacio entre columnas */
-    row-gap: 10px;
-    /* Ajusta el espacio entre filas */
-    align-items: center;
-    /* Alinea los elementos verticalmente */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  /* Ajusta el espacio entre columnas */
+  row-gap: 10px;
+  /* Ajusta el espacio entre filas */
+  align-items: center;
+  /* Alinea los elementos verticalmente */
 }
 
 #editForm label {
-    color: white;
-    font-size: 19px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: 2px 0 #1c51a0;
-    white-space: nowrap;
-    text-align: left;
-    /* Alinea el texto a la izquierda */
-    padding-right: 10px;
-    /* Añade espacio a la derecha */
-    margin-bottom: 5px;
-    /* Ajusta el margen inferior */
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+  text-align: left;
+  /* Alinea el texto a la izquierda */
+  padding-right: 10px;
+  /* Añade espacio a la derecha */
+  margin-bottom: 5px;
+  /* Ajusta el margen inferior */
 }
 
 form input[type="text"],
 #editForm select {
-    background-color: #ffffff;
-    border-radius: 23px;
-    height: 31px;
-    width: calc(100% - 34px);
-    /* Ajusta el ancho al tamaño del contenedor */
-    color: #000;
-    padding: 0 17px;
-    /* Añade espacio a la izquierda del input */
-    border: none;
-    font-size: 14px;
-    margin-bottom: 5px;
-    /* Ajusta el margen inferior */
+  background-color: #ffffff;
+  border-radius: 23px;
+  height: 31px;
+  width: calc(100% - 34px);
+  /* Ajusta el ancho al tamaño del contenedor */
+  color: #000;
+  padding: 0 17px;
+  /* Añade espacio a la izquierda del input */
+  border: none;
+  font-size: 14px;
+  margin-bottom: 5px;
+  /* Ajusta el margen inferior */
 }
 
 .modal-content {
-    width: 35%;
+  width: 35%;
 
-    text-align: center;
-    background-color: rgb(174 174 174 / 46%);
-    padding: 23px;
-    border-radius: 18px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 7%;
-    margin-left: 35%;
+  text-align: center;
+  background-color: rgb(174 174 174 / 46%);
+  padding: 23px;
+  border-radius: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 7%;
+  margin-left: 35%;
 }
 
 .modal-content h2 {
-    font-size: 38px;
-    margin-top: -5%;
-    color: white;
-    text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
-    margin-left: 13px;
-    letter-spacing: 5px;
-    padding: 16px;
+  font-size: 38px;
+  margin-top: -5%;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 16px;
 }
 
 .campo {
-    display: flex;
-    flex-direction: column;
-    width: 316px;
-    max-width: 101%;
-    padding: 10px;
-    margin-bottom: 1.5px;
+  display: flex;
+  flex-direction: column;
+  width: 316px;
+  max-width: 101%;
+  padding: 10px;
+  margin-bottom: 1.5px;
 }
 
 .campo label {
-    margin-bottom: 5px;
-    color: white;
-    font-size: 19px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: 2px 0 #1c51a0;
-    white-space: nowrap;
+  margin-bottom: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
 }
 
 .modal-boton {
-    margin-left: 19%;
-    margin-top: 4%;
+  margin-left: 19%;
+  margin-top: 4%;
 }
 
 #modal-boton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #007BFF;
-    font-weight: bold;
-    color: white;
-    border: none;
-    padding: 3px 4px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 18px;
-    transition: background-color 0.3sease;
-    margin-right: 6%;
-    width: 157px;
-    height: 47px;
-    display: flex;
-    text-decoration: none;
-    font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #007bff;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 3px 4px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 18px;
+  transition: background-color 0.3sease;
+  margin-right: 6%;
+  width: 157px;
+  height: 47px;
+  display: flex;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 #modal-boton:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 /* Barra lateral (Menú) */
 .sidebar {
-    width: 100px;
-    height: 100vh;
-    transition: width 0.3s ease;
-    overflow: hidden;
-    position: fixed;
-    left: 0;
-    top: 0;
+  width: 100px;
+  height: 100vh;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  position: fixed;
+  left: 0;
+  top: 0;
 }
 
 .sidebar:hover {
-    width: 270px;
+  width: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover~.main {
-    margin-left: 270px;
+.sidebar:hover ~ .main {
+  margin-left: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover~.main-content {
-    margin-left: 240px;
-    transition: margin-left 0.3s ease;
-    margin-right: 0px;
+.sidebar:hover ~ .main-content {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+  margin-right: 0px;
 }
 
 /* Contenido principal */
 .main-content {
-    padding: 20px;
-    transition: margin-left 0.3s ease;
-    height: 100vh;
-    margin-left: 85px;
-    /* Ajustado al tamaño inicial de la barra */
-    margin-right: 0px;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  height: 100vh;
+  margin-left: 85px;
+  /* Ajustado al tamaño inicial de la barra */
+  margin-right: 0px;
 }
 
 .main-content table {
-    width: auto;
-    /* Permite que la tabla ocupe solo el espacio necesario */
-    max-width: 100%;
-    /* Evita que se desborde */
-    table-layout: auto;
-    /* Permite que las columnas se ajusten según su contenido */
+  width: auto;
+  /* Permite que la tabla ocupe solo el espacio necesario */
+  max-width: 100%;
+  /* Evita que se desborde */
+  table-layout: auto;
+  /* Permite que las columnas se ajusten según su contenido */
 }
 
 .main-content table th,
 .main-content table td {
-    overflow-wrap: break-word;
-    /* Hace que el texto largo se divida en varias líneas */
-    word-break: break-word;
+  overflow-wrap: break-word;
+  /* Hace que el texto largo se divida en varias líneas */
+  word-break: break-word;
 }
 
 .main-content table {
-    width: auto;
-    max-width: 100%;
-    table-layout: fixed;
-    /* Fija el ancho de las columnas según lo especificado */
+  width: auto;
+  max-width: 100%;
+  table-layout: fixed;
+  /* Fija el ancho de las columnas según lo especificado */
 }
 
 .main-content table th:nth-child(1),
 .main-content table td:nth-child(1) {
-    width: 77px;
+  width: 77px;
 }
 
 .main-content table th:nth-child(2),
 .main-content table td:nth-child(2) {
-    width: 77px;
+  width: 77px;
 }
 
 .main-content table th:nth-child(3),
 .main-content table td:nth-child(3) {
-    width: 82px;
+  width: 82px;
 }
 
 .main-content table th:nth-child(4),
 .main-content table td:nth-child(4) {
-    width: 44px;
+  width: 44px;
 }
 
 .main-content table th:nth-child(5),
 .main-content table td:nth-child(5) {
-    width: 100px;
+  width: 100px;
 }
 
 .main-content table th:nth-child(6),
 .main-content table td:nth-child(6) {
-    width: 100px;
+  width: 100px;
 }
 
 .main-content table th:nth-child(7),
 .main-content table td:nth-child(7) {
-    width: 100px;
+  width: 100px;
 }
 
 .main-content table th:nth-child(8),
 .main-content table td:nth-child(8) {
-    width: 90px;
+  width: 90px;
 }
 
 .main-content table th:nth-child(9),
 .main-content table td:nth-child(9) {
-    width: 200px;
+  width: 200px;
 }
 
 .main-content table th:nth-child(10),
 .main-content table td:nth-child(10) {
-    width: 95px;
+  width: 95px;
 }
 
 .main-content table th:nth-child(11),
 .main-content table td:nth-child(11) {
-    width: 80px;
+  width: 80px;
 }
 
 .main-content table th:nth-child(12),
 .main-content table td:nth-child(12) {
-    width: 100px;
+  width: 100px;
 }
 
 .main-content table th:nth-child(13),
 .main-content table td:nth-child(13) {
-    width: 100px;
+  width: 100px;
 }
 
 .main-content table th:nth-child(14),
 .main-content table td:nth-child(14) {
-    width: 110px;
+  width: 110px;
 }
 
 .main-content table th:nth-child(15),
 .main-content table td:nth-child(15) {
-    width: 150px;
+  width: 150px;
 }
 
 .edit-button,
 .delete-button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edit-button i,
 .delete-button i {
-    font-size: 20px;
-    /* Tamaño del ícono */
-    color: #ffffff;
-    /* Color del ícono */
-    border: 2px solid transparent;
-    /* Inicialmente sin borde */
-    padding: 5px;
-    /* Espacio interno */
-    border-radius: 50%;
-    /* Hace el borde circular */
-    transition: all 0.3s ease-in-out;
-    /* Animación suave */
+  font-size: 20px;
+  /* Tamaño del ícono */
+  color: #ffffff;
+  /* Color del ícono */
+  border: 2px solid transparent;
+  /* Inicialmente sin borde */
+  padding: 5px;
+  /* Espacio interno */
+  border-radius: 50%;
+  /* Hace el borde circular */
+  transition: all 0.3s ease-in-out;
+  /* Animación suave */
 }
 
 .edit-button i:hover {
-    color: #ffffff;
-    /* Mantiene el color del ícono */
-    background-color: #0c68a5;
-    /* Fondo azul al hacer hover */
-    border: 2px solid #ffffff;
-    /* Borde blanco */
+  color: #ffffff;
+  /* Mantiene el color del ícono */
+  background-color: #0c68a5;
+  /* Fondo azul al hacer hover */
+  border: 2px solid #ffffff;
+  /* Borde blanco */
 }
 
 .delete-button i:hover {
-    color: #ffffff;
-    /* Mantiene el color del ícono */
-    background-color: #d11212;
-    /* Fondo rojo al hacer hover */
-    border: 2px solid #ffffff;
-    /* Borde blanco */
+  color: #ffffff;
+  /* Mantiene el color del ícono */
+  background-color: #d11212;
+  /* Fondo rojo al hacer hover */
+  border: 2px solid #ffffff;
+  /* Borde blanco */
 }
 
 #delete-selected {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #delete-selected i {
-    font-size: 20px;
-    /* Tamaño del ícono */
-    color: #ffffff;
-    /* Color del ícono */
-    border: 2px solid transparent;
-    /* Inicialmente sin borde */
-    padding: 5px;
-    /* Espacio interno */
-    border-radius: 50%;
-    /* Hace el borde circular */
-    transition: all 0.3s ease-in-out;
-    /* Animación suave */
+  font-size: 20px;
+  /* Tamaño del ícono */
+  color: #ffffff;
+  /* Color del ícono */
+  border: 2px solid transparent;
+  /* Inicialmente sin borde */
+  padding: 5px;
+  /* Espacio interno */
+  border-radius: 50%;
+  /* Hace el borde circular */
+  transition: all 0.3s ease-in-out;
+  /* Animación suave */
 }
 
 #delete-selected i:hover {
-    color: #ffffff;
-    /* Mantiene el color del ícono */
-    background-color: #d11212;
-    /* Fondo rojo al hacer hover */
-    border: 2px solid #ffffff;
-    /* Borde blanco */
+  color: #ffffff;
+  /* Mantiene el color del ícono */
+  background-color: #d11212;
+  /* Fondo rojo al hacer hover */
+  border: 2px solid #ffffff;
+  /* Borde blanco */
 }
 
 .table-wrapper {
-  display: block;           /* forzar bloque para overflow */
-  width: 100%;              /* ocupar ancho completo del contenedor padre */
-  overflow-x: auto;         /* scroll horizontal cuando haga falta */
+  display: block; /* forzar bloque para overflow */
+  width: 100%; /* ocupar ancho completo del contenedor padre */
+  overflow-x: auto; /* scroll horizontal cuando haga falta */
   -webkit-overflow-scrolling: touch; /* suavizar en iOS */
+  margin-left: 7%;
 }
-#editCodigo1Visible{
-      border: #ffffff solid 1px;
-    background-color: #ffffff42;
-} 
+#editCodigo1Visible {
+  border: #ffffff solid 1px;
+  background-color: #ffffff42;
+}
 
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
+  /* Contenedor general (sin scroll por defecto) */
+  .table-wrapper {
+    overflow-x: auto;
+    /* Scroll horizontal siempre que la tabla desborde */
+    -webkit-overflow-scrolling: touch;
+    /* Scroll suave en iOS */
+  }
 
-    /* Contenedor general (sin scroll por defecto) */
-    .table-wrapper {
-        overflow-x: auto;
-        /* Scroll horizontal siempre que la tabla desborde */
-        -webkit-overflow-scrolling: touch;
-        /* Scroll suave en iOS */
-    }
+  .table-wrapper table {
+    width: 100%;
+    /* Que la tabla mida lo que necesite */
+    min-width: 100%;
+    /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+    table-layout: auto;
+    /* Que las columnas tomen el ancho de su contenido */
+  }
 
-    .table-wrapper table {
-        width: 100%;
-        /* Que la tabla mida lo que necesite */
-        min-width: 100%;
-        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
-        table-layout: auto;
-        /* Que las columnas tomen el ancho de su contenido */
-    }
+  .table-wrapper th,
+  .table-wrapper td {
+    white-space: nowrap;
+    /* Evita que el texto salte líneas */
+  }
 
-    .table-wrapper th,
-    .table-wrapper td {
-        white-space: nowrap;
-        /* Evita que el texto salte líneas */
-    }
+  .main-content {
+    margin-left: 0%;
+  }
 
-    .main-content {
-        margin-left: 0%;
-    }
+  .sidebar:hover ~ .main-content {
+    margin-left: 0%;
+    transition: none;
+    margin-right: 0px;
+  }
 
-    .sidebar:hover~.main-content {
-        margin-left: 0%;
-        transition: none;
-        margin-right: 0px;
-    }
-
-    table {
-        margin-left: 0%;
-    }
-
+  table {
+    margin-left: 0%;
+  }
 }
 
 /* Vertical */
 @media screen and (max-width: 870px) and (orientation: portrait) {
+  /* Contenedor general (sin scroll por defecto) */
+  .table-wrapper {
+    overflow-x: auto;
+    /* Scroll horizontal siempre que la tabla desborde */
+    -webkit-overflow-scrolling: touch;
+    /* Scroll suave en iOS */
+    overflow: visible;
+  }
 
-    /* Contenedor general (sin scroll por defecto) */
-    .table-wrapper {
-        overflow-x: auto;
-        /* Scroll horizontal siempre que la tabla desborde */
-        -webkit-overflow-scrolling: touch;
-        /* Scroll suave en iOS */
-        overflow: visible;
-    }
+  .table-wrapper table {
+    width: 100%;
+    /* Que la tabla mida lo que necesite */
+    min-width: 100%;
+    /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+    table-layout: auto;
+    /* Que las columnas tomen el ancho de su contenido */
+  }
 
-    .table-wrapper table {
-        width: 100%;
-        /* Que la tabla mida lo que necesite */
-        min-width: 100%;
-        /* Ajusta este valor al ancho “real” mínimo que quieras ver */
-        table-layout: auto;
-        /* Que las columnas tomen el ancho de su contenido */
-    }
+  .table-wrapper th,
+  .table-wrapper td {
+    white-space: nowrap;
+    /* Evita que el texto salte líneas */
+  }
 
-    .table-wrapper th,
-    .table-wrapper td {
-        white-space: nowrap;
-        /* Evita que el texto salte líneas */
-    }
+  .main-content {
+    margin-left: 15%;
+    padding: 50px 0px 0px 15px;
+  }
 
-    .main-content {
-        margin-left: 15%;
-        padding: 50px 0px 0px 15px;
-    }
+  .sidebar:hover ~ .main-content {
+    margin-left: 15%;
+    transition: none;
+    margin-right: 0px;
+  }
 
-    .sidebar:hover~.main-content {
-        margin-left: 15%;
-        transition: none;
-        margin-right: 0px;
-    }
+  table {
+    margin-left: 0%;
+  }
 
-    table {
-        margin-left: 0%;
-    }
+  .table-wrapper {
+    overflow-x: auto;
+  }
 
-    .table-wrapper {
-        overflow-x: auto;
-    }
+  .table-wrapper table {
+    min-width: 500px;
+    /* o el ancho necesario para mostrar TODAS las columnas sin romper */
+  }
 
-    .table-wrapper table {
-        min-width: 500px;
-        /* o el ancho necesario para mostrar TODAS las columnas sin romper */
-    }
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    /* para que ocupen todo el ancho disponible */
+    gap: 8px;
+    /* espacio entre filas */
+    padding: 10px 5%;
+  }
 
-    .filter-bar {
-        flex-direction: column;
-        align-items: stretch;
-        /* para que ocupen todo el ancho disponible */
-        gap: 8px;
-        /* espacio entre filas */
-        padding: 10px 5%;
-    }
+  .filter-bar > * {
+    width: 100%;
+    /* cada elemento ocupa ancho completo */
+    text-align: center;
+    /* opcional: centrar texto/botones */
+  }
 
-    .filter-bar>* {
-        width: 100%;
-        /* cada elemento ocupa ancho completo */
-        text-align: center;
-        /* opcional: centrar texto/botones */
-    }
+  /* Ajustes específicos si quieres distancias distintas */
+  .filter-bar .search-form {
+    display: flex;
+    gap: 5px;
+  }
 
-    /* Ajustes específicos si quieres distancias distintas */
-    .filter-bar .search-form {
-        display: flex;
-        gap: 5px;
-    }
+  .filter-bar input.form-control {
+    flex-grow: 1;
+    width: 100%;
+  }
 
-    .filter-bar input.form-control {
-        flex-grow: 1;
-        width: 100%;
-    }
+  .export-button {
+    width: 100%;
+  }
 
-    .export-button {
-        width: 100%;
-    }
-
-    .icon-button {
-        width: 100%;
-        justify-content: center;
-    }
-
-
-
-
+  .icon-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
-
 
 /* TABLETS */
 /* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {}
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+}
 
 /* Vertical */
-@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {}
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+}

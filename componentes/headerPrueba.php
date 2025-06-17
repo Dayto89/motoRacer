@@ -231,6 +231,8 @@ $sectionColors = [
       <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
     <?php endif; ?>
   </div>
+  
 </body>
+
 
 </html>

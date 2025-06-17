@@ -13,6 +13,17 @@ if (!$conexion) {
   die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 
+// --- Validación AJAX de nombre de categoría ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_nombre'])) {
+    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $sql = "SELECT COUNT(*) as cnt FROM categoria WHERE nombre = '$nombre'";
+    $res = mysqli_query($conexion, $sql);
+    $row = mysqli_fetch_assoc($res);
+    // Si cnt > 0, ya existe
+    echo json_encode(['exists' => ($row['cnt'] > 0)]);
+    exit();
+}
+
 // justo tras conectar a BD
 $allQ = "SELECT codigo,nombre FROM categoria c";
 if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
@@ -208,6 +219,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+  <?php include 'boton-ayuda.php'; ?>
   <?php
   // Justo después de tu conexión y filtros:
   $allQ = "SELECT id,mensaje,descripcion,fecha,leida FROM notificaciones n";
@@ -282,34 +294,37 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </div>
     </div>
   </div>
-  <div class="userInfo">
-    <!-- Nombre y apellido del usuario y rol -->
-    <!-- Consultar datos del usuario -->
-    <?php
-    $id_usuario = $_SESSION['usuario_id'];
-    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-    $stmtUsuario = $conexion->prepare($sqlUsuario);
-    $stmtUsuario->bind_param("i", $id_usuario);
-    $stmtUsuario->execute();
-    $resultUsuario = $stmtUsuario->get_result();
-    $rowUsuario = $resultUsuario->fetch_assoc();
-    $nombreUsuario = $rowUsuario['nombre'];
-    $apellidoUsuario = $rowUsuario['apellido'];
-    $rol = $rowUsuario['rol'];
-    $foto = $rowUsuario['foto'];
-    $stmtUsuario->close();
-    ?>
-    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-    <p class="rol">Rol: <?php echo $rol; ?></p>
+ <div class="userContainer">
+    <div class="userInfo">
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
 
-  </div>
-  <div class="profilePic">
-    <?php if (!empty($rowUsuario['foto'])): ?>
-      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-    <?php else: ?>
-      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-    <?php endif; ?>
-  </div>
+    </div>
+    <div class="profilePic">
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
+    </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // — Datos iniciales inyectados por PHP —
@@ -510,6 +525,55 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       // inicializar
       renderTable();
     });
+
+    // Obtener referencias
+const nombreInput = document.getElementById('nombre');
+const btnGuardar = document.getElementById('btnGuardar');
+let nombreValido = false;
+
+// Función para validar en el servidor
+async function validarNombre(nombre) {
+  try {
+    const form = new URLSearchParams();
+    form.append('check_nombre', '1');
+    form.append('nombre', nombre.trim());
+    const res = await fetch('', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: form.toString()
+    });
+    const json = await res.json();
+    return !json.exists; // true si NO existe aún
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+// Listener en tiempo real
+nombreInput.addEventListener('input', async () => {
+  const valor = nombreInput.value;
+  if (valor.trim().length === 0) {
+    nombreValido = false;
+  } else {
+    nombreValido = await validarNombre(valor);
+  }
+  // Aplica estilo
+  if (!nombreValido) {
+    nombreInput.classList.add('invalid');
+  } else {
+    nombreInput.classList.remove('invalid');
+  }
+  // Habilita/deshabilita botón
+  btnGuardar.disabled = !nombreValido;
+});
+
+// Al abrir el modal, asegúrate de resetear estado
+btnAbrirNuevaCategoria.addEventListener('click', () => {
+  nombreInput.value = '';
+  nombreInput.classList.remove('invalid');
+  btnGuardar.disabled = true;
+});
   </script>
 
 </body>

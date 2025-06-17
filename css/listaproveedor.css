@@ -468,7 +468,6 @@ form input[type="text"],
   width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
   max-width: 100%; /* Evita que se desborde */
   table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
-  margin-left: 214px;
 }
 
 .main-content table th,
@@ -848,4 +847,9 @@ input.error {
   margin-left: 13px;
   letter-spacing: 5px;
   padding: 28px;
+}
+#searchRealtime{
+  font-size: 16px;
+  padding: 8px 23px;
+  border-radius: 9px;
 }

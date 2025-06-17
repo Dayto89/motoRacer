@@ -443,7 +443,7 @@ a.brand {
 
 /* Contenedor de la lista con scroll */
 .resumen-scroll {
-    max-height: 70%;
+    max-height: 55%;
     overflow-y: auto;
 }
 

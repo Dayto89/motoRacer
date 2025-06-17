@@ -178,7 +178,6 @@ label {
 }
 
 #product-form button {
-  border: 20px #ffffff;
   cursor: pointer;
 }
 
@@ -871,28 +870,19 @@ input.error {
 .modal_nueva_categoria {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
-  z-index: 1000;        
-  align-items: center;
-  justify-content: center;
-  
+  z-index: 1000;
 }
 .modal_nueva_categoria.show {
   display: flex;
-  opacity: 1;
-  transform: translateY(0);
-  visibility: visible;
+  /* deja que siga oculto internamente hasta que JS agregue opening */
 }
 
-/* Contenedor blanco con esquinas redondeadas */
+/* Contenedor blanco */
 .modal-content-nueva {
-  position: relative;
   background-color: rgba(200, 200, 200, 0.76);
   border-radius: 8px;
   width: 400px;
@@ -900,10 +890,13 @@ input.error {
   padding: 20px 24px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   text-align: center;
-  height: 28%;
-    transform: none;
-  opacity: 1;
-  transition: none;
+  
+  /* punto de partida para animaciones */
+  transform: translateY(-50px);
+  opacity: 0;
+  
+  /* declaramos la transición */
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
 }
 
 /* Título con fuente decorativa y color azul */
@@ -934,7 +927,7 @@ font-size: 32px;
   border-radius: 23px;
   box-sizing: border-box;
   margin-top: 8%;
-    height: 16%;
+    height: 3.8%;
 }
 
 /* Botonera centrada con gap */
@@ -943,7 +936,7 @@ font-size: 32px;
   justify-content: center;
   gap: 34px;
   margin-top: 6%;
-  height: 16%;
+  height: 4%;
 }
 
 /* Botón rojo de cancelar */
@@ -990,13 +983,12 @@ font-size: 32px;
 .modal_nueva_categoria.opening .modal-content-nueva {
   transform: translateY(0);
   opacity: 1;
-  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
 }
 
+/* Al cerrar: movemos 50px hacia arriba y fade-out */
 .modal_nueva_categoria.closing .modal-content-nueva {
   transform: translateY(-50px);
   opacity: 0;
-  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
 }
 .add-button {
   display: inline-flex;
@@ -1008,17 +1000,13 @@ font-size: 32px;
   margin-left: 0.5rem;        /* separa un poco del label */
   border: 2px solid #306b2f;  /* color verde oscuro */
   border-radius: 4px;         /* bordes levemente redondeados */
-  background-color: white;
+  background-color: #ffffffab;
   color: #306b2f;             /* mismo verde para el icono */
   font-size: 1rem;            /* tamaño del icono */
   cursor: pointer;
   transition: background-color .2s, color .2s;
 }
 
-.add-button:hover {
-  background-color: #306b2f;  /* al pasar el ratón, fondo verde */
-  color: white;               /* “+” en blanco */
-}
 
 /* Opcional: quitar outline feo al hacer focus */
 .add-button:focus {

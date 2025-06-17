@@ -60,6 +60,7 @@ while ($fila = mysqli_fetch_assoc($resultado)) {
 // 2) ACTUALIZAR (POST) Y ELIMINAR (AJAX) SIN CAMBIOS
 // ——————————————————————————————————————————————————————————
 
+
 if (isset($_POST['codigo1'])) {
   $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
   $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
@@ -88,7 +89,7 @@ if (isset($_POST['codigo1'])) {
         Ubicacion_codigo = '$ubicacion', 
         Proveedor_nit = '$proveedor' 
         WHERE codigo1 = '$codigo1'";
-  
+
   if (mysqli_query($conexion, $consulta_update)) {
     header("Location: listaproductos.php?actualizado=1");
     exit;
@@ -153,7 +154,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <?php if (isset($_GET['actualizado']) && $_GET['actualizado'] == 1): ?>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
       Swal.fire({
         title: '<span class="titulo-alerta confirmacion">Éxito</span>',
         html: `
@@ -235,13 +236,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     /* Input para búsqueda en tiempo real */
-    #searchRealtime {
-      width: 200px;
-      padding: 5px 8px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
+  #searchRealtime {
+    width: 18%;
+    padding: 5px 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height: 34px;
+}
 
     /* Botón eliminar múltiple */
     #delete-selected {
@@ -255,7 +257,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       margin-top: 23px;
       gap: 12px;
       font-family: arial;
-      font-size: 11px;
+      font-size: 14px;
     }
 
     .pagination-dinamica button {
@@ -937,60 +939,60 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     // función de filtrado (tú ya la tienes, aquí solo agregas lectura de checks)
-function applyFilter() {
-  const q = document.getElementById('searchRealtime').value.trim().toLowerCase();
-  const selCats   = Array.from(document.querySelectorAll('input[name="filtrosCat[]"]:checked')).map(cb=>cb.value);
-  const selMarcas = Array.from(document.querySelectorAll('input[name="filtrosMarca[]"]:checked')).map(cb=>cb.value);
-  const selUbics  = Array.from(document.querySelectorAll('input[name="filtrosUbic[]"]:checked')).map(cb=>cb.value);
-  const selProvs  = Array.from(document.querySelectorAll('input[name="filtrosProv[]"]:checked')).map(cb=>cb.value);
+    function applyFilter() {
+      const q = document.getElementById('searchRealtime').value.trim().toLowerCase();
+      const selCats = Array.from(document.querySelectorAll('input[name="filtrosCat[]"]:checked')).map(cb => cb.value);
+      const selMarcas = Array.from(document.querySelectorAll('input[name="filtrosMarca[]"]:checked')).map(cb => cb.value);
+      const selUbics = Array.from(document.querySelectorAll('input[name="filtrosUbic[]"]:checked')).map(cb => cb.value);
+      const selProvs = Array.from(document.querySelectorAll('input[name="filtrosProv[]"]:checked')).map(cb => cb.value);
 
-  filteredData = allData.filter(item => {
-    // búsqueda global
-    const comp = (
-      item.codigo1 + ' '+
-      item.codigo2 + ' '+
-      item.nombre + ' '+
-      item.categoria + ' '+
-      item.marca + ' '+
-      item.ubicacion + ' '+
-      item.proveedor
-    ).toLowerCase();
-    if (!comp.includes(q)) return false;
+      filteredData = allData.filter(item => {
+        // búsqueda global
+        const comp = (
+          item.codigo1 + ' ' +
+          item.codigo2 + ' ' +
+          item.nombre + ' ' +
+          item.categoria + ' ' +
+          item.marca + ' ' +
+          item.ubicacion + ' ' +
+          item.proveedor
+        ).toLowerCase();
+        if (!comp.includes(q)) return false;
 
-    if (selCats.length && !selCats.includes(item.categoria_id)) return false;
-    if (selMarcas.length && !selMarcas.includes(item.marca_id))   return false;
-    if (selUbics.length  && !selUbics.includes(item.ubicacion_id))return false;
-    if (selProvs.length  && !selProvs.includes(item.proveedor_id))return false;
+        if (selCats.length && !selCats.includes(item.categoria_id)) return false;
+        if (selMarcas.length && !selMarcas.includes(item.marca_id)) return false;
+        if (selUbics.length && !selUbics.includes(item.ubicacion_id)) return false;
+        if (selProvs.length && !selProvs.includes(item.proveedor_id)) return false;
 
-    return true;
-  });
+        return true;
+      });
 
-  currentPage = 1;
-  renderTable();
-}
+      currentPage = 1;
+      renderTable();
+    }
 
-// listeners
-document.getElementById('searchRealtime')
-        .addEventListener('input', applyFilter);
+    // listeners
+    document.getElementById('searchRealtime')
+      .addEventListener('input', applyFilter);
 
-document.querySelectorAll(
-  'input[name="filtrosCat[]"], '+
-  'input[name="filtrosMarca[]"], '+
-  'input[name="filtrosUbic[]"], '+
-  'input[name="filtrosProv[]"]'
-).forEach(cb=>cb.addEventListener('change', applyFilter));
+    document.querySelectorAll(
+      'input[name="filtrosCat[]"], ' +
+      'input[name="filtrosMarca[]"], ' +
+      'input[name="filtrosUbic[]"], ' +
+      'input[name="filtrosProv[]"]'
+    ).forEach(cb => cb.addEventListener('change', applyFilter));
 
-// limpiar
-document.getElementById('btnClear').addEventListener('click', () => {
-  document.querySelectorAll(
-    'input[name="filtrosCat[]"], '+
-    'input[name="filtrosMarca[]"], '+
-    'input[name="filtrosUbic[]"], '+
-    'input[name="filtrosProv[]"]'
-  ).forEach(cb=>cb.checked=false);
-  document.getElementById('searchRealtime').value = '';
-  applyFilter();
-});
+    // limpiar
+    document.getElementById('btnClear').addEventListener('click', () => {
+      document.querySelectorAll(
+        'input[name="filtrosCat[]"], ' +
+        'input[name="filtrosMarca[]"], ' +
+        'input[name="filtrosUbic[]"], ' +
+        'input[name="filtrosProv[]"]'
+      ).forEach(cb => cb.checked = false);
+      document.getElementById('searchRealtime').value = '';
+      applyFilter();
+    });
     // ============================================================
     // 4) ORDENAMIENTO POR COLUMNAS: clic en <th>
     // ============================================================
@@ -1230,33 +1232,37 @@ document.getElementById('btnClear').addEventListener('click', () => {
     });
     /*ANIMACIONES*/
   </script>
+<div class="userContainer">
+    <div class="userInfo">
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
 
-  <div class="userInfo">
-    <?php
-    $conexion2 = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-    $id_usuario = $_SESSION['usuario_id'];
-    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-    $stmtUsuario = $conexion2->prepare($sqlUsuario);
-    $stmtUsuario->bind_param("i", $id_usuario);
-    $stmtUsuario->execute();
-    $resultUsuario = $stmtUsuario->get_result();
-    $rowUsuario = $resultUsuario->fetch_assoc();
-    $nombreUsuario = $rowUsuario['nombre'];
-    $apellidoUsuario = $rowUsuario['apellido'];
-    $rol = $rowUsuario['rol'];
-    $foto = $rowUsuario['foto'];
-    $stmtUsuario->close();
-    ?>
-    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-    <p class="rol">Rol: <?php echo $rol; ?></p>
-  </div>
-  <div class="profilePic">
-    <?php if (!empty($rowUsuario['foto'])): ?>
-      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-    <?php else: ?>
-      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-    <?php endif; ?>
-  </div>
+    </div>
+    <div class="profilePic">
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
+    </div>
 </body>
 
 </html>

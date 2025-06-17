@@ -32,7 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
     $apellido = mysqli_real_escape_string($conexion, $_POST['apellido']);
     $celular = mysqli_real_escape_string($conexion, $_POST['celular']);
-    $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+    if (empty($_POST['correo'])) {
+        // usamos el correo que cargamos al inicio ($usuario['correo'])
+        $correo = $usuario['correo'];
+    } else {
+        $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+    }
     // Chequear duplicado de correo en otros usuarios
     $check = mysqli_query($conexion, "SELECT COUNT(*) AS cnt FROM usuario WHERE correo = '$correo' AND identificacion <> '$usuarioId'");
     $rowCheck = mysqli_fetch_assoc($check);
@@ -71,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_close($conexion);
         exit();
     }
+
 
     // Verificar si se subió una imagen
     if (!empty($_FILES['foto']['tmp_name'])) {
@@ -530,34 +536,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
         });
     </script>
+  <div class="userContainer">
     <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
-        <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-        $id_usuario = $_SESSION['usuario_id'];
-        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
-        $nombreUsuario = $rowUsuario['nombre'];
-        $apellidoUsuario = $rowUsuario['apellido'];
-        $rol = $rowUsuario['rol'];
-        $foto = $rowUsuario['foto'];
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
 
     </div>
     <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
     </div>
 </body>
 

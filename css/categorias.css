@@ -407,6 +407,16 @@ input[type="text"] {
   background: #c00a0a;
 }
 
+/* Marca el input como inválido */
+input.invalid {
+  border: 2px solid #dc3545 !important; /* rojo Bootstrap */
+  background-color: #f8d7da;
+}
+#btnGuardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

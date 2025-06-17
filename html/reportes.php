@@ -512,7 +512,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
       });
     </script>
-
+<div class="userContainer">
     <div class="userInfo">
       <!-- Nombre y apellido del usuario y rol -->
       <!-- Consultar datos del usuario -->
@@ -541,6 +541,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <?php else: ?>
         <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
+    </div>
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
@@ -770,6 +771,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
         renderTable();
+      });
+      // Cerrar el filtro (details) si se hace clic fuera
+      document.addEventListener('click', function(e) {
+        const filterDropdown = document.querySelector('.filter-dropdown');
+        // Si el <details> está abierto y se hizo clic fuera de él
+        if (filterDropdown && filterDropdown.open && !filterDropdown.contains(e.target)) {
+          filterDropdown.removeAttribute('open');
+        }
       });
     </script>
 </body>

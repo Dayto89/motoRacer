@@ -37,11 +37,13 @@ if (isset($_POST['cobrar'])) {
             $nombre   = $producto['nombre'];
             $precio   = (float) $producto['precio'];
             $cantidad = (int)   $producto['cantidad'];
+            $tipo     = $producto['tipo'];
             $productos[] = [
                 'id'       => $id,
                 'nombre'   => $nombre,
                 'precio'   => $precio,
-                'cantidad' => $cantidad
+                'cantidad' => $cantidad,
+                'tipo'     => $tipo
             ];
             $total += $precio * $cantidad;
         }
@@ -102,6 +104,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+    <?php include 'boton-ayuda.php'; ?>
     <script>
         // Esto estará disponible para filtrar en cliente:
         const allProducts = <?php echo json_encode($allProducts, JSON_HEX_TAG); ?>;
@@ -182,6 +185,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <script>
+        let precioTipo = null;
         // 1) Si vienes de ventas.php o de prueba.php, NO borres; 
         //    en cualquier otro caso, sí.
         const ref = document.referrer;
@@ -315,7 +319,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     id: li.dataset.id,
                     nombre: li.dataset.nombre,
                     precio: parseFloat(li.dataset.precio),
-                    cantidad: parseInt(li.dataset.cantidad)
+                    cantidad: parseInt(li.dataset.cantidad),
+                    tipo: li.dataset.tipo
                 });
             });
             let form = document.createElement('form');
@@ -327,6 +332,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 form.innerHTML += `<input type="hidden" name="productos[${i}][nombre]" value="${p.nombre}">`;
                 form.innerHTML += `<input type="hidden" name="productos[${i}][precio]" value="${p.precio}">`;
                 form.innerHTML += `<input type="hidden" name="productos[${i}][cantidad]" value="${p.cantidad}">`;
+                    form.innerHTML += `<input type="hidden" name="productos[${i}][tipo]" value="${p.tipo}">`;
             });
             document.body.appendChild(form);
             form.submit();
@@ -340,6 +346,27 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             const select = el.querySelector('.price-selector');
             const tipoActual = select.selectedIndex === 0 ? 'taller' : 'publico';
             const precioSel = parseFloat(select.value);
+            const listado = document.getElementById('listaResumen');
+
+            console.log(
+                '[DEBUG] intentar agregar:',
+                'tipoActual=', tipoActual,
+                'precioTipo=', precioTipo,
+                'itemsEnResumen=', document.getElementById('listaResumen').children.length
+            );
+
+            // Si precioTipo no es ni 'taller' ni 'publico', lo inicializamos
+            if (precioTipo !== 'taller' && precioTipo !== 'publico') {
+                precioTipo = tipoActual;
+                console.log('[DEBUG] precioTipo inicializado a', precioTipo);
+            } else if (tipoActual !== precioTipo) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Tipos de precio mixtos',
+                    text: 'No puedes mezclar Precio Taller y Precio Público en la misma venta.'
+                });
+                return;
+            }
 
             // ③ Si ya hay productos, comprueba contra precioTipo
             const list = document.getElementById('listaResumen');
@@ -381,6 +408,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 if (li.dataset.id === id && parseFloat(li.dataset.precio) === precio) {
                     let c = parseInt(li.dataset.cantidad) + 1;
                     li.dataset.cantidad = c;
+                    li.dataset.tipo = tipoActual;
                     li.innerHTML = `${nombre} x${c} - $${(precio*c).toLocaleString()}`;
                     found = true;
                 }
@@ -390,6 +418,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 li.dataset.id = id;
                 li.dataset.nombre = nombre;
                 li.dataset.precio = precio;
+                li.dataset.tipo = tipoActual;
                 li.dataset.cantidad = 1;
                 li.innerHTML = `${nombre} x1 - $${precio.toLocaleString()}`;
                 lista.appendChild(li);
@@ -435,8 +464,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     ctr.style.display = count > 0 ? 'block' : 'none';
                 }
             });
-
-            total -= precio;
             document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
 
             // Si ya no quedan productos, reinicia precioTipo
@@ -453,7 +480,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 id: li.dataset.id,
                 nombre: li.dataset.nombre,
                 precio: parseFloat(li.dataset.precio),
-                cantidad: parseInt(li.dataset.cantidad)
+                cantidad: parseInt(li.dataset.cantidad),
+                tipo: li.dataset.tipo
             }));
             sessionStorage.setItem('carritoProductos', JSON.stringify(items));
             sessionStorage.setItem('carritoTotal', total);
@@ -473,6 +501,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     li.dataset.nombre = item.nombre;
                     li.dataset.precio = item.precio;
                     li.dataset.cantidad = item.cantidad;
+                    li.dataset.tipo = item.tipo;
                     li.innerHTML = `${item.nombre} x${item.cantidad} - $${(item.precio*item.cantidad).toLocaleString()}`;
                     lista.appendChild(li);
                     // ajustar tarjeta
@@ -493,6 +522,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         }
                     }
                 });
+                // ← Fija el precioTipo al tipo del primer <li>
+                if (lista.children.length > 0) {
+                    precioTipo = lista.children[0].dataset.tipo;
+                    console.log('[DEBUG] precioTipo restaurado a', precioTipo);
+                }
             }
         });
         document.addEventListener('click', function(e) {
@@ -513,27 +547,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
         renderProducts();
     </script>
-
-
+<div class="userContainer">
     <div class="userInfo">
-        <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-        $id_usuario = $_SESSION['usuario_id'];
-        $stmtUsuario = $conexion->prepare("SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?");
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $rowUsuario = $stmtUsuario->get_result()->fetch_assoc();
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?= htmlspecialchars($rowUsuario['nombre']) ?> <?= htmlspecialchars($rowUsuario['apellido']) ?></p>
-        <p class="rol">Rol: <?= htmlspecialchars($rowUsuario['rol']) ?></p>
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
+
     </div>
     <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img src="data:image/jpeg;base64,<?= base64_encode($rowUsuario['foto']) ?>" alt="Usuario">
-        <?php else: ?>
-            <img src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
     </div>
 </body>
 

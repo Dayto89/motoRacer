@@ -1,804 +1,1286 @@
 <?php
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+ini_set('error_log', 'C:\xampp\htdocs\php_errors.log'); // Windows
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
+  header("Location: ../index.php");
+  exit();
 }
+
 //require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
-// Conexión
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-    die("alert('No se pudo conectar a la base de datos');");
+  die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-// 1) AJAX check código
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['accion']) &&
-    $_POST['accion'] === 'check_codigo'
-) {
-    header('Content-Type: application/json');
-    $codigo = $_POST['codigo1'] ?? '';
-    $stmt = $conexion->prepare("SELECT 1 FROM producto WHERE codigo1 = ?");
-    $stmt->bind_param("s", $codigo);
-    $stmt->execute();
-    $stmt->store_result();
-    $existe = $stmt->num_rows > 0;
-    echo json_encode(['exists' => $existe]);
-    $stmt->close();
-    $conexion->close();
-    exit;
+// ——————————————————————————————————————————————————————————
+// 1) TRAER TODOS LOS PRODUCTOS (sin FILTROS ni PAGINACIÓN) 
+// ——————————————————————————————————————————————————————————
+$consulta = "SELECT 
+  p.codigo1,
+  p.codigo2, 
+  p.nombre, 
+  p.precio1, 
+  p.precio2, 
+  p.precio3, 
+  p.cantidad, 
+  p.Categoria_codigo    AS categoria_id,
+  c.nombre              AS categoria,
+  p.Marca_codigo        AS marca_id,
+  m.nombre              AS marca,
+  p.UnidadMedida_codigo AS unidad_id,
+  u.nombre              AS unidadmedida,
+  p.Ubicacion_codigo    AS ubicacion_id,
+  ub.nombre             AS ubicacion,
+  p.proveedor_nit       AS proveedor_id,
+  pr.nombre             AS proveedor
+FROM producto p
+LEFT JOIN categoria c ON p.Categoria_codigo = c.codigo
+LEFT JOIN marca m ON p.Marca_codigo = m.codigo
+LEFT JOIN unidadmedida u ON p.UnidadMedida_codigo = u.codigo
+LEFT JOIN ubicacion ub ON p.Ubicacion_codigo = ub.codigo
+LEFT JOIN proveedor pr ON p.proveedor_nit = pr.nit
+ORDER BY p.nombre ASC";
+
+$resultado = mysqli_query($conexion, $consulta);
+if (!$resultado) {
+  die("Error en consulta: " . mysqli_error($conexion));
 }
 
-// 2a) AJAX handler para agregar categoría y devolver JSON
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['accion']) &&
-    $_POST['accion'] === 'add_categoria'
-) {
-    header('Content-Type: application/json');
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $query  = "INSERT INTO categoria (nombre) VALUES ('$nombre')";
-    if (mysqli_query($conexion, $query)) {
-        $id = mysqli_insert_id($conexion);
-        echo json_encode([
-            'success' => true,
-            'id'      => $id,
-            'nombre'  => $nombre
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error'   => mysqli_error($conexion)
-        ]);
-    }
-    exit;
-}
-// 2b) AJAX handler para agregar ubicación
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['accion']) &&
-    $_POST['accion'] === 'add_ubicacion'
-) {
-    header('Content-Type: application/json');
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $query  = "INSERT INTO ubicacion (nombre) VALUES ('$nombre')";
-    if (mysqli_query($conexion, $query)) {
-        $id = mysqli_insert_id($conexion);
-        echo json_encode([
-            'success' => true,
-            'id'      => $id,
-            'nombre'  => $nombre
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error'   => mysqli_error($conexion)
-        ]);
-    }
-    exit;
+// Construimos un array PHP con TODAS las filas
+$todosLosDatos = [];
+while ($fila = mysqli_fetch_assoc($resultado)) {
+  $todosLosDatos[] = $fila;
 }
 
-// 2c) AJAX handler para agregar marca
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['accion']) &&
-    $_POST['accion'] === 'add_marca'
-) {
-    header('Content-Type: application/json');
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $query  = "INSERT INTO marca (nombre) VALUES ('$nombre')";
-    if (mysqli_query($conexion, $query)) {
-        $id = mysqli_insert_id($conexion);
-        echo json_encode([
-            'success' => true,
-            'id'      => $id,
-            'nombre'  => $nombre
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error'   => mysqli_error($conexion)
-        ]);
-    }
+// ——————————————————————————————————————————————————————————
+// 2) ACTUALIZAR (POST) Y ELIMINAR (AJAX) SIN CAMBIOS
+// ——————————————————————————————————————————————————————————
+
+if (isset($_POST['codigo1'])) {
+  $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
+  $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $precio1 = mysqli_real_escape_string($conexion, $_POST['precio1']);
+  $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
+  $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
+  $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
+  $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
+  $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
+  $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
+  $ubicacion = mysqli_real_escape_string($conexion, $_POST['ubicacion-id']);
+  $proveedor = mysqli_real_escape_string($conexion, $_POST['proveedor-id']);
+
+  $consulta_update = "UPDATE producto SET 
+        codigo1 = '$codigo1', 
+        codigo2 = '$codigo2', 
+        nombre = '$nombre', 
+        precio1 = '$precio1', 
+        precio2 = '$precio2', 
+        precio3 = '$precio3', 
+        cantidad = '$cantidad', 
+        Categoria_codigo = '$categoria', 
+        Marca_codigo = '$marca', 
+        UnidadMedida_codigo = '$unidadmedida', 
+        Ubicacion_codigo = '$ubicacion', 
+        Proveedor_nit = '$proveedor' 
+        WHERE codigo1 = '$codigo1'";
+
+  if (mysqli_query($conexion, $consulta_update)) {
+    header("Location: listaproductos.php?actualizado=1");
     exit;
+  } else {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+          document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+              title: '<span class=\"titulo-alerta error\">Error</span>',
+              html: \`
+                <div class=\"custom-alert\">
+                  <div class=\"contenedor-imagen\">
+                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                  </div>
+                  <p>Error al actualizar los datos.</p>
+                </div>
+              \`,
+              background: '#ffffffdb',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#dc3545',
+              customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+              }
+            });
+          });
+        </script>";
+  }
 }
 
-// 2d) AJAX handler para agregar proveedor
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['accion']) &&
-    $_POST['accion'] === 'add_proveedor'
-) {
-    header('Content-Type: application/json');
-    // Escapa el nombre y demás campos que quieras capturar:
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $nit    = mysqli_real_escape_string($conexion, $_POST['nit']);
-    // Puedes capturar más campos si tu tabla los tiene
-    $query  = "INSERT INTO proveedor (nit, nombre) VALUES ('$nit', '$nombre')";
-    if (mysqli_query($conexion, $query)) {
-        $id = $nit; // aquí tu clave primaria es nit
-        echo json_encode([
-            'success' => true,
-            'id'      => $id,
-            'nombre'  => $nombre
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error'   => mysqli_error($conexion)
-        ]);
-    }
-    exit;
-}
+// Eliminación individual por AJAX
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
+  header('Content-Type: application/json');
 
-// Consultas de selects
-$marcas      = $conexion->query("SELECT codigo, nombre FROM marca");
-$categorias  = $conexion->query("SELECT codigo, nombre FROM categoria");
-$proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
-$ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
-$unidades    = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
+  if (!$conexion) {
+    echo json_encode(['success' => false, 'error' => 'Error de conexión']);
+    exit;
+  }
+
+  $codigo = $_POST['codigo'];
+  $stmt = $conexion->prepare("DELETE FROM producto WHERE codigo1 = ?");
+  $stmt->bind_param("s", $codigo);
+
+  if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'error' => $stmt->error]);
+    exit;
+  }
+
+  if ($stmt->affected_rows === 0) {
+    echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
+    exit;
+  }
+
+  echo json_encode(['success' => true]);
+  exit;
+}
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
+
+<?php if (isset($_GET['actualizado']) && $_GET['actualizado'] == 1): ?>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      Swal.fire({
+        title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+        html: `
+          <div class='alerta'>
+              <div class='contenedor-imagen'>
+                  <img src='../imagenes/moto.png' alt="Éxito" class='moto'>
+              </div>
+              <p>Los datos se actualizaron con éxito.</p>
+          </div>
+        `,
+        background: '#ffffffdb',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
+        }
+      });
+    });
+  </script>
+<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Crear Producto</title>
-    <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <link rel="stylesheet" href="../css/producto.css">
-    <link rel="stylesheet" href="../css/alertas.css">
-    <link rel="stylesheet" href="/componentes/header.php">
-    <link rel="stylesheet" href="/componentes/header.css">
-    <script src="../js/header.js"></script>
-    <script src="/js/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-        .required::after {
-            content: " *";
-            color: red;
-        }
+  <title>Inventario</title>
+  <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
+  <link rel="stylesheet" href="../css/inventario.css" />
+  <link rel="stylesheet" href="../css/alertas.css">
+  <link rel="stylesheet" href="../componentes/header.css">
+  <script src="../js/header.js"></script>
+  <script src="/js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        /* Estilo del botón de cierre */
-        .close-button {
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            user-select: none;
-        }
+  <style>
+    .required::after {
+      content: " *";
+      color: red;
+    }
 
-        /* Opcional: cambio de color al pasar el ratón */
-        .close-button:hover {
-            color: red;
-        }
-    </style>
+    /* ------------------------------------------------- */
+    /* Estilos para filtrado/ordenamiento/resaltado     */
+    /* ------------------------------------------------- */
+    /* Resaltado de fila seleccionada */
+    /* #productTable table tbody tr.selected {
+  background-color: rgba(0, 123, 255, 0.15);
+}
+#productTable tbody tr.selected td {
+  background-color: rgba(0, 123, 255, 0.15);
+} */
+
+    #productTable tbody tr:hover,
+    #productTable tbody tr:hover td {
+      background-color: rgba(0, 123, 255, 0.15);
+    }
+
+
+    /* Cursor pointer en encabezados para indicar que son clicables */
+    table th {
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Flecha de ordenamiento en cada <th> */
+    .sort-arrow {
+      margin-left: 5px;
+      font-size: 0.8em;
+      display: inline-block;
+      width: 0.8em;
+      text-align: center;
+    }
+
+    /* Input para búsqueda en tiempo real */
+    #searchRealtime {
+      width: 200px;
+      padding: 5px 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Botón eliminar múltiple */
+    #delete-selected {
+      margin-left: 10px;
+    }
+
+    /* Estilos básicos para paginación dinámica */
+    .pagination-dinamica {
+      display: flex;
+      justify-content: center;
+      margin-top: 23px;
+      gap: 12px;
+      font-family: arial;
+      font-size: 14px;
+    }
+
+    .pagination-dinamica button {
+      padding: 6px 10px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      color: #333;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+
+    .pagination-dinamica button:hover:not(.active) {
+      background-color: rgb(158, 146, 209);
+    }
+
+    .pagination-dinamica button.active {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      pointer-events: none;
+      border-color: #007bff;
+    }
+
+    /* contenedor flex de filtros */
+    .filtros-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: #f9f9f9;
+      padding: 0.75rem;
+      border-radius: 8px;
+    }
+
+    /* búsqueda */
+    .search-box input {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 180px;
+    }
+
+    /* cada filtro */
+    .filtro {
+      position: relative;
+      min-width: 140px;
+    }
+
+    /* título desplegable */
+    .filtro-titulo {
+      width: 100%;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .filtro-titulo i {
+      transition: transform 0.2s;
+    }
+
+    /* opciones ocultas */
+    .filtro-opciones {
+      display: none;
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      z-index: 50;
+    }
+
+    /* mostrar cuando .active */
+    .filtro.active .filtro-opciones {
+      display: block;
+    }
+
+    .filtro.active .filtro-titulo i {
+      transform: rotate(180deg);
+    }
+
+    /* estilo de labels */
+    .filtro-opciones label {
+      display: block;
+      margin: 4px 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* botón limpiar */
+    .clear-btn button {
+      background: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .clear-btn button:hover {
+      background: #5a6268;
+    }
+  </style>
 </head>
 
 <body>
-
-    <!-- Aquí se cargará el header -->
+  <div class="sidebar">
     <div id="menu"></div>
+  </div>
+  <div class="main-content">
+    <h1>Inventario</h1>
 
-    <!-- Sección para Crear Producto -->
-    <div id="crearProducto" class="form-section">
-        <h1>Crear Producto</h1>
-        <!-- Abrir modal para subir el archivo -->
-        <button type="submit" class="icon-button" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
+    <!-- ============================== -->
+    <!-- 6) FILTROS / BÚSQUEDA CLIENTE  -->
+    <!-- ============================== -->
+    <div class="filter-bar">
+      <div class="filtros-container">
+
+        <!-- Sub‑dropdown Categorías -->
+        <div class="filtro">
+          <button class="filtro-titulo">Categorías <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resCat = mysqli_query($conexion, "SELECT codigo, nombre FROM categoria");
+            while ($cat = mysqli_fetch_assoc($resCat)): ?>
+              <label>
+                <input type="checkbox" name="filtrosCat[]" value="<?= htmlspecialchars($cat['codigo']) ?>">
+                <?= htmlspecialchars($cat['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Sub‑dropdown Marcas -->
+        <div class="filtro">
+          <button class="filtro-titulo">Marcas <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resMar = mysqli_query($conexion, "SELECT codigo, nombre FROM marca");
+            while ($mar = mysqli_fetch_assoc($resMar)): ?>
+              <label>
+                <input type="checkbox" name="filtrosMarca[]" value="<?= htmlspecialchars($mar['codigo']) ?>">
+                <?= htmlspecialchars($mar['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Sub‑dropdown Ubicaciones -->
+        <div class="filtro">
+          <button class="filtro-titulo">Ubicaciones <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resUb = mysqli_query($conexion, "SELECT codigo, nombre FROM ubicacion");
+            while ($ub = mysqli_fetch_assoc($resUb)): ?>
+              <label>
+                <input type="checkbox" name="filtrosUbic[]" value="<?= htmlspecialchars($ub['codigo']) ?>">
+                <?= htmlspecialchars($ub['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Sub‑dropdown Proveedores -->
+        <div class="filtro">
+          <button class="filtro-titulo">Proveedores <i class="fa fa-chevron-down"></i></button>
+          <div class="filtro-opciones">
+            <?php
+            $resProv = mysqli_query($conexion, "SELECT nit, nombre FROM proveedor");
+            while ($prov = mysqli_fetch_assoc($resProv)): ?>
+              <label>
+                <input type="checkbox" name="filtrosProv[]" value="<?= htmlspecialchars($prov['nit']) ?>">
+                <?= htmlspecialchars($prov['nombre']) ?>
+              </label>
+            <?php endwhile; ?>
+          </div>
+        </div>
+
+        <!-- Botón Limpiar -->
+        <div class="filtro clear-btn">
+          <button id="btnClear">Limpiar filtros</button>
+        </div>
+
+      </div>
+
+      <!-- Caja de búsqueda en tiempo real (cliente) -->
+      <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
+
+      <!-- Botón exportar a Excel (agregado de nuevo) -->
+      <div class="export-button" style="margin-left: 15px;">
+        <form action="exportar_excel.php" method="post">
+          <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
             <i class="fas fa-file-excel"></i>
-            <label>Importar archivo</label>
-        </button>
-
-        <!-- Modal para subir el archivo -->
-        <div id="modalConfirm" class="modal hidden">
-            <div class="modal-content">
-                <!-- Botón "X" para cerrar -->
-                <span class="close-button" onclick="closeModal()">&times;</span>
-
-                <!-- Formulario para subir el archivo -->
-                <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
-                    <label>Selecciona el archivo Excel:</label>
-                    <label for="archivoExcel" class="custom-file-upload">
-                        <i class="fas fa-cloud-upload-alt"></i><br>
-                        <span>Haz clic para seleccionar un archivo</span>
-                    </label>
-
-                    <input
-                        id="archivoExcel"
-                        type="file"
-                        name="archivoExcel"
-                        accept=".xlsx, .xls"
-                        required
-                        hidden />
-
-                    <button type="submit" name="importar" onclick="closeModal()">Importar</button>
-                    <!-- Botón de cancelar eliminado -->
-                    <a href="../componentes/formato_productos.xlsx" download class="download-link">
-                        <i class="fas fa-file-download" style="color: #0b59c7;"></i>
-                        Descargar formato de Excel
-                    </a>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Contenedor principal -->
-    <div class="container">
-
-        <form id="product-form" method="POST" action="">
-
-
-            <div class="campo">
-                <label class="required" for="codigo1">Código 1:</label>
-                <input type="text" id="codigo1" name="codigo1" required><br>
-            </div>
-            <div class="campo">
-                <label for="codigo2">Código 2:</label>
-                <input type="text" id="codigo2" name="codigo2" value="0"><br>
-            </div>
-            <div class="campo">
-                <label class="required" for="nombre">Producto:</label>
-                <input type="text" id="nombre" name="nombre" required><br>
-            </div>
-
-            <div class="campo">
-                <label class="required" for="precio1">Precio llegada:</label>
-                <input type="text" id="precio1" name="precio1" required
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-            </div>
-
-            <div class="campo">
-                <label class="required" for="precio2">Precio taller:</label>
-                <input type="text" id="precio2" name="precio2"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-            </div>
-
-            <div class="campo">
-                <label class="required" for="precio3">Precio publico:</label>
-                <input type="text" id="precio3" name="precio3"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-            </div>
-
-            <div class="campo">
-                <label class="required" for="cantidad">Cantidad:</label>
-                <input type="number"
-                    id="cantidad"
-                    name="cantidad"
-                    required
-                    min="0"
-                    max="99"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-            </div>
-
-
-            <div class="campo">
-                <div class="label-with-button" style="display:flex;align-items:center;">
-                    <label class="required" for="categoria">Categoría:</label>
-                    <button type="button"
-                        class="add-button"
-                        onclick="openModalCategoria()"
-                        aria-label="Agregar categoría">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-                <select id="categoria" name="categoria" required>
-                    <?php while ($fila = $categorias->fetch_assoc()) { ?>
-                        <option value="<?= $fila['codigo'] ?>">
-                            <?= $fila['nombre'] ?>
-                        </option>
-                    <?php } ?>
-                </select>
-            </div>
-            <div class="campo">
-                <div class="label-with-button">
-                    <label class="required" for="marca">Marca:</label>
-                    <button type="button"
-                        class="add-button"
-                        onclick="openModalMarca()"
-                        aria-label="Agregar marca">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-                <select name="marca" id="marca" required>
-                    <?php while ($fila = $marcas->fetch_assoc()) { ?>
-                        <option value="<?php echo $fila['codigo']; ?>">
-                            <?php echo $fila['nombre']; ?>
-                        </option>
-                    <?php } ?>
-                </select>
-                <br>
-            </div>
-            <div class="campo">
-                <label class="required" for="unidadMedida">Clase:</label>
-                <select name="unidadMedida" id="unidadMedida" required>
-                    <?php while ($fila = $unidades->fetch_assoc()) { ?>
-                        <option value="<?php echo $fila['codigo']; ?>">
-                            <?php echo $fila['nombre']; ?>
-                        </option>
-                    <?php } ?>
-                </select><br>
-            </div>
-            <div class="campo">
-                <div class="label-with-button">
-                    <label for="ubicacion">Ubicación:</label>
-                    <button
-                        type="button"
-                        class="add-button"
-                        onclick="openModalUbicacion()"
-                        aria-label="Agregar ubicación"
-                        title="Agregar ubicación">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-                <select name="ubicacion" id="ubicacion">
-                    <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
-                        <option value="<?php echo $fila['codigo']; ?>">
-                            <?php echo $fila['nombre']; ?>
-                        </option>
-                    <?php } ?>
-                </select>
-                <br>
-            </div>
-
-            <div class="campo">
-                <label class="required" for="proveedor">Proveedor:</label>
-                <select name="proveedor" id="proveedor" required>
-                    <?php while ($fila = $proveedores->fetch_assoc()) { ?>
-                        <option value="<?php echo $fila['nit']; ?>">
-                            <?php echo $fila['nombre']; ?>
-                        </option>
-                    <?php } ?>
-                </select><br>
-            </div>
-            <div class="button-container">
-                <div class="boton">
-                    <button type="submit" name="guardar">Guardar</button>
-                </div>
-            </div>
-
+            <label> Exportar a Excel</label>
+          </button>
         </form>
+      </div>
 
 
     </div>
 
+    <div class="table-wrapper">
+      <table id="productTable">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th data-col="1" data-type="string">Código 2<span class="sort-arrow"></span></th>
+            <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
+            <th data-col="3" data-type="number">Precio 1<span class="sort-arrow"></span></th>
+            <th data-col="4" data-type="number">Precio 2<span class="sort-arrow"></span></th>
+            <th data-col="5" data-type="number">Precio 3<span class="sort-arrow"></span></th>
+            <th data-col="6" data-type="number">Cantidad<span class="sort-arrow"></span></th>
+            <th data-col="7" data-type="string">Categoría<span class="sort-arrow"></span></th>
+            <th data-col="8" data-type="string">Marca<span class="sort-arrow"></span></th>
+            <th data-col="9" data-type="string">Clase<span class="sort-arrow"></span></th>
+            <th data-col="10" data-type="string">Ubicación<span class="sort-arrow"></span></th>
+            <th data-col="11" data-type="string">Proveedor<span class="sort-arrow"></span></th>
+            <th data-col="12" data-type="none">Acciones</th>
+            <th data-col="13" data-type="none" class="acciones-multiples">
+              <!-- Botón para eliminar seleccionados -->
+              <button id="delete-selected" class="btn btn-danger" style="display: none;">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Se llenará dinámicamente con JavaScript -->
+        </tbody>
+      </table>
     </div>
 
-    <!--Modal categoria dentro de <body> … -->
-    <div id="modalCategoria" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <h2>Nueva categoría</h2>
-            <form id="formAddCategoria" action="" method="POST">
-                <div class="form-group">
-                    <label for="nombre">Ingrese el nombre de la categoría:</label>
-                    <input
-                        type="text"
-                        id="inputNombreCategoria"
-                        name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelarCategoria">Cancelar</button>
-                    <button type="submit" id="btnGuardarCategoria">Guardar</button>
-                </div>
-            </form>
+    <!-- Paginación Dinámica (cliente) -->
+    <div id="paginationContainer" class="pagination-dinamica"></div>
+  </div>
+
+  <!-- Modal de edición (igual que antes) -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">
+        <i class="fa-solid fa-x"></i>
+      </span>
+
+      <h2>Editar Producto</h2>
+      <form id="editForm" method="post">
+        <input type="hidden" id="editCodigo1" name="codigo1">
+        <div class="campo">
+          <label for="editCodigo1Visible">Código:</label>
+          <input type="text" id="editCodigo1Visible" disabled>
         </div>
-    </div>
-
-    <!-- Modal Nueva Ubicación -->
-    <div id="modalUbicacion" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <h2>Nueva ubicación</h2>
-            <form id="formAddUbicacion" method="POST" action="">
-                <div class="form-group">
-                    <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
-                    <input
-                        type="text"
-                        id="inputNombreUbicacion"
-                        name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelarUbicacion">Cancelar</button>
-                    <button type="submit" id="btnGuardarUbicacion">Guardar</button>
-                </div>
-            </form>
+        <div class="campo">
+          <label for="editCodigo2">Código 2:</label>
+          <input type="text" id="editCodigo2" name="codigo2"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
-    </div>
-
-    <!-- Modal Nueva Marca -->
-    <div id="modalMarca" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <h2>Nueva marca</h2>
-            <form id="formAddMarca" method="POST" action="">
-                <div class="form-group">
-                    <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
-                    <input
-                        type="text"
-                        id="inputNombreMarca"
-                        name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelarMarca">Cancelar</button>
-                    <button type="submit" id="btnGuardarMarca">Guardar</button>
-                </div>
-            </form>
+        <div class="campo">
+          <label class="required" for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" name="nombre">
         </div>
+        <div class="campo">
+          <label class="required" for="editPrecio1">Precio 1:</label>
+          <input type="text" id="editPrecio1" name="precio1"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="campo">
+          <label class="required" for="editPrecio2">Precio 2:</label>
+          <input type="text" id="editPrecio2" name="precio2"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="campo">
+          <label class="required" for="editPrecio3">Precio 3:</label>
+          <input type="text" id="editPrecio3" name="precio3"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="campo">
+          <label class="required" for="editCantidad">Cantidad:</label>
+          <input type="text" id="editCantidad" name="cantidad"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="campo">
+          <label class="required" for="editCategoria">Categoría:</label>
+          <select name="categoria-id" id="editCategoria" required>
+            <option value="">Seleccione una categoría</option>
+            <?php
+            $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
+            if (!$conexion2) {
+              die("Error de conexión: " . mysqli_connect_error());
+            }
+            $consultaCategorias = "SELECT codigo, nombre FROM categoria";
+            $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
+            while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
+              echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo">
+          <label class="required" for="editMarca">Marca:</label>
+          <select name="marca-id" id="editMarca" required>
+            <option value="">Seleccione una marca</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaMarcas = "SELECT codigo, nombre FROM marca";
+            $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
+            while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
+              echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo">
+          <label class="required" for="editUnidadMedida">Clase:</label>
+          <select name="unidadmedida-id" id="editUnidadMedida" required>
+            <option value="">Seleccione una medida</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
+            $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
+            while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
+              echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo">
+          <label class="required" for="editUbicacion">Ubicación:</label>
+          <select name="ubicacion-id" id="editUbicacion" required>
+            <option value="">Seleccione una ubicación</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
+            $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
+            while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
+              echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="campo">
+          <label class="required" for="editProveedor">Proveedor:</label>
+          <select name="proveedor-id" id="editProveedor" required>
+            <option value="">Seleccione un proveedor</option>
+            <?php
+            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
+            $consultaProveedores = "SELECT nit, nombre FROM proveedor";
+            $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
+            while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
+              echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
+            }
+            mysqli_close($conexion2);
+            ?>
+          </select>
+        </div>
+        <div class="modal-boton">
+          <button type="submit" id="modal-boton">Guardar Cambios</button>
+        </div>
+      </form>
     </div>
+  </div>
 
+  <!-- —————————————————————————————————————————————————————————— -->
+  <!-- 3) SCRIPT DE JAVASCRIPT: paginación / filtrado / ordenamiento -->
+  <!-- —————————————————————————————————————————————————————————— -->
+  <script>
+    // — sub‑dropdown toggle
+    document.querySelectorAll('.filtro-titulo').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const parent = btn.parentElement;
+        parent.classList.toggle('active');
+        // cierra los demás
+        document.querySelectorAll('.filtro').forEach(f => {
+          if (f !== parent) f.classList.remove('active');
+        });
+      });
+    });
 
+    // cierra si clic fuera
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.filtro')) {
+        document.querySelectorAll('.filtro').forEach(f => f.classList.remove('active'));
+      }
+    });
+    // Convertimos el array PHP $todosLosDatos a JSON para JS
+    const allData = <?php echo json_encode($todosLosDatos, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 
-    <?php
+    // Variables de estado para paginación y filtrado
+    let filteredData = [...allData];
+    const rowsPerPage = 7;
+    let currentPage = 1;
 
-    $mensaje = null;  // Variable para almacenar el estado del mensaje
-    define('CANTIDAD_MAX', 99);
+    const tableBody = document.querySelector('#productTable tbody');
+    const paginationContainer = document.getElementById('paginationContainer');
+    const inputBusqueda = document.getElementById('searchRealtime');
 
-
-    if ($_POST) {
-        if (!$conexion) {
-            die("<script>alert('No se pudo conectar a la base de datos');</script>");
-        };
-        $codigo1 = $_POST['codigo1'];
-        $codigo2 = $_POST['codigo2'];
-        $nombre = $_POST['nombre'];
-        $iva = 19;
-        $precio1 = $_POST['precio1'];
-        $precio2 = $_POST['precio2'];
-        $precio3 = $_POST['precio3'];
-        $cantidad = (int) $_POST['cantidad'];
-        if ($cantidad < 0 || $cantidad > CANTIDAD_MAX) {
-            die("<script>alert('La cantidad debe estar entre 0 y " . CANTIDAD_MAX . "'); window.history.back();</script>");
-        }
-
-        $categoria = $_POST['categoria'];
-        $marca = $_POST['marca'];
-        $unidadMedida = $_POST['unidadMedida'];
-        $ubicacion = $_POST['ubicacion'];
-        $proveedor = $_POST['proveedor'];
-
-        $query = "INSERT INTO producto (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit) VALUES ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$categoria', '$marca', '$unidadMedida', '$ubicacion', '$proveedor')";
-
-
-
-        $resultado = mysqli_query($conexion, $query);
-
-        if ($resultado) {
-            $mensaje = 'producto_agregado';
-        } else {
-            $mensaje = 'error_al_agregar';
-        }
+    // Devuelve el valor “limpio” de una fila según criterio
+    function getFieldValue(rowObj, criterion) {
+      switch (criterion) {
+        case 'codigo1':
+          return rowObj.codigo1.toString().toLowerCase();
+        case 'codigo2':
+          return rowObj.codigo2.toString().toLowerCase();
+        case 'nombre':
+          return rowObj.nombre.toLowerCase();
+        case 'precio1':
+          return rowObj.precio1.toString().toLowerCase();
+        case 'precio2':
+          return rowObj.precio2.toString().toLowerCase();
+        case 'precio3':
+          return rowObj.precio3.toString().toLowerCase();
+        case 'categoria':
+          return rowObj.categoria.toLowerCase();
+        case 'marca':
+          return rowObj.marca.toLowerCase();
+        case 'ubicacion':
+          return rowObj.ubicacion.toLowerCase();
+        case 'proveedor':
+          return rowObj.proveedor.toLowerCase();
+        default:
+          return '';
+      }
     }
 
+    // Función para ordenar filteredData por columna
+    function getCellValueForSort(rowObj, colIndex) {
+      switch (colIndex) {
+        case 0:
+          return rowObj.codigo1.toLowerCase();
+        case 1:
+          return rowObj.codigo2.toLowerCase();
+        case 2:
+          return rowObj.nombre.toLowerCase();
+        case 3:
+          return parseFloat(rowObj.precio1) || 0;
+        case 4:
+          return parseFloat(rowObj.precio2) || 0;
+        case 5:
+          return parseFloat(rowObj.precio3) || 0;
+        case 6:
+          return parseFloat(rowObj.cantidad) || 0;
+        case 7:
+          return rowObj.descripcion.toLowerCase();
+        case 8:
+          return rowObj.categoria.toLowerCase();
+        case 9:
+          return rowObj.marca.toLowerCase();
+        case 10:
+          return rowObj.unidadmedida.toLowerCase();
+        case 11:
+          return rowObj.ubicacion.toLowerCase();
+        case 12:
+          return rowObj.proveedor.toLowerCase();
+        default:
+          return '';
+      }
+    }
+
+    function sortData(colIndex, asc = true) {
+      filteredData.sort((a, b) => {
+        const valA = getCellValueForSort(a, colIndex);
+        const valB = getCellValueForSort(b, colIndex);
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
+        return 0;
+      });
+    }
+
+    // Renderiza la tabla según página actual
+    function renderTable() {
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const pageData = filteredData.slice(start, end);
+
+      tableBody.innerHTML = '';
+      pageData.forEach(rowObj => {
+        const tr = document.createElement('tr');
+
+        // 1) Código
+        let td = document.createElement('td');
+        td.textContent = rowObj.codigo1;
+        tr.appendChild(td);
+
+        // 2) Código 2
+        td = document.createElement('td');
+        td.textContent = rowObj.codigo2;
+        tr.appendChild(td);
+
+        // 3) Nombre
+        td = document.createElement('td');
+        td.textContent = rowObj.nombre;
+        tr.appendChild(td);
+
+        // 5) Precio 1
+        td = document.createElement('td');
+        td.textContent = rowObj.precio1;
+        tr.appendChild(td);
+
+        // 6) Precio 2
+        td = document.createElement('td');
+        td.textContent = rowObj.precio2;
+        tr.appendChild(td);
+
+        // 7) Precio 3
+        td = document.createElement('td');
+        td.textContent = rowObj.precio3;
+        tr.appendChild(td);
+
+        // 8) Cantidad
+        td = document.createElement('td');
+        td.textContent = rowObj.cantidad;
+        tr.appendChild(td);
+
+        // 10) Categoría
+        td = document.createElement('td');
+        td.textContent = rowObj.categoria;
+        td.setAttribute('data-categoria-id', rowObj.categoria_id);
+        tr.appendChild(td);
+
+        // 11) Marca
+        td = document.createElement('td');
+        td.textContent = rowObj.marca;
+        td.setAttribute('data-marca-id', rowObj.marca_id);
+        tr.appendChild(td);
+
+        // 12) Clase (unidadmedida)
+        td = document.createElement('td');
+        td.textContent = rowObj.unidadmedida;
+        td.setAttribute('data-unidadmedida-id', rowObj.unidad_id);
+        tr.appendChild(td);
+
+        // 13) Ubicación
+        td = document.createElement('td');
+        td.textContent = rowObj.ubicacion;
+        td.setAttribute('data-ubicacion-id', rowObj.ubicacion_id);
+        tr.appendChild(td);
+
+        // 14) Proveedor
+        td = document.createElement('td');
+        td.textContent = rowObj.proveedor;
+        td.setAttribute('data-proveedor-id', rowObj.proveedor_id);
+        tr.appendChild(td);
+
+        // 15) Acciones (editar / eliminar individual)
+        td = document.createElement('td');
+        td.classList.add('acciones');
+        // Botón editar
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'edit-button';
+        btnEdit.setAttribute('data-id', rowObj.codigo1);
+        btnEdit.innerHTML = "<i class='fa-solid fa-pen-to-square'></i>";
+        td.appendChild(btnEdit);
+        // Botón eliminar
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'delete-button';
+        btnDelete.setAttribute('onclick', `eliminarProducto('${rowObj.codigo1}')`);
+        btnDelete.innerHTML = "<i class='fa-solid fa-trash'></i>";
+        td.appendChild(btnDelete);
+        tr.appendChild(td);
+
+        // 16) Checkbox selección múltiple
+        td = document.createElement('td');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'select-product';
+        checkbox.value = rowObj.codigo1;
+        td.appendChild(checkbox);
+        tr.appendChild(td);
+
+        // Resaltar fila al clic
+        //tr.addEventListener('click', () => {
+        // tr.classList.toggle('selected');
+        //});
+
+        tableBody.appendChild(tr);
+      });
+
+      renderPaginationControls();
+      attachEditButtonListeners();
+      attachCheckboxListeners();
+    }
+
+    // Renderiza los botones de paginación
+    function renderPaginationControls() {
+      paginationContainer.innerHTML = '';
+      const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+      if (totalPages <= 1) return;
+
+      // « Primera
+      const btnFirst = document.createElement('button');
+      btnFirst.textContent = '« Primera';
+      btnFirst.disabled = (currentPage === 1);
+      btnFirst.addEventListener('click', () => {
+        currentPage = 1;
+        renderTable();
+      });
+      if (currentPage === 1) btnFirst.classList.add('active');
+      paginationContainer.appendChild(btnFirst);
+
+      // ‹ Anterior
+      const btnPrev = document.createElement('button');
+      btnPrev.textContent = '‹ Anterior';
+      btnPrev.disabled = (currentPage === 1);
+      btnPrev.addEventListener('click', () => {
+        if (currentPage > 1) currentPage--;
+        renderTable();
+      });
+      if (currentPage === 1) btnPrev.classList.add('active');
+      paginationContainer.appendChild(btnPrev);
+
+      // Números de página (hasta 5 alrededor)
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, currentPage + 2);
+      if (currentPage <= 2) {
+        endPage = Math.min(5, totalPages);
+      }
+      if (currentPage >= totalPages - 1) {
+        startPage = Math.max(1, totalPages - 4);
+      }
+
+      if (startPage > 1) {
+        const ellipsis = document.createElement('button');
+        ellipsis.textContent = '…';
+        ellipsis.disabled = true;
+        paginationContainer.appendChild(ellipsis);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        const btnPage = document.createElement('button');
+        btnPage.textContent = i;
+        if (i === currentPage) btnPage.classList.add('active');
+        btnPage.addEventListener('click', () => {
+          currentPage = i;
+          renderTable();
+        });
+        paginationContainer.appendChild(btnPage);
+      }
+
+      if (endPage < totalPages) {
+        const ellipsis2 = document.createElement('button');
+        ellipsis2.textContent = '…';
+        ellipsis2.disabled = true;
+        paginationContainer.appendChild(ellipsis2);
+      }
+
+      // Siguiente ›
+      const btnNext = document.createElement('button');
+      btnNext.textContent = 'Siguiente ›';
+      btnNext.disabled = (currentPage === totalPages);
+      btnNext.addEventListener('click', () => {
+        if (currentPage < totalPages) currentPage++;
+        renderTable();
+      });
+      if (currentPage === totalPages) btnNext.classList.add('active');
+      paginationContainer.appendChild(btnNext);
+
+      // Última »
+      const btnLast = document.createElement('button');
+      btnLast.textContent = 'Última »';
+      btnLast.disabled = (currentPage === totalPages);
+      btnLast.addEventListener('click', () => {
+        currentPage = totalPages;
+        renderTable();
+      });
+      if (currentPage === totalPages) btnLast.classList.add('active');
+      paginationContainer.appendChild(btnLast);
+    }
+
+    // función de filtrado (tú ya la tienes, aquí solo agregas lectura de checks)
+    function applyFilter() {
+      const q = document.getElementById('searchRealtime').value.trim().toLowerCase();
+      const selCats = Array.from(document.querySelectorAll('input[name="filtrosCat[]"]:checked')).map(cb => cb.value);
+      const selMarcas = Array.from(document.querySelectorAll('input[name="filtrosMarca[]"]:checked')).map(cb => cb.value);
+      const selUbics = Array.from(document.querySelectorAll('input[name="filtrosUbic[]"]:checked')).map(cb => cb.value);
+      const selProvs = Array.from(document.querySelectorAll('input[name="filtrosProv[]"]:checked')).map(cb => cb.value);
+
+      filteredData = allData.filter(item => {
+        // búsqueda global
+        const comp = (
+          item.codigo1 + ' ' +
+          item.codigo2 + ' ' +
+          item.nombre + ' ' +
+          item.categoria + ' ' +
+          item.marca + ' ' +
+          item.ubicacion + ' ' +
+          item.proveedor
+        ).toLowerCase();
+        if (!comp.includes(q)) return false;
+
+        if (selCats.length && !selCats.includes(item.categoria_id)) return false;
+        if (selMarcas.length && !selMarcas.includes(item.marca_id)) return false;
+        if (selUbics.length && !selUbics.includes(item.ubicacion_id)) return false;
+        if (selProvs.length && !selProvs.includes(item.proveedor_id)) return false;
+
+        return true;
+      });
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    // listeners
+    document.getElementById('searchRealtime')
+      .addEventListener('input', applyFilter);
+
+    document.querySelectorAll(
+      'input[name="filtrosCat[]"], ' +
+      'input[name="filtrosMarca[]"], ' +
+      'input[name="filtrosUbic[]"], ' +
+      'input[name="filtrosProv[]"]'
+    ).forEach(cb => cb.addEventListener('change', applyFilter));
+
+    // limpiar
+    document.getElementById('btnClear').addEventListener('click', () => {
+      document.querySelectorAll(
+        'input[name="filtrosCat[]"], ' +
+        'input[name="filtrosMarca[]"], ' +
+        'input[name="filtrosUbic[]"], ' +
+        'input[name="filtrosProv[]"]'
+      ).forEach(cb => cb.checked = false);
+      document.getElementById('searchRealtime').value = '';
+      applyFilter();
+    });
+    // ============================================================
+    // 4) ORDENAMIENTO POR COLUMNAS: clic en <th>
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      const thead = document.querySelector('#productTable thead');
+      const sortStates = {};
+
+      thead.querySelectorAll('th').forEach(th => {
+        const colIndex = parseInt(th.getAttribute('data-col'), 10);
+        const type = th.getAttribute('data-type');
+        if (!type || type === 'none') return;
+
+        sortStates[colIndex] = true; // ascendente inicial
+
+        th.addEventListener('click', () => {
+          sortStates[colIndex] = !sortStates[colIndex];
+          sortData(colIndex, sortStates[colIndex]);
+
+          // Limpiar flechas de otros encabezados
+          thead.querySelectorAll('th .sort-arrow').forEach(span => {
+            span.textContent = '';
+          });
+          // Poner flecha en el clicado
+          th.querySelector('.sort-arrow').textContent = sortStates[colIndex] ? '▲' : '▼';
+
+          renderTable();
+        });
+      });
+    });
+
+    // ============================================================
+    // 5) RESALTADO DE FILA: listener en cada <tr>
+    // ============================================================
+    //function attachRowHighlightListeners() {
+    //  const rows = document.querySelectorAll('#productTable tbody tr');
+    //  rows.forEach(row => {
+    //    row.addEventListener('click', () => {
+    //      row.classList.toggle('selected');
+    //    });
+    //  });
+    //}
+
+    // ============================================================
+    // 6) SELECCIÓN MÚLTIPLE: activar botón Eliminar Múltiple
+    // ============================================================
+    function attachCheckboxListeners() {
+      // Recolectamos checkboxes y botón de cabecera
+      const checkboxes = document.querySelectorAll(".select-product");
+      const deleteBtn = document.getElementById("delete-selected");
+
+      // Cada vez que cambie cualquier checkbox, actualizamos visibilidad
+      checkboxes.forEach(cb => {
+        cb.addEventListener("change", toggleDeleteButtonVisibility);
+      });
+
+      // Inicializamos estado al cargar
+      toggleDeleteButtonVisibility();
+
+      // Al hacer clic en eliminar seleccionados...
+      deleteBtn.addEventListener("click", () => {
+        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+        if (selected.length < 2) return; // redundante, pero seguro
+
+        Swal.fire({
+          title: '<span class="titulo-alerta advertencia">¿Eliminar seleccionados?</span>',
+          html: `<p>Se eliminarán ${selected.length} productos.</p>`,
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+          customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",
+            cancelButton: "btn-cancelar"
+          }
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          // tu fetch a eliminar_productos.php con { codigos: selected }
+          fetch("eliminar_productos.php", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                codigos: selected
+              })
+            })
+            .then(r => r.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire("Eliminados", `${selected.length} productos eliminados.`, "success")
+                  .then(() => location.reload());
+              } else {
+                Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
+              }
+            })
+            .catch(() => Swal.fire("Error", "Fallo comunicación.", "error"));
+        });
+      });
+    }
+
+    function toggleDeleteButtonVisibility() {
+      const checkedCount = document.querySelectorAll(".select-product:checked").length;
+      const deleteBtn = document.getElementById("delete-selected");
+      // Mostramos solo si hay 2 o más
+      deleteBtn.style.display = checkedCount >= 2 ? "inline-block" : "none";
+    }
+
+    // ============================================================
+  // 7) MÓDULO DE EDICIÓN: animación drop-in / drop-out
+  // ============================================================
+
+  // — Funciones genéricas para animar modales —
+  function openModal(modalEl) {
+    modalEl.classList.add('show');
+    void modalEl.offsetWidth;      // fuerza reflow
+    modalEl.classList.add('opening');
+  }
+  function closeModal(modalEl) {
+    modalEl.classList.remove('opening');
+    modalEl.classList.add('closing');
+    const content = modalEl.querySelector('.modal-content');
+    content.addEventListener('transitionend', function handler() {
+      content.removeEventListener('transitionend', handler);
+      modalEl.classList.remove('show','closing');
+    });
+  }
+
+  // — Selección del modal de edición y su botón “×” —
+  const editModal    = document.getElementById('editModal');
+  const editCloseBtn = editModal.querySelector('.close');
+
+  // Cerrar al hacer clic en la “X”
+  editCloseBtn.addEventListener('click', () => closeModal(editModal));
+
+  // Cerrar al hacer clic fuera del contenido
+  editModal.addEventListener('click', e => {
+    if (e.target === editModal) closeModal(editModal);
+  });
+
+  // — Adjuntar listeners a los botones editar —
+  function attachEditButtonListeners() {
+    const editButtons = document.querySelectorAll('.edit-button');
+
+    editButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const row = this.closest('tr');
+        // Rellenas los campos…
+        document.getElementById('editCodigo1').value            = row.cells[0].innerText.trim();
+        document.getElementById('editCodigo1Visible').value     = row.cells[0].innerText.trim();
+        document.getElementById('editCodigo2').value            = row.cells[1].innerText.trim();
+        document.getElementById('editNombre').value             = row.cells[2].innerText.trim();
+        document.getElementById('editPrecio1').value            = row.cells[3].innerText.trim();
+        document.getElementById('editPrecio2').value            = row.cells[4].innerText.trim();
+        document.getElementById('editPrecio3').value            = row.cells[5].innerText.trim();
+        document.getElementById('editCantidad').value           = row.cells[6].innerText.trim();
+        document.getElementById('editCategoria').value          = row.cells[7].getAttribute('data-categoria-id');
+        document.getElementById('editMarca').value              = row.cells[8].getAttribute('data-marca-id');
+        document.getElementById('editUnidadMedida').value       = row.cells[9].getAttribute('data-unidadmedida-id');
+        document.getElementById('editUbicacion').value          = row.cells[10].getAttribute('data-ubicacion-id');
+        document.getElementById('editProveedor').value          = row.cells[11].getAttribute('data-proveedor-id');
+
+        // EN LUGAR DE modal.style.display = 'block';
+        openModal(editModal);
+      });
+    });
+  }
+    // ============================================================
+    // 8) ELIMINACIÓN INDIVIDUAL: SweetAlert2 + AJAX
+    // ============================================================
+    function eliminarProducto(codigo) {
+      Swal.fire({
+        title: '<span class="titulo-alerta advertencia">¿Estás Seguro?</span>',
+        html: `
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                </div>
+                <p>¿Quieres eliminar el producto <strong>${codigo}</strong>?</p>
+            </div>
+        `,
+        background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar",
+          container: 'fondo-oscuro'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch('listaproductos.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+            })
+            .then(response => {
+              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+              return response.json();
+            })
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  title: '<span class="titulo-alerta confirmacion">Producto Eliminado</span>',
+                  html: `
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
+                                </div>
+                                 <p>El producto <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
+                            </div>
+                        `,
+                  background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire("Error", data.error || "No se pudo completar la eliminación", "error");
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              Swal.fire("Error", "Error al conectar con el servidor", "error");
+            });
+        }
+      });
+    }
+
+    // ============================================================
+    // 9) CERRAR DROPDOWN SI SE HACE CLIC FUERA
+    // ============================================================
+    document.addEventListener('click', function(event) {
+      const filterDropdown = document.querySelector('.filter-dropdown');
+      if (filterDropdown.hasAttribute('open') && !filterDropdown.contains(event.target)) {
+        filterDropdown.removeAttribute('open');
+      }
+    });
+
+    // ============================================================
+    // 10) INICIALIZACIÓN: aplicamos ordenamiento, filtrado y paginación
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Al cargar, pintamos la primera página
+      renderTable();
+
+      // Al escribir en el input de búsqueda en tiempo real
+      inputBusqueda.addEventListener('input', function() {
+        applyFilter();
+      });
+    });
+    /*ANIMACIONES*/
+  </script>
+
+  <div class="userInfo">
+    <?php
+    $conexion2 = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+    $id_usuario = $_SESSION['usuario_id'];
+    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+    $stmtUsuario = $conexion2->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_usuario);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $rowUsuario = $resultUsuario->fetch_assoc();
+    $nombreUsuario = $rowUsuario['nombre'];
+    $apellidoUsuario = $rowUsuario['apellido'];
+    $rol = $rowUsuario['rol'];
+    $foto = $rowUsuario['foto'];
+    $stmtUsuario->close();
     ?>
-
-
-
-    <script>
-        // Función para abrir el modal de subir archivo
-        function openModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex"; // Mostrar el modal con flexbox
-            btnAbrirModal.style.display = "none"; // Ocultar el botón de abrir modal
-        }
-
-        // Función para cerrar el modal de subir archivo
-        function closeModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrirModal = document.getElementById("btnAbrirModal");
-            modal.style.display = "none"; // Ocultar el modal
-            btnAbrirModal.style.display = "block"; // Mostrar el botón de abrir modal
-        }
-
-
-        //llamar la variable mensaje y alertas
-
-        const mensaje = "<?php echo $mensaje; ?>";
-
-        if (mensaje === "producto_agregado") {
-            Swal.fire({
-                title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
-                html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
-                    </div>
-                    <p>Producto agregado con éxito al inventario.</p>
-                </div>
-            `,
-                background: 'hsl(0deg 0% 100% / 76%)',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        } else if (mensaje === "error_al_agregar") {
-            Swal.fire({
-                title: '<span class="titulo-alerta error">Error</span>',
-                html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                    </div>
-                    <p>Error al agregar el producto.</p>
-                </div>
-            `,
-                background: 'hsl(0deg 0% 100% / 76%)',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputCodigo = document.getElementById('codigo1');
-            const submitBtn = document.querySelector('#product-form button[type="submit"]');
-
-            // Generar el tooltip dentro de .campo
-            const campo = inputCodigo.closest('.campo');
-            let tooltip = campo.querySelector('.small-error-tooltip');
-            if (!tooltip) {
-                tooltip = document.createElement('div');
-                tooltip.className = 'small-error-tooltip';
-                tooltip.textContent = 'Este código ya está registrado.';
-                campo.appendChild(tooltip);
-            }
-
-            inputCodigo.addEventListener('blur', () => {
-                const val = inputCodigo.value.trim();
-                if (!val) {
-                    inputCodigo.classList.remove('error');
-                    tooltip.style.display = 'none';
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                fetch('crearproducto.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.exists) {
-                            inputCodigo.classList.add('error');
-                            tooltip.style.display = 'block';
-                            submitBtn.disabled = true;
-                        } else {
-                            inputCodigo.classList.remove('error');
-                            tooltip.style.display = 'none';
-                            submitBtn.disabled = false;
-                        }
-                    })
-                    .catch(() => {
-                        // en error de red, ocultamos el tooltip y permitimos envío
-                        inputCodigo.classList.remove('error');
-                        tooltip.style.display = 'none';
-                        submitBtn.disabled = false;
-                    });
-            });
-        });
-
-
-        //Modal para crear categoria
-        // Referencias
-        const modalCat = document.getElementById('modalCategoria');
-        const formCat = document.getElementById('formAddCategoria');
-        const selCategoria = document.getElementById('categoria');
-        const btnCancelCat = document.getElementById('btnCancelarCategoria');
-
-        // Abrir modal
-        function openModalCategoria() {
-            modalCat.classList.add('show');
-            document.getElementById('inputNombreCategoria').focus();
-        }
-        // Cerrar modal
-        btnCancelCat.addEventListener('click', () => modalCat.classList.remove('show'));
-        modalCat.addEventListener('click', e => {
-            if (e.target === modalCat) modalCat.classList.remove('show');
-        });
-
-        // Manejar submit AJAX
-        formCat.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('inputNombreCategoria').value.trim();
-            if (!nombre) return;
-            fetch('', { // misma URL
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        accion: 'add_categoria',
-                        nombre: nombre
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        // 1) Agregar nueva opción al select
-                        const opt = document.createElement('option');
-                        opt.value = data.id;
-                        opt.text = data.nombre;
-                        opt.selected = true;
-                        selCategoria.appendChild(opt);
-                        // 2) Cerrar modal y limpiar input
-                        modalCat.classList.remove('show');
-                        formCat.reset();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    }
-                })
-                .catch(err => console.error(err));
-        });
-
-        // Referencias para Ubicación
-        const modalUbic = document.getElementById('modalUbicacion');
-        const formUbic = document.getElementById('formAddUbicacion');
-        const selUbicacion = document.getElementById('ubicacion');
-        const btnCancelUbic = document.getElementById('btnCancelarUbicacion');
-
-        // Funciones abrir/cerrar el modal de Ubicación
-        function openModalUbicacion() {
-            modalUbic.classList.add('show');
-            document.getElementById('inputNombreUbicacion').focus();
-        }
-        btnCancelUbic.addEventListener('click', () => modalUbic.classList.remove('show'));
-        modalUbic.addEventListener('click', e => {
-            if (e.target === modalUbic) modalUbic.classList.remove('show');
-        });
-
-        // AJAX para agregar Ubicación
-        formUbic.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('inputNombreUbicacion').value.trim();
-            if (!nombre) return;
-            fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        accion: 'add_ubicacion',
-                        nombre: nombre
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        // Crear y seleccionar la nueva opción
-                        const opt = document.createElement('option');
-                        opt.value = data.id;
-                        opt.text = data.nombre;
-                        opt.selected = true;
-                        selUbicacion.appendChild(opt);
-                        // Cerrar y resetear modal
-                        modalUbic.classList.remove('show');
-                        formUbic.reset();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    }
-                })
-                .catch(err => console.error(err));
-        });
-
-        // Referencias para Marca
-        const modalMarca = document.getElementById('modalMarca');
-        const formMarca = document.getElementById('formAddMarca');
-        const selMarca = document.getElementById('marca');
-        const btnCancelMarca = document.getElementById('btnCancelarMarca');
-
-        // Abrir / cerrar modal Marca
-        function openModalMarca() {
-            modalMarca.classList.add('show');
-            document.getElementById('inputNombreMarca').focus();
-        }
-        btnCancelMarca.addEventListener('click', () => modalMarca.classList.remove('show'));
-        modalMarca.addEventListener('click', e => {
-            if (e.target === modalMarca) modalMarca.classList.remove('show');
-        });
-
-        // AJAX para agregar Marca
-        formMarca.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('inputNombreMarca').value.trim();
-            if (!nombre) return;
-
-            fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        accion: 'add_marca',
-                        nombre: nombre
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        // Crear y seleccionar la nueva opción
-                        const opt = document.createElement('option');
-                        opt.value = data.id;
-                        opt.text = data.nombre;
-                        opt.selected = true;
-                        selMarca.appendChild(opt);
-                        // Cerrar y limpiar modal
-                        formMarca.reset();
-                        modalMarca.classList.remove('show');
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    }
-                })
-                .catch(err => console.error(err));
-        });
-    </script>
-    <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
-        <?php
-        $id_usuario = $_SESSION['usuario_id'];
-        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
-        $nombreUsuario = $rowUsuario['nombre'];
-        $apellidoUsuario = $rowUsuario['apellido'];
-        $rol = $rowUsuario['rol'];
-        $foto = $rowUsuario['foto'];
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
-
-    </div>
-    <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
-    </div>
-
+    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+    <p class="rol">Rol: <?php echo $rol; ?></p>
+  </div>
+  <div class="profilePic">
+    <?php if (!empty($rowUsuario['foto'])): ?>
+      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+    <?php else: ?>
+      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+    <?php endif; ?>
+  </div>
 </body>
 
 </html>

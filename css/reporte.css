@@ -141,7 +141,7 @@ display: flex;
 
 .filter-button {
     padding: 8px 16px;
-    background-color: #1aa906;
+    background-color: 218838;
     color: white;
     border: none;
     cursor: pointer;
@@ -165,6 +165,20 @@ display: flex;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
+#btnClear{
+    background-color: #1167cc;
+    font-size: 12px;
+    color: white;
+    padding: 5px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 6%;
+    width: 42%;
+}
+#btnClear:hover {
+  background-color: #0056b3;
+}
+
 .search-form {
     display: flex;
     align-items: center;
@@ -605,12 +619,11 @@ form input[type="text"], #editForm select {
 }
 
 .recibo-button {
-    font-size: 20px;
+    font-size: 24px;
     color: #ffffff;
     border: 2px solid transparent;
     padding: 5px;
     border-radius: 50%;
-    margin-left: 68%;
 }
 
 .recibo-button:hover {
@@ -664,105 +677,12 @@ form input[type="text"], #editForm select {
     border: 2px solid #ffffff; /* Borde blanco */
 }
 
-/*Alertas*/
 
-
-/* Estilos generales de los párrafos */
-p {
-    font-size: 16px;
-    color: black;
-    font-family: arial;
-    padding: 10px;
-}
-
-
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%;
-    /* Se ajusta automáticamente */
-    max-width: 350px;
-    /* Define un límite de ancho */
-}
-
-
-/* Imágenes dentro del modal */
-.custom-alert .moto,
-.custom-alert .llave,
-.custom-alert .tornillo {
-    width: 177px;
-    height: 130px;
-}
-
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-    position: relative;
-    display: inline-block;
-}
-
-
-
-.titulo-alerta {
-    font-size: 28px;
-    font-weight: bold;
+.table-wrapper {
     display: block;
-    margin-bottom: 10px;
-    font-family: 'Arial Black', sans-serif;
-    letter-spacing: 1px;
-}
-
-.titulo-alerta.confirmacion {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #9b9496;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-.titulo-alerta.error {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #af3b3b;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-.titulo-alerta.advertencia {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #e09804;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-
-
-.btn-aceptar {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-.swal2-border-radius {
-    border-radius: 5px !important;
-}
-
-
-
-.fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    /* Fondo oscuro */
-    backdrop-filter: blur(2px);
-    /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-    border-radius: 20px;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* MÓVILES */

@@ -108,7 +108,7 @@ if (!$resultado) {
 }
 
 // Agregar proveedor
-if ($_POST && isset($_POST['guardar'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
   if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
   };
@@ -118,6 +118,35 @@ if ($_POST && isset($_POST['guardar'])) {
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
 
+  // Si el id es mayor a 10 digitos alerta de error
+  if (strlen($nit) > 9) {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: '<span class=\"titulo-alerta error\">Error</span>',
+            html: `
+                <div class=\"custom-alert\">
+                    <div class=\"contenedor-imagen\">
+                        <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                    </div>
+                    <p>El NIT no puede tener más de 9 dígitos.</p>
+                </div>
+            `,
+            background: '#ffffffdb',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    });
+</script>";
+
+    exit;
+  }
 
   $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo')";
 
@@ -148,6 +177,7 @@ if ($_POST && isset($_POST['guardar'])) {
         });
     });
 </script>";
+    
   } else {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
 
@@ -176,25 +206,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>";
+    
   }
+  exit;
 }
 
 // Actualización de datos del modal
-if (isset($_POST['nit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
   // Se reciben y se escapan las variables
-  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
+  $original = mysqli_real_escape_string($conexion, $_POST['nitOriginal']);
+  $nuevo    = mysqli_real_escape_string($conexion, $_POST['nitNuevo']);
   $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
   $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
 
   $consulta_update = "UPDATE proveedor SET 
-        nit = '$nit', 
+        nit = '$nuevo',
         nombre = '$nombre', 
         telefono = '$telefono', 
         direccion = '$direccion', 
         correo = '$correo'
-        WHERE nit = '$nit'";
+        WHERE nit = '$original'";
   if (mysqli_query($conexion, $consulta_update)) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
     echo "<script>
@@ -247,6 +280,7 @@ if (isset($_POST['nit'])) {
                     });
                     </script>";
   }
+  exit;
 }
 
 
@@ -304,7 +338,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-
     .required::after {
       content: " *";
       color: red;
@@ -356,6 +389,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+  <?php include 'boton-ayuda.php'; ?>
   <?php
   // Justo después de tu conexión y filtros:
   $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p";
@@ -567,30 +601,31 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <h2>Editar Proveedor</h2>
       <form id="editForm" method="post">
         <!-- Campo oculto para enviar el código 1 -->
-        <input type="hidden" id="editNit" name="nit">
+        <input type="hidden" name="nitOriginal" id="editNit" value="">
+
         <div class="campo"><label class="required" for="editNitVisible">Nit:</label>
-          <input type="text" id="editNitVisible" readonly
-          oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <input type="text" name="nitNuevo" id="editNitVisible" readonly
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo"><label class="required" for="editNombre">Nombre:</label>
           <input type="text" id="editNombre" name="nombre"
-          oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+            oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
         </div>
         <div class="campo"> <label class="required" for="editTelefono">Teléfono:</label>
           <input type="text" id="editTelefono" name="telefono"
-          oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo"><label class="required" for="editDireccion">Dirección:</label>
           <input type="text" id="editDireccion" name="direccion">
         </div>
         <div class="campo"> <label class="required" for="editCorreo">Correo:</label>
           <input type="text" id="editCorreo" name="correo"
-           pattern=".+@.+"
-          placeholder="ejemplo@correo.com">
+            pattern=".+@.+"
+            placeholder="ejemplo@correo.com">
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelarEdit">Cancelar</button>
-          <button type="submit" id="modal-boton">Guardar </button>
+          <button type="submit" id="modal-boton" name="actualizar">Guardar </button>
         </div>
       </form>
     </div>
@@ -907,34 +942,37 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
     });
   </script>
-  <div class="userInfo">
+ <div class="userContainer">
+    <div class="userInfo">
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    <?php
-    $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-    $id_usuario = $_SESSION['usuario_id'];
-    $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-    $stmtUsuario = $conexion->prepare($sqlUsuario);
-    $stmtUsuario->bind_param("i", $id_usuario);
-    $stmtUsuario->execute();
-    $resultUsuario = $stmtUsuario->get_result();
-    $rowUsuario = $resultUsuario->fetch_assoc();
-    $nombreUsuario = $rowUsuario['nombre'];
-    $apellidoUsuario = $rowUsuario['apellido'];
-    $rol = $rowUsuario['rol'];
-    $foto = $rowUsuario['foto'];
-    $stmtUsuario->close();
-    ?>
-    <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-    <p class="rol">Rol: <?php echo $rol; ?></p>
-
-  </div>
-  <div class="profilePic">
-    <?php if (!empty($rowUsuario['foto'])): ?>
-      <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-    <?php else: ?>
-      <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-    <?php endif; ?>
-  </div>
+    </div>
+    <div class="profilePic">
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
+    </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const rowsPerPage = 7;

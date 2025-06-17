@@ -115,6 +115,7 @@ $sectionColors = [
 </head>
 
 <body>
+  
   <div id="sidebar" class="sidebar">
     <div class="sidebar-header">
       <a href="../html/inicio.php"><img src="../imagenes/LOGO.webp" alt="Logo" class="logo" /></a>
@@ -168,6 +169,8 @@ $sectionColors = [
         <span>Salir</span>
       </a>
     </li>
+    
   </ul>
+  
 </body>
 </html>
