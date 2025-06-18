@@ -593,47 +593,63 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         //verificacion que marca no se repita 
         // Referencias
-        const nombreInput = document.getElementById('nombre');
-        const btnGuardar = document.getElementById('btnGuardar');
-        const btnAbrir = document.getElementById('btnAbrirModal');
-        let nombreValido = false;
+        document.addEventListener('DOMContentLoaded', () => {
+  const nombreInput  = document.getElementById('nombre');
+  const nombreError  = document.getElementById('nombre-error');
+  const btnGuardar   = document.getElementById('btnGuardar');
+  const btnAbrir     = document.getElementById('btnAbrirModal');
 
-        // AJAX de validación
-        async function validarMarca(nombre) {
-            try {
-                const form = new URLSearchParams();
-                form.append('check_marca', '1');
-                form.append('nombre', nombre.trim());
-                const res = await fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: form.toString()
-                });
-                const json = await res.json();
-                return !json.exists;
-            } catch (e) {
-                console.error(e);
-                return false;
-            }
-        }
+  // Función para validar en el servidor
+  async function validarMarca(nombre) {
+    try {
+      const form = new URLSearchParams();
+      form.append('check_marca', '1');
+      form.append('nombre', nombre);
+      const res  = await fetch('', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form.toString()
+      });
+      const json = await res.json();
+      return !json.exists;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 
-        // Listener en tiempo real
-        nombreInput.addEventListener('input', async () => {
-            const val = nombreInput.value.trim();
-            nombreValido = val ? await validarMarca(val) : false;
+  nombreInput.addEventListener('input', async () => {
+    const val = nombreInput.value.trim();
 
-            nombreInput.classList.toggle('invalid', !nombreValido);
-            btnGuardar.disabled = !nombreValido;
-        });
+    // Si está vacío o NO tiene ninguna letra, no validar y ocultar error
+    if (!val || !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(val)) {
+      nombreInput.classList.remove('invalid');
+      nombreError.style.display = 'none';
+      btnGuardar.disabled = true;
+      return;
+    }
 
-        // Al abrir el modal, resetear estado
-        btnAbrir.addEventListener('click', () => {
-            nombreInput.value = '';
-            nombreInput.classList.remove('invalid');
-            btnGuardar.disabled = true;
-        });
+    // Ahora sí, validamos en el servidor
+    const disponible = await validarMarca(val);
+
+    if (!disponible) {
+      nombreInput.classList.add('invalid');
+      nombreError.style.display = 'block';
+    } else {
+      nombreInput.classList.remove('invalid');
+      nombreError.style.display = 'none';
+    }
+    btnGuardar.disabled = !disponible;
+  });
+
+  // Al abrir el modal, reseteamos todo
+  btnAbrir.addEventListener('click', () => {
+    nombreInput.value       = '';
+    nombreInput.classList.remove('invalid');
+    nombreError.style.display = 'none';
+    btnGuardar.disabled     = true;
+  });
+});
     </script>
 
 </body>

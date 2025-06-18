@@ -264,8 +264,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="nombre"
                         name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+                        required/>
                     <span id="nombre-error" class="input-error-message">
                         Esta ubicación ya está registrada.
                     </span>

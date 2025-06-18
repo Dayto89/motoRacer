@@ -1,34 +1,150 @@
-/* Estilos base actualizados para responsive */
+ /* Reseteo y estilos básicos */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
-  --font-main: "Merriweather", serif;
-  --font-sec: Arial, Helvetica, sans-serif;
-  --primary-color: #1c51a0;
-  --secondary-color: #87cefa;
-  --text-light: white;
-  --text-dark: #333;
-  --bg-dark: #1c1c1c;
-  --bg-overlay: rgba(0, 0, 0, 0.6);
-  --popup-bg: rgba(200, 200, 200, 0.83);
-  --highlight-color: #007bff;
-  --danger-color: red;
+body {
+  font-family: "Merriweather", serif;
+  background-color: #1c1c1c;
+  color: white;
+}
+
+.container {
+  align-items: center;
+  background: rgb(174 174 174 / 59%);
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  width: 87%;
+  max-width: 44%;
+  padding: 29px;
+}
+
+h1 {
+  font-size: 44px;
+  color: white;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
+  margin-left: 37%;
+  letter-spacing: 5px;
+  padding: 14px;
+  letter-spacing: 5px;
+}
+
+.profile-pic {
+  text-align: center;
+}
+
+.profile-pic img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #87cefa;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 47px;
+  margin-left: 74px;
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+}
+
+.info-group label {
+  margin-bottom: 5px;
+  color: white;
+  font-size: 19px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+}
+
+.info-group span {
+  flex: 0.5;
+  padding: 10px;
+  background: #f4f4f4;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 23px;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  size: 10px;
+  font-weight: normal;
+  width: 115%;
+}
+
+.btn-abrir {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #1167cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 87%;
+  margin-top: 18%;
+  width: 30%;
+}
+
+.btn-abrir:hover {
+  background-color: #0056b3;
+  transform: scale(1.07);
+}
+
+.popup h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #003366;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px #000000;
+}
+
+.popup form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.button_popup {
+  display: flex;
+  gap: 34px;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 50%;
+  margin-left: 27%;
+}
+.button_container {
+  margin-bottom: 5%;
+}
+
+.btn-cancelar {
+  background: red;
+  color: white;
+  margin-right: 10px;
 }
 
 body {
-  font-family: var(--font-main);
+  font-family: "Metal Mania", system-ui;
   background: url("fondoMotoRacer.png") no-repeat center center fixed;
   background-size: cover;
-  color: var(--text-light);
+  color: #fff;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  position: relative;
+  height: 100vh;
 }
 
 body::before {
@@ -43,227 +159,327 @@ body::before {
   z-index: -1;
 }
 
-.container {
-  background: rgba(174, 174, 174, 0.59);
-  border-radius: 1rem;
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.5);
-  width: 90%;
-  max-width: 700px;
-  padding: 2rem;
-  margin: 2rem auto;
+.form-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-right: 5%;
 }
 
-h1 {
-  font-size: 2.75rem;
-  text-align: center;
-  color: var(--text-light);
-  text-shadow: 2px 2px var(--primary-color);
-  padding: 1rem;
-  letter-spacing: 0.2rem;
-}
-
-.profile-pic {
-  text-align: center;
-}
-
-.profile-pic img {
-  width: 9rem;
-  height: 9rem;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--secondary-color);
-}
-
-.info-group {
+/* Formularios */
+.form-container form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 2rem;
+  gap: 15px;
 }
 
-.info-group label {
-  font-size: 1.2rem;
-  color: var(--text-light);
-  font-family: var(--font-sec);
-  text-shadow: 1px 1px var(--primary-color);
+.input-group {
+  text-align: left;
 }
 
-.info-group span {
-  padding: 0.75rem;
-  background: #f4f4f4;
-  color: var(--text-dark);
-  border: 1px solid #ddd;
-  border-radius: 1rem;
-  font-size: 1rem;
-}
-
-.btn-abrir {
+.input-group label {
   display: block;
-  margin: 2rem auto;
-  padding: 0.75rem 1.5rem;
-  background-color: #1167cc;
-  color: white;
+  font-size: 1em;
+  margin-bottom: 5px;
+  color: #ddd;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  width: 70%;
+  color: #fff;
+  font-size: 1em;
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
-.btn-abrir:hover {
-  background-color: #0056b3;
-  transform: scale(1.07);
+.input-group input:focus,
+.input-group textarea:focus {
+  background: rgb(174, 174, 174 / 59%);
+  box-shadow: 0 0 5px #1e88e5;
+  outline: none;
 }
 
-.popup,
+.input-group textarea {
+  resize: none;
+  height: 80px;
+}
+
+/* Estilos para la ventana emergente */
 .overlay {
-  display: none;
   position: fixed;
-  top: 0;
+  top: 0; /* Evita que se corte en la parte superior */
   left: 0;
   width: 100vw;
   height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* Oscurece todo el fondo */
+  display: none; /* Se mostrará con JS */
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
 
+/* Mostrar ventana emergente */
 .overlay.active {
   display: flex;
-  background: var(--bg-overlay);
 }
 
+/* Definición de keyframes */
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
+
+/* Estados del popup */
 .popup {
-  background: var(--popup-bg);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-  max-height: 80vh;
-  overflow-y: auto;
+  position: relative;
+  background-color: rgb(200 200 200 / 83%);
+  padding: 20px;
+  border-radius: 10px;
+  width: 22%;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  /* quitamos la animación fija aquí */
+  animation-duration: 0.3s;
+  animation-fill-mode: forwards;
+  height: auto;
+}
+
+.popup.open {
+  animation-name: slideIn;
+}
+
+.popup.closing {
+  animation-name: slideOut;
 }
 
 .popup h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  text-shadow: 1px 1px var(--primary-color);
-  color: var(--text-light);
+  font-size: 32px;
+  margin-top: 15px;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0,
+    -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 4px;
 }
 
-.popup input,
-.input-group input,
-.input-group textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 1rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  margin-bottom: 1rem;
+.popup input {
+  margin: 0;
+  background-color: #ffffff;
+  border-radius: 24px;
+  height: 40px;
+  width: 67%;
+  color: #000;
+  padding: 0px 0px 0px 10px;
+  border: none;
+  font-size: 13px;
+  margin-bottom: 12px;
+  -webkit-appearance: none;
 }
 
-.button_popup,
-.btn-cancelar,
-.btn-guardar,
+.btn-cancelar:hover {
+  background: #c01515;
+  transform: scale(1.05);
+}
+
 .btn-guardar1 {
-  display: inline-block;
-  margin: 1rem auto;
-  padding: 0.75rem 1.25rem;
-  border-radius: 1rem;
-  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
   cursor: pointer;
   border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
 }
 
-.btn-cancelar,
-.btn-cancelar1 {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-.btn-cancelar:hover,
-.btn-cancelar1:hover {
-  background-color: #c01515;
-}
-
-.btn-guardar,
-.btn-guardar1 {
-  background-color: var(--highlight-color);
-  color: white;
-}
-
-.btn-guardar:hover,
 .btn-guardar1:hover {
-  background-color: #1565c0;
+  background: #1565c0;
+  transform: scale(1.05);
 }
 
-/* Responsive ajustes */
-@media (max-width: 768px) {
-  .container,
-  .popup {
-    width: 95%;
-    padding: 1rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-  }
-
-  .info-group span {
-    font-size: 0.9rem;
-  }
-
-  .btn-abrir {
-    width: 90%;
-  }
+/*SECCION DE VERIFICAR*/
+/* ======================= */
+/* 1) Ocultar elementos:  */
+/* ======================= */
+.hidden {
+  display: none !important;
 }
 
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.5rem;
-    padding: 0.5rem;
-  }
-
-  .popup h2 {
-    font-size: 1.5rem;
-  }
-
-  .info-group label,
-  .info-group span {
-    font-size: 0.85rem;
-  }
+/* ======================= */
+/* 2) Botones de verificación (igual que antes) */
+/* ======================= */
+.btn-cancelar1 {
+  background-color: #df2f2f;
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.btnCancelar1:hover {
+  background-color: #a71d2a;
 }
 
-/* Scrollbar */
+.btn-guardar {
+  background-color: rgb(50 83 133);
+  color: white;
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.btn-guardar:hover {
+  background-color: #007bff;
+}
+
+/* ======================= */
+/* 3) Estilos de inputs y labels */
+/* ======================= */
+.popup label {
+  margin-bottom: 5px;
+  color: white;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-shadow: 2px 0 #1c51a0;
+  white-space: nowrap;
+}
+
+.input-group input {
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 18px;
+  width: 83%;
+  margin-left: 9%;
+}
+input#correoVerificado.input-group {
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 18px;
+  width: 67%;
+  margin-left: 4%;
+}
+.input-group p{
+  text-align: center;
+  width: 83%;
+  margin-left: 9%;
+  font-size: 16px;
+  color: black;
+  font-family: arial;
+  padding: 10px;
+  font-weight: bold;
+}
+/* ======================= */
+/* 4) Estilo del botón “Cambiar correo” */
+/* ======================= */
+.btn-verificar-correo {
+  background-color: white;
+  color: #3d3a3a;
+  font-size: 16px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  width: 83%;
+  margin-left: 9%;
+}
+.btn-verificar-correo:hover {
+  background-color: #85baf1;
+}
+
+/* ======================= */
+/* 5) Ajustes de #verificacionWrapper */
+/* ======================= */
+#verificacionWrapper {
+  margin-top: 20px;
+}
+#verificacionWrapper h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+/* 3) (Opcional) Reducir margen superior/inferior de verificacionWrapper */
+#verificacionWrapper {
+  margin-top: 10px; /* Un poco menos de separación para ganar espacio */
+  margin-bottom: 10px;
+}
+#mensajeModal {
+  text-align: center;
+  width: 83%;
+  margin-left: 9%;
+}
+
+/* 1) Limitar la altura del popup y permitir scroll */
+.popup {
+  max-height: 77vh; /* Hasta el 80% de la altura de la ventana */
+  overflow-y: auto; /* Activa el scroll vertical cuando sobrepase */
+  /* Si quieres que el scroll solo aparezca en móviles muy estrechos, puedes usar media queries */
+}
 .popup::-webkit-scrollbar {
-  width: 4px;
+  width: 3px; /* barra muy delgada */
 }
-
-.popup::-webkit-scrollbar-thumb {
-  background-color: #2f79b6;
-  border-radius: 5px;
-}
-
+/* 2.2) Hacer que la pista (track) sea transparente */
 .popup::-webkit-scrollbar-track {
   background: transparent;
 }
-
-.popup {
-  scrollbar-width: thin;
-  scrollbar-color: #2f79b6 transparent;
+/* 2.3) Thumb (la parte que se arrastra), color azul vivo */
+.popup::-webkit-scrollbar-thumb {
+  background-color: rgb(47 121 182); /* azul brillante */
+  border-radius: 3px; /* bordes redondeados */
 }
-
-/* Imagen de perfil (editable) */
+/* 2.4) Al pasar el cursor por la thumb, cambiar ligeramente */
+.popup::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(47 121 182); /* azul un poco más oscuro en hover */
+}
+/* En Firefox usamos propiedades estándar */
+.popup {
+  scrollbar-width: thin; /* hace la barra más estrecha */
+  scrollbar-color: rgb(213, 215, 218) transparent; /* thumb color / track color */
+}
+/* 2) Ajustar padding para que no choque con el scroll */
+.popup {
+  padding: 4px 4px; /* Ajusta a tu gusto */
+  box-sizing: border-box;
+}
+/*PARA SUBIR IMAGEN AL EDITAR PERFIL*/
+/* Contenedor general */
 .image-upload-container {
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 1rem 0;
 }
 
+/* Posiciona imagen + overlay */
 .avatar-upload {
   position: relative;
-  width: 7.5rem;
-  height: 7.5rem;
+  width: 120px;
+  height: 120px;
 }
 
 .avatar-upload .preview {
@@ -271,34 +487,101 @@ h1 {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid var(--highlight-color);
+  border: 3px solid #007bff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* Oculta el input nativo */
 .avatar-upload input[type="file"] {
   display: none;
 }
 
+/* El overlay: ocupa todo el círculo, centra icono */
 .avatar-upload .upload-overlay {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100%; /* abarque todo el círculo */
   height: 100%;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.4);
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* apila texto + icono */
   align-items: center;
   justify-content: center;
+  text-align: center;
+  padding: 0.2rem; /* espacio interior */
   opacity: 0;
+  cursor: pointer;
   transition: opacity 0.3s ease;
 }
-
+/* Al hacer hover, se ve el overlay */
 .avatar-upload:hover .upload-overlay {
   opacity: 1;
 }
 
-.upload-overlay i,
-.upload-overlay .upload-text {
+/* Icono del botón */
+.avatar-upload .upload-overlay i {
+  font-size: 2rem;
   color: #fff;
+}
+.upload-overlay .upload-text {
+  font-size: 12px;
+  line-height: 2.1;
+  word-break: break-word;
+  max-width: 100%;
+  color: #fff;
+}
+.upload-overlay i {
+  margin-top: 0.2rem;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+/* MÓVILES */
+/* Horizontal */
+@media screen and (max-width: 870px) and (orientation: landscape) {
+  .container {
+    margin-top: 60%;
+    margin-left: 0%;
+    max-width: 100%;
+    padding: 0;
+  }
+}
+
+/* Vertical */
+@media screen and (max-width: 870px) and (orientation: portrait) {
+  .container {
+    max-width: 75%;
+    margin-left: 20%;
+    height: 98%;
+  }
+
+  .form-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    margin-right: 0%;
+  }
+
+  .info-group {
+    margin-top: 2vh;
+    margin-left: 4.5vh;
+  }
+
+  h1 {
+    margin-left: 25%;
+  }
+
+  .btn-abrir {
+    margin-left: 35%;
+  }
+}
+
+/* TABLETS */
+/* Horizontal */
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+}
+
+/* Vertical */
+@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
 }

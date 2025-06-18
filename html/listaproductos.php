@@ -195,195 +195,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script src="/js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <style>
-    .required::after {
-      content: " *";
-      color: red;
-    }
-
-    /* ------------------------------------------------- */
-    /* Estilos para filtrado/ordenamiento/resaltado     */
-    /* ------------------------------------------------- */
-    /* Resaltado de fila seleccionada */
-    /* #productTable table tbody tr.selected {
-  background-color: rgba(0, 123, 255, 0.15);
-}
-#productTable tbody tr.selected td {
-  background-color: rgba(0, 123, 255, 0.15);
-} */
-
-    #productTable tbody tr:hover,
-    #productTable tbody tr:hover td {
-      background-color: rgba(0, 123, 255, 0.15);
-    }
-
-
-    /* Cursor pointer en encabezados para indicar que son clicables */
-    table th {
-      cursor: pointer;
-      position: relative;
-      user-select: none;
-    }
-
-    /* Flecha de ordenamiento en cada <th> */
-    .sort-arrow {
-      margin-left: 5px;
-      font-size: 0.8em;
-      display: inline-block;
-      width: 0.8em;
-      text-align: center;
-    }
-
-    /* Input para búsqueda en tiempo real */
-    #searchRealtime {
-      width: 23%;
-      padding: 5px 8px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
-
-    /* Botón eliminar múltiple */
-    #delete-selected {
-      margin-left: 10px;
-    }
-
-    /* Estilos básicos para paginación dinámica */
-    .pagination-dinamica {
-      display: flex;
-      justify-content: center;
-      margin-top: 23px;
-      gap: 12px;
-      font-family: arial;
-      font-size: 14px;
-    }
-
-    .pagination-dinamica button {
-      padding: 6px 10px;
-      background-color: #f0f0f0;
-      border: 1px solid #ccc;
-      color: #333;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9em;
-    }
-
-    .pagination-dinamica button:hover:not(.active) {
-      background-color: rgb(158, 146, 209);
-    }
-
-    .pagination-dinamica button.active {
-      background-color: #007bff;
-      color: white;
-      font-weight: bold;
-      pointer-events: none;
-      border-color: #007bff;
-    }
-
-    /* contenedor flex de filtros */
-    .filtros-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      border-radius: 12px;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    /* búsqueda */
-    .search-box input {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      background: #1f1f1f;
-      color: #fff;
-      border: 1px solid #444;
-      width: 180px;
-    }
-
-    /* cada filtro */
-    .filtro {
-      position: relative;
-      min-width: 150px;
-    }
-
-    /* botón de filtro */
-    .filtro-titulo {
-      width: 100%;
-      background: #0d6efd;
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background 0.3s;
-    }
-
-    .filtro-titulo:hover {
-      background: #0b5ed7;
-    }
-
-    .filtro-titulo i {
-      transition: transform 0.3s ease;
-    }
-
-    /* dropdown oculto */
-    .filtro-opciones {
-      display: none;
-      position: absolute;
-      top: 110%;
-      left: 0;
-      background: #1e1e1e;
-      border: 1px solid #444;
-      border-radius: 8px;
-      max-height: 220px;
-      overflow-y: auto;
-      padding: 0.5rem;
-      z-index: 100;
-    }
-
-    /* mostrar opciones si está activo */
-    .filtro.active .filtro-opciones {
-      display: block;
-    }
-
-    .filtro.active .filtro-titulo i {
-      transform: rotate(180deg);
-    }
-
-    /* checkbox dentro de opciones */
-    .filtro-opciones label {
-      display: block;
-      margin: 6px 0;
-      font-size: 14px;
-      color: #eee;
-      cursor: pointer;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    /* checkbox input */
-    .filtro-opciones input[type="checkbox"] {
-      margin-right: 6px;
-    }
-
-    /* botón limpiar */
-    .clear-btn button {
-      background: #6c757d;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .clear-btn button:hover {
-      background: #5a6268;
-    }
-  </style>
 </head>
 
 <body>
@@ -396,7 +207,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!-- ============================== -->
     <!-- 6) FILTROS / BÚSQUEDA CLIENTE  -->
     <!-- ============================== -->
-    <div class="filter-bar">
+    <div class="barra-superior">
+       <button id="filtros-btn">Mostrar Filtros</button>
+      <!-- Caja de búsqueda en tiempo real (cliente) -->
+      <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
+      <!-- Botón exportar a Excel (agregado de nuevo) -->
+      <div class="export-button" style="margin-left: 15px;">
+        <form action="exportar_excel.php" method="post">
+          <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
+            <i class="fas fa-file-excel"></i>
+            <label> Exportar a Excel</label>
+          </button>
+        </form>
+      </div>
+     
+    </div>
+    <div id="filtros-popup" class="filtros-popup">
       <div class="filtros-container">
 
         <!-- Sub‑dropdown Categorías -->
@@ -461,26 +287,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         <!-- Botón Limpiar -->
         <div class="filtro clear-btn">
-          <button id="btnClear">Limpiar filtros</button>
+          <button id="btnClear">Limpiar </button>
         </div>
-
       </div>
-
-      <!-- Caja de búsqueda en tiempo real (cliente) -->
-      <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
-
-      <!-- Botón exportar a Excel (agregado de nuevo) -->
-      <div class="export-button" style="margin-left: 15px;">
-        <form action="exportar_excel.php" method="post">
-          <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
-            <i class="fas fa-file-excel"></i>
-            <label> Exportar a Excel</label>
-          </button>
-        </form>
-      </div>
-
-
     </div>
+
+
 
     <div class="table-wrapper">
       <table id="productTable">
@@ -1069,17 +881,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
         if (selected.length < 2) return; // redundante, pero seguro
 
-        Swal.fire({
+         Swal.fire({
           title: '<span class="titulo-alerta advertencia">¿Eliminar seleccionados?</span>',
-          html: `<p>Se eliminarán ${selected.length} productos.</p>`,
-          showCancelButton: true,
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-          customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar",
-            cancelButton: "btn-cancelar"
-          }
+          html: `
+          <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                </div>
+          <p>Se eliminarán ${selected.length} productos.</p>
+          </div>`,
+         background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar",
+          container: 'fondo-oscuro'
+        }
         }).then(result => {
           if (!result.isConfirmed) return;
           // tu fetch a eliminar_productos.php con { codigos: selected }
@@ -1095,7 +915,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             .then(r => r.json())
             .then(data => {
               if (data.success) {
-                Swal.fire("Eliminados", `${selected.length} productos eliminados.`, "success")
+                 Swal.fire({
+          title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+          html: `
+          <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                </div>
+          <p>Los proveedores se eliminaron correctamente.</p>
+          </div>`,
+         background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+          })
                   .then(() => location.reload());
               } else {
                 Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
@@ -1268,7 +1105,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         applyFilter();
       });
     });
-    /*ANIMACIONES*/
+    document.getElementById('filtros-btn').onclick = function() {
+      document.getElementById('filtros-popup').classList.toggle('active');
+    };
   </script>
 
   <div class="userContainer">

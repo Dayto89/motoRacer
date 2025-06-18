@@ -19,21 +19,6 @@ body::before {
   background: black;
   opacity: 0.6;
 }
-… .main-content {
-  padding: 20px;
-
-  height: 100vh;
-  margin-right: 100px;
-}
-
-.main-content table {
-   box-shadow: 0 0 15px white;
-  border-radius: 8px;
-  margin: 20px auto; /* Le da espacio para que se vea la sombra */
-  width: fit-content; /* Ajusta al contenido */
-  border-collapse: collapse;
-  overflow: hidden;
-}
 
 .main-content h1 {
   color: white;
@@ -51,11 +36,10 @@ body::before {
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  color: white;
-  margin-left: 23%;
-  font-family: Arial;
+    border-collapse: collapse;
+    color: white;
+    margin-left: 60px;
+    font-family: Arial;
 }
 
 th,
@@ -104,18 +88,6 @@ input[type="checkbox"] {
   color: #ffffff;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
     3px 3px 0 #000;
-}
-
-/* Ajustes para el título */
-.main-content h1 {
-  color: white;
-  text-align: center;
-  margin-top: 40px;
-  margin-bottom: 20px;
-  font-family: "Metal Mania", system-ui;
-  font-size: 70px;
-  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
-    3px 5px 0 #1c51a0;
 }
 
 /* Ajustes para el filter-bar */
@@ -469,58 +441,52 @@ form input[type="text"],
   margin-right: 0px;
 }
 
-.main-content table {
-  width: auto;
-  max-width: 88%;
-  table-layout: fixed;
-  margin-left: 6%;
-}
-
 .main-content table th,
 .main-content table td {
   overflow-wrap: break-word; /* Hace que el texto largo se divida en varias líneas */
   word-break: break-word;
 }
-.main-content table th:nth-child(1),
-.main-content table td:nth-child(1) {
-  width: 10%;
+
+.main-content table th:nth-child(1), 
+.main-content table td:nth-child(1) { 
+    width: 100px; 
 }
 
-.main-content table th:nth-child(2),
-.main-content table td:nth-child(2) {
-  width: 10%;
+.main-content table th:nth-child(2), 
+.main-content table td:nth-child(2) { 
+    width: 150px; 
 }
 
-.main-content table th:nth-child(3),
-.main-content table td:nth-child(3) {
-  width: 10%;
+.main-content table th:nth-child(3), 
+.main-content table td:nth-child(3) { 
+    width: 200px; 
 }
 
-.main-content table th:nth-child(4),
-.main-content table td:nth-child(4) {
-  width: 20%;
+.main-content table th:nth-child(4), 
+.main-content table td:nth-child(4) { 
+    width: 150px; 
 }
 
-.main-content table th:nth-child(5),
-.main-content table td:nth-child(5) {
-  width: 25%;
+.main-content table th:nth-child(5), 
+.main-content table td:nth-child(5) { 
+    width: 200px; 
 }
 
-.main-content table th:nth-child(6),
-.main-content table td:nth-child(6) {
-  width: 10%;
+.main-content table th:nth-child(6), 
+.main-content table td:nth-child(6) { 
+    width: 150px;
 }
 
-.main-content table th:nth-child(7),
-.main-content table td:nth-child(7) {
-  width: 10%;
+.main-content table th:nth-child(7), 
+.main-content table td:nth-child(7) { 
+    width: 150px;
 }
 
-.main-content table th:nth-child(8),
-.main-content table td:nth-child(8) {
-  width: 0%;
+.main-content table th:nth-child(8), 
+.main-content table td:nth-child(8) { 
+       width: 100px;
+    height: 57px;
 }
-
 .edit-button,
 .delete-button {
   background: none;
@@ -623,6 +589,21 @@ form input[type="text"],
 #providerTable tbody tr:hover td {
   background-color: rgba(0, 123, 255, 0.15);
 }
+
+.table-wrapper {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.tabla-centrada {
+  box-shadow: 0 0 15px white;
+  border-radius: 8px;
+  margin: 20px auto; /* Le da espacio para que se vea la sombra */
+  width: fit-content; /* Ajusta al contenido */
+  border-collapse: collapse;
+  overflow: hidden;
+}
 /*ANIMACIONES MODALES*/
 
 /*diseño que nit no se repita*/
@@ -671,6 +652,7 @@ input.error {
   border-style: solid;
   border-color: transparent #ffe6e6 transparent transparent;
 }
+
 /*-----------------------------------------------------------*/
 
 /* MÓVILES */

@@ -620,59 +620,61 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Obtener referencias
-      const nombreInput = document.getElementById('nombre');
-      const btnGuardar = document.getElementById('btnGuardar');
-      const btnAbrirNuevaCategoria = document.getElementById('btnAbrirModal');
-      let nombreValido = false;
+  const nombreInput = document.getElementById('nombre');
+  const nombreError = document.getElementById('nombre-error');
+  const btnGuardar = document.getElementById('btnGuardar');
+  let nombreValido = false;
 
-      // Función para validar en el servidor
-      async function validarNombre(nombre) {
-        try {
-          const form = new URLSearchParams();
-          form.append('check_nombre', '1');
-          form.append('nombre', nombre.trim());
-          const res = await fetch('', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: form.toString()
-          });
-          const json = await res.json();
-          return !json.exists; // true si NO existe aún
-        } catch (e) {
-          console.error(e);
-          return false;
-        }
-      }
-
-      // Listener en tiempo real
-      nombreInput.addEventListener('input', async () => {
-        const valor = nombreInput.value.trim();
-        if (!valor) {
-          nombreValido = false;
-        } else {
-          nombreValido = await validarNombre(valor);
-        }
-
-        if (!nombreValido) {
-          nombreInput.classList.add('invalid');
-        } else {
-          nombreInput.classList.remove('invalid');
-        }
-
-        btnGuardar.disabled = !nombreValido;
+  async function validarNombre(nombre) {
+    try {
+      const form = new URLSearchParams();
+      form.append('check_nombre', '1');
+      form.append('nombre', nombre.trim());
+      const res = await fetch('', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form.toString()
       });
+      const json = await res.json();
+      return !json.exists;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 
-      // Al abrir el modal, asegúrate de resetear estado
-      btnAbrirNuevaCategoria.addEventListener('click', () => {
-        nombreInput.value = '';
-        nombreInput.classList.remove('invalid');
-        btnGuardar.disabled = true;
-      });
+  nombreInput.addEventListener('input', async () => {
+    const valor = nombreInput.value.trim();
 
-    });
+    // Si está vacío o no contiene ninguna letra, no validar ni mostrar error
+    if (!valor || !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(valor)) {
+      nombreInput.classList.remove('invalid');
+      nombreError.style.display = 'none';
+      btnGuardar.disabled = true;
+      return;
+    }
+
+    // Sólo aquí validamos en el servidor
+    nombreValido = await validarNombre(valor);
+
+    if (!nombreValido) {
+      nombreInput.classList.add('invalid');
+      nombreError.style.display = 'block';
+    } else {
+      nombreInput.classList.remove('invalid');
+      nombreError.style.display = 'none';
+    }
+    btnGuardar.disabled = !nombreValido;
+  });
+
+  // Al abrir el modal, resetear estado
+  document.getElementById('btnAbrirModal').addEventListener('click', () => {
+    nombreInput.value = '';
+    nombreInput.classList.remove('invalid');
+    nombreError.style.display = 'none';
+    btnGuardar.disabled = true;
+  });
+});
   </script>
 
 </body>

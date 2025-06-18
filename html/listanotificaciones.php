@@ -211,7 +211,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <h1>Notificaciones</h1>
     <div class="filter-bar">
       <!-- Filtros adaptados -->
-      <details class="filter-dropdown">
+       <div class="barra-superior">
         <summary class="filter-button">Filtrar</summary>
         <div class="filter-options">
           <form id="filterForm">
@@ -234,7 +234,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               </select>
             </div>
             <div class="form-group">
-              <button type="button" id="clearFilters" class="filter-button">Limpiar Filtros</button>
+              <button type="button" id="clearFilters" class="filter-button">Limpiar</button>
             </div>
           </form>
         </div>
@@ -512,11 +512,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           btnEstado.classList.add('boton-accion', 'marcar-toggle');
           btnEstado.dataset.id = row.id;
           if (row.leida) {
-            btnEstado.textContent = 'Marcar No Leída';
+            btnEstado.textContent = 'No Leída';
             btnEstado.dataset.accion = 'marcar_no_leida';
             btnEstado.classList.add('marcarN');
           } else {
-            btnEstado.textContent = 'Marcar Leída';
+            btnEstado.textContent = 'Leída';
             btnEstado.dataset.accion = 'marcar_leida';
             btnEstado.classList.add('marcarL');
           }
@@ -683,11 +683,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           .then(resp => {
             if (resp.success) {
               if (accion === 'marcar_leida') {
-                btn.textContent = 'Marcar No Leída';
+                btn.textContent = 'No Leída';
                 btn.dataset.accion = 'marcar_no_leida';
                 btn.classList.replace('marcarL', 'marcarN');
               } else {
-                btn.textContent = 'Marcar Leída';
+                btn.textContent = 'Leída';
                 btn.dataset.accion = 'marcar_leida';
                 btn.classList.replace('marcarN', 'marcarL');
               }

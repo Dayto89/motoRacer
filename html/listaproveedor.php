@@ -399,7 +399,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
     <div class="table-wrapper">
       <?php if (mysqli_num_rows($resultado) > 0): ?>
-        <table id="providerTable" class="provider-table">
+        <table id="providerTable" class="tabla-centrada">
           <thead>
             <tr>
               <th>Nit </th>
@@ -526,35 +526,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <div id="nit-tooltip" class="small-error-tooltip">
               Este NIT ya está registrado
             </div>
-            </div>
-            <div class="campo">
-              <label class="required">Nombre:</label>
-              <input type="text" id="nombre" name="nombre" required />
-            </div>
+          </div>
+          <div class="campo">
+            <label class="required">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required />
+          </div>
 
-            <div class="campo">
-              <label class="required" for="telefono">Telefono:</label>
-              <input type="text" id="telefono" name="telefono" required
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-            </div>
+          <div class="campo">
+            <label class="required" for="telefono">Telefono:</label>
+            <input type="text" id="telefono" name="telefono" required
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+          </div>
 
-            <div class="campo">
-              <label class="required" for="direccion">Dirección:</label>
-              <input type="text" id="direccion" name="direccion" required />
-            </div>
-            <div class="campo">
-              <label class="required" for="correo">Correo:</label>
-              <input type="text" id="correo" name="correo" required
-                pattern=".+@.+"
-                placeholder="ejemplo@correo.com">
-            </div>
-            <div class="modal-buttons">
-              <button type="button" id="btnCancelar">Cancelar</button>
-              <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
-            </div>
+          <div class="campo">
+            <label class="required" for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" required />
+          </div>
+          <div class="campo">
+            <label class="required" for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" required
+              pattern=".+@.+"
+              placeholder="ejemplo@correo.com">
+          </div>
+          <div class="modal-buttons">
+            <button type="button" id="btnCancelar">Cancelar</button>
+            <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
           </div>
         </div>
-      </form>
+    </div>
+    </form>
   </div>
   </div>
 
@@ -804,103 +804,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         checkbox.addEventListener("change", toggleDeleteButton);
       });
 
-      deleteButton.addEventListener("click", function() {
-        let selectedCodes = Array.from(checkboxes)
-          .filter(checkbox => checkbox.checked)
-          .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
-
-        if (selectedCodes.length === 0) {
-          alert("Selecciona al menos un proveedor para eliminar.");
-          return;
-        }
-
-        // Mostrar la alerta con SweetAlert
-        Swal.fire({
-          title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
-          html: `
-            <div class="custom-alert">
-                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                <p>Los proveedores se eliminarán de forma permanente.</p>
-            </div>
-        `,
-          background: '#ffffffdb',
-          showCancelButton: true,
-          confirmButtonText: "Sí, eliminar",
-          cancelButtonText: "Cancelar",
-          customClass: {
-            popup: "custom-alert",
-            confirmButton: "btn-eliminar", // Clase personalizada para el botón de confirmación
-            cancelButton: "btn-cancelar", // Clase personalizada para el botón de cancelar
-            container: 'fondo-oscuro'
-          }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Depuración: Ver datos antes de enviarlos
-            console.log("Enviando códigos a eliminar:", selectedCodes);
-
-            // Enviar datos al servidor
-            fetch("eliminar_proveedores.php", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  nits: selectedCodes
-                })
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log("Respuesta del servidor:", data); // Depuración
-                if (data.success) {
-                  Swal.fire({
-                      title: '<span class="titulo-alerta confirmacion">Exito</span>',
-                      html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" alt="Exito" class="moto">
-                                </div>
-                                <p>Productos eliminados correctamente.</p>
-                            </div>
-                        `,
-                      background: '#ffffffdb',
-                      confirmButtonText: 'Aceptar',
-                      confirmButtonColor: '#007bff',
-                      customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-aceptar',
-                        container: 'fondo-oscuro'
-                      }
-                    })
-                    .then(() => location.reload()); // Recargar página después de cerrar la alerta
-                } else {
-                  Swal.fire("Error", "Error al eliminar los productos: " + data.error, "error");
-                }
-              })
-              .catch(error => {
-                console.error("Error en la solicitud:", error);
-                Swal.fire({
-                  title: '<span class="titulo-alerta confirmacion">Exito</span>',
-                  html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/moto.png" alt="Exito" class="moto">
-                                </div>
-                                <p>Uno o mas proveedores seleccionados tienen productos asociados.</p>
-                            </div>
-                        `,
-                  background: '#ffffffdb',
-                  confirmButtonText: 'Aceptar',
-                  confirmButtonColor: '#007bff',
-                  customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                  }
-                })
-              });
-          }
-        });
-      });
     });
   </script>
   <div class="userContainer">
@@ -944,6 +847,88 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       const paginationContainer = document.getElementById('jsPagination');
       const inputBusqueda = document.getElementById('searchRealtime');
       const headers = document.querySelectorAll('#providerTable thead th');
+      const deleteBtn = document.getElementById('delete-selected');
+
+      // Mostrar/ocultar botón según checkboxes
+      function toggleBtn() {
+        const anyChecked = !!document.querySelector('.select-product:checked');
+        deleteBtn.style.display = anyChecked ? 'inline-block' : 'none';
+      }
+      document.querySelectorAll('.select-product').forEach(cb => {
+        cb.addEventListener('change', toggleBtn);
+      });
+
+      // Al hacer clic en “Eliminar seleccionados”:
+      deleteBtn.addEventListener('click', () => {
+        const selected = Array.from(document.querySelectorAll('.select-product:checked'))
+          .map(cb => cb.value.trim());
+        if (selected.length === 0) return;
+
+         Swal.fire({
+          title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+          html: `
+          <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                </div>
+          <p>Se eliminarán ${selected.length} proveedores.</p>
+          </div>`,
+          background: '#ffffffdb',
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "custom-alert",
+          confirmButton: "btn-eliminar",
+          cancelButton: "btn-cancelar",
+          container: 'fondo-oscuro'
+        }
+        }).then(choice => {
+          if (!choice.isConfirmed) return;
+
+          fetch('eliminar_proveedores.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                nits: selected
+              })
+            })
+            .then(r => r.json())
+            .then(data => {
+              if (data.success) {
+                // Quita filas del DOM
+                selected.forEach(nit => {
+                  const row = document.querySelector(`.select-product[value="${nit}"]`);
+                  if (row) row.closest('tr').remove();
+                });
+               Swal.fire({
+          title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+          html: `
+          <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                </div>
+          <p>Los proveedores se eliminaron correctamente.</p>
+          </div>`,
+         background: '#ffffffdb',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#007bff',
+                  customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                  }
+          });
+                toggleBtn();
+              } else {
+                Swal.fire('Error', data.error || 'No se pudo eliminar.', 'error');
+              }
+            })
+            .catch(() => Swal.fire('Error', 'Fallo de comunicación.', 'error'));
+        });
+      });
 
       // Render tabla
       function renderTable() {
@@ -991,46 +976,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         // Inicializamos estado al cargar
         toggleDeleteButtonVisibility();
 
-        // Al hacer clic en eliminar seleccionados...
-        deleteBtn.addEventListener("click", () => {
-          const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-          if (selected.length < 2) return; // redundante, pero seguro
-
-          Swal.fire({
-            title: '<span class="titulo-alerta advertencia">¿Eliminar seleccionados?</span>',
-            html: `<p>Se eliminarán ${selected.length} productos.</p>`,
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-            customClass: {
-              popup: "custom-alert",
-              confirmButton: "btn-eliminar",
-              cancelButton: "btn-cancelar"
-            }
-          }).then(result => {
-            if (!result.isConfirmed) return;
-            // tu fetch a eliminar_productos.php con { codigos: selected }
-            fetch("eliminar_productos.php", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                  codigos: selected
-                })
-              })
-              .then(r => r.json())
-              .then(data => {
-                if (data.success) {
-                  Swal.fire("Eliminados", `${selected.length} productos eliminados.`, "success")
-                    .then(() => location.reload());
-                } else {
-                  Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
-                }
-              })
-              .catch(() => Swal.fire("Error", "Fallo comunicación.", "error"));
-          });
-        });
       }
 
       function toggleDeleteButtonVisibility() {

@@ -112,6 +112,54 @@ body.swal2-shown.swal2-height-auto{
   background-color: #3c5e4d;
 }
 
+/* Textarea de observación dentro de SweetAlert2 */
+.swal2-textarea#swal-input-obs {
+  width: 94%;             /* ocupa todo el ancho del popup */
+  max-width: 24rem;        /* ancho máximo razonable */
+  padding: 0.75rem;        /* espacio interno */
+  font-size: 1rem;         /* legible */
+  line-height: 1.4;        /* altura de línea cómoda */
+  border: 2px solid #dc3545;  /* borde rojo acorde al botón */
+  border-radius: 0.5rem;   /* esquinas redondeadas */
+  background-color: #fff;  /* fondo blanco puro */
+  resize: vertical;        /* sólo cambio de altura */
+  min-height: 6rem;        /* altura inicial */
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* ligero relieve interno */
+  transition: border-color 0.2s; /* efecto suave al enfocar */
+  margin-left: 3%;
+}
+
+.swal2-textarea#swal-input-obs:focus {
+  outline: none;
+  border-color: #a71d2a;   /* rojo más oscuro al enfocar */
+}
+/* Estilo del mensaje de validación dentro de SweetAlert2 */
+.swal2-validation-message {
+  color: #dc3545;               /* rojo intenso como tu botón */
+  font-size: 0.95rem;           /* tamaño legible, por debajo del texto principal */
+  margin: 0.5rem 0 0;           /* separa un poco del textarea */
+  text-align: center;           /* centrado bajo el input */
+  font-weight: 500;             /* un poco más de presencia */
+  line-height: 1.3;    
+  font-family: Arial, Helvetica, sans-serif;         /* altura de línea cómoda */
+}
+
+/* Si quieres que aparezca con una pequeña animación de entrada */
+.swal2-validation-message {
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* MÓVILES - VISTA HORIZONTAL */
 @media screen and (max-width: 870px) and (orientation: landscape) {
   /* Estilo general para párrafos */

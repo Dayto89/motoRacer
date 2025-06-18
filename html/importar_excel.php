@@ -1,159 +1,148 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
-}
+date_default_timezone_set('America/Bogota');
+header('Content-Type: text/html; charset=UTF-8');
 
 require '../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-// ------------ Conexión a la base de datos ------------
-$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-if ($conexion->connect_error) {
-    mostrarAlertaJS('error', 'Error BD', 'No se pudo conectar con la base de datos.<br><small>' . $conexion->connect_error . '</small>');
-    exit;
-}
-
 /**
- * Ejecuta SweetAlert2 vía JavaScript
+ * Muestra una alerta SweetAlert2 y redirige de vuelta.
  */
-function mostrarAlertaJS($tipo, $titulo, $mensaje) {
-    // $tipo: 'confirmacion', 'advertencia' o 'error'
-    $iconos = [
-        'confirmacion' => 'moto.png',
-        'advertencia'  => 'tornillo.png',
-        'error'        => 'llave.png'
-    ];
-    $icono = $iconos[$tipo] ?? 'llave.png';
+function mostrarAlertaJS($type, $title, $text) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
     echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: `<span class='titulo-alerta {$tipo}'>${titulo}</span>`,
-                html: `
-                    <div class='custom-alert'>
-                        <div class='contenedor-imagen'>
-                            <img src='../imagenes/{$icono}' alt='${titulo}' class='{$tipo}'>
-                        </div>
-                        <p>${mensaje}</p>
-                    </div>
-                `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            }).then(() => {
-                window.location.href = '../html/crearproducto.php';
-            });
-        });
+      document.addEventListener('DOMContentLoaded', function(){
+        Swal.fire({
+          icon:   '{$type}',
+          title:  '{$title}',
+          html:   `{$text}`,
+          confirmButtonText: 'Aceptar'
+        }).then(()=>{ window.location.href = '../html/crearproducto.php'; });
+      });
     </script>";
+    exit;
 }
+
+// 1) Autorización
+if (!isset($_SESSION['usuario_id'])) {
+    mostrarAlertaJS('error','No autorizado','Por favor inicie sesión.');
+}
+
+// 2) Llega la acción de importar
+if (!isset($_POST['importar'])) {
+    mostrarAlertaJS('warning','Atención','No se recibió la señal de importación.');
+}
+
+// 3) Archivo subido
+if (empty($_FILES['archivoExcel']['tmp_name']) || !is_uploaded_file($_FILES['archivoExcel']['tmp_name'])) {
+    mostrarAlertaJS('error','Atención','No se subió ningún archivo.');
+}
+
+// 4) Validar extensión, MIME y tamaño
+$ext  = strtolower(pathinfo($_FILES['archivoExcel']['name'], PATHINFO_EXTENSION));
+$finfo= new finfo(FILEINFO_MIME_TYPE);
+$mime = $finfo->file($_FILES['archivoExcel']['tmp_name']);
+$maxSize = 3 * 1024 * 1024; // 3 MiB
+if (
+    !in_array($ext, ['xlsx','xls']) ||
+    !in_array($mime, [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel'
+    ])
+) {
+    mostrarAlertaJS('error','Formato inválido','Solo se permiten archivos .xlsx o .xls');
+}
+if ($_FILES['archivoExcel']['size'] > $maxSize) {
+    mostrarAlertaJS('error','Archivo muy grande',"El Excel no puede exceder ".($maxSize/1024/1024)." MiB.");
+}
+
+// 5) Conexión DB
+$conexion = new mysqli('localhost','root','','inventariomotoracer');
+if ($conexion->connect_error) {
+    mostrarAlertaJS('error','Error BD',$conexion->connect_error);
+}
+$conexion->set_charset('utf8mb4');
 
 /**
- * Obtiene o crea el registro en $tabla buscando por $columnaNombre = $valor.
- * Retorna el código generado en $columnaCodigo.
+ * Busca o crea en la tabla dada, retornando el código (PK).
  */
-function obtenerOCrearCodigo(mysqli $conexion, string $tabla, string $columnaNombre, string $valor, string $columnaCodigo) {
-    // 1. Buscar
-    $sql = "SELECT `$columnaCodigo` FROM `$tabla` WHERE `$columnaNombre` = ? LIMIT 1";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param('s', $valor);
-    $stmt->execute();
-    $stmt->bind_result($codigo);
-    if ($stmt->fetch()) {
-        $stmt->close();
+function obtenerOCrearCodigo(mysqli $c, $tabla, $colNombre, $valor, $colCodigo) {
+    $sql = "SELECT `$colCodigo` FROM `$tabla` WHERE `$colNombre` = ? LIMIT 1";
+    $st  = $c->prepare($sql);
+    $st->bind_param('s',$valor);
+    $st->execute();
+    $st->bind_result($codigo);
+    if ($st->fetch()) {
+        $st->close();
         return $codigo;
     }
-    $stmt->close();
-
-    // 2. Si no existe, insertar
-    $sqlIns = "INSERT INTO `$tabla` (`$columnaNombre`) VALUES (?)";
-    $ins = $conexion->prepare($sqlIns);
-    $ins->bind_param('s', $valor);
+    $st->close();
+    // insertar nuevo
+    $ins = $c->prepare("INSERT INTO `$tabla` (`$colNombre`) VALUES (?)");
+    $ins->bind_param('s',$valor);
     if (!$ins->execute()) {
-        throw new Exception("Error al crear en $tabla: " . $ins->error);
+        throw new Exception("Error creando en $tabla: ".$ins->error);
     }
-    $nuevoCodigo = $ins->insert_id;
+    $nuevo = $ins->insert_id;
     $ins->close();
-    return $nuevoCodigo;
-}
-
-if (!isset($_POST['importar'])) {
-    // No se envió el formulario
-    mostrarAlertaJS('advertencia', 'Atención', 'No se recibió la señal de importación.');
-    exit;
-}
-
-// ------------ Validación de archivo subido ------------
-if (empty($_FILES['archivoExcel']['tmp_name'])) {
-    mostrarAlertaJS('advertencia', 'Atención', 'No se ha seleccionado ningún archivo.');
-    exit;
-}
-$nombreArchivo = $_FILES['archivoExcel']['name'];
-$ext = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
-if (!in_array($ext, ['xlsx','xls'])) {
-    mostrarAlertaJS('error', 'Formato inválido', 'Solo se permiten archivos .xlsx o .xls');
-    exit;
+    return $nuevo;
 }
 
 try {
-    // ------------ Carga de Excel ------------
+    // 6) Cargar Excel
     $spreadsheet = IOFactory::load($_FILES['archivoExcel']['tmp_name']);
-    $hoja = $spreadsheet->getActiveSheet();
-    $datos = $hoja->toArray(null, true, true, true);
+    $hoja        = $spreadsheet->getActiveSheet();
+    $datos       = $hoja->toArray(null,true,true,true);
 
-    // ------------ Validación de encabezados ------------
+    // 7) Validar encabezados (13 cols)
     $encEsperados = [
-        'codigo1','codigo2','nombre','iva',
-        'precio1','precio2','precio3','cantidad',
-        'descripcion','categoria','marca','clase',
-        'ubicacion','proveedor'
+      'codigo1','codigo2','nombre','iva',
+      'precio1','precio2','precio3','cantidad',
+      'categoria','marca','clase',
+      'ubicacion','proveedor'
     ];
     $encExcel = array_map('strtolower', array_values($datos[1]));
     if ($encExcel !== $encEsperados) {
-        mostrarAlertaJS('error','Encabezados inválidos','Los encabezados no coinciden con los esperados: ' . implode(', ',$encEsperados));
-        exit;
+        mostrarAlertaJS(
+          'error','Encabezados inválidos',
+          'Se esperaban: '.implode(', ',$encEsperados)
+        );
     }
 
-    // ------------ Preparación de INSERT y UPDATE ------------
-    $sqlInsert = "INSERT INTO producto
-        (codigo1,codigo2,nombre,iva,precio1,precio2,precio3,cantidad,descripcion,
-         Categoria_codigo,Marca_codigo,UnidadMedida_codigo,Ubicacion_codigo,proveedor_nit)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    $sqlUpdate = "UPDATE producto SET
-        nombre=?, iva=?, precio1=?, precio2=?, precio3=?, cantidad=?,
-        descripcion=?, Categoria_codigo=?, Marca_codigo=?, UnidadMedida_codigo=?,
-        Ubicacion_codigo=?, proveedor_nit=?
+    // 8) Preparar statements
+    $sqlI = "INSERT INTO producto
+      (codigo1,codigo2,nombre,iva,precio1,precio2,precio3,cantidad,
+       Categoria_codigo,Marca_codigo,UnidadMedida_codigo,Ubicacion_codigo,proveedor_nit)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    $sqlU = "UPDATE producto SET
+       nombre=?, iva=?, precio1=?, precio2=?, precio3=?, cantidad=?,
+       Categoria_codigo=?, Marca_codigo=?, UnidadMedida_codigo=?,
+       Ubicacion_codigo=?, proveedor_nit=?
      WHERE codigo1=? AND codigo2=?";
+    $stI = $conexion->prepare($sqlI);
+    $stU = $conexion->prepare($sqlU);
 
-    $stmtI = $conexion->prepare($sqlInsert);
-    $stmtU = $conexion->prepare($sqlUpdate);
-
-    $filasOmitidas = [];
-    // ------------ Procesamiento de filas --------
-    for ($i=2; $i<=count($datos); $i++) {
+    $omitidas = [];
+    $total    = count($datos);
+    for ($i=2; $i<=$total; $i++) {
         $fila = array_map('trim', array_values($datos[$i]));
-        if (count($fila) < 14) {
-            $filasOmitidas[] = $i;
-            continue;
+        if (count($fila) < 13) {
+            $omitidas[] = $i; continue;
         }
-        list(
-            $c1,$c2,$nom,$iva,$p1,$p2,$p3,$cant,
-            $desc,$cat,$mar,$uni,$ubi,$prov
-        ) = $fila;
+        list($c1,$c2,$nom,$iva,$p1,$p2,$p3,$cant,$cat,$mar,$uni,$ubi,$prov) = $fila;
 
-        // Validar campos obligatorios
-        if (!$c1||!$c2||!$nom||!$cat||!$mar||!$uni||!$ubi||!$prov) {
-            $filasOmitidas[] = $i;
-            continue;
+        // Validar obligatorios y tipos
+        if (
+            !$c1 || !$nom ||
+            !is_numeric($iva) ||
+            !is_numeric($p1) ||
+            !filter_var($cant, FILTER_VALIDATE_INT, ["options"=>["min_range"=>0,"max_range"=>99]])
+        ) {
+            $omitidas[] = $i; continue;
         }
 
-        // Obtener o crear FK
+        // FK: obtener o crear
         try {
             $catCod  = obtenerOCrearCodigo($conexion,'categoria','nombre',$cat,'codigo');
             $marCod  = obtenerOCrearCodigo($conexion,'marca','nombre',$mar,'codigo');
@@ -161,55 +150,50 @@ try {
             $ubiCod  = obtenerOCrearCodigo($conexion,'ubicacion','nombre',$ubi,'codigo');
             $provNit = obtenerOCrearCodigo($conexion,'proveedor','nombre',$prov,'nit');
         } catch (Exception $e) {
-            error_log("Fila $i: " . $e->getMessage());
-            $filasOmitidas[] = $i;
-            continue;
+            $omitidas[] = $i; continue;
         }
 
-        // Decidir INSERT o UPDATE
+        // UPDATE vs INSERT
         $chk = $conexion->prepare("SELECT 1 FROM producto WHERE codigo1=? AND codigo2=? LIMIT 1");
         $chk->bind_param('ss',$c1,$c2);
         $chk->execute();
         $chk->store_result();
 
         if ($chk->num_rows>0) {
-            // UPDATE
-            $stmtU->bind_param(
-                'diiisiiiiiisss',
-                $nom,$iva,$p1,$p2,$p3,$cant,$desc,
+            // UPDATE: 11 campos + 2 en WHERE
+            $stU->bind_param(
+                'diiiii iiiisss',
+                $nom,$iva,$p1,$p2,$p3,$cant,
                 $catCod,$marCod,$uniCod,$ubiCod,$provNit,
                 $c1,$c2
             );
-            if (!$stmtU->execute()) {
-                error_log("Error UPDATE fila $i: " . $stmtU->error);
-            }
+            $stU->execute();
         } else {
-            // INSERT
-            $stmtI->bind_param(
-                'sssdiiissiiiis',
+            // INSERT: 13 parámetros
+            $stI->bind_param(
+                'sssdiiissiiis',
                 $c1,$c2,$nom,$iva,$p1,$p2,$p3,$cant,
-                $desc,$catCod,$marCod,$uniCod,$ubiCod,$provNit
+                $catCod,$marCod,$uniCod,$ubiCod,$provNit
             );
-            if (!$stmtI->execute()) {
-                error_log("Error INSERT fila $i: " . $stmtI->error);
-            }
+            $stI->execute();
         }
         $chk->close();
     }
 
-    $stmtI->close();
-    $stmtU->close();
+    $stI->close();
+    $stU->close();
+    $conexion->close();
 
-    // ------------ Mostrar resultado ------------
-    if (empty($filasOmitidas)) {
-        mostrarAlertaJS('confirmacion','Éxito','Archivo importado y datos actualizados correctamente.');
+    // 9) Resultado
+    if (empty($omitidas)) {
+        mostrarAlertaJS('success','Éxito',"Importación completa ({$total}-1 filas).");
     } else {
-        $omit = implode(', ',$filasOmitidas);
-        mostrarAlertaJS('advertencia','Importación parcial',"Se omitieron las filas: $omit");
+        mostrarAlertaJS(
+          'warning','Importación parcial',
+          'Omitidas filas: '.implode(', ',$omitidas)
+        );
     }
-    exit;
 
 } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-    mostrarAlertaJS('error','Error Excel','No se pudo procesar el archivo.<br><small>'.$e->getMessage().'</small>');
-    exit;
+    mostrarAlertaJS('error','Error Excel',$e->getMessage());
 }

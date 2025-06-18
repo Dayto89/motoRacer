@@ -56,6 +56,7 @@ h3 {
 
  /* Tabla de categorías */
  .user-table {
+      box-shadow: 0 0 15px white;
     width: 100%;
     border-collapse: collapse;
     color: white;

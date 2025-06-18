@@ -574,32 +574,41 @@ input[type="checkbox"] {
 }
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgb(0 0 0 / 65%);
-  display: flex;
-  justify-content: center;
+  top:0; left:0; right:0; bottom:0;
+  display: none;
   align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
   z-index: 1000;
+}
+.modal.show {
+  display: flex;
+}
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  position: relative;
+}
+.close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 .modal.hidden {
   display: none;
 }
 
 .modal-content {
-  background-color: rgba(228, 227, 227, 0.842);
-  padding: 20px 30px;
-  border-radius: 10px;
-  width: 450px;
-  text-align: left;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease-out;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  max-width: 90%;      /* para no desbordar en pantallas pequeñas */
+  width: 500px;         /* ancho fijo o relativo a tu gusto */
+  box-sizing: border-box;
+  position: relative;
 }
 
 .modal-content #modalMessage {
@@ -882,7 +891,7 @@ input.error {
 }
 
 /* Contenedor blanco */
-.modal-content-nueva {
+.modal-content-nueva, .modal-content {
   background-color: rgba(200, 200, 200, 0.76);
   border-radius: 8px;
   width: 400px;
@@ -980,13 +989,13 @@ font-size: 32px;
   background-color: #256bb5;
 }
 /* --- Estados de animación --- */
-.modal_nueva_categoria.opening .modal-content-nueva {
+.modal_nueva_categoria.opening .modal-content-nueva,.modal.opening .modal-content {
   transform: translateY(0);
   opacity: 1;
 }
 
 /* Al cerrar: movemos 50px hacia arriba y fade-out */
-.modal_nueva_categoria.closing .modal-content-nueva {
+.modal_nueva_categoria.closing .modal-content-nueva, .modal.closing .modal-content {
   transform: translateY(-50px);
   opacity: 0;
 }
@@ -1022,17 +1031,18 @@ input.invalid {
 .input-error-message {
   display: none;
   position: absolute;
-  top: 50%;
-  left: 100%;
+  top: 78%;
+  left: -53%;
   transform: translate(8px, -50%);
   background: #f8d7da;
   color: #721c24;
   padding: 4px 8px;
   border: 1px solid #f5c6cb;
   border-radius: 4px;
-  font-size: 0.85em;
+  font-size: 12px;
   white-space: nowrap;
   z-index: 10;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .input-error-message::after {

@@ -504,18 +504,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
 
 
-        // Mostrar el popup
         function abrirPopup() {
-            const overlay = document.getElementById('overlay');
-            overlay.style.display = 'flex'; // para usar flex centering
-            document.getElementById('popupProfilePic').src =
-                document.getElementById('profilePic').src;
-        }
-        // Cerrar el popup
-        function cerrarPopup() {
-            document.getElementById('overlay').style.display = 'none';
-        }
+    const overlay = document.getElementById('overlay');
+    const popup   = document.getElementById('popup');
 
+    overlay.style.display = 'flex';
+    // Quitar clase 'closing' en caso de que exista
+    popup.classList.remove('closing');
+    // Forzar reflow para reiniciar animación si fuese necesario
+    void popup.offsetWidth;
+    // Añadir clase de apertura
+    popup.classList.add('open');
+}
+
+function cerrarPopup() {
+    const overlay = document.getElementById('overlay');
+    const popup   = document.getElementById('popup');
+
+    // Quitar la clase de apertura
+    popup.classList.remove('open');
+    // Añadir la clase de cierre
+    popup.classList.add('closing');
+
+    // Cuando termine la animación de cierre, ocultamos el overlay
+    popup.addEventListener('animationend', function handler() {
+        overlay.style.display = 'none';
+        // limpiamos clases para la próxima apertura
+        popup.classList.remove('closing');
+        popup.removeEventListener('animationend', handler);
+    });
+}
 
         // Función para subir imagen
         function uploadImage() {

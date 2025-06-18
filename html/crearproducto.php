@@ -134,29 +134,29 @@ if (
 }
 
 // 1a) Check nombre de categoría
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion']==='check_categoria') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_categoria') {
     header('Content-Type: application/json');
     $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
     $r = mysqli_query($conexion, "SELECT 1 FROM categoria WHERE nombre='$n' LIMIT 1");
-    echo json_encode(['exists'=> (mysqli_num_rows($r)>0)]);
+    echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
     exit;
 }
 
 // 1b) Check nombre de ubicación
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion']==='check_ubicacion') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_ubicacion') {
     header('Content-Type: application/json');
     $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
     $r = mysqli_query($conexion, "SELECT 1 FROM ubicacion WHERE nombre='$n' LIMIT 1");
-    echo json_encode(['exists'=> (mysqli_num_rows($r)>0)]);
+    echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
     exit;
 }
 
 // 1c) Check nombre de marca
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion']==='check_marca') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_marca') {
     header('Content-Type: application/json');
     $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
     $r = mysqli_query($conexion, "SELECT 1 FROM marca WHERE nombre='$n' LIMIT 1");
-    echo json_encode(['exists'=> (mysqli_num_rows($r)>0)]);
+    echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
     exit;
 }
 
@@ -223,42 +223,48 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div id="crearProducto" class="form-section">
         <h1>Crear Producto</h1>
         <!-- Abrir modal para subir el archivo -->
-        <button type="submit" class="icon-button" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
+        <button
+            type="button"
+            class="icon-button"
+            aria-label="Importar archivo"
+            title="Importar archivo"
+            id="btnAbrirModalImport">
             <i class="fas fa-file-excel"></i>
             <label>Importar archivo</label>
         </button>
+     <!-- **Nuevo** modal de importación -->
+<div id="modalImport" class="modal">
+  <div class="modal-content">
+    <span class="close-button" id="btnCerrarModalImport">&times;</span>
 
-        <!-- Modal para subir el archivo -->
-        <div id="modalConfirm" class="modal hidden">
-            <div class="modal-content">
-                <!-- Botón "X" para cerrar -->
-                <span class="close-button" onclick="closeModal()">&times;</span>
-
-                <!-- Formulario para subir el archivo -->
-                <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
-                    <label>Selecciona el archivo Excel:</label>
-                    <label for="archivoExcel" class="custom-file-upload">
-                        <i class="fas fa-cloud-upload-alt"></i><br>
-                        <span>Haz clic para seleccionar un archivo</span>
-                    </label>
-
-                    <input
-                        id="archivoExcel"
-                        type="file"
-                        name="archivoExcel"
-                        accept=".xlsx, .xls"
-                        required
-                        hidden />
-
-                    <button type="submit" name="importar" onclick="closeModal()">Importar</button>
-                    <!-- Botón de cancelar eliminado -->
-                    <a href="../componentes/formato_productos.xlsx" download class="download-link">
-                        <i class="fas fa-file-download" style="color: #0b59c7;"></i>
-                        Descargar formato de Excel
-                    </a>
-                </form>
-            </div>
-        </div>
+    <form
+      method="post"
+      enctype="multipart/form-data"
+      action="/html/importar_excel.php"
+    >
+      <label>Selecciona el archivo Excel:</label>
+      <label for="archivoExcel" class="custom-file-upload">
+        <i class="fas fa-cloud-upload-alt"></i><br>
+        <span>Haz clic para seleccionar un archivo</span>
+      </label>
+      <input
+        id="archivoExcel"
+        type="file"
+        name="archivoExcel"
+        accept=".xlsx,.xls"
+        required
+        data-max-size="2097152"
+        hidden
+      />
+      <div class="modal-buttons">
+        <button type="submit" name="importar">Importar</button>
+        <a href="../componentes/formato_productos.xlsx" download>
+          <i class="fas fa-file-download"></i> Descargar formato
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
     </div>
 
 
@@ -404,85 +410,81 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <!-- Modal Nueva Categoría -->
-<div id="modalCategoria" class="modal_nueva_categoria">
-  <div class="modal-content-nueva">
-    <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
-    <h2>Nueva categoría</h2>
-    <form id="formAddCategoria" action="" method="POST">
-      <div class="form-group" style="position: relative;">
-        <label for="inputNombreCategoria">Ingrese el nombre de la categoría:</label>
-        <input
-          type="text"
-          id="inputNombreCategoria"
-          name="nombre"
-          required
-          oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
-        />
-        <span class="input-error-message">
-          Este nombre ya está registrado.
-        </span>
-      </div>
-      <div class="modal-buttons">
-        <button type="button" id="btnCancelarCategoria">Cancelar</button>
-        <button type="submit" id="btnGuardarCategoria" disabled>Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
+    <div id="modalCategoria" class="modal_nueva_categoria">
+        <div class="modal-content-nueva">
+            <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
+            <h2>Nueva categoría</h2>
+            <form id="formAddCategoria" action="" method="POST">
+                <div class="form-group" style="position: relative;">
+                    <label for="inputNombreCategoria">Ingrese el nombre de la categoría:</label>
+                    <input
+                        type="text"
+                        id="inputNombreCategoria"
+                        name="nombre"
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+                    <span class="input-error-message">
+                        Este nombre ya está registrado.
+                    </span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelarCategoria">Cancelar</button>
+                    <button type="submit" id="btnGuardarCategoria" disabled>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<!-- Modal Nueva Ubicación -->
-<div id="modalUbicacion" class="modal_nueva_categoria">
-  <div class="modal-content-nueva">
-    <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
-    <h2>Nueva ubicación</h2>
-    <form id="formAddUbicacion" method="POST" action="">
-      <div class="form-group" style="position: relative;">
-        <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
-        <input
-          type="text"
-          id="inputNombreUbicacion"
-          name="nombre"
-          required
-          oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
-        />
-        <span class="input-error-message">
-          Este nombre ya está registrado.
-        </span>
-      </div>
-      <div class="modal-buttons">
-        <button type="button" id="btnCancelarUbicacion">Cancelar</button>
-        <button type="submit" id="btnGuardarUbicacion" disabled>Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
+    <!-- Modal Nueva Ubicación -->
+    <div id="modalUbicacion" class="modal_nueva_categoria">
+        <div class="modal-content-nueva">
+            <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
+            <h2>Nueva ubicación</h2>
+            <form id="formAddUbicacion" method="POST" action="">
+                <div class="form-group" style="position: relative;">
+                    <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
+                    <input
+                        type="text"
+                        id="inputNombreUbicacion"
+                        name="nombre"
+                        required />
+                    <span class="input-error-message">
+                        Este nombre ya está registrado.
+                    </span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelarUbicacion">Cancelar</button>
+                    <button type="submit" id="btnGuardarUbicacion" disabled>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<!-- Modal Nueva Marca -->
-<div id="modalMarca" class="modal_nueva_categoria">
-  <div class="modal-content-nueva">
-    <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
-    <h2>Nueva marca</h2>
-    <form id="formAddMarca" method="POST" action="">
-      <div class="form-group" style="position: relative;">
-        <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
-        <input
-          type="text"
-          id="inputNombreMarca"
-          name="nombre"
-          required
-          oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
-        />
-        <span class="input-error-message">
-          Este nombre ya está registrado.
-        </span>
-      </div>
-      <div class="modal-buttons">
-        <button type="button" id="btnCancelarMarca">Cancelar</button>
-        <button type="submit" id="btnGuardarMarca" disabled>Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
+    <!-- Modal Nueva Marca -->
+    <div id="modalMarca" class="modal_nueva_categoria">
+        <div class="modal-content-nueva">
+            <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
+            <h2>Nueva marca</h2>
+            <form id="formAddMarca" method="POST" action="">
+                <div class="form-group" style="position: relative;">
+                    <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
+                    <input
+                        type="text"
+                        id="inputNombreMarca"
+                        name="nombre"
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+                    <span class="input-error-message">
+                        Este nombre ya está registrado.
+                    </span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelarMarca">Cancelar</button>
+                    <button type="submit" id="btnGuardarMarca" disabled>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <?php
 
@@ -529,309 +531,408 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
 
-   <script>
-    // ——— Modal de subir archivo ———
-    function openConfirmModal() {
-        const modal = document.getElementById("modalConfirm");
-        const btnAbrir = document.getElementById("btnAbrirModal");
-        modal.style.display = "flex";
-        btnAbrir.style.display = "none";
-    }
-    function closeConfirmModal() {
-        const modal = document.getElementById("modalConfirm");
-        const btnAbrir = document.getElementById("btnAbrirModal");
-        modal.style.display = "none";
-        btnAbrir.style.display = "block";
-    }
+    <script>
+        function openModal(modal) {
+            modal.classList.add('show');
+            void modal.offsetWidth; // fuerza reflow para animación
+            modal.classList.add('opening');
+        }
 
-    // ——— SweetAlert según mensaje PHP ———
-    const mensaje = "<?php echo $mensaje; ?>";
-    if (mensaje === "producto_agregado") {
-        Swal.fire({
-            title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
-            html: `
+        function closeModal(modal) {
+            modal.classList.remove('opening');
+            modal.classList.add('closing');
+            const contenido = modal.querySelector('.modal-content');
+            contenido.addEventListener('transitionend', function handler() {
+                contenido.removeEventListener('transitionend', handler);
+                modal.classList.remove('show', 'closing');
+            });
+        }
+        document.querySelector('form[action="/html/importar_excel.php"]').addEventListener('submit', e => {
+            const inp = document.getElementById('archivoExcel');
+            const file = inp.files[0];
+            if (!file) return; // el required ya avisa
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['xlsx', 'xls'].includes(ext)) {
+                Swal.fire('Error', 'Formato no permitido. Usa .xlsx o .xls', 'error');
+                e.preventDefault();
+                return;
+            }
+            const max = parseInt(inp.dataset.maxSize, 10);
+            if (file.size > max) {
+                Swal.fire('Error', `El archivo no puede pesar más de ${max/1024/1024} MiB`, 'error');
+                e.preventDefault();
+                return;
+            }
+        });
+
+        // ——— Modal de subir archivo ———
+        function openConfirmModal() {
+            const modal = document.getElementById("modalConfirm");
+            const btnAbrir = document.getElementById("btnAbrirModal");
+            modal.style.display = "flex";
+            btnAbrir.style.display = "none";
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById("modalConfirm");
+            const btnAbrir = document.getElementById("btnAbrirModal");
+            modal.style.display = "none";
+            btnAbrir.style.display = "block";
+        }
+
+        // ——— SweetAlert según mensaje PHP ———
+        const mensaje = "<?php echo $mensaje; ?>";
+        if (mensaje === "producto_agregado") {
+            Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
+                html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
                     </div>
                     <p>Producto agregado con éxito al inventario.</p>
                 </div>`,
-            background: 'hsl(0deg 0% 100% / 0.76)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    } else if (mensaje === "error_al_agregar") {
-        Swal.fire({
-            title: '<span class="titulo-alerta error">Error</span>',
-            html: `
+                background: 'hsl(0deg 0% 100% / 0.76)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        } else if (mensaje === "error_al_agregar") {
+            Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
                     </div>
                     <p>Error al agregar el producto.</p>
                 </div>`,
-            background: 'hsl(0deg 0% 100% / 0.76)',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    }
-
-    // ——— Validación código duplicado ———
-    document.addEventListener('DOMContentLoaded', () => {
-        const inputCodigo = document.getElementById('codigo1');
-        const submitBtn   = document.querySelector('#product-form button[type="submit"]');
-        const campo       = inputCodigo.closest('.campo');
-        let tooltip       = campo.querySelector('.small-error-tooltip');
-
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.className = 'small-error-tooltip';
-            tooltip.textContent = 'Este código ya está registrado.';
-            campo.appendChild(tooltip);
+                background: 'hsl(0deg 0% 100% / 0.76)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
         }
 
-        inputCodigo.addEventListener('blur', () => {
-            const val = inputCodigo.value.trim();
-            if (!val) {
-                inputCodigo.classList.remove('error');
-                tooltip.style.display = 'none';
-                submitBtn.disabled = false;
-                return;
+        // ——— Validación código duplicado ———
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputCodigo = document.getElementById('codigo1');
+            const submitBtn = document.querySelector('#product-form button[type="submit"]');
+            const campo = inputCodigo.closest('.campo');
+            let tooltip = campo.querySelector('.small-error-tooltip');
+
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'small-error-tooltip';
+                tooltip.textContent = 'Este código ya está registrado.';
+                campo.appendChild(tooltip);
             }
-            fetch('crearproducto.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.exists) {
-                    inputCodigo.classList.add('error');
-                    tooltip.style.display = 'block';
-                    submitBtn.disabled = true;
-                } else {
+
+            inputCodigo.addEventListener('blur', () => {
+                const val = inputCodigo.value.trim();
+                if (!val) {
                     inputCodigo.classList.remove('error');
                     tooltip.style.display = 'none';
                     submitBtn.disabled = false;
+                    return;
                 }
-            })
-            .catch(() => {
-                inputCodigo.classList.remove('error');
-                tooltip.style.display = 'none';
-                submitBtn.disabled = false;
+                fetch('crearproducto.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.exists) {
+                            inputCodigo.classList.add('error');
+                            tooltip.style.display = 'block';
+                            submitBtn.disabled = true;
+                        } else {
+                            inputCodigo.classList.remove('error');
+                            tooltip.style.display = 'none';
+                            submitBtn.disabled = false;
+                        }
+                    })
+                    .catch(() => {
+                        inputCodigo.classList.remove('error');
+                        tooltip.style.display = 'none';
+                        submitBtn.disabled = false;
+                    });
             });
         });
-    });
 
-    // ——— Funciones genéricas para los modales con animación ———
-    function openModal(modal) {
-        // Mostrar overlay y arrancar apertura
-        modal.classList.add('show');
-        void modal.offsetWidth;             // fuerza reflow
-        modal.classList.add('opening');
-    }
-    function closeModal(modal) {
-        // Arrancar cierre
-        modal.classList.remove('opening');
-        modal.classList.add('closing');
-        // Cuando termine la transición, ocultar por completo
-        const contenido = modal.querySelector('.modal-content-nueva');
-        contenido.addEventListener('transitionend', function handler() {
-            contenido.removeEventListener('transitionend', handler);
-            modal.classList.remove('show', 'closing');
+        // ——— Funciones genéricas para los modales con animación ———
+        function openModal(modal) {
+            // Mostrar overlay y arrancar apertura
+            modal.classList.add('show');
+            void modal.offsetWidth; // fuerza reflow
+            modal.classList.add('opening');
+        }
+
+        function closeModal(modal) {
+            // Arrancar cierre
+            modal.classList.remove('opening');
+            modal.classList.add('closing');
+            // Cuando termine la transición, ocultar por completo
+            const contenido = modal.querySelector('.modal-content-nueva, .modal-content');
+            
+            contenido.addEventListener('transitionend', function handler() {
+                contenido.removeEventListener('transitionend', handler);
+                modal.classList.remove('show', 'closing');
+            });
+        }
+
+        // ——— Asociar cada modal y sus eventos ———
+        const modalCat = document.getElementById('modalCategoria');
+        const modalUbic = document.getElementById('modalUbicacion');
+        const modalMarca = document.getElementById('modalMarca');
+
+        // Cerrar al hacer clic fuera del contenido
+        [modalCat, modalUbic, modalMarca].forEach(modalEl => {
+            modalEl.addEventListener('click', e => {
+                if (e.target === modalEl) closeModal(modalEl);
+            });
         });
-    }
 
-    // ——— Asociar cada modal y sus eventos ———
-    const modalCat   = document.getElementById('modalCategoria');
-    const modalUbic  = document.getElementById('modalUbicacion');
-    const modalMarca = document.getElementById('modalMarca');
-
-    // Cerrar al hacer clic fuera del contenido
-    [modalCat, modalUbic, modalMarca].forEach(modalEl => {
-        modalEl.addEventListener('click', e => {
-            if (e.target === modalEl) closeModal(modalEl);
-        });
-    });
-
-    // ——— Modal Categoría ———
-    document.getElementById('btnCancelarCategoria')
+        // ——— Modal Categoría ———
+        document.getElementById('btnCancelarCategoria')
             .addEventListener('click', () => closeModal(modalCat));
-    function openModalCategoria() { 
-        openModal(modalCat);
-        document.getElementById('inputNombreCategoria').focus();
-    }
-    formAddCategoria.addEventListener('submit', e => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputNombreCategoria').value.trim();
-        if (!nombre) return;
-        fetch('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ accion: 'add_categoria', nombre })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const opt = document.createElement('option');
-                opt.value = data.id;
-                opt.text  = data.nombre;
-                opt.selected = true;
-                document.getElementById('categoria').appendChild(opt);
-                closeModal(modalCat);
-                formAddCategoria.reset();
-            } else {
-                Swal.fire({ icon: 'error', title: 'Error', text: data.error });
-            }
-        });
-    });
 
-    // ——— Modal Ubicación ———
-    document.getElementById('btnCancelarUbicacion')
+        function openModalCategoria() {
+            openModal(modalCat);
+            document.getElementById('inputNombreCategoria').focus();
+        }
+        formAddCategoria.addEventListener('submit', e => {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombreCategoria').value.trim();
+            if (!nombre) return;
+            fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        accion: 'add_categoria',
+                        nombre
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.text = data.nombre;
+                        opt.selected = true;
+                        document.getElementById('categoria').appendChild(opt);
+                        closeModal(modalCat);
+                        formAddCategoria.reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                });
+        });
+
+        // ——— Modal Ubicación ———
+        document.getElementById('btnCancelarUbicacion')
             .addEventListener('click', () => closeModal(modalUbic));
-    function openModalUbicacion() {
-        openModal(modalUbic);
-        document.getElementById('inputNombreUbicacion').focus();
-    }
-    formAddUbicacion.addEventListener('submit', e => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputNombreUbicacion').value.trim();
-        if (!nombre) return;
-        fetch('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ accion: 'add_ubicacion', nombre })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const opt = document.createElement('option');
-                opt.value = data.id;
-                opt.text  = data.nombre;
-                opt.selected = true;
-                document.getElementById('ubicacion').appendChild(opt);
-                closeModal(modalUbic);
-                formAddUbicacion.reset();
-            } else {
-                Swal.fire({ icon: 'error', title: 'Error', text: data.error });
-            }
-        });
-    });
 
-    // ——— Modal Marca ———
-    document.getElementById('btnCancelarMarca')
+        function openModalUbicacion() {
+            openModal(modalUbic);
+            document.getElementById('inputNombreUbicacion').focus();
+        }
+        formAddUbicacion.addEventListener('submit', e => {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombreUbicacion').value.trim();
+            if (!nombre) return;
+            fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        accion: 'add_ubicacion',
+                        nombre
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.text = data.nombre;
+                        opt.selected = true;
+                        document.getElementById('ubicacion').appendChild(opt);
+                        closeModal(modalUbic);
+                        formAddUbicacion.reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                });
+        });
+
+        // ——— Modal Marca ———
+        document.getElementById('btnCancelarMarca')
             .addEventListener('click', () => closeModal(modalMarca));
-    function openModalMarca() {
-        openModal(modalMarca);
-        document.getElementById('inputNombreMarca').focus();
-    }
-    formAddMarca.addEventListener('submit', e => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputNombreMarca').value.trim();
-        if (!nombre) return;
-        fetch('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ accion: 'add_marca', nombre })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const opt = document.createElement('option');
-                opt.value = data.id;
-                opt.text  = data.nombre;
-                opt.selected = true;
-                document.getElementById('marca').appendChild(opt);
-                closeModal(modalMarca);
-                formAddMarca.reset();
-            } else {
-                Swal.fire({ icon: 'error', title: 'Error', text: data.error });
+
+        function openModalMarca() {
+            openModal(modalMarca);
+            document.getElementById('inputNombreMarca').focus();
+        }
+        formAddMarca.addEventListener('submit', e => {
+            e.preventDefault();
+            const nombre = document.getElementById('inputNombreMarca').value.trim();
+            if (!nombre) return;
+            fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        accion: 'add_marca',
+                        nombre
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.text = data.nombre;
+                        opt.selected = true;
+                        document.getElementById('marca').appendChild(opt);
+                        closeModal(modalMarca);
+                        formAddMarca.reset();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error
+                        });
+                    }
+                });
+        });
+
+        // referencias
+        const modalImport = document.getElementById('modalImport');
+        const btnAbrirImport = document.getElementById('btnAbrirModalImport');
+        const btnCerrarImport = document.getElementById('btnCerrarModalImport');
+
+        // abrir
+        btnAbrirImport.addEventListener('click', () => {
+            openModal(modalImport);
+        });
+
+        // cerrar con la “X”
+        btnCerrarImport.addEventListener('click', () => {
+            closeModal(modalImport);
+        });
+
+        // cerrar al clicar fuera de .modal-content
+        modalImport.addEventListener('click', e => {
+            if (e.target === modalImport) {
+                closeModal(modalImport);
             }
         });
-    });
-    // Helper genérico
-async function checkExists(accion, nombre) {
-  const body = new URLSearchParams({ accion, nombre: nombre.trim() });
-  const resp = await fetch('', {
-    method: 'POST',
-    headers: {'Content-Type':'application/x-www-form-urlencoded'},
-    body: body.toString()
-  });
-  const json = await resp.json();
-  return json.exists;
-}
 
-// Crea un listener para un modal dado:
-function setupModalValidation({ inputId, btnGuardarId, accion }) {
-  const inp   = document.getElementById(inputId);
-  const btn   = document.getElementById(btnGuardarId);
-  const span  = inp.nextElementSibling; // asume el span justo después
-  inp.addEventListener('input', async () => {
-    const val = inp.value.trim();
-    const exists = val ? await checkExists(accion, val) : false;
-    inp.classList.toggle('invalid', exists);
-    btn.disabled = exists || !val;
-  });
-}
+        // Helper genérico
+        async function checkExists(accion, nombre) {
+            const body = new URLSearchParams({
+                accion,
+                nombre: nombre.trim()
+            });
+            const resp = await fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: body.toString()
+            });
+            const json = await resp.json();
+            return json.exists;
+        }
 
-// Inicializa las tres validaciones
-setupModalValidation({
-  inputId: 'inputNombreCategoria',
-  btnGuardarId: 'btnGuardarCategoria',
-  accion: 'check_categoria'
-});
-setupModalValidation({
-  inputId: 'inputNombreUbicacion',
-  btnGuardarId: 'btnGuardarUbicacion',
-  accion: 'check_ubicacion'
-});
-setupModalValidation({
-  inputId: 'inputNombreMarca',
-  btnGuardarId: 'btnGuardarMarca',
-  accion: 'check_marca'
-});
+        // Crea un listener para un modal dado:
+        function setupModalValidation({
+            inputId,
+            btnGuardarId,
+            accion
+        }) {
+            const inp = document.getElementById(inputId);
+            const btn = document.getElementById(btnGuardarId);
+            const span = inp.nextElementSibling; // asume el span justo después
+            inp.addEventListener('input', async () => {
+                const val = inp.value.trim();
+                const exists = val ? await checkExists(accion, val) : false;
+                inp.classList.toggle('invalid', exists);
+                btn.disabled = exists || !val;
+            });
+        }
 
-</script>
+        // Inicializa las tres validaciones
+        setupModalValidation({
+            inputId: 'inputNombreCategoria',
+            btnGuardarId: 'btnGuardarCategoria',
+            accion: 'check_categoria'
+        });
+        setupModalValidation({
+            inputId: 'inputNombreUbicacion',
+            btnGuardarId: 'btnGuardarUbicacion',
+            accion: 'check_ubicacion'
+        });
+        setupModalValidation({
+            inputId: 'inputNombreMarca',
+            btnGuardarId: 'btnGuardarMarca',
+            accion: 'check_marca'
+        });
+    </script>
 
-   <div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
     </div>
 
 </body>
