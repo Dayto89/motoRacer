@@ -3,7 +3,7 @@
 // Este archivo cumple doble función:
 //  1) Mostrar la pantalla de pago (al llegar desde ventas.php)
 //  2) Recibir el POST AJAX para registrar la factura y responder JSON
-
+error_reporting(E_ERROR | E_PARSE);
 // 1) Inicio de sesión y validación de usuario
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
@@ -30,30 +30,6 @@ if ($conn->connect_error) {
         die("Conexión fallida: " . $conn->connect_error);
     }
 }
-
-if (isset($_GET['codigo'])) {
-    // Agregar el wildcard (%) para la búsqueda
-    $codigoBusqueda = $_GET['codigo'] . '%';
-    $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo 
-            FROM cliente 
-            WHERE codigo LIKE ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $codigoBusqueda);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $clientes = [];
-    while ($fila = $result->fetch_assoc()) {
-        $clientes[] = $fila;
-    }
-    header('Content-Type: application/json');
-    echo json_encode($clientes);
-    exit();
-}
-
-// ————————————————————————————————————————————————
-// 3) Bloque para manejar el POST AJAX que guarda la factura
-// ————————————————————————————————————————————————
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Leemos JSON enviado por fetch()
     $data = json_decode(file_get_contents("php://input"), true);
@@ -117,17 +93,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $cliente_id = $rowCl["codigo"];
     }
     $stmtCl->close();
-
+    $observaciones = null;  // o "" si prefieres texto vacío
+    $activo = 1;           // o 0 si no quieres que se active la factura
     // 3.4) Registrar factura
     $sqlFac = "INSERT INTO factura 
                (fechaGeneracion, Usuario_identificacion, nombreUsuario, apellidoUsuario, Cliente_codigo, 
-                nombreCliente, apellidoCliente, telefonoCliente, identificacionCliente, cambio, precioTotal, activo, observacion, prductos_resumen) 
+                nombreCliente, apellidoCliente, telefonoCliente, identificacionCliente, cambio, precioTotal, activo, observacion, productos_resumen) 
                VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmtFac = $conn->prepare($sqlFac);
-    $usuario_id = $_SESSION["usuario_id"];
     $stmtFac->bind_param(
         "ississssddiss",
-        $usuario_id,
+        $_SESSION["usuario_id"],
         $nameUser,
         $apellidoUser,
         $cliente_id,
@@ -137,8 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $codigo,
         $cambio,
         $total,
-        1,
-        null,
+        $activo,
+        $observaciones,
         $productos_resumen
     );
     $stmtFac->execute();
@@ -153,31 +129,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmtMP->execute();
         $stmtMP->close();
     }
-
-    // 3.6) Registrar productos en la factura y descontar stock
+        // 3.6) **Descontar stock de cada producto vendido**
     foreach ($productos as $prod) {
-        $sqlPF = "INSERT INTO producto_factura 
-                  (Factura_codigo, Producto_codigo, nombreProducto, cantidad, precioUnitario) 
-                  VALUES (?, ?, ?, ?, ?)";
-        $stmtPF = $conn->prepare($sqlPF);
-        $stmtPF->bind_param(
-            "issid",
-            $factura_id,
-            $prod["id"],
-            $prod["nombre"],
-            $prod["cantidad"],
-            $prod["precio"]
-        );
-        $stmtPF->execute();
-        $stmtPF->close();
-
-        // Descontar stock
-        $sqlUp = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo1 = ?";
+        $sqlUp = "UPDATE producto 
+                  SET cantidad = cantidad - ? 
+                  WHERE codigo1 = ?";
         $stmtUp = $conn->prepare($sqlUp);
-        $stmtUp->bind_param("ii", $prod["cantidad"], $prod["id"]);
+        $stmtUp->bind_param(
+            "ii",
+            $prod["cantidad"],   // unidades vendidas
+            $prod["id"]          // código del producto
+        );
         $stmtUp->execute();
         $stmtUp->close();
     }
+
 
     // 3.7) Verificar notificaciones de stock bajo (opcional)
     $min_quantity = 0;
@@ -219,7 +185,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         $stmtChk->close();
     }
-
     // 3.8) Almacenar factura_id en sesión por si lo necesitas luego
     $_SESSION['factura_id'] = $factura_id;
 
@@ -232,10 +197,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     echo json_encode(["success" => true, "factura_id" => $factura_id]);
     exit;
 }
+if (isset($_GET['codigo'])) {
+    // Agregar el wildcard (%) para la búsqueda
+    $codigoBusqueda = $_GET['codigo'] . '%';
+    $sql = "SELECT codigo, identificacion, nombre, apellido, telefono, correo 
+            FROM cliente 
+            WHERE codigo LIKE ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $codigoBusqueda);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $clientes = [];
+    while ($fila = $result->fetch_assoc()) {
+        $clientes[] = $fila;
+    }
+    header('Content-Type: application/json');
+    echo json_encode($clientes);
+    exit();
+}
+// ————————————————————————————————————————————————
+// 3) Bloque para manejar el POST AJAX que guarda la factura
+// ————————————————————————————————————————————————
+
 // ————————————————————————————————————————————————
 // Si NO es POST, continuo con la parte del HTML (pantalla de pago)
 // ————————————————————————————————————————————————
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -416,7 +403,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
             let correo = document.getElementById("correo").value;
-            let productos_json = JSON.stringify(productos);
+            
 
             if (!codigo || !tipoDoc || !nombre || !apellido || !telefono || !correo) {
                 Swal.fire({
@@ -459,6 +446,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     precio: precioUn
                 });
             });
+
+            let productos_json = JSON.stringify(productos);
 
             // 5.3) Reconstruir métodos de pago
             const valEfectivo = parseFloat(document.querySelector("input[name='valor_efectivo']").value) || 0;
@@ -577,15 +566,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             };
 
 
-            // 5.6) Enviar petición AJAX a este mismo archivo (prueba.php)
+            // 5.6) Enviar petición AJAX a este mismo archivo (pagos.php)
             fetch("pagos.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
-                    },
+                    }, 
                     body: JSON.stringify(body)
                 })
-                .then(response => response.json())
+                .then(response => response.json()) 
                 .then(data => {
                     if (data.success) {
                         Swal.fire({

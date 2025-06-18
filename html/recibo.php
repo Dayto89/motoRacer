@@ -30,7 +30,8 @@ $sql = "
         f.telefonoCliente,
         f.identificacionCliente,
         f.precioTotal,
-        f.cambio
+        f.cambio,
+        f.productos_resumen
     FROM factura f
     WHERE f.codigo = ?
 ";
@@ -39,29 +40,19 @@ $stmt->bind_param("i", $factura_id);
 $stmt->execute();
 $resultado = $stmt->get_result();
 $factura = $resultado->fetch_assoc();
+// Decodificamos el JSON de productos
+$detalleProductos = json_decode($factura['productos_resumen'], true);
+
+// En caso de que algo falle, aseguramos un array
+if (!is_array($detalleProductos)) {
+    $detalleProductos = [];
+}
 $stmt->close();
 
 if (!$factura) {
     die("La factura solicitada no existe.");
 }
 
-// --------------------------------------------------
-// 2) Obtener los productos asociados a esta factura
-// --------------------------------------------------
-$sqlProd = "
-    SELECT 
-        pf.cantidad, 
-        pf.precioUnitario, 
-        p.nombre AS nombreProducto 
-    FROM producto_factura pf
-    JOIN producto p ON pf.Producto_codigo = p.codigo1
-    WHERE pf.Factura_codigo = ?
-";
-$stmt = $conexion->prepare($sqlProd);
-$stmt->bind_param("i", $factura_id);
-$stmt->execute();
-$productos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
 
 // --------------------------------------------------
 // 3) Obtener los métodos de pago asociados
@@ -163,12 +154,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($productos as $prod): ?>
+                    <?php foreach ($detalleProductos as $prod): ?>
                         <tr>
                             <td><?php echo $prod['cantidad']; ?></td>
-                            <td>$<?php echo number_format($prod['precioUnitario']); ?></td>
-                            <td><?php echo $prod['nombreProducto']; ?></td>
-                            <td>$<?php echo number_format($prod['cantidad'] * $prod['precioUnitario']); ?></td>
+                            <td>$<?php echo number_format($prod['precio']); ?></td>
+                            <td><?php echo htmlspecialchars($prod['nombre'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                $<?php
+                                    echo number_format(
+                                        $prod['cantidad'] * $prod['precio'],
+                                        2
+                                    );
+                                    ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -222,72 +220,72 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <p>¡Gracias por su compra!</p>
         </div>
     </div>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
 
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
     </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
-    </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-  document.getElementById('btnDescargarImagen').addEventListener('click', () => {
-    // 1) Seleccionamos el elemento completo de la factura
-    const nodoFactura = document.querySelector('.factura');
-    if (!nodoFactura) {
-      alert('No se encontró el elemento .factura');
-      return;
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('btnDescargarImagen').addEventListener('click', () => {
+            // 1) Seleccionamos el elemento completo de la factura
+            const nodoFactura = document.querySelector('.factura');
+            if (!nodoFactura) {
+                alert('No se encontró el elemento .factura');
+                return;
+            }
 
-    // 2) Obtenemos sus dimensiones “reales” (incluso si está fuera de pantalla):
-    const width  = nodoFactura.scrollWidth;
-    const height = nodoFactura.scrollHeight;
+            // 2) Obtenemos sus dimensiones “reales” (incluso si está fuera de pantalla):
+            const width = nodoFactura.scrollWidth;
+            const height = nodoFactura.scrollHeight;
 
-    // 3) Opciones para html2canvas: explicitamos width/height
-    html2canvas(nodoFactura, {
-      width:          width,
-      height:         height,
-      scale:          2,              // aumenta resolución
-      backgroundColor:'#ffffff',      // fondo blanco
-    }).then(canvas => {
-      // 4) Convertimos el canvas a Blob y forzamos la descarga
-      canvas.toBlob(blob => {
-        const link = document.createElement('a');
-        link.download = `factura_${Date.now()}.png`;
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }, 'image/png');
-    }).catch(err => {
-      console.error('Error generando la imagen:', err);
-      alert('Ocurrió un problema al generar la imagen.');
-    });
-  });
-</script>
+            // 3) Opciones para html2canvas: explicitamos width/height
+            html2canvas(nodoFactura, {
+                width: width,
+                height: height,
+                scale: 2, // aumenta resolución
+                backgroundColor: '#ffffff', // fondo blanco
+            }).then(canvas => {
+                // 4) Convertimos el canvas a Blob y forzamos la descarga
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.download = `factura_${Date.now()}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                }, 'image/png');
+            }).catch(err => {
+                console.error('Error generando la imagen:', err);
+                alert('Ocurrió un problema al generar la imagen.');
+            });
+        });
+    </script>
 
 </body>
 
