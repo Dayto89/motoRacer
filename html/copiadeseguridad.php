@@ -115,9 +115,14 @@ echo "</script>\n";
             font-family: Arial;
         }
 
+        table {
+            filter: drop-shadow(0px 0px 10px #bebfc5);
+        }
+
         .backup-table thead {
             align-items: center;
             justify-content: center;
+
         }
 
         th,
@@ -204,6 +209,7 @@ echo "</script>\n";
             display: flex;
             align-items: center;
             margin-top: 3%;
+            justify-content: space-evenly;
         }
 
         .no-backups {
@@ -229,6 +235,7 @@ echo "</script>\n";
         }
 
         .search-container input {
+            border-radius: 10px;
             width: 300px;
             height: 40px;
             padding: 9px;
@@ -259,7 +266,7 @@ echo "</script>\n";
             width: 198px;
             font-size: 14px;
             cursor: pointer;
-            margin-left: 47%;
+            margin-left: 0%;
             padding: 6px;
         }
 
@@ -416,11 +423,11 @@ echo "</script>\n";
         <h1>Gestión de Copias de Seguridad</h1>
 
         <div class="filter-bar">
+            <button class="boton boton-agregar" onclick="agregarBackup()">Nueva Copia de Seguridad</button>
             <div class="search-container">
-                <input id="searchRealtime" type="text" placeholder="Buscar en tiempo real…" />
+                <input id="searchRealtime" type="text" placeholder="Buscar copias de seguridad…" />
 
             </div>
-            <button class="boton boton-agregar" onclick="agregarBackup()">Nueva Copia de Seguridad</button>
 
         </div>
 
@@ -586,192 +593,203 @@ echo "</script>\n";
 
 
 <script>
-
     /**
- * Restaura un backup: llama a restore_backup.php
- */
-async function restoreBackup(filename) {
-  const { isConfirmed } = await Swal.fire({
-    title: '<span class="titulo-alerta advertencia">Advertencia</span>',
-    html: `
+     * Restaura un backup: llama a restore_backup.php
+     */
+    async function restoreBackup(filename) {
+        const {
+            isConfirmed
+        } = await Swal.fire({
+            title: '<span class="titulo-alerta advertencia">Advertencia</span>',
+            html: `
       <div class="custom-alert">
         <div class="contenedor-imagen">
           <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
         </div>
         <p>¿Seguro que deseas restaurar <strong>${filename}</strong>? Se sobrescribirán datos existentes.</p>
       </div>`,
-    showCancelButton: true,
-    confirmButtonText: 'Sí, restaurar',
-    cancelButtonText: 'Cancelar',
-    customClass: {
-      popup: 'swal2-border-radius',
-      confirmButton: 'btn-aceptar',
-      cancelButton: 'btn-cancelar',
-      container: 'fondo-oscuro'
-    }
-  });
+            showCancelButton: true,
+            confirmButtonText: 'Sí, restaurar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                cancelButton: 'btn-cancelar',
+                container: 'fondo-oscuro'
+            }
+        });
 
-  if (!isConfirmed) return;
+        if (!isConfirmed) return;
 
-  try {
-    const resp = await fetch('../includes/restore_backup.php', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ file: filename })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.message);
+        try {
+            const resp = await fetch('../includes/restore_backup.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    file: filename
+                })
+            });
+            const result = await resp.json();
+            if (!result.success) throw new Error(result.message);
 
-    await Swal.fire({
-      title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-      html: `
+            await Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                html: `
         <div class="custom-alert">
           <div class="contenedor-imagen">
             <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
           </div>
           <p>${result.message}</p>
         </div>`,
-      customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-      }
-    });
-    location.reload();
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: '<span class="titulo-alerta error">Error</span>',
-      html: `
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+            location.reload();
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
         <div class="custom-alert">
           <div class="contenedor-imagen">
             <img src="../imagenes/llave.png" alt="Error" class="llave">
           </div>
           <p>${err.message}</p>
         </div>`,
-      customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-      }
-    });
-  }
-}
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        }
+    }
 
-/**
- * Elimina un backup: llama a delete_backup.php
- */
-async function deleteBackup(filename) {
-  const { isConfirmed } = await Swal.fire({
-    title: '<span class="titulo-alerta advertencia">¿Eliminar?</span>',
-    html: `
+    /**
+     * Elimina un backup: llama a delete_backup.php
+     */
+    async function deleteBackup(filename) {
+        const {
+            isConfirmed
+        } = await Swal.fire({
+            title: '<span class="titulo-alerta advertencia">¿Eliminar?</span>',
+            html: `
       <div class="custom-alert">
         <div class="contenedor-imagen">
           <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
         </div>
         <p>¿Eliminar permanentemente <strong>${filename}</strong>? Esta acción no se puede deshacer.</p>
       </div>`,
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    customClass: {
-      popup: 'swal2-border-radius',
-      confirmButton: 'btn-aceptar',
-      cancelButton: 'btn-cancelar',
-      container: 'fondo-oscuro'
-    }
-  });
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                cancelButton: 'btn-cancelar',
+                container: 'fondo-oscuro'
+            }
+        });
 
-  if (!isConfirmed) return;
+        if (!isConfirmed) return;
 
-  try {
-    const resp = await fetch('../includes/delete_backup.php', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ file: filename })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.message);
+        try {
+            const resp = await fetch('../includes/delete_backup.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    file: filename
+                })
+            });
+            const result = await resp.json();
+            if (!result.success) throw new Error(result.message);
 
-    await Swal.fire({
-      title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
-      html: `
+            await Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                html: `
         <div class="custom-alert">
           <div class="contenedor-imagen">
             <img src="../imagenes/moto.png" alt="Confirmación" class="moto">
           </div>
           <p>${result.message}</p>
         </div>`,
-      customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-      }
-    });
-    location.reload();
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: '<span class="titulo-alerta error">Error</span>',
-      html: `
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+            location.reload();
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
         <div class="custom-alert">
           <div class="contenedor-imagen">
             <img src="../imagenes/llave.png" alt="Error" class="llave">
           </div>
           <p>${err.message}</p>
         </div>`,
-      customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-      }
-    });
-  }
-}
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        }
+    }
 
-async function agregarBackup() {
-  try {
-    const resp   = await fetch('../includes/backup.php');
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.message);
+    async function agregarBackup() {
+        try {
+            const resp = await fetch('../includes/backup.php');
+            const result = await resp.json();
+            if (!result.success) throw new Error(result.message);
 
-    Swal.fire({
-      title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
-      html: `
+            Swal.fire({
+                title: '<span class="titulo-alerta confirmacion">Copia Creada</span>',
+                html: `
         <div class="custom-alert">
           <div class="contenedor-imagen">
             <img src="../imagenes/moto.png" alt="Éxito" class="moto">
           </div>
           <p>${result.message}</p>
         </div>`,
-      confirmButtonText: 'Aceptar',
-      customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-      }
-    }).then(() => location.reload());
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            }).then(() => location.reload());
 
-  } catch (err) {
-    console.error(err);
-    Swal.fire({
-      title: '<span class="titulo-alerta error">Error</span>',
-      html: `
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
         <div class="custom-alert">
           <div class="contenedor-imagen">
             <img src="../imagenes/llave.png" alt="Error" class="llave">
           </div>
           <p>${err.message}</p>
         </div>`,
-      confirmButtonText: 'Aceptar',
-      customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-      }
-    });
-  }
-}
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        }
+    }
 
 
 
@@ -934,35 +952,35 @@ async function agregarBackup() {
 
 <div class="userContainer">
     <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
+        <!-- Nombre y apellido del usuario y rol -->
+        <!-- Consultar datos del usuario -->
+        <?php
+        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $id_usuario = $_SESSION['usuario_id'];
+        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario->bind_param("i", $id_usuario);
+        $stmtUsuario->execute();
+        $resultUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $nombreUsuario = $rowUsuario['nombre'];
+        $apellidoUsuario = $rowUsuario['apellido'];
+        $rol = $rowUsuario['rol'];
+        $foto = $rowUsuario['foto'];
+        $stmtUsuario->close();
+        ?>
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
 
     </div>
     <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
+        <?php if (!empty($rowUsuario['foto'])): ?>
+            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
     </div>
-    </div>
+</div>
 </body>
 
 </html>

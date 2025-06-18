@@ -189,7 +189,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-  <?php include 'boton-ayuda.php'; ?>
   <?php
   // Justo después de tu conexión y filtros:
   $allQ = "SELECT id,mensaje,descripcion,fecha,leida FROM notificaciones n";
@@ -210,45 +209,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <h1>Notificaciones</h1>
     <div class="filter-bar">
-      <!-- Filtros adaptados -->
-       <div class="barra-superior">
-        <summary class="filter-button">Filtrar</summary>
-        <div class="filter-options">
-          <form id="filterForm">
-            <!-- Fecha desde/hasta -->
-            <div class="form-group">
-              <label for="filterFrom">Desde:</label>
-              <input type="date" id="filterFrom" name="filterFrom">
-            </div>
-            <div class="form-group">
-              <label for="filterTo">Hasta:</label>
-              <input type="date" id="filterTo" name="filterTo">
-            </div>
-            <!-- Estado -->
-            <div class="form-group">
-              <label for="filterState">Estado:</label>
-              <select id="filterState" name="filterState">
-                <option value="all">Todas</option>
-                <option value="read">Leídas</option>
-                <option value="unread">No leídas</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <button type="button" id="clearFilters" class="filter-button">Limpiar</button>
-            </div>
+      <div class="barra-superior">
+        <button id="filtros-btn" class="filter-button">Mostrar Filtros</button>
+        <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+        <div class="boton-excel">
+          <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel icon-color"></i><label> Exportar a Excel</label></a>
+          </div>
+           <div class="boton-pdf">
+          <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf icon-color"></i><label> Exportar a PDF</label></a>
+        </div>
+        <!-- Botón para eliminar seleccionados -->
+        <button id="delete-selected" class="btn btn-danger" style="display: none;">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+      <div id="filtros-popup" class="filtros-popup">
+        <div class="filtros-container">
+          <div class="filter-options">
+            <form id="filterForm">
+              <!-- Fecha desde/hasta -->
+              <div class="form-group">
+                <label for="filterFrom" >Desde:</label>
+                <input type="date" id="filterFrom" name="filterFrom" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
+              </div>
+              <div class="form-group">
+                <label for="filterTo">Hasta:</label>
+                <input type="date" id="filterTo" name="filterTo" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
+              </div>
+              <!-- Estado -->
+              <div class="form-group">
+                <label for="filterState">Estado:</label>
+                <select id="filterState" name="filterState" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
+                  <option value="all">Todas</option>
+                  <option value="read">Leídas</option>
+                  <option value="unread">No leídas</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="button" id="btnClear" class="filter-button">Limpiar</button>
+              </div>
+            </form>
+          </div>
+          </details>
           </form>
         </div>
-      </details>
-      </form>
-      <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
-      <!-- Botón para eliminar seleccionados -->
-      <button id="delete-selected" class="btn btn-danger" style="display: none;">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
-    <div style="margin-bottom: 25px;margin-left: 74%;size: 50%;font-family:Arial;">
-      <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel icon-color"></i><label> Exportar a Excel</label></a>
-      <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf icon-color"></i><label> Exportar a PDF</label></a>
+      </div>
     </div>
 
     <table id="notificacionesTable">
@@ -275,10 +280,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <input type="hidden" name="id" value="<?= $fila['id'] ?>">
                 <?php if ($fila["leida"]) { ?>
                   <input type="hidden" name="accion" value="marcar_no_leida">
-                  <button class="boton-accion marcarN" type="submit">Marcar No Leída</button>
+                  <button class="boton-accion marcarN" type="submit">No Leída</button>
                 <?php } else { ?>
                   <input type="hidden" name="accion" value="marcar_leida">
-                  <button class="boton-accion marcarL" type="submit">Marcar Leída</button>
+                  <button class="boton-accion marcarL" type="submit"> Leída</button>
                 <?php } ?>
               </form>
             </td>
@@ -325,8 +330,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
 
   <script>
-    const selectedIds = new Set();
-
     // -------------------
     // Helper Alerts
     // -------------------
@@ -433,7 +436,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       allData.forEach(r => r.leida = (String(r.leida) === "1"));
 
       const inputText = document.getElementById('searchRealtime');
-      const btnClear = document.getElementById('clearFilters');
+      const btnClear = document.getElementById('btnClear');
       const dateFrom = document.getElementById('filterFrom');
       const dateTo = document.getElementById('filterTo');
       const selectState = document.getElementById('filterState');
@@ -582,20 +585,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         selectAllChk.checked = false;
         selectAllChk.addEventListener('change', () => {
           const checked = selectAllChk.checked;
-          table.querySelectorAll('.select-item').forEach(chk => {
-            chk.checked = checked;
-            const id = chk.value;
-            if (checked) selectedIds.add(id);
-            else selectedIds.delete(id);
-          });
+          table.querySelectorAll('.select-item').forEach(chk => chk.checked = checked);
           updateDeleteButton();
         });
         table.querySelectorAll('.select-item').forEach(chk => {
-          const id = chk.value;
-          chk.checked = selectedIds.has(id);
           chk.addEventListener('change', () => {
-            if (chk.checked) selectedIds.add(id);
-            else selectedIds.delete(id);
             if (!chk.checked) selectAllChk.checked = false;
             else if ([...table.querySelectorAll('.select-item')].every(c => c.checked)) {
               selectAllChk.checked = true;
@@ -607,11 +601,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       function updateDeleteButton() {
         const count = table.querySelectorAll('.select-item:checked').length;
-         deleteBtn.style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+        deleteBtn.style.display = count > 1 ? 'inline-block' : 'none';
       }
 
       deleteBtn.addEventListener('click', () => {
-        const ids = Array.from(selectedIds);
+        const ids = [...table.querySelectorAll('.select-item:checked')].map(c => c.value);
         if (!ids.length) return;
 
         Swal.fire({
@@ -746,14 +740,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       // Inicia
       renderTable();
     });
-      // Cerrar el filtro (details) si se hace clic fuera
-      document.addEventListener('click', function(e) {
-        const filterDropdown = document.querySelector('.filter-dropdown');
-        // Si el <details> está abierto y se hizo clic fuera de él
-        if (filterDropdown && filterDropdown.open && !filterDropdown.contains(e.target)) {
-          filterDropdown.removeAttribute('open');
-        }
-      });
+    //FILTROS
+      document.getElementById('filtros-btn').onclick = function() {
+      document.getElementById('filtros-popup').classList.toggle('active');
+    };
+    // Cierra el popup al hacer clic fuera
+    document.addEventListener('click', function(event) {
+      const popup = document.getElementById('filtros-popup');
+      const btn = document.getElementById('filtros-btn');
+      if (popup.classList.contains('active') && !popup.contains(event.target) && event.target !== btn) {
+        popup.classList.remove('active');
+      }
+    });
   </script>
 
 

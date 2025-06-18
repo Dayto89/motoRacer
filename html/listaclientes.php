@@ -301,13 +301,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         </div>
                         <div class="campo">
                             <label class="required" for="editNombre">Nombre:</label>
-                            <input type="text" id="editNombre" name="nombre"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+                            <input type="text" id="editNombre" name="nombre">
                         </div>
                         <div class="campo">
                             <label class="required" for="editApellido">Apellido:</label>
-                            <input type="text" id="editApellido" name="apellido"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+                            <input type="text" id="editApellido" name="apellido">
                         </div>
                         <div class="campo">
                             <label class="required" for="editTelefono">Teléfono:</label>

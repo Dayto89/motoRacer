@@ -194,15 +194,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <button id="filtros-btn" class="filter-button">Mostrar Filtros</button>
         <input type="text" id="barraReportes" name="valor" placeholder="Ingrese el reporte a buscar">
         <div class="export-button">
-      <form action="excel_reporte.php" method="post">
-        <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
+          <form action="excel_reporte.php" method="post">
+            <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
 
-          <!-- Agregar este botón junto al botón de exportar -->
-          <i class="fas fa-file-excel"></i>
-          <label> Exportar a Excel</label>
-        </button>
-      </form>
-    </div>
+              <!-- Agregar este botón junto al botón de exportar -->
+              <i class="fas fa-file-excel"></i>
+              <label> Exportar a Excel</label>
+            </button>
+          </form>
+        </div>
       </div>
       <div id="filtros-popup" class="filtros-popup">
         <div class="filtros-container">
@@ -210,13 +210,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <form id="filterForm">
               <!-- Fecha desde/hasta -->
               <div class="form-group">
-                <label>Desde: <input type="date" id="fDesde"></label>
-                <label>Hasta: <input type="date" id="fHasta"></label>
+                <label>Desde: <input type="date" id="fDesde" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;"></label>
+              </div>
+              <!-- Fecha hasta -->
+              <div class="form-group">
+                <label>Hasta: <input type="date" id="fHasta" style="font-family: Arial, Helvetica, sans-serif;    height: 26px; border-radius:10px;border:none; padding: 5px;"></label>
               </div>
               <!-- Estado activo/inactivo -->
               <div class="form-group">
                 <label>Estado:
-                  <select id="fActivo">
+                  <select id="fActivo" style="  height: 26px; border-radius:10px;border:none; padding: 5px;">
                     <option value="all">Todos</option>
                     <option value="1">Activo</option>
                     <option value="0">Inactivo</option>
@@ -225,7 +228,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               </div>
               <div class="form-group">
                 <label for="fPago">Método Pago:</label>
-                <select id="fPago" name="fPago">
+                <select id="fPago" name="fPago" style="  height: 26px; border-radius:10px;border:none; padding: 5px;">
                   <option value="all">Todos</option>
                   <option value="tarjeta">Tarjeta</option>
                   <option value="efectivo">Efectivo</option>
@@ -272,50 +275,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       // json_encode una sola vez
       const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
     </script>
-  </div>
-  <div class="table-wrapper">
-    <?php if (mysqli_num_rows($resultado) > 0): ?>
-      <table id="facturaTable">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th data-col="1" data-type="string">Fecha<span class="sort-arrow"></span></th>
-            <th data-col="2" data-type="string">Usuario<span class="sort-arrow"></span></th>
-            <th data-col="3" data-type="string">Cliente<span class="sort-arrow"></span></th>
-            <th data-col="4" data-type="string">Cliente ID<span class="sort-arrow"></span></th>
-            <th data-col="5" data-type="number">Total<span class="sort-arrow"></span></th>
-            <th data-col="6" data-type="string">Activo<span class="sort-arrow"></span></th>
-            <th data-col="7" data-type="string">Observación<span class="sort-arrow"></span></th>
-            <th data-col="8" data-type="string">Método Pago<span class="sort-arrow"></span></th>
-            <th data-col="9" data-type="none">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
+
+    <div class="table-wrapper">
+      <?php if (mysqli_num_rows($resultado) > 0): ?>
+        <table id="facturaTable">
+          <thead>
             <tr>
-              <td><?= htmlspecialchars($fila['codigo']) ?></td>
-              <td><?= htmlspecialchars($fila['fechaGeneracion']) ?></td>
-              <!-- Para usuario y cliente ya tienes la concatenación en el SELECT paginado: -->
-              <td><?= htmlspecialchars($fila['usuario']) ?></td>
-              <td><?= htmlspecialchars($fila['cliente']) ?></td>
-              <td><?= htmlspecialchars($fila['Cliente_codigo']) ?></td>
-              <td><?= number_format($fila['precioTotal'], 2) ?></td>
-              <td><?= htmlspecialchars($fila['activo']) ?></td>
-              <td><?= htmlspecialchars($fila['observacion']) ?></td>
-              <td><?= htmlspecialchars($fila['metodoPago']) ?></td>
-              <td>
-                <form method="POST"><input name="factura_id" type="hidden" value="<?= $fila['codigo'] ?>">
-                  <button class="recibo-button"><i class="bx bx-search-alt"></i></button>
-                </form>
-              </td>
+              <th>Código</th>
+              <th data-col="1" data-type="string">Fecha<span class="sort-arrow"></span></th>
+              <th data-col="2" data-type="string">Usuario<span class="sort-arrow"></span></th>
+              <th data-col="3" data-type="string">Cliente<span class="sort-arrow"></span></th>
+              <th data-col="4" data-type="string">Cliente ID<span class="sort-arrow"></span></th>
+              <th data-col="5" data-type="number">Total<span class="sort-arrow"></span></th>
+              <th data-col="6" data-type="string">Activo<span class="sort-arrow"></span></th>
+              <th data-col="7" data-type="string">Observación<span class="sort-arrow"></span></th>
+              <th data-col="8" data-type="string">Método Pago<span class="sort-arrow"></span></th>
+              <th data-col="9" data-type="none">Acciones</th>
             </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
-      <div id="jsPagination" class="pagination-dinamica"></div>
-    <?php else: ?>
-      <p>No se encontraron resultados con los criterios seleccionados.</p>
-    <?php endif; ?>
+          </thead>
+          <tbody>
+            <?php while ($fila = mysqli_fetch_assoc($resultado)) : ?>
+              <tr>
+                <td><?= htmlspecialchars($fila['codigo']) ?></td>
+                <td><?= htmlspecialchars($fila['fechaGeneracion']) ?></td>
+                <!-- Para usuario y cliente ya tienes la concatenación en el SELECT paginado: -->
+                <td><?= htmlspecialchars($fila['usuario']) ?></td>
+                <td><?= htmlspecialchars($fila['cliente']) ?></td>
+                <td><?= htmlspecialchars($fila['Cliente_codigo']) ?></td>
+                <td><?= number_format($fila['precioTotal'], 2) ?></td>
+                <td><?= htmlspecialchars($fila['activo']) ?></td>
+                <td><?= htmlspecialchars($fila['observacion']) ?></td>
+                <td><?= htmlspecialchars($fila['metodoPago']) ?></td>
+                <td>
+                  <form method="POST"><input name="factura_id" type="hidden" value="<?= $fila['codigo'] ?>">
+                    <button class="recibo-button"><i class="bx bx-search-alt"></i></button>
+                  </form>
+                </td>
+              </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
+        <div id="jsPagination" class="pagination-dinamica"></div>
+      <?php else: ?>
+        <p>No se encontraron resultados con los criterios seleccionados.</p>
+      <?php endif; ?>
+    </div>
   </div>
 
 
@@ -374,6 +378,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       const searchInput = document.getElementById('barraReportes');
       const headers = document.querySelectorAll('#facturaTable thead th');
 
+
+
       // 1) Define campos, con objetos composite para unir nombre+apellido
       const fields = [
         'codigo',
@@ -387,6 +393,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         },
         'Cliente_codigo',
         'precioTotal',
+        'activo',
         'observacion',
         'metodoPago'
       ];
@@ -544,50 +551,54 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       }
 
 
+      // 1) Reemplaza tu renderTable por esto:
       function renderTable() {
         const start = (currentPage - 1) * rowsPerPage;
-        const page = filteredData.slice(start, start + rowsPerPage);
-        tableBody.innerHTML = '';
+        const slice = filteredData.slice(start, start + rowsPerPage);
 
-        page.forEach(row => {
+        tableBody.innerHTML = ''; // borramos filas viejas
+
+        slice.forEach(row => {
           const tr = document.createElement('tr');
 
-          fields.forEach((fld, colIdx) => {
-            // 1) tus celdas normales
-            const td = document.createElement('td');
-            td.textContent = typeof fld === 'string' ?
-              row[fld] :
-              fld.composite.map(k => row[k]).join(' ');
-            tr.appendChild(td);
+          // 1. Código
+          tr.innerHTML += `<td>${row.codigo}</td>`;
+          // 2. Fecha
+          tr.innerHTML += `<td>${row.fechaGeneracion}</td>`;
+          // 3. Usuario
+          tr.innerHTML += `<td>${row.nombreUsuario} ${row.apellidoUsuario}</td>`;
+          // 4. Cliente
+          tr.innerHTML += `<td>${row.nombreCliente} ${row.apellidoCliente}</td>`;
+          // 5. Cliente ID
+          tr.innerHTML += `<td>${row.Cliente_codigo}</td>`;
+          // 6. Total
+          tr.innerHTML += `<td>${Number(row.precioTotal).toFixed(2)}</td>`;
 
-            // 2) justo después de la columna 'precioTotal' (colIdx === 5), inyectamos botón 'Activo'
-            if (colIdx === 5) {
-              const tdAct = document.createElement('td');
-              const btn = document.createElement('button');
-              btn.className = 'btn-estado';
-              btn.dataset.codigo = row.codigo;
-              btn.dataset.estado = row.activo;
-              btn.innerHTML = row.activo === '1' ?
-                '🟢 Activo' :
-                '🔴 Inactivo';
-              tdAct.appendChild(btn);
-              tr.appendChild(tdAct);
+          // 7. Activo  → aquí tu botón
+          const btn = document.createElement('button');
+          btn.className = 'btn-estado';
+          btn.dataset.codigo = row.codigo;
+          btn.dataset.estado = row.activo;
+          btn.innerText = row.activo === '1' ? '🟢 Activo' : '🔴 Inactivo';
+          btn.addEventListener('click', () => manejarCambioEstado(btn));
+          const tdAct = document.createElement('td');
+          tdAct.appendChild(btn);
+          tr.appendChild(tdAct);
 
-              // listener sobre ese botón
-              btn.addEventListener('click', () => manejarCambioEstado(btn));
-            }
-          });
+          // 8. Observación
+          const obs = row.observacion || ''; 
+          tr.innerHTML += `<td>${obs}</td>`;
+          // 9. Método Pago
+          tr.innerHTML += `<td>${row.metodoPago}</td>`;
 
-          // 3) y luego tus Acciones al final
-          const tdAcc = document.createElement('td');
-          tdAcc.innerHTML = `
-      <form method="POST">
-        <input type="hidden" name="factura_id" value="${row.codigo}">
-        <button type="submit" class="recibo-button">
-          <i class='bx bx-search-alt'></i>
-        </button>
-      </form>`;
-          tr.appendChild(tdAcc);
+          // 10. Acciones
+          tr.innerHTML += `
+      <td>
+        <form method="POST">
+          <input type="hidden" name="factura_id" value="${row.codigo}">
+          <button class="recibo-button"><i class='bx bx-search-alt'></i></button>
+        </form>
+      </td>`;
 
           tableBody.appendChild(tr);
         });
@@ -650,7 +661,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         const desde = inpDesde.value;
         const hasta = inpHasta.value;
         const act = selActivo.value; // "all", "1", "0"
-        const pagoSel = selPago.value;
+        const pago = selPago.value;
 
 
         filteredData = allData.filter(item => {
@@ -663,13 +674,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           }
           // — Activo
           if (act !== 'all' && String(item.activo) !== act) return false;
-          // Método de pago
-          if (pagoSel !== 'all') {
-            // construye array ['tarjeta','efectivo',...]
-            const met = item.metodoPago
-              .toLowerCase()
-              .split(/\s*,\s*/);
-            if (!met.includes(pagoSel)) return false;
+          // — Método de pago
+          if (pago !== 'all') {
+            // normalizamos a minúsculas y protegemos nulos
+            const mp = (item.metodoPago || '').toLowerCase();
+
+            // si el filtro es “tarjeta”, buscamos tarjeta|crédito|débito
+            let terms;
+            if (pago === 'tarjeta') {
+              terms = ['tarjeta', 'credito', 'debito'];
+            } else {
+              terms = [pago];
+            }
+
+            // construimos una expresión para cualquiera de los términos
+            const re = new RegExp(`\\b(${ terms.join('|') })\\b`, 'i');
+            if (!re.test(mp)) return false;
           }
 
           return true;
@@ -751,17 +771,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       renderTable();
     });
-    // Cerrar el filtro (details) si se hace clic fuera
-    document.addEventListener('click', function(e) {
-      const filterDropdown = document.querySelector('.filter-dropdown');
-      // Si el <details> está abierto y se hizo clic fuera de él
-      if (filterDropdown && filterDropdown.open && !filterDropdown.contains(e.target)) {
-        filterDropdown.removeAttribute('open');
-      }
-    });
-     document.getElementById('filtros-btn').onclick = function() {
+
+    //FILTROS POPUP
+    document.getElementById('filtros-btn').onclick = function() {
       document.getElementById('filtros-popup').classList.toggle('active');
     };
+    // Cierra el popup al hacer clic fuera
+    document.addEventListener('click', function(event) {
+      const popup = document.getElementById('filtros-popup');
+      const btn = document.getElementById('filtros-btn');
+      if (popup.classList.contains('active') && !popup.contains(event.target) && event.target !== btn) {
+        popup.classList.remove('active');
+      }
+    });
   </script>
 </body>
 

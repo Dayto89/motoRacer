@@ -26,7 +26,6 @@ body::before {
 }
 
 .main-content table {
-  filter: drop-shadow(0px 0px 10px #bebfc5);
   margin-bottom: 20px;
 }
 
@@ -606,6 +605,7 @@ form input[type="text"],
   overflow-x: auto; /* scroll horizontal cuando haga falta */
   -webkit-overflow-scrolling: touch; /* suavizar en iOS */
   margin-left: 7%;
+  filter: drop-shadow(0px 0px 10px #bebfc5);
 }
 #editCodigo1Visible {
   border: #ffffff solid 1px;
@@ -770,8 +770,8 @@ table th {
 .filtros-popup {
   display: none;
   position: absolute;
-  top: 210px;
-  left: 921px;
+  top: 21%;
+  left: 50%;
   transform: translateX(-50%);
   background: rgb(174 174 174 / 95%);
   z-index: 1000;
@@ -797,7 +797,7 @@ table th {
   position: absolute;
   top: 110%;
   left: 0;
-  background: #5f656ac4;
+  background: #565c60;
   border-radius: 8px;
   max-height: 220px;
   overflow-y: auto;

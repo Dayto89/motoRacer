@@ -597,6 +597,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </script>
 
   <script>
+    const selectedProviderNits = new Set();
     document.addEventListener("DOMContentLoaded", () => {
       // 1) Abrir/Cerrar modal "Nuevo Proveedor"
       const nuevoModal = document.getElementById("nuevoModal");
@@ -864,7 +865,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           .map(cb => cb.value.trim());
         if (selected.length === 0) return;
 
-         Swal.fire({
+        Swal.fire({
           title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
           html: `
           <div class="custom-alert">
@@ -874,15 +875,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <p>Se eliminarán ${selected.length} proveedores.</p>
           </div>`,
           background: '#ffffffdb',
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-        customClass: {
-          popup: "custom-alert",
-          confirmButton: "btn-eliminar",
-          cancelButton: "btn-cancelar",
-          container: 'fondo-oscuro'
-        }
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+          customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",
+            cancelButton: "btn-cancelar",
+            container: 'fondo-oscuro'
+          }
         }).then(choice => {
           if (!choice.isConfirmed) return;
 
@@ -903,16 +904,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                   const row = document.querySelector(`.select-product[value="${nit}"]`);
                   if (row) row.closest('tr').remove();
                 });
-               Swal.fire({
-          title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-          html: `
+                Swal.fire({
+                  title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                  html: `
           <div class="custom-alert">
                 <div class="contenedor-imagen">
                     <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
                 </div>
           <p>Los proveedores se eliminaron correctamente.</p>
           </div>`,
-         background: '#ffffffdb',
+                  background: '#ffffffdb',
                   confirmButtonText: 'Aceptar',
                   confirmButtonColor: '#007bff',
                   customClass: {
@@ -920,7 +921,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     confirmButton: 'btn-aceptar',
                     container: 'fondo-oscuro'
                   }
-          });
+                });
                 toggleBtn();
               } else {
                 Swal.fire('Error', data.error || 'No se pudo eliminar.', 'error');
@@ -956,6 +957,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           checkbox.type = 'checkbox';
           checkbox.className = 'select-product';
           checkbox.value = row.nit;
+          if (selectedProviderNits.has(row.nit)) {
+            checkbox.checked = true;
+          }
           tdCheckbox.appendChild(checkbox);
           tr.appendChild(tdCheckbox);
         });
@@ -970,7 +974,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         // Cada vez que cambie cualquier checkbox, actualizamos visibilidad
         checkboxes.forEach(cb => {
-          cb.addEventListener("change", toggleDeleteButtonVisibility);
+          cb.addEventListener("change", () => {
+            const nit = cb.value;
+            if (cb.checked) {
+              selectedProviderNits.add(nit);
+            } else {
+              selectedProviderNits.delete(nit);
+            }
+            // Persistir selección
+            // Mostrar/ocultar botón
+            toggleDeleteButtonVisibility();
+          });
         });
 
         // Inicializamos estado al cargar

@@ -208,7 +208,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!-- 6) FILTROS / BÚSQUEDA CLIENTE  -->
     <!-- ============================== -->
     <div class="barra-superior">
-       <button id="filtros-btn">Mostrar Filtros</button>
+      <button id="filtros-btn">Mostrar Filtros</button>
       <!-- Caja de búsqueda en tiempo real (cliente) -->
       <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
       <!-- Botón exportar a Excel (agregado de nuevo) -->
@@ -220,7 +220,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           </button>
         </form>
       </div>
-     
+
     </div>
     <div id="filtros-popup" class="filtros-popup">
       <div class="filtros-container">
@@ -458,9 +458,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
 
   <!-- —————————————————————————————————————————————————————————— -->
-  <!-- 3) SCRIPT DE JAVASCRIPT: paginación / filtrado / ordenamiento -->
+  <!-- 3) SCRIPT DE JAVASCRIPT: paginación / filtrado / ordenamiento / selección -->
   <!-- —————————————————————————————————————————————————————————— -->
   <script>
+    const selectedProductIds = new Set();
     // — sub‑dropdown toggle
     document.querySelectorAll('.filtro-titulo').forEach(btn => {
       btn.addEventListener('click', e => {
@@ -661,6 +662,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         checkbox.type = 'checkbox';
         checkbox.className = 'select-product';
         checkbox.value = rowObj.codigo1;
+        if (selectedProductIds.has(rowObj.codigo1)) {
+          checkbox.checked = true;
+        }
         td.appendChild(checkbox);
         tr.appendChild(td);
 
@@ -870,9 +874,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       // Cada vez que cambie cualquier checkbox, actualizamos visibilidad
       checkboxes.forEach(cb => {
-        cb.addEventListener("change", toggleDeleteButtonVisibility);
-      });
+        cb.addEventListener("change", () => {
+          const id = cb.value;
+          if (cb.checked) {
+            selectedProductIds.add(id);
+          } else {
+            selectedProductIds.delete(id);
+          }
+          // persistir (opcional)
 
+          // y actualizar visibilidad del botón
+          toggleDeleteButtonVisibility();
+        });
+      });
       // Inicializamos estado al cargar
       toggleDeleteButtonVisibility();
 
@@ -881,7 +895,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
         if (selected.length < 2) return; // redundante, pero seguro
 
-         Swal.fire({
+        Swal.fire({
           title: '<span class="titulo-alerta advertencia">¿Eliminar seleccionados?</span>',
           html: `
           <div class="custom-alert">
@@ -890,16 +904,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 </div>
           <p>Se eliminarán ${selected.length} productos.</p>
           </div>`,
-         background: '#ffffffdb',
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-        customClass: {
-          popup: "custom-alert",
-          confirmButton: "btn-eliminar",
-          cancelButton: "btn-cancelar",
-          container: 'fondo-oscuro'
-        }
+          background: '#ffffffdb',
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+          customClass: {
+            popup: "custom-alert",
+            confirmButton: "btn-eliminar",
+            cancelButton: "btn-cancelar",
+            container: 'fondo-oscuro'
+          }
         }).then(result => {
           if (!result.isConfirmed) return;
           // tu fetch a eliminar_productos.php con { codigos: selected }
@@ -915,24 +929,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             .then(r => r.json())
             .then(data => {
               if (data.success) {
-                 Swal.fire({
-          title: '<span class="titulo-alerta confirmacion">Éxito</span>',
-          html: `
+                Swal.fire({
+                    title: '<span class="titulo-alerta confirmacion">Éxito</span>',
+                    html: `
           <div class="custom-alert">
                 <div class="contenedor-imagen">
                     <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
                 </div>
           <p>Los proveedores se eliminaron correctamente.</p>
           </div>`,
-         background: '#ffffffdb',
-                  confirmButtonText: 'Aceptar',
-                  confirmButtonColor: '#007bff',
-                  customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                  }
-          })
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  })
                   .then(() => location.reload());
               } else {
                 Swal.fire("Error", data.error || "No se pudo eliminar.", "error");
@@ -1108,6 +1122,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     document.getElementById('filtros-btn').onclick = function() {
       document.getElementById('filtros-popup').classList.toggle('active');
     };
+    // Cierra el popup al hacer clic fuera
+document.addEventListener('click', function(event) {
+  const popup = document.getElementById('filtros-popup');
+  const btn = document.getElementById('filtros-btn');
+  if (popup.classList.contains('active') && !popup.contains(event.target) && event.target !== btn) {
+    popup.classList.remove('active');
+  }
+});
   </script>
 
   <div class="userContainer">
