@@ -236,7 +236,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="container">
       <div class="actions">
         <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nueva categoría</button>
-        <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+        <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese la categoría a buscar">
       </div>
       <table class="category-table">
         <thead>
@@ -672,7 +672,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         btnGuardar.disabled = true;
       });
 
-      // ... (aquí iría el resto de tu código de modales, paginación, etc.)
     });
   </script>
 

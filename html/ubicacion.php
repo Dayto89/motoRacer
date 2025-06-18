@@ -224,9 +224,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <h1>Ubicación</h1>
         <div class="container">
             <div class="actions">
-                <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva ubicación</button>
-                <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
-            </div>
+                <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva ubicación</button>  
+            <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese la ubicación a buscar">
+             </div>
             <table class="category-table">
                 <thead>
                     <tr>
@@ -264,7 +264,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="nombre"
                         name="nombre"
-                        required />
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
                     <span id="nombre-error" class="input-error-message">
                         Esta ubicación ya está registrada.
                     </span>
@@ -499,7 +500,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             console.error("Error al obtener productos:", error);
                         });
                 } else if (btn.classList.contains('btn-delete')) {
-                    // Eliminar categoría
+                    // Eliminar ubicacion
                     Swal.fire({
                         title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
                         html: `
@@ -560,14 +561,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                                 renderTable();
                                             });
                                     } else {
-                                       Swal.fire({
+                                      Swal.fire({
                     title: '<span class="titulo-alerta error">Error</span>',
                     html: `
                       <div class="custom-alert">
                         <div class="contenedor-imagen">
                           <img src="../imagenes/llave.png" alt="Error" class="llave">
                         </div>
-                        <p>No se pudo eliminar la ubicación porque hay productos asociados..</p>
+                        <p>No se pudo eliminar la ubicación porque hay productos asociados.</p>
                       </div>
                     `,
                     background: '#ffffffdb',
@@ -581,7 +582,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                   });
                 }
               })
-                                .catch(() =>   Swal.fire({
+                                .catch(() => Swal.fire({
                   title: '<span class="titulo-alerta error">Error</span>',
                   html: `
                     <div class="custom-alert">

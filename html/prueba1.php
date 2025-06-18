@@ -1,132 +1,172 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('log_errors', 1);
-error_reporting(E_ALL);
-ini_set('error_log', 'C:\xampp\htdocs\php_errors.log');
-
 session_start();
-
-
-// Verificación de sesión
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
-
-// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
-
-// Conexión a la base de datos
+// Conexión
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+    die("alert('No se pudo conectar a la base de datos');");
 }
 
-// 1. Eliminación por AJAX (JSON)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
+// 1) AJAX check código
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'check_codigo'
+) {
     header('Content-Type: application/json');
-
-    $codigo = $_POST['codigo'];
-
-    $stmt = $conexion->prepare("DELETE FROM cliente WHERE codigo = ?");
+    $codigo = $_POST['codigo1'] ?? '';
+    $stmt = $conexion->prepare("SELECT 1 FROM producto WHERE codigo1 = ?");
     $stmt->bind_param("s", $codigo);
-
-    if (!$stmt->execute()) {
-        echo json_encode(['success' => false, 'error' => $stmt->error]);
-        exit;
-    }
-
-    if ($stmt->affected_rows === 0) {
-        echo json_encode(['success' => false, 'error' => 'Cliente no encontrado']);
-        exit;
-    }
-
-    echo json_encode(['success' => true]);
+    $stmt->execute();
+    $stmt->store_result();
+    $existe = $stmt->num_rows > 0;
+    echo json_encode(['exists' => $existe]);
+    $stmt->close();
+    $conexion->close();
     exit;
 }
 
-// 2. Actualización de datos (desde formulario)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-    $id = $_POST['id'];
-    $identificacion = $_POST['identificacion'];
-    $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
-    $telefono = $_POST['telefono'];
-    $correo = $_POST['correo'];
-
-    // Usando sentencias preparadas para mayor seguridad
-    $stmt = $conexion->prepare("UPDATE cliente SET 
-        identificacion = ?,
-        nombre = ?,
-        apellido = ?,
-        telefono = ?,
-        correo = ?
-        WHERE codigo = ?");
-    $stmt->bind_param("ssssss", $identificacion, $nombre, $apellido, $telefono, $correo, $id);
-
-    if ($stmt->execute()) {
-        $_SESSION['alert'] = [
-            'type' => 'success',
-            'title' => 'Éxito',
-            'message' => 'Datos actualizados correctamente.',
-            'image' => 'moto.png',
-            'redirect' => 'listaclientes.php'
-        ];
+// 2a) AJAX handler para agregar categoría y devolver JSON
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_categoria'
+) {
+    header('Content-Type: application/json');
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $query  = "INSERT INTO categoria (nombre) VALUES ('$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = mysqli_insert_id($conexion);
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
     } else {
-        $_SESSION['alert'] = [
-            'type' => 'error',
-            'title' => 'Error',
-            'message' => 'Error al actualizar los datos: ' . $stmt->error,
-            'image' => 'llave.png'
-        ];
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
     }
-    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+// 2b) AJAX handler para agregar ubicación
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_ubicacion'
+) {
+    header('Content-Type: application/json');
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $query  = "INSERT INTO ubicacion (nombre) VALUES ('$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = mysqli_insert_id($conexion);
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
+    }
     exit;
 }
 
-// 3. Filtros de búsqueda y paginación
-$filtros = [];
-$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
-
-if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios'])) {
-    foreach ($_GET['criterios'] as $criterio) {
-        $criterio = mysqli_real_escape_string($conexion, $criterio);
-        $filtros[] = "$criterio LIKE '%$valor%'";
+// 2c) AJAX handler para agregar marca
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_marca'
+) {
+    header('Content-Type: application/json');
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $query  = "INSERT INTO marca (nombre) VALUES ('$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = mysqli_insert_id($conexion);
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
     }
+    exit;
 }
 
-// justo tras conectar a BD
-$allQ = "SELECT codigo,identificacion,nombre,apellido,telefono,correo FROM cliente";
-if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
-$allRes = mysqli_query($conexion, $allQ);
-$allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
-
-$por_pagina = 10;
-$pagina_actual = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-$offset = ($pagina_actual - 1) * $por_pagina;
-
-// Conteo total de registros
-$consulta_total = "SELECT COUNT(*) AS total FROM cliente WHERE 1=1";
-if (!empty($filtros)) {
-    $consulta_total .= " AND (" . implode(" OR ", $filtros) . ")";
-}
-$resultado_total = mysqli_query($conexion, $consulta_total);
-$total_filas = mysqli_fetch_assoc($resultado_total)['total'];
-$total_paginas = ceil($total_filas / $por_pagina);
-
-// Consulta principal con paginación
-$consulta = "SELECT * FROM cliente WHERE 1=1";
-if (!empty($filtros)) {
-    $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
-}
-$consulta .= " LIMIT $por_pagina OFFSET $offset";
-
-$resultado = mysqli_query($conexion, $consulta);
-if (!$resultado) {
-    die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
+// 2d) AJAX handler para agregar proveedor
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['accion']) &&
+    $_POST['accion'] === 'add_proveedor'
+) {
+    header('Content-Type: application/json');
+    // Escapa el nombre y demás campos que quieras capturar:
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $nit    = mysqli_real_escape_string($conexion, $_POST['nit']);
+    // Puedes capturar más campos si tu tabla los tiene
+    $query  = "INSERT INTO proveedor (nit, nombre) VALUES ('$nit', '$nombre')";
+    if (mysqli_query($conexion, $query)) {
+        $id = $nit; // aquí tu clave primaria es nit
+        echo json_encode([
+            'success' => true,
+            'id'      => $id,
+            'nombre'  => $nombre
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'error'   => mysqli_error($conexion)
+        ]);
+    }
+    exit;
 }
 
-// 4. Widget de accesibilidad
+// 1a) Check nombre de categoría
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_categoria') {
+    header('Content-Type: application/json');
+    $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $r = mysqli_query($conexion, "SELECT 1 FROM categoria WHERE nombre='$n' LIMIT 1");
+    echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
+    exit;
+}
+
+// 1b) Check nombre de ubicación
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_ubicacion') {
+    header('Content-Type: application/json');
+    $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $r = mysqli_query($conexion, "SELECT 1 FROM ubicacion WHERE nombre='$n' LIMIT 1");
+    echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
+    exit;
+}
+
+// 1c) Check nombre de marca
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_marca') {
+    header('Content-Type: application/json');
+    $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $r = mysqli_query($conexion, "SELECT 1 FROM marca WHERE nombre='$n' LIMIT 1");
+    echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
+    exit;
+}
+
+// Consultas de selects
+$marcas = $conexion->query("SELECT codigo, nombre FROM marca");
+$categorias = $conexion->query("SELECT codigo, nombre FROM categoria");
+$proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
+$ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
+$unidades = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
@@ -134,575 +174,641 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inventario</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Crear Producto</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-    <link rel="stylesheet" href="../css/clientes.css" />
+    <link rel="stylesheet" href="../css/producto.css">
     <link rel="stylesheet" href="../css/alertas.css">
-    <link rel="stylesheet" href="../componentes/header.css">
-    <link rel="stylesheet" href="../componentes/header.php">
+    <link rel="stylesheet" href="/componentes/header.php">
+    <link rel="stylesheet" href="/componentes/header.css">
     <script src="../js/header.js"></script>
     <script src="/js/index.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
 
         .required::after {
             content: " *";
             color: red;
         }
-        .export-container {
-            margin-bottom: 15px;
-        }
 
-        .btn-export {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 12px;
-            background-color: #28a745;
-            color: #fff;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .btn-export:hover {
-            background-color: #218838;
-        }
-
-        .btn-export i {
-            margin-right: 6px;
-        }
-
-        .pagination-dinamica {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 5px;
-            font-family: arial;
-            font-size: 13px;
-        }
-
-        .pagination-dinamica button {
-            padding: 8px 12px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            text-decoration: none;
-            color: #333;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
-
-        .pagination-dinamica button:hover {
-            background-color: rgb(158, 146, 209);
-        }
-
-        .pagination-dinamica button.active {
-            background-color: #007bff;
-            color: white;
+        /* Estilo del botón de cierre */
+        .close-button {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 2.2rem;
             font-weight: bold;
-            pointer-events: none;
-            border-color: #007bff;
+            color: #333;
             cursor: pointer;
+            user-select: none;
         }
 
-        /* Al arrancar, ocultamos la paginación PHP (queda como fallback) */
-        .pagination {
-            display: none;
-        }
-
-
-        #clientesTable tbody tr:hover,
-        #clientesTable tbody tr:hover td {
-            background-color: rgba(0, 123, 255, 0.15);
+        /* Opcional: cambio de color al pasar el ratón */
+        .close-button:hover {
+            color: red;
         }
     </style>
 </head>
 
 <body>
-    <script>
-        const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-    </script>
-    <div class="sidebar">
-        <div id="menu"></div>
-    </div>
 
-    <div class="main-content">
-        <h1>Clientes</h1>
-        <div class="filter-bar">
-            <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
-            <div class="export-container">
-                <a href="exportar_excel_clientes.php" class="btn-export">
-                    <i class="fa-solid fa-file-csv"></i> Exportar Excel
-                </a>
+    <!-- Aquí se cargará el header -->
+    <div id="menu"></div>
+
+    <!-- Sección para Crear Producto -->
+    <div id="crearProducto" class="form-section">
+        <h1>Crear Producto</h1>
+        <!-- Botón para abrir modal de importar -->
+        <button type="submit" class="icon-button" aria-label="Importar archivo" title="Importar archivo" onclick="openModal('modalImport')">
+            <i class="fas fa-file-excel"></i>
+            <label>Importar archivo</label>
+        </button>
+
+        <!-- Modal Importar Archivo -->
+        <div id="modalImport" class="modal_nueva_categoria hidden">
+            <div class="modal-content-nueva">
+                <span class="close-button" onclick="closeModal('modalImport')">&times;</span>
+                <h2>Importar Archivo</h2>
+                <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
+                    <div class="form-group">
+                        <label>Selecciona el archivo Excel:</label>
+                        <label for="archivoExcel" class="custom-file-upload">
+                            <i class="fas fa-cloud-upload-alt"></i><br>
+                            <span>Haz clic para seleccionar un archivo</span>
+                        </label>
+                        <input id="archivoExcel" type="file" name="archivoExcel" accept=".xlsx, .xls" required hidden>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" onclick="closeModal('modalImport')">Cancelar</button>
+                        <button type="submit">Importar</button>
+                    </div>
+                    <a href="../componentes/formato_productos.xlsx" download class="download-link">
+                        <i class="fas fa-file-download"></i> Descargar formato
+                    </a>
+                </form>
             </div>
         </div>
 
 
-        <?php if (mysqli_num_rows($resultado) > 0): ?>
-            <table id="clientesTable">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th data-col="1" data-type="string">Identificación<span class="sort-arrow"></span></th>
-                        <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
-                        <th data-col="3" data-type="string">Apellido<span class="sort-arrow"></span></th>
-                        <th data-col="4" data-type="string">Teléfono<span class="sort-arrow"></span></th>
-                        <th data-col="5" data-type="string">Correo<span class="sort-arrow"></span></th>
-                        <th data-col="6" data-type="none">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($fila['codigo']) ?></td>
-                            <td><?= htmlspecialchars($fila['identificacion']) ?></td>
-                            <td><?= htmlspecialchars($fila['nombre']) ?></td>
-                            <td><?= htmlspecialchars($fila['apellido']) ?></td>
-                            <td><?= htmlspecialchars($fila['telefono']) ?></td>
-                            <td><?= htmlspecialchars($fila['correo']) ?></td>
-                            <td class="acciones">
-                                <button class="edit-button" data-id="<?= $fila['codigo'] ?>">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button class="delete-button" onclick="eliminarCliente('<?= $fila['codigo'] ?>')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-            <div id="jsPagination" class="pagination-dinamica"></div>
-            <!-- Modal de edición -->
-            <div id="editModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">
-                        <i class="fa-solid fa-x"></i>
-                    </span>
-                    <h2>Editar Cliente</h2>
-                    <form id="editForm" method="post">
-                        <input type="hidden" id="editId" name="id">
-                        <div class="campo">
-                            <label class="required" for="editIdentificacion">Identificación:</label>
-                            <input type="text" id="editIdentificacion" name="identificacion"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editNombre">Nombre:</label>
-                            <input type="text" id="editNombre" name="nombre"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editApellido">Apellido:</label>
-                            <input type="text" id="editApellido" name="apellido"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editTelefono">Teléfono:</label>
-                            <input type="text" id="editTelefono" name="telefono" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editCorreo">Correo:</label>
-                            <input type="email" id="editCorreo" name="correo"
-                                pattern=".+@.+"
-                                placeholder="ejemplo@correo.com">
-                        </div>
-                        <div class="modal-boton">
-                            <button type="submit" id="modal-boton">Guardar Cambios</button>
-                        </div>
-                    </form>
+
+        <!-- Contenedor principal -->
+        <div class="container">
+
+            <form id="product-form" method="POST" action="">
+
+
+                <div class="campo">
+                    <label class="required" for="codigo1">Código 1:</label>
+                    <input type="text" id="codigo1" name="codigo1" required><br>
                 </div>
-            </div>
-
-            <?php if ($total_paginas > 1): ?>
-                <div class="pagination">
-                    <?php
-                    $base_params = $_GET;
-                    ?>
-                    <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => 1])) ?>">« Primera</a>
-
-                    <?php if ($pagina_actual > 1): ?>
-                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $pagina_actual - 1])) ?>">‹ Anterior</a>
-                    <?php endif; ?>
-
-                    <?php
-                    $start = max(1, $pagina_actual - 2);
-                    $end   = min($total_paginas, $pagina_actual + 2);
-
-                    if ($start > 1) {
-                        echo '<span class="ellips" style="color:white">…</span>';
-                    }
-
-                    for ($i = $start; $i <= $end; $i++):
-                    ?>
-                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $i])) ?>"
-                            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-                            <?= $i ?>
-                        </a>
-                    <?php endfor;
-
-                    if ($end < $total_paginas) {
-                        echo '<span class="ellips" style="color:white">…</span>';
-                    }
-                    ?>
-
-                    <?php if ($pagina_actual < $total_paginas): ?>
-                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $pagina_actual + 1])) ?>">Siguiente ›</a>
-                    <?php endif; ?>
-
-                    <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $total_paginas])) ?>">Última »</a>
+                <div class="campo">
+                    <label for="codigo2">Código 2:</label>
+                    <input type="text" id="codigo2" name="codigo2" value="0"><br>
                 </div>
-            <?php endif; ?>
+                <div class="campo">
+                    <label class="required" for="nombre">Producto:</label>
+                    <input type="text" id="nombre" name="nombre" required><br>
+                </div>
+
+                <div class="campo">
+                    <label class="required" for="precio1">Precio llegada:</label>
+                    <input type="text" id="precio1" name="precio1" required
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+                </div>
+
+                <div class="campo">
+                    <label class="required" for="precio2">Precio taller:</label>
+                    <input type="text" id="precio2" name="precio2"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+                </div>
+
+                <div class="campo">
+                    <label class="required" for="precio3">Precio publico:</label>
+                    <input type="text" id="precio3" name="precio3"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+                </div>
+
+                <div class="campo">
+                    <label class="required" for="cantidad">Cantidad:</label>
+                    <input type="number"
+                        id="cantidad"
+                        name="cantidad"
+                        required
+                        min="0"
+                        max="99"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+                </div>
+
+
+               <!-- Campo Categoría con botón para agregar nueva -->
+                <div class="campo">
+                    <div class="label-with-button">
+                        <label class="required" for="categoria">Categoría:</label>
+                        <button type="button" class="add-button" onclick="openModal('modalCategoria')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <select id="categoria" name="categoria" required>
+                        <?php while ($fila = $categorias->fetch_assoc()) { ?>
+                            <option value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <!-- Campo Marca con botón para agregar nueva -->
+                <div class="campo">
+                    <div class="label-with-button">
+                        <label class="required" for="marca">Marca:</label>
+                        <button type="button" class="add-button" onclick="openModal('modalMarca')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <select id="marca" name="marca" required>
+                        <?php while ($fila = $marcas->fetch_assoc()) { ?>
+                            <option value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="required" for="unidadMedida">Clase:</label>
+                    <select name="unidadMedida" id="unidadMedida" required>
+                        <?php while ($fila = $unidades->fetch_assoc()) { ?>
+                            <option value="<?php echo $fila['codigo']; ?>">
+                                <?php echo $fila['nombre']; ?>
+                            </option>
+                        <?php } ?>
+                    </select><br>
+                </div>
+               <!-- Campo Ubicación con botón para agregar nueva -->
+                <div class="campo">
+                    <div class="label-with-button">
+                        <label for="ubicacion">Ubicación:</label>
+                        <button type="button" class="add-button" onclick="openModal('modalUbicacion')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <select id="ubicacion" name="ubicacion">
+                        <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
+                            <option value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label class="required" for="proveedor">Proveedor:</label>
+                    <select name="proveedor" id="proveedor" required>
+                        <?php while ($fila = $proveedores->fetch_assoc()) { ?>
+                            <option value="<?php echo $fila['nit']; ?>">
+                                <?php echo $fila['nombre']; ?>
+                            </option>
+                        <?php } ?>
+                    </select><br>
+                </div>
+                <div class="button-container">
+                    <div class="boton">
+                        <button type="submit" name="guardar">Guardar</button>
+                    </div>
+                </div>
+
+            </form>
+
+
+        </div>
+
     </div>
-<?php else: ?>
-    <p>No se encontraron resultados.</p>
-<?php endif; ?>
 
-<!-- Mostrar alertas desde sesión -->
-<?php if (isset($_SESSION['alert'])): ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: '<span class="titulo-alerta confirmacion <?= $_SESSION['alert']['type'] ?>"><?= $_SESSION['alert']['title'] ?></span>',
-                html: `
-            <div class="custom-alert">
-                <div class="contenedor-imagen">
-                    <img class="<?= $_SESSION['alert']['type'] ?>" src="../imagenes/<?= $_SESSION['alert']['image'] ?>" alt="<?= $_SESSION['alert']['title'] ?>">
+   <!-- Modal Nueva Categoría -->
+    <div id="modalCategoria" class="modal_nueva_categoria hidden">
+        <div class="modal-content-nueva">
+            <span class="close-button" onclick="closeModal('modalCategoria')">&times;</span>
+            <h2>Nueva categoría</h2>
+            <form id="formAddCategoria">
+                <div class="form-group">
+                    <label for="inputNombreCategoria">Nombre de la categoría:</label>
+                    <input type="text" id="inputNombreCategoria" name="nombre" required>
+                    <span class="input-error-message">Este nombre ya está registrado.</span>
                 </div>
-                <p><?= $_SESSION['alert']['message'] ?></p>
-            </div>
-        `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '<?= $_SESSION['alert']['type'] === 'success' ? '#007bff' : '#dc3545' ?>',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            }).then(() => {
-                <?php if (isset($_SESSION['alert']['redirect'])): ?>
-                    window.location.href = '<?= $_SESSION['alert']['redirect'] ?>';
-                <?php endif; ?>
-            });
-            <?php unset($_SESSION['alert']); ?>
-        });
-    </script>
-<?php endif; ?>
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModal('modalCategoria')">Cancelar</button>
+                    <button type="submit" id="btnGuardarCategoria">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Ubicación -->
+    <div id="modalUbicacion" class="modal_nueva_categoria hidden">
+        <div class="modal-content-nueva">
+            <span class="close-button" onclick="closeModal('modalUbicacion')">&times;</span>
+            <h2>Nueva ubicación</h2>
+            <form id="formAddUbicacion">
+                <div class="form-group">
+                    <label for="inputNombreUbicacion">Nombre de la ubicación:</label>
+                    <input type="text" id="inputNombreUbicacion" name="nombre" required>
+                    <span class="input-error-message">Este nombre ya está registrado.</span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModal('modalUbicacion')">Cancelar</button>
+                    <button type="submit" id="btnGuardarUbicacion">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Marca -->
+    <div id="modalMarca" class="modal_nueva_categoria hidden">
+        <div class="modal-content-nueva">
+            <span class="close-button" onclick="closeModal('modalMarca')">&times;</span>
+            <h2>Nueva marca</h2>
+            <form id="formAddMarca">
+                <div class="form-group">
+                    <label for="inputNombreMarca">Nombre de la marca:</label>
+                    <input type="text" id="inputNombreMarca" name="nombre" required>
+                    <span class="input-error-message">Este nombre ya está registrado.</span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModal('modalMarca')">Cancelar</button>
+                    <button type="submit" id="btnGuardarMarca">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <?php
+
+    $mensaje = null;  // Variable para almacenar el estado del mensaje
+    define('CANTIDAD_MAX', 99);
+
+
+    if ($_POST) {
+        if (!$conexion) {
+            die("<script>alert('No se pudo conectar a la base de datos');</script>");
+        };
+        $codigo1 = $_POST['codigo1'];
+        $codigo2 = $_POST['codigo2'];
+        $nombre = $_POST['nombre'];
+        $iva = 19;
+        $precio1 = $_POST['precio1'];
+        $precio2 = $_POST['precio2'];
+        $precio3 = $_POST['precio3'];
+        $cantidad = (int) $_POST['cantidad'];
+        if ($cantidad < 0 || $cantidad > CANTIDAD_MAX) {
+            die("<script>alert('La cantidad debe estar entre 0 y " . CANTIDAD_MAX . "'); window.history.back();</script>");
+        }
+
+        $categoria = $_POST['categoria'];
+        $marca = $_POST['marca'];
+        $unidadMedida = $_POST['unidadMedida'];
+        $ubicacion = $_POST['ubicacion'];
+        $proveedor = $_POST['proveedor'];
+
+        $query = "INSERT INTO producto (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit) VALUES ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$categoria', '$marca', '$unidadMedida', '$ubicacion', '$proveedor')";
+
+
+
+        $resultado = mysqli_query($conexion, $query);
+
+        if ($resultado) {
+            $mensaje = 'producto_agregado';
+        } else {
+            $mensaje = 'error_al_agregar';
+        }
+    }
+
+    ?>
+
+
 
 <script>
- document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('editModal');
-    const openButtons = document.querySelectorAll('.edit-button');
-    const closeBtn = modal.querySelector('.close');
-    const animationDuration = 600; // 0.6s en ms (debe coincidir con el CSS)
+    // ========= FUNCIONES PARA MODALES =========
 
-    function openModal() {
-        modal.style.display = 'flex';
-        setTimeout(() => {
-            modal.classList.add('show');
-        }, 10);
+    // Función mejorada para abrir cualquier modal con animación
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const content = modal.querySelector('.modal-content, .modal-content-nueva');
+        
+        // Resetear estado de animación
+        content.style.transform = 'translateY(-20px)';
+        content.style.opacity = '0';
+        
+        // Mostrar modal
+        modal.classList.remove('hidden');
+        modal.classList.add('show');
+        
+        // Forzar reflow para activar la animación
+        void modal.offsetWidth;
+        
+        // Iniciar animación
+        modal.classList.add('opening');
+        content.style.transform = 'translateY(0)';
+        content.style.opacity = '1';
+        
+        // Enfocar el primer input si existe
+        const input = content.querySelector('input');
+        if (input) input.focus();
     }
 
-    function closeModal() {
-        modal.classList.remove('show');
+    // Función mejorada para cerrar cualquier modal con animación
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const content = modal.querySelector('.modal-content, .modal-content-nueva');
+        
+        // Iniciar animación de cierre
+        modal.classList.remove('opening');
+        modal.classList.add('closing');
+        content.style.transform = 'translateY(-20px)';
+        content.style.opacity = '0';
+        
+        // Ocultar completamente después de la animación
         setTimeout(() => {
-            modal.style.display = 'none';
-        }, animationDuration); // Ahora coincide con la duración CSS
+            modal.classList.remove('show', 'closing');
+            modal.classList.add('hidden');
+        }, 300); // 300ms = duración de la animación
     }
 
-    // Abrir modal al hacer clic en botón de edición
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.edit-button')) {
-            const btn = e.target.closest('.edit-button');
-            const row = btn.closest('tr');
-            
-            document.getElementById('editId').value = row.cells[0].textContent.trim();
-            document.getElementById('editIdentificacion').value = row.cells[1].textContent.trim();
-            document.getElementById('editNombre').value = row.cells[2].textContent.trim();
-            document.getElementById('editApellido').value = row.cells[3].textContent.trim();
-            document.getElementById('editTelefono').value = row.cells[4].textContent.trim();
-            document.getElementById('editCorreo').value = row.cells[5].textContent.trim();
-            
-            openModal();
-        }
-    });
+    // ========= MODAL DE IMPORTAR ARCHIVO =========
+    function openImportModal() {
+        openModal('modalConfirm');
+    }
 
-    // Cerrar modal
-    closeBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-});
-    // Función para eliminar cliente
-    function eliminarCliente(codigo) {
+    function closeImportModal() {
+        closeModal('modalConfirm');
+    }
+
+    // ========= SWEETALERT MENSAJES PHP =========
+    const mensaje = "<?php echo $mensaje; ?>";
+    if (mensaje === "producto_agregado") {
         Swal.fire({
-            title: '<span class="titulo-alerta advertencia">¿Estas Seguro?</span>',
+            title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
             html: `
-                <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                    </div>
-                    <p>¿Quieres eliminar el cliente <strong>${codigo}</strong>?</p>
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
                 </div>
-            `,
-            background: '#ffffffdb',
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-            confirmButtonColor: '#dc3545',
+                <p>Producto agregado con éxito al inventario.</p>
+            </div>`,
+            background: 'hsl(0deg 0% 100% / 0.76)',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
             customClass: {
-                popup: "custom-alert",
-                confirmButton: "btn-eliminar",
-                cancelButton: "btn-cancelar",
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
                 container: 'fondo-oscuro'
             }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch('../html/listaclientes.php', {
+        });
+    } else if (mensaje === "error_al_agregar") {
+        Swal.fire({
+            title: '<span class="titulo-alerta error">Error</span>',
+            html: `
+            <div class="custom-alert">
+                <div class="contenedor-imagen">
+                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                </div>
+                <p>Error al agregar el producto.</p>
+            </div>`,
+            background: 'hsl(0deg 0% 100% / 0.76)',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#007bff',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'btn-aceptar',
+                container: 'fondo-oscuro'
+            }
+        });
+    }
+
+    // ========= VALIDACIÓN CÓDIGO DUPLICADO =========
+    function setupCodeValidation() {
+        const inputCodigo = document.getElementById('codigo1');
+        const submitBtn = document.querySelector('#product-form button[type="submit"]');
+        const campo = inputCodigo?.closest('.campo');
+        
+        if (campo) {
+            let tooltip = campo.querySelector('.small-error-tooltip');
+
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'small-error-tooltip';
+                tooltip.textContent = 'Este código ya está registrado.';
+                campo.appendChild(tooltip);
+            }
+
+            inputCodigo.addEventListener('blur', () => {
+                const val = inputCodigo.value.trim();
+                if (!val) {
+                    inputCodigo.classList.remove('error');
+                    tooltip.style.display = 'none';
+                    submitBtn.disabled = false;
+                    return;
+                }
+                fetch('crearproducto.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
+                        body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
                     })
-                    .then(response => response.json())
+                    .then(r => r.json())
                     .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                title: '<span class="titulo-alerta confirmacion"> Eliminado</span>',
-                                html: `
-                                <div class="custom-alert">
-                                    <div class="contenedor-imagen">
-                                        <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
-                                    </div>
-                                    <p>El cliente <strong>${codigo}</strong> ha sido eliminado correctamente.</p>
-                                </div>
-                            `,
-                                background: '#ffffffdb',
-                                confirmButtonText: 'Aceptar',
-                                confirmButtonColor: '#007bff',
-                                customClass: {
-                                    popup: 'swal2-border-radius',
-                                    confirmButton: 'btn-aceptar',
-                                    container: 'fondo-oscuro'
-                                }
-                            }).then(() => {
-                                location.reload();
-                            });
+                        if (data.exists) {
+                            inputCodigo.classList.add('error');
+                            tooltip.style.display = 'block';
+                            submitBtn.disabled = true;
                         } else {
-                            Swal.fire({
-                                title: '<span class="titulo-alerta error">Error</span>',
-                                html: `
-                                <div class="custom-alert">
-                                    <div class="contenedor-imagen">
-                                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                                    </div>
-                                    <p>${data.error || 'Error al eliminar el cliente'}</p>
-                                </div>
-                            `,
-                                background: '#ffffffdb',
-                                confirmButtonText: 'Aceptar',
-                                confirmButtonColor: '#dc3545',
-                                customClass: {
-                                    popup: 'swal2-border-radius',
-                                    confirmButton: 'btn-aceptar',
-                                    container: 'fondo-oscuro'
-                                }
-                            });
+                            inputCodigo.classList.remove('error');
+                            tooltip.style.display = 'none';
+                            submitBtn.disabled = false;
                         }
                     })
-                    .catch(error => {
-                        Swal.fire({
-                            title: '<span class="titulo-alerta error">Error</span>',
-                            html: `
-                            <div class="custom-alert">
-                                <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
-                                </div>
-                                <p>Error al eliminar el cliente, puede tener registros de ventas.</p>
-                            </div>
-                        `,
-                            background: '#ffffffdb',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#dc3545',
-                            customClass: {
-                                popup: 'swal2-border-radius',
-                                confirmButton: 'btn-aceptar',
-                                container: 'fondo-oscuro'
-                            }
-                        });
+                    .catch(() => {
+                        inputCodigo.classList.remove('error');
+                        tooltip.style.display = 'none';
+                        submitBtn.disabled = false;
                     });
+            });
+        }
+    }
+
+    // ========= FUNCIONES PARA MODALES DE CATEGORÍA, MARCA Y UBICACIÓN =========
+
+    // Helper genérico para verificar existencia
+    async function checkExists(accion, nombre) {
+        const body = new URLSearchParams({
+            accion,
+            nombre: nombre.trim()
+        });
+        const resp = await fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body.toString()
+        });
+        const json = await resp.json();
+        return json.exists;
+    }
+
+    // Configuración de validación para cada modal
+    function setupModalValidation({ inputId, btnGuardarId, accion }) {
+        const inp = document.getElementById(inputId);
+        const btn = document.getElementById(btnGuardarId);
+        const span = inp.nextElementSibling;
+        
+        inp.addEventListener('input', async () => {
+            const val = inp.value.trim();
+            const exists = val ? await checkExists(accion, val) : false;
+            inp.classList.toggle('invalid', exists);
+            btn.disabled = exists || !val;
+            span.style.display = exists ? 'block' : 'none';
+        });
+    }
+
+    // Manejar envío de formularios de modales
+    function handleModalFormSubmit(form, accion, selectId) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const input = this.querySelector('input');
+            const nombre = input.value.trim();
+            
+            if (!nombre) return;
+
+            const response = await fetch('', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({ accion, nombre })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // Actualizar el select correspondiente
+                const select = document.getElementById(selectId);
+                
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = data.nombre;
+                option.selected = true;
+                
+                select.appendChild(option);
+                closeModal('modal' + form.id.replace('formAdd', ''));
+                this.reset();
+            } else {
+                Swal.fire('Error', data.error || 'Ocurrió un error', 'error');
             }
         });
     }
 
+    // ========= INICIALIZACIÓN CUANDO EL DOM ESTÁ LISTO =========
     document.addEventListener('DOMContentLoaded', () => {
-        const rowsPerPage = 7;
-        let currentPage = 1;
-        let filteredData = [...allData];
-
-        console.log("allData:", allData);
-        console.log("filteredData tras input:", filteredData);
-
-        const tableBody = document.querySelector('#clientesTable tbody');
-        const paginationContainer = document.getElementById('jsPagination');
-        const inputBusqueda = document.getElementById('searchRealtime');
-        const headers = document.querySelectorAll('#clientesTable thead th');
-
-        // Render tabla
-        function renderTable() {
-            const start = (currentPage - 1) * rowsPerPage;
-            const pageData = filteredData.slice(start, start + rowsPerPage);
-
-            tableBody.innerHTML = '';
-            pageData.forEach(row => {
-                const tr = document.createElement('tr');
-                ['codigo', 'identificacion', 'nombre', 'apellido', 'telefono', 'correo'].forEach(f => {
-                    const td = document.createElement('td');
-                    td.textContent = row[f];
-                    tr.appendChild(td);
-                });
-                // Acciones (usa exactamente tu HTML)
-                const tdAcc = document.createElement('td');
-                tdAcc.innerHTML = `<button class="edit-button" data-id="${row.codigo}"><i class="fa-solid fa-pen-to-square"></i></button>
-                         <button class="delete-button" onclick="eliminarCliente('${row.codigo}')"><i class="fa-solid fa-trash"></i></button>`;
-                tr.appendChild(tdAcc);
-
-                tableBody.appendChild(tr);
+        // Configurar eventos para cerrar modales al hacer clic fuera
+        document.querySelectorAll('.modal_nueva_categoria, .modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
             });
-            renderPaginationControls();
+        });
+        
+        // Configurar eventos específicos para cada modal
+        document.getElementById('btnCancelarCategoria')?.addEventListener('click', () => closeModal('modalCategoria'));
+        document.getElementById('btnCancelarUbicacion')?.addEventListener('click', () => closeModal('modalUbicacion'));
+        document.getElementById('btnCancelarMarca')?.addEventListener('click', () => closeModal('modalMarca'));
+        
+        // Cerrar modal de importación al enviar el formulario
+        document.querySelector('#modalConfirm form')?.addEventListener('submit', () => closeModal('modalConfirm'));
+
+        // Configurar validación de código duplicado
+        setupCodeValidation();
+
+        // Configurar validaciones para modales
+        setupModalValidation({
+            inputId: 'inputNombreCategoria',
+            btnGuardarId: 'btnGuardarCategoria',
+            accion: 'check_categoria'
+        });
+
+        setupModalValidation({
+            inputId: 'inputNombreUbicacion',
+            btnGuardarId: 'btnGuardarUbicacion',
+            accion: 'check_ubicacion'
+        });
+
+        setupModalValidation({
+            inputId: 'inputNombreMarca',
+            btnGuardarId: 'btnGuardarMarca',
+            accion: 'check_marca'
+        });
+
+        // Configurar envío de formularios de modales
+        const formAddCategoria = document.getElementById('formAddCategoria');
+        const formAddUbicacion = document.getElementById('formAddUbicacion');
+        const formAddMarca = document.getElementById('formAddMarca');
+
+        if (formAddCategoria) {
+            handleModalFormSubmit(formAddCategoria, 'add_categoria', 'categoria');
         }
 
-        document.getElementById('clientesTable').addEventListener('click', function(e) {
-            if (e.target.closest('.edit-button')) {
-                const btn = e.target.closest('.edit-button');
-                // Busca la fila correspondiente:
-                const row = btn.closest('tr');
-                // Rellena y abre el modal:
-                document.getElementById('editId').value = row.cells[0].innerText.trim();
-                document.getElementById('editIdentificacion').value = row.cells[1].innerText.trim();
-                document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-                document.getElementById('editApellido').value = row.cells[3].innerText.trim();
-                document.getElementById('editTelefono').value = row.cells[4].innerText.trim();
-                document.getElementById('editCorreo').value = row.cells[5].innerText.trim();
-                document.getElementById('editModal').style.display = 'block';
-            }
-        });
-
-        // Controles de paginación
-        function renderPaginationControls() {
-            paginationContainer.innerHTML = '';
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-            if (totalPages <= 1) return;
-
-            const btn = (txt, pg) => {
-                const b = document.createElement('button');
-                b.textContent = txt;
-                if (pg === currentPage) b.classList.add('active');
-                b.onclick = () => {
-                    currentPage = pg;
-                    renderTable();
-                };
-                return b;
-            };
-
-            paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
-
-            let start = Math.max(1, currentPage - 2),
-                end = Math.min(totalPages, currentPage + 2);
-            if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), {
-                textContent: '…'
-            }));
-            for (let i = start; i <= end; i++) paginationContainer.append(btn(i, i));
-            if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), {
-                textContent: '…'
-            }));
-
-            paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+        if (formAddUbicacion) {
+            handleModalFormSubmit(formAddUbicacion, 'add_ubicacion', 'ubicacion');
         }
 
-        // Búsqueda en tiempo real (global)
-        inputBusqueda.addEventListener('input', () => {
-            const q = inputBusqueda.value.trim().toLowerCase();
-            filteredData = allData.filter(r =>
-                Object.values(r).some(v => v.toLowerCase().includes(q))
-            );
-            currentPage = 1;
-            renderTable();
-        });
+        if (formAddMarca) {
+            handleModalFormSubmit(formAddMarca, 'add_marca', 'marca');
+        }
 
-        // Ordenamiento por click en <th>
-        const sortStates = {};
-        headers.forEach((th, idx) => {
-            const type = th.dataset.type;
-            if (!type || type === 'none') return;
-            th.style.cursor = 'pointer';
-            sortStates[idx] = true;
-            th.onclick = () => {
-                sortStates[idx] = !sortStates[idx];
-                const asc = sortStates[idx];
-                filteredData.sort((a, b) => {
-                    let va = a[Object.keys(a)[idx]].toLowerCase();
-                    let vb = b[Object.keys(b)[idx]].toLowerCase();
-                    if (type === 'number') {
-                        va = +va;
-                        vb = +vb;
-                    }
-                    return (va < vb ? -1 : va > vb ? 1 : 0) * (asc ? 1 : -1);
-                });
-                // Actualiza flechas
-                headers.forEach(h => {
-                    const sp = h.querySelector('.sort-arrow');
-                    if (sp) sp.textContent = '';
-                });
-                th.querySelector('.sort-arrow').textContent = asc ? '▲' : '▼';
-                renderTable();
-            };
-        });
+        // Funciones específicas para abrir modales
+        window.openModalCategoria = function() {
+            openModal('modalCategoria');
+            document.getElementById('inputNombreCategoria').focus();
+        };
 
-        // Arranca
-        renderTable();
+        window.openModalUbicacion = function() {
+            openModal('modalUbicacion');
+            document.getElementById('inputNombreUbicacion').focus();
+        };
+
+        window.openModalMarca = function() {
+            openModal('modalMarca');
+            document.getElementById('inputNombreMarca').focus();
+        };
     });
 </script>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
 
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
     </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
-    </div>
+
 </body>
 
 </html>

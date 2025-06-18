@@ -684,7 +684,14 @@ form input[type="text"], #editForm select {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
-
+#facturaTable {
+  box-shadow: 0 0 15px white;
+  border-radius: 8px;
+  margin: 20px auto; /* Le da espacio para que se vea la sombra */
+  width: fit-content; /* Ajusta al contenido */
+  border-collapse: collapse;
+  overflow: hidden;
+}
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

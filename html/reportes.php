@@ -299,7 +299,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
       </details>
-      <input type="text" id="barraReportes" name="valor" placeholder="Ingrese el valor a buscar">
+      <input type="text" id="barraReportes" name="valor" placeholder="Ingrese el reporte a buscar">
       <?php
       // Justo después de tu conexión y filtros:
       $allQ = "SELECT

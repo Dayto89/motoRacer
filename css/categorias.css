@@ -123,7 +123,7 @@ th {
 }
 #tabla-categorias td .btn-list,
 #tabla-categorias td .btn-delete {
-  margin: 0 20px; /* 5px de espacio horizontal entre botones */
+  margin: 0 30px; /* 5px de espacio horizontal entre botones */
   text-align: center;
 }
 

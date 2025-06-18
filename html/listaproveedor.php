@@ -2,11 +2,14 @@
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
+
+
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -105,7 +108,7 @@ if (!$resultado) {
 }
 
 // Agregar proveedor
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
+if ($_POST && isset($_POST['guardar'])) {
   if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
   };
@@ -115,35 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
 
-  // Si el id es mayor a 10 digitos alerta de error
-  if (strlen($nit) > 9) {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-    echo "<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            title: '<span class=\"titulo-alerta error\">Error</span>',
-            html: `
-                <div class=\"custom-alert\">
-                    <div class=\"contenedor-imagen\">
-                        <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                    </div>
-                    <p>El NIT no puede tener más de 9 dígitos.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    });
-</script>";
-
-    exit;
-  }
 
   $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo')";
 
@@ -174,7 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
         });
     });
 </script>";
-    
   } else {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
 
@@ -203,28 +176,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>";
-    
   }
-  exit;
 }
 
 // Actualización de datos del modal
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
+if (isset($_POST['nit'])) {
   // Se reciben y se escapan las variables
-  $original = mysqli_real_escape_string($conexion, $_POST['nitOriginal']);
-  $nuevo    = mysqli_real_escape_string($conexion, $_POST['nitNuevo']);
+  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
   $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
   $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
 
   $consulta_update = "UPDATE proveedor SET 
-        nit = '$nuevo',
+        nit = '$nit', 
         nombre = '$nombre', 
         telefono = '$telefono', 
         direccion = '$direccion', 
         correo = '$correo'
-        WHERE nit = '$original'";
+        WHERE nit = '$nit'";
   if (mysqli_query($conexion, $consulta_update)) {
     echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
     echo "<script>
@@ -277,7 +247,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
                     });
                     </script>";
   }
-  exit;
 }
 
 
@@ -311,6 +280,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['c
   echo json_encode(['success' => true]);
   exit;
 }
+
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
@@ -321,7 +292,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
-  <title>Inventario</title>
+  <title>Proveedores</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
@@ -384,7 +355,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-  <?php include 'boton-ayuda.php'; ?>
   <?php
   // Justo después de tu conexión y filtros:
   $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p";
@@ -403,7 +373,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="filter-bar">
       <button id="btnAbrirModal" class="btn-nuevo-proveedor"><i class="bx bx-plus bx-flip-vertical bx-beat "></i>Nuevo </button>
 
-      <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+      <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el provedor a buscar">
 
       <div class="export-button">
         <form action="exportar_excel_proveedores.php" method="get">
@@ -418,14 +388,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endif; ?>
           <?php endforeach; ?>
           <button type="submit" id="exportar-boton" class="icon-button" title="Exportar proveedores a Excel">
-            <i class="fas fa-file-excel fa-lg"></i>
+            <i class="fas fa-file-excel"></i> Exportar a Excel
           </button>
         </form>
       </div>
+
+
+
+
     </div>
     <div class="table-wrapper">
       <?php if (mysqli_num_rows($resultado) > 0): ?>
-        <table id="providerTable">
+        <table id="providerTable" class="provider-table">
           <thead>
             <tr>
               <th>Nit </th>
@@ -542,7 +516,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <h2>Nuevo Proveedor</h2>
       <form id="nuevoForm" method="POST" action="">
         <div class="form-grid">
-
           <div class="campo" id="nit-campo">
             <label class="required">Nit:</label>
             <input type="text"
@@ -553,36 +526,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <div id="nit-tooltip" class="small-error-tooltip">
               Este NIT ya está registrado
             </div>
-          </div>
-          <div class="campo">
-            <label class="required">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required />
-          </div>
+            </div>
+            <div class="campo">
+              <label class="required">Nombre:</label>
+              <input type="text" id="nombre" name="nombre" required />
+            </div>
 
-          <div class="campo">
-            <label class="required" for="telefono">Telefono:</label>
-            <input type="text" id="telefono" name="telefono" required
-              oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-          </div>
+            <div class="campo">
+              <label class="required" for="telefono">Telefono:</label>
+              <input type="text" id="telefono" name="telefono" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+            </div>
 
-          <div class="campo">
-            <label class="required" for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion" required />
+            <div class="campo">
+              <label class="required" for="direccion">Dirección:</label>
+              <input type="text" id="direccion" name="direccion" required />
+            </div>
+            <div class="campo">
+              <label class="required" for="correo">Correo:</label>
+              <input type="text" id="correo" name="correo" required
+                pattern=".+@.+"
+                placeholder="ejemplo@correo.com">
+            </div>
+            <div class="modal-buttons">
+              <button type="button" id="btnCancelar">Cancelar</button>
+              <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
+            </div>
           </div>
-          <div class="campo">
-            <label class="required" for="correo">Correo:</label>
-            <input type="text" id="correo" name="correo" required
-              pattern=".+@.+"
-              placeholder="ejemplo@correo.com">
-          </div>
-
         </div>
-        <div class="modal-buttons">
-          <button type="button" id="btnCancelar">Cancelar</button>
-          <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
-        </div>
-    </div>
-    </form>
+      </form>
   </div>
   </div>
 
@@ -592,15 +564,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       <h2>Editar Proveedor</h2>
       <form id="editForm" method="post">
         <!-- Campo oculto para enviar el código 1 -->
-        <input type="hidden" name="nitOriginal" id="editNit" value="">
-
+        <input type="hidden" id="editNit" name="nit">
         <div class="campo"><label class="required" for="editNitVisible">Nit:</label>
-          <input type="text" name="nitNuevo" id="editNitVisible" readonly
+          <input type="text" id="editNitVisible" readonly
             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo"><label class="required" for="editNombre">Nombre:</label>
-          <input type="text" id="editNombre" name="nombre"
-            oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+          <input type="text" id="editNombre" name="nombre">
         </div>
         <div class="campo"> <label class="required" for="editTelefono">Teléfono:</label>
           <input type="text" id="editTelefono" name="telefono"
@@ -616,7 +586,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelarEdit">Cancelar</button>
-          <button type="submit" id="modal-boton" name="actualizar">Guardar </button>
+          <button type="submit" id="modal-boton">Guardar </button>
         </div>
       </form>
     </div>
@@ -933,7 +903,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
     });
   </script>
- <div class="userContainer">
+  <div class="userContainer">
     <div class="userInfo">
       <!-- Nombre y apellido del usuario y rol -->
       <!-- Consultar datos del usuario -->
@@ -963,7 +933,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
     </div>
-    </div>
+  </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const rowsPerPage = 7;
@@ -1247,5 +1217,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
     });
   </script>
+
+
 </body>
+
 </html>

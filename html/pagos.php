@@ -95,6 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $metodos_pago = $data["metodos_pago"]; // arreglo de métodos { tipo, valor }
     $cambio     = $data["cambio"];
     $total      = $data["total"];
+    $productos_resumen = json_encode($productos, JSON_UNESCAPED_UNICODE);
 
     // 3.3) Verificar si el cliente existe; si no, insertarlo
     $sqlCl = "SELECT codigo FROM cliente WHERE codigo = ?";
@@ -120,12 +121,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // 3.4) Registrar factura
     $sqlFac = "INSERT INTO factura 
                (fechaGeneracion, Usuario_identificacion, nombreUsuario, apellidoUsuario, Cliente_codigo, 
-                nombreCliente, apellidoCliente, telefonoCliente, identificacionCliente, cambio, precioTotal) 
-               VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                nombreCliente, apellidoCliente, telefonoCliente, identificacionCliente, cambio, precioTotal, activo, observacion, prductos_resumen) 
+               VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmtFac = $conn->prepare($sqlFac);
     $usuario_id = $_SESSION["usuario_id"];
     $stmtFac->bind_param(
-        "ississssdd",
+        "ississssddiss",
         $usuario_id,
         $nameUser,
         $apellidoUser,
@@ -135,7 +136,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $telefono,
         $codigo,
         $cambio,
-        $total
+        $total,
+        1,
+        null,
+        $productos_resumen
     );
     $stmtFac->execute();
     $factura_id = $stmtFac->insert_id;
@@ -412,6 +416,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
             let correo = document.getElementById("correo").value;
+            let productos_json = JSON.stringify(productos);
 
             if (!codigo || !tipoDoc || !nombre || !apellido || !telefono || !correo) {
                 Swal.fire({

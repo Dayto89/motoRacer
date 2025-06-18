@@ -30,7 +30,7 @@ if (!$pdf) return;  // nada que mostrar
 
 // 4. Imprimir el botón
 ?>
-<a href="<?= htmlspecialchars($pdf) ?>" download class="boton-ayuda" title="Descargar ayuda">
+<a href="<?= htmlspecialchars($pdf) ?>" target="_blank" class="boton-ayuda" title="Ver ayuda">
   <i class="bx bx-help-circle"></i>
 </a>
 

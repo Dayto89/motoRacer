@@ -27,8 +27,12 @@ body::before {
 }
 
 .main-content table {
-  filter: drop-shadow(0px 0px 10px #bebfc5);
-  margin-bottom: 20px;
+   box-shadow: 0 0 15px white;
+  border-radius: 8px;
+  margin: 20px auto; /* Le da espacio para que se vea la sombra */
+  width: fit-content; /* Ajusta al contenido */
+  border-collapse: collapse;
+  overflow: hidden;
 }
 
 .main-content h1 {
@@ -122,7 +126,7 @@ input[type="checkbox"] {
   gap: 10px;
   margin-bottom: 20px;
   max-width: 74%;
-  margin-left: 15%;
+  margin-left: 12%;
   padding: 10px;
   border-radius: 8px;
 }
@@ -256,7 +260,7 @@ input.form-control {
   background-color: rgba(200, 200, 200, 0.76);
   padding: 23px;
   border-radius: 18px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px black;
   height: auto;
   /* Animación de arrastre */
   transform: translateY(-50px); /* Inicialmente un poco arriba */
@@ -285,10 +289,10 @@ input.form-control {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  row-gap: 19px;
+  row-gap: 12px;
   column-gap: 10px;
-  margin-top: 27px;
-  padding: 10px;
+  margin-top: 12px;
+  padding: 4px;
 }
 .form-grid label,
 #editForm label {
@@ -314,6 +318,7 @@ input.form-control {
   justify-content: center;
   border-radius: 10px;
   font-weight: bold;
+  align-items: center;
 }
 
 #btnCancelar,
@@ -465,9 +470,10 @@ form input[type="text"],
 }
 
 .main-content table {
-  width: auto; /* Permite que la tabla ocupe solo el espacio necesario */
-  max-width: 100%; /* Evita que se desborde */
-  table-layout: auto; /* Permite que las columnas se ajusten según su contenido */
+  width: auto;
+  max-width: 88%;
+  table-layout: fixed;
+  margin-left: 6%;
 }
 
 .main-content table th,
@@ -475,12 +481,6 @@ form input[type="text"],
   overflow-wrap: break-word; /* Hace que el texto largo se divida en varias líneas */
   word-break: break-word;
 }
-.main-content table {
-  width: auto;
-  max-width: 100%;
-  table-layout: fixed; /* Fija el ancho de las columnas según lo especificado */
-}
-
 .main-content table th:nth-child(1),
 .main-content table td:nth-child(1) {
   width: 10%;
@@ -630,7 +630,7 @@ form input[type="text"],
 /* CONTENEDOR RELATIVO */
 .campo {
   position: relative;
-  margin-bottom: 1.5rem; /* separa campos */
+  margin-bottom: 1rem; /* separa campos */
 }
 
 /* INPUT EN ROJO */
@@ -853,4 +853,5 @@ input.error {
   font-size: 16px;
   padding: 8px 23px;
   border-radius: 9px;
+  width: 50%;
 }

@@ -236,11 +236,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     /* Input para búsqueda en tiempo real */
     #searchRealtime {
-      width: 200px;
+      width: 23%;
       padding: 5px 8px;
       margin-bottom: 12px;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 10px;
     }
 
     /* Botón eliminar múltiple */
@@ -285,60 +285,67 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      background: #f9f9f9;
-      padding: 0.75rem;
-      border-radius: 8px;
+      border-radius: 12px;
+      justify-content: center;
+      align-items: flex-start;
     }
 
     /* búsqueda */
     .search-box input {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #1f1f1f;
+      color: #fff;
+      border: 1px solid #444;
       width: 180px;
     }
 
     /* cada filtro */
     .filtro {
       position: relative;
-      min-width: 140px;
+      min-width: 150px;
     }
 
-    /* título desplegable */
+    /* botón de filtro */
     .filtro-titulo {
       width: 100%;
-      background: #007bff;
-      color: #fff;
+      background: #0d6efd;
+      color: white;
       border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 8px 18px;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background 0.3s;
+    }
+
+    .filtro-titulo:hover {
+      background: #0b5ed7;
     }
 
     .filtro-titulo i {
-      transition: transform 0.2s;
+      transition: transform 0.3s ease;
     }
 
-    /* opciones ocultas */
+    /* dropdown oculto */
     .filtro-opciones {
       display: none;
       position: absolute;
       top: 110%;
       left: 0;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      max-height: 200px;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      max-height: 220px;
       overflow-y: auto;
       padding: 0.5rem;
-      z-index: 50;
+      z-index: 100;
     }
 
-    /* mostrar cuando .active */
+    /* mostrar opciones si está activo */
     .filtro.active .filtro-opciones {
       display: block;
     }
@@ -347,12 +354,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       transform: rotate(180deg);
     }
 
-    /* estilo de labels */
+    /* checkbox dentro de opciones */
     .filtro-opciones label {
       display: block;
-      margin: 4px 0;
+      margin: 6px 0;
       font-size: 14px;
+      color: #eee;
       cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* checkbox input */
+    .filtro-opciones input[type="checkbox"] {
+      margin-right: 6px;
     }
 
     /* botón limpiar */
@@ -360,9 +374,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       background: #6c757d;
       color: #fff;
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: background 0.3s;
     }
 
     .clear-btn button:hover {
@@ -1099,65 +1114,66 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     // ============================================================
-  // 7) MÓDULO DE EDICIÓN: animación drop-in / drop-out
-  // ============================================================
+    // 7) MÓDULO DE EDICIÓN: animación drop-in / drop-out
+    // ============================================================
 
-  // — Funciones genéricas para animar modales —
-  function openModal(modalEl) {
-    modalEl.classList.add('show');
-    void modalEl.offsetWidth;      // fuerza reflow
-    modalEl.classList.add('opening');
-  }
-  function closeModal(modalEl) {
-    modalEl.classList.remove('opening');
-    modalEl.classList.add('closing');
-    const content = modalEl.querySelector('.modal-content');
-    content.addEventListener('transitionend', function handler() {
-      content.removeEventListener('transitionend', handler);
-      modalEl.classList.remove('show','closing');
-    });
-  }
+    // — Funciones genéricas para animar modales —
+    function openModal(modalEl) {
+      modalEl.classList.add('show');
+      void modalEl.offsetWidth; // fuerza reflow
+      modalEl.classList.add('opening');
+    }
 
-  // — Selección del modal de edición y su botón “×” —
-  const editModal    = document.getElementById('editModal');
-  const editCloseBtn = editModal.querySelector('.close');
-
-  // Cerrar al hacer clic en la “X”
-  editCloseBtn.addEventListener('click', () => closeModal(editModal));
-
-  // Cerrar al hacer clic fuera del contenido
-  editModal.addEventListener('click', e => {
-    if (e.target === editModal) closeModal(editModal);
-  });
-
-  // — Adjuntar listeners a los botones editar —
-  function attachEditButtonListeners() {
-    const editButtons = document.querySelectorAll('.edit-button');
-
-    editButtons.forEach(button => {
-      button.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const row = this.closest('tr');
-        // Rellenas los campos…
-        document.getElementById('editCodigo1').value            = row.cells[0].innerText.trim();
-        document.getElementById('editCodigo1Visible').value     = row.cells[0].innerText.trim();
-        document.getElementById('editCodigo2').value            = row.cells[1].innerText.trim();
-        document.getElementById('editNombre').value             = row.cells[2].innerText.trim();
-        document.getElementById('editPrecio1').value            = row.cells[3].innerText.trim();
-        document.getElementById('editPrecio2').value            = row.cells[4].innerText.trim();
-        document.getElementById('editPrecio3').value            = row.cells[5].innerText.trim();
-        document.getElementById('editCantidad').value           = row.cells[6].innerText.trim();
-        document.getElementById('editCategoria').value          = row.cells[7].getAttribute('data-categoria-id');
-        document.getElementById('editMarca').value              = row.cells[8].getAttribute('data-marca-id');
-        document.getElementById('editUnidadMedida').value       = row.cells[9].getAttribute('data-unidadmedida-id');
-        document.getElementById('editUbicacion').value          = row.cells[10].getAttribute('data-ubicacion-id');
-        document.getElementById('editProveedor').value          = row.cells[11].getAttribute('data-proveedor-id');
-
-        // EN LUGAR DE modal.style.display = 'block';
-        openModal(editModal);
+    function closeModal(modalEl) {
+      modalEl.classList.remove('opening');
+      modalEl.classList.add('closing');
+      const content = modalEl.querySelector('.modal-content');
+      content.addEventListener('transitionend', function handler() {
+        content.removeEventListener('transitionend', handler);
+        modalEl.classList.remove('show', 'closing');
       });
+    }
+
+    // — Selección del modal de edición y su botón “×” —
+    const editModal = document.getElementById('editModal');
+    const editCloseBtn = editModal.querySelector('.close');
+
+    // Cerrar al hacer clic en la “X”
+    editCloseBtn.addEventListener('click', () => closeModal(editModal));
+
+    // Cerrar al hacer clic fuera del contenido
+    editModal.addEventListener('click', e => {
+      if (e.target === editModal) closeModal(editModal);
     });
-  }
+
+    // — Adjuntar listeners a los botones editar —
+    function attachEditButtonListeners() {
+      const editButtons = document.querySelectorAll('.edit-button');
+
+      editButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const row = this.closest('tr');
+          // Rellenas los campos…
+          document.getElementById('editCodigo1').value = row.cells[0].innerText.trim();
+          document.getElementById('editCodigo1Visible').value = row.cells[0].innerText.trim();
+          document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
+          document.getElementById('editNombre').value = row.cells[2].innerText.trim();
+          document.getElementById('editPrecio1').value = row.cells[3].innerText.trim();
+          document.getElementById('editPrecio2').value = row.cells[4].innerText.trim();
+          document.getElementById('editPrecio3').value = row.cells[5].innerText.trim();
+          document.getElementById('editCantidad').value = row.cells[6].innerText.trim();
+          document.getElementById('editCategoria').value = row.cells[7].getAttribute('data-categoria-id');
+          document.getElementById('editMarca').value = row.cells[8].getAttribute('data-marca-id');
+          document.getElementById('editUnidadMedida').value = row.cells[9].getAttribute('data-unidadmedida-id');
+          document.getElementById('editUbicacion').value = row.cells[10].getAttribute('data-ubicacion-id');
+          document.getElementById('editProveedor').value = row.cells[11].getAttribute('data-proveedor-id');
+
+          // EN LUGAR DE modal.style.display = 'block';
+          openModal(editModal);
+        });
+      });
+    }
     // ============================================================
     // 8) ELIMINACIÓN INDIVIDUAL: SweetAlert2 + AJAX
     // ============================================================
@@ -1284,7 +1300,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
     </div>
-    </div>
+  </div>
 </body>
 
 </html>

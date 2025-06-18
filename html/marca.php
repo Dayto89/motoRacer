@@ -254,30 +254,30 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-   <!-- Modal Nueva Marca -->
-<div id="modal" class="modal_nueva_marca">
-  <div class="modal-content-nueva">
-    <h2>Nueva marca</h2>
-    <form method="POST" action="">
-      <div class="form-group" style="position: relative;">
-        <label>Ingrese el nombre de la marca:</label>
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          required
-        />
-        <span id="nombre-error" class="input-error-message">
-          Esta marca ya está registrada.
-        </span>
-      </div>
-      <div class="modal-buttons">
-        <button type="button" id="btnCancelar">Cancelar</button>
-        <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
+    <!-- Modal Nueva Marca -->
+    <div id="modal" class="modal_nueva_marca">
+        <div class="modal-content-nueva">
+            <h2>Nueva marca</h2>
+            <form method="POST" action="">
+                <div class="form-group" style="position: relative;">
+                    <label>Ingrese el nombre de la marca:</label>
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+                    <span id="nombre-error" class="input-error-message">
+                        Esta marca ya está registrada.
+                    </span>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="btnCancelar">Cancelar</button>
+                    <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
     <!-- Modal de productos - Mismo estilo que el modal principal -->
@@ -293,36 +293,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </div>
-<div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
     </div>
 
     <script>
@@ -454,14 +454,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 document.getElementById('lista-productos').innerHTML = html;
                                 document.getElementById('modalProductos').classList.add('show');
                             } else {
-                                 Swal.fire({
+                                   Swal.fire({
                   title: '<span class="titulo-alerta advertencia">Sin productos</span>',
                   html: `
                   <div class="custom-alert">
                     <div class="contenedor-imagen">
                       <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
                     </div>
-                    <p>No hay productos con esta marca.</p>
+                    <p>No hay productos en esta marca.</p>
                   </div>
                 `,
                   background: '#ffffffdb',
@@ -475,12 +475,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 });
               }
             })
-                        .catch(error => {
+                       .catch(error => {
               console.error("Error al obtener productos:", error);
             });
-        } else if (btn.classList.contains('btn-delete')) {
-                    // Eliminar categoría
-                     Swal.fire({
+
+                } else if (btn.classList.contains('btn-delete')) {
+                    // Eliminar marca
+                    Swal.fire({
             title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
             html: `
             <div class="custom-alert">
@@ -513,7 +514,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 .then(r => r.json())
                                 .then(resp => {
                                     if (resp.success) {
-                                       Swal.fire({
+                                        Swal.fire({
                         title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
                         html: `
                       <div class="custom-alert">
@@ -540,7 +541,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                                 renderTable();
                                             });
                                     } else {
-                                        Swal.fire({
+                                         Swal.fire({
                     title: '<span class="titulo-alerta error">Error</span>',
                     html: `
                       <div class="custom-alert">
@@ -561,7 +562,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                   });
                 }
               })
-                                .catch(() =>  Swal.fire({
+                                .catch(() => Swal.fire({
                   title: '<span class="titulo-alerta error">Error</span>',
                   html: `
                     <div class="custom-alert">
@@ -592,45 +593,47 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         //verificacion que marca no se repita 
         // Referencias
-const nombreInput = document.getElementById('nombre');
-const btnGuardar  = document.getElementById('btnGuardar');
-const btnAbrir    = document.getElementById('btnAbrirModal');
-let   nombreValido = false;
+        const nombreInput = document.getElementById('nombre');
+        const btnGuardar = document.getElementById('btnGuardar');
+        const btnAbrir = document.getElementById('btnAbrirModal');
+        let nombreValido = false;
 
-// AJAX de validación
-async function validarMarca(nombre) {
-  try {
-    const form = new URLSearchParams();
-    form.append('check_marca', '1');
-    form.append('nombre', nombre.trim());
-    const res  = await fetch('', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: form.toString()
-    });
-    const json = await res.json();
-    return !json.exists;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
-}
+        // AJAX de validación
+        async function validarMarca(nombre) {
+            try {
+                const form = new URLSearchParams();
+                form.append('check_marca', '1');
+                form.append('nombre', nombre.trim());
+                const res = await fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: form.toString()
+                });
+                const json = await res.json();
+                return !json.exists;
+            } catch (e) {
+                console.error(e);
+                return false;
+            }
+        }
 
-// Listener en tiempo real
-nombreInput.addEventListener('input', async () => {
-  const val = nombreInput.value.trim();
-  nombreValido = val ? await validarMarca(val) : false;
+        // Listener en tiempo real
+        nombreInput.addEventListener('input', async () => {
+            const val = nombreInput.value.trim();
+            nombreValido = val ? await validarMarca(val) : false;
 
-  nombreInput.classList.toggle('invalid', !nombreValido);
-  btnGuardar.disabled = !nombreValido;
-});
+            nombreInput.classList.toggle('invalid', !nombreValido);
+            btnGuardar.disabled = !nombreValido;
+        });
 
-// Al abrir el modal, resetear estado
-btnAbrir.addEventListener('click', () => {
-  nombreInput.value = '';
-  nombreInput.classList.remove('invalid');
-  btnGuardar.disabled = true;
-}); 
+        // Al abrir el modal, resetear estado
+        btnAbrir.addEventListener('click', () => {
+            nombreInput.value = '';
+            nombreInput.classList.remove('invalid');
+            btnGuardar.disabled = true;
+        });
     </script>
 
 </body>
