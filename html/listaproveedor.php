@@ -392,10 +392,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           </button>
         </form>
       </div>
-
-
-
-
     </div>
     <div class="table-wrapper">
       <?php if (mysqli_num_rows($resultado) > 0): ?>
@@ -840,7 +836,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const rowsPerPage = 7;
+      const rowsPerPage = 10;
       let currentPage = 1;
       let filteredData = [...allData];
 

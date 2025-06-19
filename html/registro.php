@@ -40,7 +40,7 @@ require '../vendor/autoload.php';   // si usas composer para Mailjet
 use \Mailjet\Resources;
 
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 $mensaje = null; // Variable para almacenar el estado del mensaje

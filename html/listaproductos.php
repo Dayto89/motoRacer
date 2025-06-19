@@ -202,6 +202,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div id="menu"></div>
   </div>
   <div class="main-content">
+    <div class="fondoBlanco">
     <h1>Inventario</h1>
 
     <!-- ============================== -->
@@ -327,6 +328,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <!-- Paginación Dinámica (cliente) -->
     <div id="paginationContainer" class="pagination-dinamica"></div>
+    </div>
   </div>
 
   <!-- Modal de edición (igual que antes) -->

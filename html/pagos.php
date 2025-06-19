@@ -11,7 +11,7 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 // 2) Conexión a la base de datos
 $servername = "localhost";
