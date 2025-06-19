@@ -11,7 +11,7 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 // 2) Conexión a la base de datos
 $servername = "localhost";
@@ -509,16 +509,7 @@ if (isset($_GET['codigo'])) {
                 conteo[m.tipo] = (conteo[m.tipo] || 0) + 1;
             });
 
-            // Mostrar en pantalla (puedes ajustarlo al contenedor que prefieras)
-            const resumenDiv = document.getElementById("resumenPagos");
-            if (resumenDiv) resumenDiv.remove();
-            const div = document.createElement("div");
-            div.id = "resumenPagos";
-            div.innerHTML = `<h4>Resumen de pagos:</h4>` +
-                Object.entries(conteo)
-                .map(([tipo, cant]) => `<p>${cant} pago(s) de <strong>${tipo}</strong></p>`)
-                .join("");
-            document.querySelector(".summary-section").prepend(div);
+ 
 
             // 5.4) Cálculo de total y cambio
             let total = parseFloat("<?php echo $total; ?>");

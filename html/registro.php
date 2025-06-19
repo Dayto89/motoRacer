@@ -40,7 +40,7 @@ require '../vendor/autoload.php';   // si usas composer para Mailjet
 use \Mailjet\Resources;
 
 
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 
 $mensaje = null; // Variable para almacenar el estado del mensaje
@@ -312,7 +312,7 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 
     $stmt = $conexion->prepare(
       "INSERT INTO usuario 
-            (identificacion, tipoDocumento, rol, nombre, apellido, telefono, direccion, correo, contraseña, estado) 
+            (identificacion, tipoDocumento, rol, nombre, apellido, telefono, direccion, correo, contrasena, estado) 
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
 
@@ -339,16 +339,15 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
         "INSERT INTO accesos
                 (id_usuario, seccion, sub_seccion, permitido) VALUES
                 ($identificacion, 'PRODUCTO', 'Crear Producto', 0),
-                ($identificacion, 'PRODUCTO', 'Actualizar Producto', 0),
                 ($identificacion, 'PRODUCTO', 'Categorias', 0),
                 ($identificacion, 'PRODUCTO', 'Ubicacion', 0),
                 ($identificacion, 'PRODUCTO', 'Marca', 0),
                 ($identificacion, 'PROVEEDOR', 'Lista Proveedor', 0),
-                ($identificacion, 'INVENTARIO', 'Lista de Productos', 0),
+                ($identificacion, 'INVENTARIO', 'Lista Productos', 0),
                 ($identificacion, 'FACTURA', 'Ventas', 0),
                 ($identificacion, 'FACTURA', 'Reportes', 0),
                 ($identificacion, 'FACTURA', 'Lista Clientes', 0),
-                ($identificacion, 'FACTURA', 'Lista de Notificaciones', 0),
+                ($identificacion, 'FACTURA', 'Lista Notificaciones', 0),
                 ($identificacion, 'USUARIO', 'Información', 1)"
       );
 

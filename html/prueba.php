@@ -4,7 +4,7 @@ if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) die("Error BD: " . mysqli_connect_error());
@@ -397,7 +397,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         'observacion',
         'metodoPago'
       ];
-
       async function cambiarEstado(codigo, nuevoEstado, observacion) {
         const res = await fetch('../html/actualizar_estado_factura.php', {
           method: 'POST',
@@ -511,13 +510,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           // 1) Cambiamos el botón
           btn.dataset.estado = String(nuevoEstado);
           if (nuevoEstado === 1) {
-            btn.innerHTML = 'Activo';
-            btn.classList.remove('inactivo');
-            btn.classList.add('activo');
+            btn.innerHTML = '🟢 Activo';
           } else {
-            btn.innerHTML = 'Inactivo';
-            btn.classList.remove('activo');
-            btn.classList.add('inactivo');
+            btn.innerHTML = '🔴 Inactivo';
           }
 
           // 2) Actualizamos la celda de observación
@@ -555,15 +550,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
       }
 
-      // 1) Delegación de clicks sobre .btn-estado
-      tableBody.addEventListener('click', e => {
-        const btn = e.target.closest('.btn-estado');
-        if (!btn) return;
-        // Aquí caerá en tu SweetAlert
-        console.log('Botón clicado:', btn.dataset.codigo, btn.dataset.estado);
-        manejarCambioEstado(btn);
-      });
-
 
       // 1) Reemplaza tu renderTable por esto:
       function renderTable() {
@@ -573,42 +559,48 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         tableBody.innerHTML = ''; // borramos filas viejas
 
         slice.forEach(row => {
-          const obs = row.observacion || '';
-          // Construyo el HTML del botón con sus data- atributos:
-          const estadoClass = row.activo === '1' ? 'activo' : 'inactivo';
-          const estadoTexto = row.activo === '1' ? 'Activo' : 'Inactivo';
+          const tr = document.createElement('tr');
 
-          const btnEstado = `
-  <button type="button" 
-          class="btn-estado ${estadoClass}" 
-          data-codigo="${row.codigo}" 
-          data-estado="${row.activo}">
-    ${estadoTexto}
-  </button>`;
+          // 1. Código
+          tr.innerHTML += `<td>${row.codigo}</td>`;
+          // 2. Fecha
+          tr.innerHTML += `<td>${row.fechaGeneracion}</td>`;
+          // 3. Usuario
+          tr.innerHTML += `<td>${row.nombreUsuario} ${row.apellidoUsuario}</td>`;
+          // 4. Cliente
+          tr.innerHTML += `<td>${row.nombreCliente} ${row.apellidoCliente}</td>`;
+          // 5. Cliente ID
+          tr.innerHTML += `<td>${row.Cliente_codigo}</td>`;
+          // 6. Total
+          tr.innerHTML += `<td>${Number(row.precioTotal).toFixed(2)}</td>`;
 
-          // Genero toda la fila de una sola vez:
-          const filaHTML = `
-      <tr>
-        <td>${row.codigo}</td>
-        <td>${row.fechaGeneracion}</td>
-        <td>${row.nombreUsuario} ${row.apellidoUsuario}</td>
-        <td>${row.nombreCliente} ${row.apellidoCliente}</td>
-        <td>${row.Cliente_codigo}</td>
-        <td>${Number(row.precioTotal).toFixed(2)}</td>
-        <td>${btnEstado}</td>
-        <td>${obs}</td>
-        <td>${row.metodoPago}</td>
-        <td>
-          <form method="POST">
-            <input type="hidden" name="factura_id" value="${row.codigo}">
-            <button type="submit" class="recibo-button">
-              <i class='bx bx-search-alt'></i>
-            </button>
-          </form>
-        </td>
-      </tr>`;
+          // 7. Activo  → aquí tu botón
+          const btn = document.createElement('button');
+          btn.className = 'btn-estado';
+          btn.dataset.codigo = row.codigo;
+          btn.dataset.estado = row.activo;
+          btn.innerText = row.activo === '1' ? '🟢 Activo' : '🔴 Inactivo';
+          btn.addEventListener('click', () => manejarCambioEstado(btn));
+          const tdAct = document.createElement('td');
+          tdAct.appendChild(btn);
+          tr.appendChild(tdAct);
 
-          tableBody.insertAdjacentHTML('beforeend', filaHTML);
+          // 8. Observación
+          const obs = row.observacion || ''; 
+          tr.innerHTML += `<td>${obs}</td>`;
+          // 9. Método Pago
+          tr.innerHTML += `<td>${row.metodoPago}</td>`;
+
+          // 10. Acciones
+          tr.innerHTML += `
+      <td>
+        <form method="POST">
+          <input type="hidden" name="factura_id" value="${row.codigo}">
+          <button class="recibo-button"><i class='bx bx-search-alt'></i></button>
+        </form>
+      </td>`;
+
+          tableBody.appendChild(tr);
         });
 
         renderPaginationControls();

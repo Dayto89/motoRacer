@@ -31,18 +31,16 @@ $pagina_actual = basename($_SERVER['PHP_SELF']);
 // Mapeo de páginas a secciones y subsecciones
 $mapeo_permisos = [
     'crearproducto.php' => ['seccion' => 'PRODUCTO', 'subseccion' => 'Crear Producto'],
-    'actualizarproducto.php' => ['seccion' => 'PRODUCTO', 'subseccion' => 'Actualizar Producto'],
     'categorias.php' => ['seccion' => 'PRODUCTO', 'subseccion' => 'Categorias'],
     'ubicacion.php' => ['seccion' => 'PRODUCTO', 'subseccion' => 'Ubicación'],
     'marca.php' => ['seccion' => 'PRODUCTO', 'subseccion' => 'Marca'],
-    'crearproveedor.php' => ['seccion' => 'PROVEEDOR', 'subseccion' => 'Crear Proveedor'],
-    'actualizarproveedor.php' => ['seccion' => 'PROVEEDOR', 'subseccion' => 'Actualizar Proveedor'],
     'listaproveedor.php' => ['seccion' => 'PROVEEDOR', 'subseccion' => 'Lista Proveedor'],
     'listaproductos.php' => ['seccion' => 'INVENTARIO', 'subseccion' => 'Lista Productos'],
     'ventas.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Ventas'],
     'reportes.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Reportes'],
+    'listaclientes.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Lista Clientes'],
+    'listanotificaciones.php' => ['seccion' => 'FACTURA', 'subseccion' => 'Lista Notificaciones'],
     'información.php' => ['seccion' => 'USUARIO', 'subseccion' => 'Información'],
-    'stock.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Stock'],
     'gestiondeusuarios.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Gestión de Usuarios'],
     'copiadeseguridad.php' => ['seccion' => 'CONFIGURACIÓN', 'subseccion' => 'Copia de Seguridad'],
     // Agrega más páginas según sea necesario

@@ -241,6 +241,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         modal.style.display = "none";
       }, 300);
     }
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('modalPermisos');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    });
 
 
     document.addEventListener('DOMContentLoaded', function() {

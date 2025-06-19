@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
 if ($conexion->connect_error) {

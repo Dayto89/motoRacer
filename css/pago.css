@@ -120,19 +120,20 @@ body::before {
   /* <- ESTO ayuda a igualar el grosor */
 }
 
+
 .payment-box {
   width: 500px;
 }
 
 .payment-box select {
-  width: 19%;
+  /*width: 19%;*/
   height: 40px;
   font-size: 15px;
   border-radius: 8px;
 }
 
 .payment-box input {
-  height: 40px;
+  /*height: 40px;*/
   width: 140px;
   font-size: 15px;
   border-radius: 5px;
@@ -311,44 +312,11 @@ button {
   cursor: pointer;
 }
 
-.tarjeta-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-.otro-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
 .tarjeta-content label,
 .otro-content label {
   display: block;
   margin-bottom: 5px;
   font-weight: 500;
-}
-
-.tarjeta-content input,
-.tarjeta-content select,
-.otro-content input,
-.otro-content select {
-  width: 86%;
-  padding: 8px 12px;
-  border: 1px solid #121111;
-  border-radius: 5px;
-  box-sizing: border-box;
-  font-size: 14px;
-  border-radius: 23px;
 }
 
 .notes label {
@@ -436,17 +404,6 @@ input#observaciones {
   font-family: arial;
 }
 
-.barra {
-  max-height: 90px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
 #tarjeta, #otro {
   max-height: 250px;
   overflow-y: auto;
@@ -483,100 +440,48 @@ button {
 .icono-eliminar-circular:hover {
   background-color: #d30404;
 }
-/*Alertas*/
-
-  
-  /* Estilos generales de los párrafos */
-  p {
-    font-size: 16px;
-    color: black;
-    font-family: arial;
-    padding: 10px;
-  }
-  
-
-  
-  /* Ajuste para el popup de SweetAlert */
-  div:where(.swal2-container).swal2-center>.swal2-popup {
-    width: 28%; /* Se ajusta automáticamente */
-    max-width: 350px; /* Define un límite de ancho */
-  }
-  
-  
-
-.custom-alert .tornillo, .custom-alert .moto, .custom-alert .llave {
-    width: 201px;
-    height: 145px;
+.barra {
+  max-height: 90px; /* Ajusta solo si cambias el alto de los campos */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-  
-  
-  /* Contenedor de la imagen */
-  .contenedor-imagen {
-    position: relative;
-    display: inline-block;
-  }
-
-
-
-.titulo-alerta {
-    font-size: 28px;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 10px;
-    font-family: 'Arial Black', sans-serif;
-    letter-spacing: 1px;
+.tarjeta-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-.titulo-alerta.confirmacion {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #9b9496;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-.titulo-alerta.error {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color: #af3b3b;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
-}
-.titulo-alerta.advertencia {
-    font-family: 'Metal Mania', system-ui;
-    font-size: 1.01em;
-    letter-spacing: 3px;
-    color:#e09804;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    margin: auto;
+.otro-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-
-.btn-aceptar {
-    background-color: #007bff !important;
-    color: white !important;
-    border-radius: 5px;
-    padding: 10px 13px;
-    font-size: 16px;
+.tarjeta-content input,
+.tarjeta-content select,
+.otro-content input,
+.otro-content select {
+  width: 86%;
+  padding: 8px 12px;
+  border: 1px solid #121111;
+  border-radius: 23px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
-
-.swal2-border-radius {
-    border-radius: 5px !important;
-}
-
-
-
-.fondo-oscuro {
-    background-color: rgba(0, 0, 0, 0.7) !important; /* Fondo oscuro */
-    backdrop-filter: blur(2px); /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-    border-radius: 20px;
-}
-
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

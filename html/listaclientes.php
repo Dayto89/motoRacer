@@ -14,7 +14,7 @@ if (!isset($_SESSION['usuario_id'])) {
 }
 
 
-// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 // Conexión a la base de datos
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');

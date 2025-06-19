@@ -114,15 +114,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <div class="main">
-        <div class="top-bar">
+        <h1 class="titulo">Ventas</h1>
             <div class="search-bar">
                 <i class="bx bx-search-alt-2 icon"></i>
                 <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
             </div>
-             <h1 class="titulo">Ventas</h1>
-        </div>
 
-        <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 63px; display: flex; align-items: center; border-color:aqua 2px solid;">
+        <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 7%; display: flex; align-items: center; border-color:aqua 2px solid;">
             <!-- Botón izquierda -->
             <button id="btnLeft" onclick="scrollCategorias(-200)">
                 <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda" id="icono-flecha-izquierda">
@@ -308,8 +306,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             if (!items.length) {
                 Swal.fire({
                     title: '<span class="titulo-alerta error">Error</span>',
-                    html: `<p>No hay productos en la orden.</p>`
-                });
+                    html: `
+                      <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                          <img src="../imagenes/llave.png" alt="Error" class="llave">
+                        </div>
+                        <p>No hay productos en la orden.</p>
+                      </div>
+                    `,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                      popup: 'swal2-border-radius',
+                      confirmButton: 'btn-aceptar',
+                      container: 'fondo-oscuro'
+                    }
+                  });
                 return;
             }
             let productos = [];

@@ -402,27 +402,27 @@ select option {
 
 .main-content table th:nth-child(1),
 .main-content table td:nth-child(1) {
-  width: 100px;
+  width: 85px;
 }
 
 .main-content table th:nth-child(2),
 .main-content table td:nth-child(2) {
-  width: 150px;
+  width: 135px;
 }
 
 .main-content table th:nth-child(3),
 .main-content table td:nth-child(3) {
-  width: 200px;
+  width: 218px;
 }
 
 .main-content table th:nth-child(4),
 .main-content table td:nth-child(4) {
-  width: 150px;
+  width: 190px;
 }
 
 .main-content table th:nth-child(5),
 .main-content table td:nth-child(5) {
-  width: 200px;
+  width: 165px;
 }
 
 .main-content table th:nth-child(6),
@@ -432,18 +432,18 @@ select option {
 
 .main-content table th:nth-child(7),
 .main-content table td:nth-child(7) {
-  width: 150px;
+  width: 125px;
 }
 
 .main-content table th:nth-child(8),
 .main-content table td:nth-child(8) {
-  width: 100px;
+  width: 125px;
   height: 57px;
 }
 
 .main-content table th:nth-child(9),
 .main-content table td:nth-child(9) {
-  width: 90px;
+  width: 135px;
 }
 
 .main-content table th:nth-child(10),
@@ -638,6 +638,30 @@ select option {
   border-collapse: collapse;
   overflow: hidden;
 }
+
+/*boton estado activo - inactivo*/
+.btn-estado {
+  border: none;
+  color: white;
+  padding: 5px 12px;
+  font-weight: bold;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-estado.activo {
+  background-color: green;
+}
+
+.btn-estado.inactivo {
+  background-color: darkred;
+}
+
+
+
+/*-------------------------------------------------------------------------*/
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

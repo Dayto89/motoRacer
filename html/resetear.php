@@ -19,7 +19,7 @@ if ($_POST) {
             $nueva_contrasena_hashed = password_hash($nueva_contrasena, PASSWORD_DEFAULT);
 
             $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-            $sql = "UPDATE usuario SET contraseña='$nueva_contrasena_hashed', codigo_recuperacion=NULL WHERE correo='$correo'";
+            $sql = "UPDATE usuario SET contrasena='$nueva_contrasena_hashed', codigo_recuperacion=NULL WHERE correo='$correo'";
             if ($conexion->query($sql) === TRUE) {
                 $mensaje = 'exito_restablecer_contrasena';
                 session_unset();
