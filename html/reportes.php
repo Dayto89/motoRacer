@@ -187,6 +187,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <div class="sidebar">
     <div id="menu"></div>
   </div>
+    <div class="container-general">
+    </div>
   <div class="main-content">
     <h1>Reportes</h1>
     <div class="filter-bar">
@@ -367,7 +369,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
       // Configuración
-      const rowsPerPage = 7;
+      const rowsPerPage = 9;
       let currentPage = 1;
       let filteredData = [...allData];
       console.log("filteredData tras input:", filteredData);

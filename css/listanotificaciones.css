@@ -45,25 +45,28 @@ table {
   width: 100%;
   border-collapse: collapse;
   color: white;
-  margin: 0px;
+  margin-left: 20%;
   font-family: Arial;
+  box-shadow: 0 0 15px #222a37;
+  margin-top: 1.5%;
+  border-radius: 10px;
 }
 
 th,
 td {
-  border: 1px solid #666;
+  border: 1px solid #fff7f7;
   padding: 10px;
   text-align: left;
 }
 
 th {
-  background-color: #444;
+  background-color: rgb(32 69 113);
   font-weight: bold;
   text-align: center;
 }
 
 td {
-  background-color: #222;
+  background-color: rgb(63 61 61);
   text-align: center;
 }
 
@@ -377,11 +380,6 @@ form input[type="text"],
   /* Evita que se desborde */
   table-layout: auto;
   /* Permite que las columnas se ajusten según su contenido */
-  filter: drop-shadow(0px 0px 10px #bebfc5);
-  margin-bottom: 20px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 2%;
 }
 
 .main-content table th,
@@ -400,32 +398,32 @@ form input[type="text"],
 
 .main-content table th:nth-child(1),
 .main-content table td:nth-child(1) {
-  width: 261px;
+  width: 487px;
 }
 
 .main-content table th:nth-child(2),
 .main-content table td:nth-child(2) {
-  width: 169px;
+  width: 227px;
 }
 
 .main-content table th:nth-child(3),
 .main-content table td:nth-child(3) {
-  width: 150px;
+  width: 170px;
 }
 
 .main-content table th:nth-child(4),
 .main-content table td:nth-child(4) {
-  width: 150px;
+  width: 95px;
 }
 
 .main-content table th:nth-child(5),
 .main-content table td:nth-child(5) {
-  width: 150px;
+  width: 75px;
 }
 
 .main-content table th:nth-child(6),
 .main-content table td:nth-child(6) {
-  width: 220px;
+  width: 50px;
 }
 
 .main-content table th:nth-child(7),
@@ -517,115 +515,14 @@ form input[type="text"],
   /* Borde blanco */
 }
 
-/*Alertas*/
-
-/* Estilos generales de los párrafos */
-p {
-  font-size: 16px;
-  color: black;
-  font-family: arial;
-  padding: 10px;
-}
-
-/* Ajuste para el popup de SweetAlert */
-div:where(.swal2-container).swal2-center > .swal2-popup {
-  width: 28%;
-  /* Se ajusta automáticamente */
-  max-width: 350px;
-  /* Define un límite de ancho */
-}
-
-.custom-alert .tornillo,
-.custom-alert .moto,
-.custom-alert .llave {
-  width: 201px;
-  height: 145px;
-}
-
-/* Contenedor de la imagen */
-.contenedor-imagen {
-  position: relative;
-  display: inline-block;
-}
-
-.titulo-alerta {
-  font-size: 28px;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-}
-
-.titulo-alerta.confirmacion {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #9b9496;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.titulo-alerta.error {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #af3b3b;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.titulo-alerta.advertencia {
-  font-family: "Metal Mania", system-ui;
-  font-size: 1.01em;
-  letter-spacing: 3px;
-  color: #e09804;
-  text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-    3px 3px 0 #000;
-  margin: auto;
-}
-
-.btn-aceptar {
-  background-color: #007bff !important;
-  color: white !important;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-}
-
-.swal2-border-radius {
-  border-radius: 5px !important;
-}
-
-.fondo-oscuro {
-  background-color: rgba(0, 0, 0, 0.7) !important;
-  /* Fondo oscuro */
-  backdrop-filter: blur(2px);
-  /* Opcional: desenfoque sutil */
-}
-
-.swal2-popup {
-  border-radius: 20px;
-}
-
-.btn-eliminar {
-  background-color: #bd2d3b;
-  border-radius: 10px;
-}
-
-.btn-cancelar {
-  background-color: #537c5a;
-  border-radius: 10px;
-}
 /*FILTROS*/
 .filter-bar {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  max-width: 76%;
-  margin-left: 12%;
+  max-width: 100%;
+  margin-left: 7.3%;
   padding: 10px;
   border-radius: 8px;
 }
@@ -686,19 +583,18 @@ select option {
   color: #ffffff;
 }
 #searchRealtime {
-  height: 34px;
-  width: 50%;
   font-size: 16px;
-  border-radius: 12px;
-  text-align: center;
+  padding: 8px 23px;
+  border-radius: 9px;
+  width: 50%;
 }
 .filter-bar {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  max-width: 80%;
-  margin-left: 12%;
+  max-width: 100%;
+  margin-left: 8%;
   padding: 10px;
   border-radius: 8px;
 }
@@ -761,25 +657,80 @@ select option {
 #filtros-btn {
   display: flex;
   align-items: center;
-  padding: 7px 16px;
-  background-color: #0f6103;
+  padding: 9px 15px;
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  height: 3%;
+  font-weight: bold;
 }
 #filtros-btn:hover {
-  background-color: #0d3f06;
+  background-color: #0050a7;
 }
+
+.boton-docsxls {
+  display: flex;
+  padding: 9px 10px;
+  background-color: #1f5917 !important;
+  color: white;
+  cursor: pointer;
+  border-radius: 9px;
+  align-content: center;
+  align-items: center;
+  width: 87%;
+  height: 33%;
+  font-size: 16px;
+  border: none;
+  font-weight: bold;
+  text-decoration: none;
+}
+.boton-excel label{
+  margin-left: 8px;
+}
+
+.boton-pdf label{
+  margin-left: 8px;
+}
+.boton-docpdf {
+  display: flex;
+  padding: 9px 10px;
+  background-color: #860303 !important;
+  color: white;
+  cursor: pointer;
+  border-radius: 9px;
+  margin-left: -18%;
+  align-content: center;
+  align-items: center;
+  width: 80%;
+  height: 33%;
+  font-size: 16px;
+  border: none;
+  font-weight: bold;
+  text-decoration: none;
+}
+
 .boton-excel,
 .boton-pdf {
-  font-size: 17px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   font-family: arial;
   width: 30%;
+}
+.container-general {
+  position: fixed;
+  top: 5%;
+  left: 19%;
+  width: 67%;
+  height: 92%;
+  background: rgb(211 210 210 / 84%);
+  z-index: -1000;
+  pointer-events: none;
+  box-shadow: 0 4px 20px #0b111a;
+  border-radius: 10px;
 }
 /* MÓVILES */
 /* Horizontal */

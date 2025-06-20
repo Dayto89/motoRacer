@@ -97,7 +97,8 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 <body>
    <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
-
+ <div class="container-general">
+    </div>
   <h1>CREAR USUARIO</h1>
 
   <form name="formulario" method="post" action="">

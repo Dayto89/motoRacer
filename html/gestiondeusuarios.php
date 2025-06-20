@@ -74,14 +74,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
    <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
-  <div class="fondo-opaco"></div>
-
+ <div class="container-general">
+    </div>
   <h1>Gestión de Usuarios</h1>
   <div class="container">
     <div class="actions">
       <button class='btn-registro' onclick="location.href='../html/registro.php'"><i class='bx bx-plus bx-tada'></i>Registrar nuevo usuario</button>
     </div>
-    <h3>Lista de Usuarios</h3>
     <table class="user-table">
       <thead>
         <tr>

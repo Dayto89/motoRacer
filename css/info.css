@@ -1,4 +1,4 @@
- /* Reseteo y estilos básicos */
+/* Reseteo y estilos básicos */
 * {
   margin: 0;
   padding: 0;
@@ -7,15 +7,14 @@
 
 body {
   font-family: "Merriweather", serif;
-  background-color: #1c1c1c;
   color: white;
 }
 
 .container {
   align-items: center;
-  background: rgb(174 174 174 / 59%);
+  background: rgb(211 210 210 / 84%);
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px #0b111a;
   width: 87%;
   max-width: 44%;
   padding: 29px;
@@ -41,7 +40,7 @@ h1 {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #87cefa;
+  border: 3px solid #113e73;;
 }
 
 .info-group {
@@ -56,25 +55,22 @@ h1 {
 
 .info-group label {
   margin-bottom: 5px;
-  color: white;
+  color: black;
   font-size: 19px;
   font-family: Arial, Helvetica, sans-serif;
-  text-shadow: 2px 0 #1c51a0;
   white-space: nowrap;
+  font-weight: bold;
 }
-
 .info-group span {
-  flex: 0.5;
-  padding: 10px;
-  background: #f4f4f4;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 23px;
-  text-align: left;
-  font-family: Arial, Helvetica, sans-serif;
-  size: 10px;
-  font-weight: normal;
-  width: 115%;
+    flex: 0.5;
+    padding: 10px;
+    background: #f4f4f4;
+    color: #000000;
+    border: 1px solid #0b111a;
+    border-radius: 23px;
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 102%;
 }
 
 .btn-abrir {
@@ -147,18 +143,6 @@ body {
   height: 100vh;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0.7;
-  z-index: -1;
-}
-
 .form-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -180,7 +164,6 @@ body::before {
   display: block;
   font-size: 1em;
   margin-bottom: 5px;
-  color: #ddd;
 }
 
 .input-group input,
@@ -289,12 +272,17 @@ body::before {
   width: 67%;
   color: #000;
   padding: 0px 0px 0px 10px;
-  border: none;
-  font-size: 13px;
+  border: 1px solid #000000;
+  font-size: 15px;
   margin-bottom: 12px;
   -webkit-appearance: none;
 }
-
+/* Cambia el color del placeholder a negro */
+#inputCorreo::placeholder,
+#inputCodigo::placeholder {
+    color: #000 !important;
+    opacity: 1; /* Para asegurar visibilidad en todos los navegadores */
+}
 .btn-cancelar:hover {
   background: #c01515;
   transform: scale(1.05);
@@ -358,23 +346,23 @@ body::before {
 /* 3) Estilos de inputs y labels */
 /* ======================= */
 .popup label {
-  margin-bottom: 5px;
-  color: white;
-  font-size: 16px;
+ margin-bottom: 5px;
+  color: black;
+  font-size: 17px;
   font-family: Arial, Helvetica, sans-serif;
-  text-shadow: 2px 0 #1c51a0;
   white-space: nowrap;
+  font-weight: bold;
 }
 
 .input-group input {
-  padding: 8px;
-  font-size: 13px;
-  border: 1px solid #ccc;
-  border-radius: 23px;
-  box-sizing: border-box;
-  margin-bottom: 18px;
-  width: 83%;
-  margin-left: 9%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #000000;
+    border-radius: 23px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    width: 85%;
+    margin-left: 8%;
 }
 input#correoVerificado.input-group {
   padding: 8px;
@@ -386,7 +374,7 @@ input#correoVerificado.input-group {
   width: 67%;
   margin-left: 4%;
 }
-.input-group p{
+.input-group p {
   text-align: center;
   width: 83%;
   margin-left: 9%;
@@ -400,18 +388,18 @@ input#correoVerificado.input-group {
 /* 4) Estilo del botón “Cambiar correo” */
 /* ======================= */
 .btn-verificar-correo {
-  background-color: white;
-  color: #3d3a3a;
-  font-size: 16px;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-  width: 83%;
-  margin-left: 9%;
+    background-color: white;
+    color: #000000;
+    font-size: 15px;
+    padding: 10px 15px;
+    border-radius: 24px;
+    cursor: pointer;
+    width: 85%;
+    margin-left: 8%;
+
 }
 .btn-verificar-correo:hover {
-  background-color: #85baf1;
+  background-color: #6499d6;
 }
 
 /* ======================= */
@@ -487,7 +475,7 @@ input#correoVerificado.input-group {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 3px solid #007bff;
+  border: 3px solid #113e73;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 

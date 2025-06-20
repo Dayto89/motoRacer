@@ -11,11 +11,6 @@ if (!$conexion) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-// Conexión a la base de datos
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-if (!$conexion) {
-    die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
-}
 
 // Obtener configuración existente (última fila de configuracion_stock)
 $config = ['min_quantity' => 0, 'alarm_time' => '', 'notification_method' => ''];

@@ -175,7 +175,7 @@ if (isset($_POST['nit'])) {
                               <div class='contenedor-imagen'>
                                   <img src='../imagenes/moto.png' alt=\"Éxito\" class='moto'>
                               </div>
-                              <p>Los datos se actualizaron con éxito.</p>
+                              <p>Proveedor agregado correctamente.</p>
                           </div>
                       `,
                       background: '#ffffffdb',
@@ -337,6 +337,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <div class="sidebar">
     <div id="menu"></div>
   </div>
+   <div class="container-general"></div>
   <div class="main-content">
     <h1>Proveedores</h1>
     <div class="filter-bar">
@@ -363,7 +364,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </div>
     </div>
     <div class="table-wrapper">
-      <?php if (mysqli_num_rows($resultado) > 0): ?>
+      <?php if (mysqli_num_rows($allRes) > 0): ?>
         <table id="providerTable" class="tabla-centrada">
           <thead>
             <tr>
@@ -379,7 +380,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </tr>
           </thead>
           <tbody>
-            <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+            <?php while ($fila = mysqli_fetch_assoc($allRes)): ?>
               <tr>
                 <td><?= htmlspecialchars($fila['nit']) ?></td>
                 <td><?= htmlspecialchars($fila['nombre']) ?></td>
@@ -897,9 +898,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       });
 
       function formatNit(nit) {
-  // toma todos los caracteres menos el último + '-' + el último
-  return nit.slice(0, -1) + '-' + nit.slice(-1);
-}
+        // toma todos los caracteres menos el último + '-' + el último
+        return nit.slice(0, -1) + '-' + nit.slice(-1);
+      }
 
       // Render tabla
       function renderTable() {
@@ -910,13 +911,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         pageData.forEach(row => {
           const tr = document.createElement('tr');
           ['nit', 'nombre', 'telefono', 'direccion', 'correo'].forEach(f => {
-  const td = document.createElement('td');
-  if (f === 'nit') {
-    td.textContent = formatNit(row.nit);
-  } else {
-    td.textContent = row[f];
-  }
-  tr.appendChild(td);
+            const td = document.createElement('td');
+            if (f === 'nit') {
+              td.textContent = formatNit(row.nit);
+            } else {
+              td.textContent = row[f];
+            }
+            tr.appendChild(td);
           });
           // Acciones (usa exactamente tu HTML)
           const tdAcc = document.createElement('td');

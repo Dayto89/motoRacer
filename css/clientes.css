@@ -27,12 +27,6 @@ body::before {
     margin-right: 100px;
 }
 
-.main-content table {
-    filter: drop-shadow(0px 0px 10px #bebfc5);
-    margin-bottom: 20px;
-}
-
-
 .main-content h1 {
     color: white;
     text-align: center;
@@ -55,25 +49,27 @@ table {
     width: 100%;
     border-collapse: collapse;
     color: white;
-    margin-left: 60px;
+    margin-left: 20%;
     font-family: Arial;
+    box-shadow: 0 0 15px #222a37;
+    margin-top: 0.5%;
+    border-radius: 10px;
 }
-
 th,
 td {
-    border: 1px solid #666;
+      border: 1px solid #fff7f7;
     padding: 10px;
     text-align: left;
 }
 
 th {
-    background-color: #444;
+    background-color: rgb(32 69 113);
     font-weight: bold;
     text-align: center;
 }
 
 td {
-    background-color: #222;
+   background-color: rgb(63 61 61);
     text-align: center;
 }
 
@@ -190,13 +186,10 @@ input.form-control {
 }
 /* Estilos generales */
 #searchRealtime {
-    width: 38%;
-    padding: 7px 21px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-sizing: border-box;
-    margin-bottom: 25px;
+   font-size: 16px;
+    padding: 8px 23px;
+    border-radius: 9px;
+    width: 50%;
 }
 
 .search-button {
@@ -504,7 +497,6 @@ form input[type="text"],
     /* Evita que se desborde */
     table-layout: auto;
     /* Permite que las columnas se ajusten según su contenido */
-    margin-left: 360px;
 }
 
 .main-content table th,
@@ -658,7 +650,18 @@ form input[type="text"],
     transform: translateY(-50px);
     opacity: 0;
 }
-
+.container-general {
+    position: fixed;
+    top: 5%;
+    left: 19%;
+    width: 67%;
+    height: 89%;
+    background: rgb(211 210 210 / 84%);
+    z-index: -1000;
+    pointer-events: none;
+    box-shadow: 0 4px 20px #0b111a;
+    border-radius: 10px;
+}
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {}

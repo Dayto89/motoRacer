@@ -159,20 +159,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
 
         .btn-export {
-            display: inline-flex;
+            display: flex;
+            padding: 9px 10px;
+            background-color: #1f5917;
+            color: white;
+            cursor: pointer;
+            border-radius: 9px;
+            margin-left: 3%;
+            align-content: center;
             align-items: center;
-            justify-content: center;
-            background-color: #056a15;
-            color: #fff;
-            padding: 8px 21px;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: Arial, Helvetica, sans-serif;
+            width: 104%;
+            height: 33%;
             text-decoration: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.2s ease;
-            margin-top: -10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 14px;
         }
 
         .btn-export:hover {
@@ -187,7 +189,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .pagination-dinamica {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 2%;
             gap: 5px;
             font-family: arial;
             font-size: 13px;
@@ -237,7 +239,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="sidebar">
         <div id="menu"></div>
     </div>
-
+    <div class="container-general">
+    </div>
     <div class="main-content">
         <h1>Clientes</h1>
         <div class="filter-bar">
@@ -550,7 +553,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const rowsPerPage = 7;
+        const rowsPerPage = 9;
         let currentPage = 1;
         let filteredData = [...allData];
 

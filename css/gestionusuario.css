@@ -21,14 +21,10 @@ body::before {
 }
 
 .container {
-  width: 45%;
-  margin: 50px auto;
-  text-align: center;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-top: 2%;
-  margin-left: 583px;
+    width: 57%;
+    margin: auto;
+    margin-top: 3%;
+    margin-left: 24%;
 }
 
 /* Título principal */
@@ -42,25 +38,14 @@ h1 {
     text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
     margin-left: 4%;
 }
-
-h3 {
-  font-family: Arial, Helvetica, sans-serif;
-  color: black;
-  background-color: #5e96d9;
-  padding: 9px;
-  width: 193px;
-  margin-top: 8px;
-  font-size: 16px;
-  margin-bottom: 5px;
-}
-
  /* Tabla de categorías */
  .user-table {
-      box-shadow: 0 0 15px white;
+  box-shadow: 0 0 15px #222a37;
     width: 100%;
     border-collapse: collapse;
     color: white;
     font-family: Arial;
+    margin-top: 3.5%;
 }
 
 .user-table td {
@@ -68,23 +53,24 @@ h3 {
   font-family: Arial, sans-serif;
   width: 225px;
   padding: 5px;
+    background-color: rgb(63 61 61);
 }
 
 th,
 td {
-    border: 1px solid #666;
+    border: 1px solid #fff7f7;
     padding: 10px;
     text-align: left;
 }
 
 th {
-    background-color: #444;
+     background-color: rgb(32 69 113);
     font-weight: bold;
     text-align: center;
 }
 
 #tabla-usuarios td {
-    background-color: #222;
+    background-color: rgb(63 61 61);
     text-align: center;
     color: white;
 }
@@ -115,13 +101,13 @@ th {
   color: white;
 }
 .btn-registro {
-  background-color: #219b40;
+  background-color: #007bff;
   color: white;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
   padding: 10px 21px;
   border: none;
-  border-radius: 11px;
+  border-radius: 10px;
   cursor: pointer;
   margin-right: 69%;
   width: 33%;
@@ -129,8 +115,9 @@ th {
 }
 
 .btn-permisos {
-  background-color: #20663b;
-  border-radius: 15px;
+  background-color: #007bff;
+  border-radius: 10px;
+
 }
 
 .btn-delete {
@@ -140,14 +127,14 @@ th {
 
 
 .btn-permisos:hover {
-  background-color: #1f4d30;
+  background-color: #0056b3;
 }
 
 .btn-delete:hover {
   background-color: #c82333;
 }
 .btn-registro:hover {
-  background-color: rgb(5, 105, 30);
+  background-color: #0056b3;
 }
 .modal {
   display: none;
@@ -422,7 +409,7 @@ div.subsection{
   padding: 10px 20px;
   font-size: 16px;
   border: none;
-  border-radius: 16px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -431,7 +418,18 @@ div.subsection{
   background-color:#0056b3;
 }
 
-
+.container-general {
+    position: fixed;
+    top: 5%;
+    left: 19%;
+    width: 67%;
+    height: 89%;
+    background: rgb(211 210 210 / 84%);
+    z-index: -1000;
+    pointer-events: none;
+    box-shadow: 0 4px 20px #0b111a;
+    border-radius: 10px;
+}
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

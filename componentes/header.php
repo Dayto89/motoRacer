@@ -21,6 +21,16 @@ $rowRol = $resultRol->fetch_assoc();
 $rol = $rowRol['rol'];
 $stmtRol->close();
 
+  $permisosRutas = [
+    'PRODUCTO' => ['crearproducto', 'categorias', 'ubicacion', 'marca'],
+    'PROVEEDOR' => ['listaproveedor'],
+    'INVENTARIO' => ['listaproductos'],
+    'FACTURA' => ['ventas', 'reportes', 'listaclientes', 'listanotificaciones', 'pagos', 'recibo'],
+    'USUARIO' => ['información'],
+    'CONFIGURACION' => ['gestiondeusuarios', 'copiadeseguridad', 'registro'],
+    'INICIO' => ['']
+  ];
+
 // Si el usuario es administrador, mostrar todas las secciones
 if ($rol === 'administrador') {
   $permisos = [
@@ -57,31 +67,63 @@ $iconGifs = [
   'SALIR'         => 'exit.gif',
 ];
 
-// Detectar la página actual (sin .php)
-$currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
 
-// Buscar la sección a la que corresponde esa página
-$activeSection = '';
-foreach ($permisos as $sec => $subs) {
+
+// 1) Generar mapa slug → sección/subsección
+$breadcrumbMap = [];
+foreach ($permisosRutas as $sec => $subs) {
   foreach ($subs as $sub) {
     $slug = strtolower(str_replace(' ', '', $sub));
-    if ($slug === $currentPage) {
-      $activeSection = $sec;
-      break 2;
-    }
+    $breadcrumbMap[$slug] = [
+      'section'    => $sec,
+      'subsection' => $sub
+    ];
   }
+}
+
+// ——————————————————————————————
+// 2) Detectar página actual (sin .php)
+if (!empty($_GET['page'])) {
+  $currentPage = preg_replace('/[^a-z0-9]/','', strtolower($_GET['page']));
+} else {
+  $currentPage = basename($_SERVER['SCRIPT_NAME'],'.php');
+}
+
+if (isset($breadcrumbMap[$currentPage])) {
+  // Coincidencia en permisos
+  $activeSection    = $breadcrumbMap[$currentPage]['section'];
+  $activeSubSection = $breadcrumbMap[$currentPage]['subsection'];
+
+} elseif ($currentPage === 'inicio') {
+  // Home
+  $activeSection    = '';
+  $activeSubSection = 'Inicio';
+
+} elseif ($currentPage === 'acceso_denegado') {
+  // Acceso denegado
+  $activeSection    = '';
+  $activeSubSection = 'Acceso denegado';
+
+} elseif ($currentPage === 'informacin') {
+  // Información del usuario
+  $activeSection    = 'USUARIO';
+  $activeSubSection = 'Información';
+
+} else {
+  // No coincide con nada: no mostramos breadcrumb
+  $activeSection    = '';
+  $activeSubSection = '';
 }
 
 // Colores para cada sección
 $sectionColors = [
-  'PRODUCTO'      => '#4CAF50',
-  'PROVEEDOR'     => '#FF9800',
-  'INVENTARIO'    => '#9C27B0',
-  'FACTURA'       => '#E91E63',
-  'USUARIO'       => '#607D8B',
-  'CONFIGURACION' => '#536DFE',
+  'PRODUCTO'      => '',
+  'PROVEEDOR'     => '',
+  'INVENTARIO'    => '',
+  'FACTURA'       => '',
+  'USUARIO'       => '',
+  'CONFIGURACION' => '',
 ];
-
 
 ?>
 
@@ -111,21 +153,41 @@ $sectionColors = [
       display: flex;
       align-items: center;
     }
+
+    .breadcrumb {
+      position: absolute;
+      top: 16px;
+      left: 20%;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      z-index: 1000;
+      /* para que siempre quede encima */
+    }
   </style>
 </head>
 
 <body>
-  
+  <?php if ($activeSection || $activeSubSection): ?>
+    <div class="breadcrumb">
+      <?= ($activeSection ? "{$activeSection} / " : '') . $activeSubSection ?>
+    </div>
+  <?php endif; ?>
+
   <div id="sidebar" class="sidebar">
+
     <div class="sidebar-header">
       <a href="../html/inicio.php"><img src="../imagenes/LOGO.webp" alt="Logo" class="logo" /></a>
     </div>
 
- <ul class="menu">
+    <ul class="menu">
 <?php foreach ($permisos as $seccion => $subsecciones):
   $isActive = ($seccion === $activeSection);
   $iconStyle = $isActive
-    ? "background-color: {$sectionColors[$seccion]}; padding:4px; border-radius:8px;"
+    ? "background-color: {$sectionColors[$seccion]}; border-radius:8px;"
     : "";
   $gifFile = $iconGifs[$seccion] ?? 'default.gif';
   $gifPath = "../imagenes/icons/" . $gifFile;
@@ -171,6 +233,8 @@ $sectionColors = [
     </li>
     
   </ul>
-  
+  </div>
+
 </body>
+
 </html>

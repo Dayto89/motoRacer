@@ -49,19 +49,19 @@ table {
 
 th,
 td {
-  border: 1px solid #666;
+  border: 1px solid #fff7f7;
   padding: 10px;
   text-align: left;
 }
 
 th {
-  background-color: #444;
+  background-color: rgb(32 69 113);
   font-weight: bold;
   text-align: center;
 }
 
 td {
-  background-color: #222;
+  background-color: rgb(63 61 61);
   text-align: center;
 }
 
@@ -188,14 +188,20 @@ input.form-control {
   cursor: pointer;
 }
 .icon-button {
-  width: 150px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #28a745; /* Color verde */
-  color: white;
-  cursor: pointer;
-  height: 30px;
+ display: flex;
+    padding: 9px 10px;
+    background-color: #1f5917;
+    color: white;
+    cursor: pointer;
+    border-radius: 9px;
+    margin-left: -7%;
+    align-content: center;
+    align-items: center;
+    width: 104%;
+    height: 33%;
+    font-size: 16px;
+    border: none;
+    font-weight: bold;
 }
 
 .icon-button i {
@@ -205,9 +211,7 @@ input.form-control {
   cursor: pointer;
 }
 
-.icon-button:hover {
-  background-color: #218838;
-}
+
 .criteria-group {
   display: flex;
   flex-direction: column; /* Alinea los elementos en columna */
@@ -631,7 +635,7 @@ select option {
   -webkit-overflow-scrolling: touch;
 }
 #facturaTable {
-  box-shadow: 0 0 15px white;
+  box-shadow: 0 0 15px #222a37;
   border-radius: 8px;
   margin: 20px auto; /* Le da espacio para que se vea la sombra */
   width: fit-content; /* Ajusta al contenido */
@@ -658,8 +662,6 @@ select option {
 .btn-estado.inactivo {
   background-color: darkred;
 }
-
-
 
 /*-------------------------------------------------------------------------*/
 /* MÓVILES */
@@ -796,11 +798,10 @@ select option {
 }
 
 #barraReportes {
-  height: 34px;
-  width: 50%;
   font-size: 16px;
-  border-radius: 12px;
-  text-align: center;
+  padding: 8px 23px;
+  border-radius: 9px;
+  width: 36%;
 }
 /*FILTROS*/
 /* contenedor flex de filtros */
@@ -893,16 +894,30 @@ select option {
 #filtros-btn {
   display: flex;
   align-items: center;
-  padding: 7px 16px;
-  background-color: #0f6103;
+  padding: 9px 15px;
+  background-color: #007bff;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  height: 3%;
+  font-weight: bold;
 }
 #filtros-btn:hover {
-  background-color: #0d3f06;
+  background-color: #0153aa;
+}
+.container-general {
+  position: fixed;
+  top: 4%;
+  left: 11%;
+  width: 78%;
+  height: 92%;
+  background: rgb(211 210 210 / 84%);
+  z-index: -1000;
+  pointer-events: none;
+  box-shadow: 0 4px 20px #0b111a;
+  border-radius: 10px;
 }
 /* TABLETS */
 /* Horizontal */

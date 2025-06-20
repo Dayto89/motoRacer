@@ -489,7 +489,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     // Variables de estado para paginación y filtrado
     let filteredData = [...allData];
-    const rowsPerPage = 8;
+    const rowsPerPage = 10;
     let currentPage = 1;
 
     const tableBody = document.querySelector('#productTable tbody');

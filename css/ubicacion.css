@@ -44,20 +44,20 @@ body::before {
 
 /* Botón para agregar categoría */
 .btn-nueva-categoria {
-  background-color: #1167cc;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  padding: 13px 21px;
-  border: none;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-bottom: 15px;
+    background-color: #1167cc;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 9px 21px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 16px;
 }
 
 .btn-nueva-categoria:hover {
-  background-color: #0056b3;
+  background-color: #0153aa
 }
 .actions {
   margin-left: 14%;
@@ -359,14 +359,10 @@ button[type="submit"]:hover {
 
 /* Estilo para los inputs del formulario */
 input[type="text"] {
-  width: 59%;
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 23px;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  padding: 11px 21px;
+     font-size: 16px;
+    padding: 8px 23px;
+    border-radius: 9px;
+    width: 50%;
 }
 .bx-tada {
   color: #fdfcfc;

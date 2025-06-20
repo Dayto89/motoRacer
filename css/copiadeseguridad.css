@@ -1,0 +1,251 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Metal Mania", system-ui;
+  background-image: url("fondoMotoRacer.png");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Estilos mejorados para backups */
+.main-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: white;
+  margin-top: 50px;
+}
+
+.main-content h1 {
+  font-size: 50px;
+  text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
+    3px 5px 0 #1c51a0;
+  margin-left: 28%;
+}
+
+.backup-table {
+  width: 96%;
+  border-collapse: collapse;
+  color: white;
+  margin-left: 6%;
+  font-family: Arial;
+  box-shadow: 0 0 15px #222a37;
+  margin-top: 2%;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #222a37;
+}
+
+.backup-table thead {
+  align-items: center;
+  justify-content: center;
+}
+
+th,
+td {
+   border: 1px solid #fff7f7;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: rgb(32 69 113);
+  font-weight: bold;
+  text-align: center;
+}
+
+#tabla-backups td {
+  background-color: rgb(63 61 61);
+  text-align: center;
+  color: white;
+}
+
+.productos-table th {
+  background-color: #98bde9;
+  color: #0b111a;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.backup-table td {
+  font-size: 16px;
+  font-family: arial;
+  text-align: center;
+}
+
+.backup-item-actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.btn-restore {
+  background: #326534;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.btn-restore:hover,
+.btn-delete:hover {
+  opacity: 0.9;
+}
+
+.backup-type {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.type-db {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.type-files {
+  background-color: #f0f4c3;
+  color: #afb42b;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  margin-top: 3%;
+  justify-content: space-evenly;
+}
+
+.no-backups {
+  text-align: center;
+  padding: 2rem;
+  color: #757575;
+  border: 2px dashed #e0e0e0;
+  margin-top: 2rem;
+  border-radius: 8px;
+}
+
+.search-container {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+}
+
+#search-input {
+  padding: 15px;
+  width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.search-container input {
+  border-radius: 10px;
+  width: 300px;
+  height: 40px;
+  padding: 9px;
+}
+
+.search-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  height: 40px;
+  width: 100px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.boton-agregar {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 11px;
+  height: 40px;
+  width: 198px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 0%;
+  padding: 6px;
+}
+
+.boton-agregar:hover {
+  background-color: #0056b3;
+}
+
+.pagination {
+  display: none;
+}
+
+.pagination-dinamica {
+  display: flex;
+  justify-content: center;
+  margin-top: 34px;
+  gap: 5px;
+  font-family: arial;
+  font-size: 13px;
+}
+
+.pagination-dinamica button {
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  text-decoration: none;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.pagination-dinamica button:hover {
+  background-color: rgb(158, 146, 209);
+}
+
+.pagination-dinamica button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  pointer-events: none;
+  border-color: #007bff;
+}
+
+#backupTable tbody tr:hover,
+#backupTable tbody tr:hover td {
+  background-color: rgba(0, 123, 255, 0.15);
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+  /* opcional: elimina el espacio donde estaban los puntos */
+}
+.container-general {
+  position: fixed;
+  top: 5%;
+  left: 19%;
+  width: 67%;
+  height: 89%;
+  background: rgb(211 210 210 / 84%);
+  z-index: -1000;
+  pointer-events: none;
+  box-shadow: 0 4px 20px #0b111a;
+  border-radius: 10px;
+}

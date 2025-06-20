@@ -25,7 +25,7 @@ class PDF extends FPDF {
         $this->SetY(-20);
         $this->SetFont('Arial', 'I', 9);
         $this->SetTextColor(100);
-        $empresa = "Moto Racer. | NIT: 74182332-1 | Calle 40 #6 - 50, Yopal | Tel: 3004401797";
+        $empresa = "Moto Racer. | NIT: 74182332-1 | Calle 40 #6 - 50, Yopal | Tel: 3102572023";
         $this->Cell(0, 10, utf8_decode($empresa), 0, 0, 'C');
     }
 }

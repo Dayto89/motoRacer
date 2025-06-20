@@ -23,9 +23,9 @@ body::before {
 /* Estado inicial: margin-left en px */
 .container {
   /* en lugar de margin:auto, asigna el margin-left explícito */
-  margin: 0 auto 0 100px;  /* top right bottom left */
-  width: 1698px;
-  transition: margin-left 0.2s ease, background-color 0.3s ease;
+margin: 2px auto 0 107px;
+    width: 1758px;
+    transition: margin-left 0.2s ease, background-color 0.3s ease;
 }
 
 /* Al hacer hover en .sidebar, movemos el container */
@@ -69,10 +69,11 @@ body::before {
   text-align: start;
   margin-left: 10px;
   font-size: 41px;
-  margin-top: 23px;
+  margin-top: 12%;
   font-family: metal mania;
   text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px,
     rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+    color: white ;
 }
 
 .form-grid {
@@ -101,22 +102,24 @@ body::before {
   font-family: metal mania;
   text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px,
     rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+    color: white;
+    margin-top: 10%;
 }
 
 .user-info label {
-  font-size: 20px;
-  text-shadow: -1px 1px 0 rgb(85 170 239);
-  font-family: arial;
-  margin-top: 3%;
-  font-weight: normal;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-top: 13%;
   /* <- ESTO ayuda a igualar el grosor */
 }
 .payment-methods h3 {
-  font-size: 20px;
-  text-shadow: -1px 1px 0 rgb(85 170 239);
-  font-family: arial;
-  margin-top: 10%;
-  font-weight: normal;
+     font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-top: 23%;
   /* <- ESTO ayuda a igualar el grosor */
 }
 
@@ -187,7 +190,6 @@ input {
   display: flex;
   justify-content: space-evenly;
   margin-left: -200px;
-  margin-top: 10%;
 }
 
 input[name="valor_tarjeta"] {
@@ -203,17 +205,13 @@ input[name="valor_tarjeta"] {
   text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px,
     rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
   color: white;
-  margin-top: 23px;
+  margin-top: 10%;
 }
 .summary-section h2 {
-  text-align: start;
-  font-size: 20px;
-  text-shadow: -1px 1px 0 rgb(85 170 239);
-  font-family: arial;
-  margin-top: 10%;
-  font-weight: normal;
-  margin-left: 0px;
-  color: black;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
 .summary-section ul {
@@ -221,7 +219,7 @@ input[name="valor_tarjeta"] {
   padding-left: 0;
 }
 .summary-container {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0);
   border-radius: 10px;
   padding: 6px;
 }
@@ -266,13 +264,19 @@ p {
   height: 40px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.btn-pagar:hover {
+    background-color: #1565c0;
+  }
+
+.btn-editar:hover {
+  background-color:rgb(167, 29, 42);
+
+
   /* Azul más oscuro */
 }
 button {
     flex-shrink: 0;
-    background-color: #5496c3;
+    background-color: #0068d70;
     cursor: pointer;
     width: 79px;
     height: 41px;
@@ -291,10 +295,12 @@ button {
     font-size: 14px;
 }
 .plus-icon h3 {
-  font-family: Arial, sans-serif;
-  text-shadow: -1px 1px 0 rgb(85 170 239);
-  font-weight: normal;
-  font-size: 20px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    white-space: nowrap;
+    margin-left: -5%;
+    margin-top: 9%;
 }
 
 .plus-icon {
@@ -305,11 +311,11 @@ button {
 }
 
 .plus-icon img {
-  width: 30px;
-  height: 30px;
-  margin-top: 40px;
-  margin-left: 20px;
-  cursor: pointer;
+width: 30px;
+    height: 30px;
+    margin-top: 40px;
+    margin-left: 18px;
+    cursor: pointer;
 }
 
 .tarjeta-content label,
@@ -320,9 +326,10 @@ button {
 }
 
 .notes label {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
-  text-shadow: -1px 1px 0 rgb(85 170 239);
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
 .notes {
@@ -351,7 +358,8 @@ input#observaciones {
 .content > div {
   flex: 1;
   margin-right: 40px;
-  padding: 43px;
+  padding: 28px;
+  background-color: rgb(211 210 210 / 84%);
 }
 
 .user-info input,
@@ -374,6 +382,7 @@ input#observaciones {
 #otro.payment-box {
   background: transparent;
   width: 100%;
+  margin-top: -7%;
 }
 
 .input-group {
@@ -404,15 +413,20 @@ input#observaciones {
   font-family: arial;
 }
 
-#tarjeta, #otro {
-  max-height: 250px;
+#contenedor-tarjetas, #contenedor-otros {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.tarjeta-content{
+  max-height: 100px ;
   overflow-y: auto;
 }
 
 
 button {
     flex-shrink: 0;
-    background-color: #5496c3;
+    background-color: #0068d7;
     cursor: pointer;
     width: 79px;
     height: 41px;
@@ -420,6 +434,9 @@ button {
     border-radius: 15px;
     margin-top: 20px;
     font-size: 14px;
+}
+button:hover{
+  background-color: #1565c0;
 }
 
 .icono-eliminar-circular {
@@ -441,14 +458,15 @@ button {
   background-color: #d30404;
 }
 .barra {
-  max-height: 90px; /* Ajusta solo si cambias el alto de los campos */
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
+max-height: 130px;
+    overflow-y: auto;
+    display: flex
+;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 6px;
+    box-sizing: border-box;
+    margin-left: -8%;
 }
 
 .tarjeta-content {
@@ -482,6 +500,194 @@ button {
   font-size: 14px;
   box-sizing: border-box;
 }
+    .payment-box {
+      width: 500px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .plus-icon {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .plus-icon h3 {
+        font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    white-space: nowrap;
+    }
+
+    .plus-icon button {
+      padding: 6px 12px;
+      background-color: #1167cc;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .barra {
+      max-height: 130px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 6px;
+      box-sizing: border-box;
+    }
+
+    .barra::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .barra::-webkit-scrollbar-thumb {
+      background-color: #2f79b6;
+      border-radius: 4px;
+    }
+
+    .tarjeta-content {
+        display: grid;
+    gap: 8px;
+    align-items: center;
+    width: 95%;
+    padding: 10px;
+    box-sizing: border-box;
+    }
+
+    .tarjeta-content select,
+    .tarjeta-content input {
+        width: 86%;
+    padding: 8px 12px;
+    border: 1px solid #121111;
+    border-radius: 23px;
+    font-size: 14px;
+    box-sizing: border-box;
+    }
+
+    .eliminar-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .tabla-productos {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ccc;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.tabla-productos th{
+   background-color: rgb(32 69 113);
+  font-weight: bold;
+  text-align: center;
+
+}
+
+.tabla-productos th,
+.tabla-productos td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+.tabla-productos td{
+  background-color: rgb(63 61 61);
+  text-align: center;
+
+
+}
+
+.summary-container {
+    background: #ffffff00;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 2%;
+}
+
+.contenedor-precio p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #000000;
+}
+
+#saldoPendiente {
+font-weight: bold;
+    color: #0b0f6b;
+    margin-bottom: 10px;
+    margin-left: -4%;
+    font-size: 20px;
+}
+
+.btn-editar,
+.btn-pagar {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-editar {
+    background-color: rgb(223, 47, 47);
+}
+
+
+.btn-pagar {
+    background-color:#0068d7;
+}
+select[name="tipo_tarjeta"] {
+    width: 133%;
+    padding: 8px 12px;
+    border: 1px solid #121111;
+    border-radius: 23px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+input[name="voucher"],
+input[name="valor_tarjeta"] {
+    width: 86%;
+    padding: 8px 12px;
+    border: 1px solid #121111;
+    border-radius: 23px;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin-left: 41%;
+}
+input[name="valor_tarjeta"]{
+ margin-left: 29%;
+}
+.tabla-scroll {
+    max-height: 282px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    margin-left: -7%;
+    margin-right: -7%;
+}
+
+.tabla-productos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-productos th,
+.tabla-productos td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.content {
+  align-items: stretch;
+}
+
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

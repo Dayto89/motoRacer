@@ -129,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmtMP->execute();
         $stmtMP->close();
     }
-        // 3.6) **Descontar stock de cada producto vendido**
+    // 3.6) **Descontar stock de cada producto vendido**
     foreach ($productos as $prod) {
         $sqlUp = "UPDATE producto 
                   SET cantidad = cantidad - ? 
@@ -238,6 +238,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../css/pago.css">
+    <link rel="stylesheet" href="../css/alertas.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
@@ -313,14 +314,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <img src="../imagenes/plus.svg" onclick="AgregarOtraTarjeta()" alt="">
                             </div>
                             <div class="barra">
-                                <div class="tarjeta-content">
-                                    <select name="tipo_tarjeta">
-                                        <option value="">Opciones</option>
-                                        <option value="credito">Crédito</option>
-                                        <option value="debito">Débito</option>
-                                    </select>
-                                    <input type="text" name="voucher" placeholder="Nro. voucher">
-                                    <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+                                <div id="contenedor-tarjetas">
+                                    <div class="tarjeta-content">
+                                        <select name="tipo_tarjeta">
+                                            <option value="">Opciones</option>
+                                            <option value="credito">Crédito</option>
+                                            <option value="debito">Débito</option>
+                                        </select>
+                                        <input type="text" name="voucher" placeholder="Nro. voucher">
+                                        <input type="text" name="valor_tarjeta" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -330,12 +333,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 <img src="../imagenes/plus.svg" alt="" onclick="AgregarOtroPago()">
                             </div>
                             <div class="barra">
-                                <div class="otro-content">
-                                    <select name="tipo_otro">
-                                        <option value="">Opciones</option>
-                                        <option value="transferencia">Transferencia</option>
-                                    </select>
-                                    <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+                                <div id="contenedor-otros">
+                                    <div class="otro-content">
+                                        <select name="tipo_otro">
+                                            <option value="">Opciones</option>
+                                            <option value="transferencia">Transferencia</option>
+                                        </select>
+                                        <input type="text" name="valor_otro" placeholder="$0.00" oninput="actualizarSaldoPendiente()">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -347,56 +352,62 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 </div>
 
                 <div class="summary-section">
-                    <h3>Información de pago</h3>
+    <h3>Información de pago</h3>
 
-                    <?php
-                    // 4) Recuperar productos y total desde sesión (sin borrarlos)
-                    $productos = $_SESSION['productos'] ?? [];
-                    $total     = $_SESSION['total'] ?? 0;
-                    ?>
+    <?php
+    $productos = $_SESSION['productos'] ?? [];
+    $total     = $_SESSION['total'] ?? 0;
+    ?>
 
-                    <?php if (!empty($productos)): ?>
-                        <div class="summary-container">
-                            <h2>Productos:</h2>
-                            <ul>
-                                <?php foreach ($productos as $producto): ?>
-                                    <li data-id="<?php echo $producto['id']; ?>">
-                                        <p>
-                                            <?php echo $producto['cantidad'] . " x " . $producto['nombre']; ?>
-                                            –
-                                            <span class="precio">
-                                                $<?php echo number_format($producto['precio'], 2); ?>
-                                            </span>
-                                        </p>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
+    <?php if (!empty($productos)): ?>
+        <div class="summary-container">
+            <h2>Productos:</h2>
+           <div class="tabla-scroll">
+    <table class="tabla-productos">
+        <thead>
+            <tr>
+                <th>Cantidad</th>
+                <th>Nombre</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($productos as $producto): ?>
+                <tr data-id="<?php echo $producto['id']; ?>">
+                    <td><?php echo $producto['cantidad']; ?></td>
+                    <td><?php echo $producto['nombre']; ?></td>
+                    <td>$<?php echo number_format($producto['precio'], 2); ?></td>
+                    <td>$<?php echo number_format($producto['cantidad'] * $producto['precio'], 2); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 
-                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
-                            <h2>Total a pagar:</h2>
-                            <div class="contenedor-precio">
-                                <p>$<?php echo number_format($total, 2); ?></p>
-                            </div>
+            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
+            <h2>Total a pagar:</h2>
+            <div class="contenedor-precio">
+                <p>$<?php echo number_format($total, 2); ?></p>
+            </div>
 
-                            <!-- BOTÓN “Editar” -->
-                            <button class="btn-editar" onclick="window.location.href='ventas.php'">
-                                ✏️ Editar productos
-                            </button>
+            <button class="btn-editar" onclick="window.location.href='ventas.php'">
+                ✏️ Editar productos
+            </button>
 
-                            <!-- BOTÓN “Pagar” -->
-                            <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
-                        </div>
-                    <?php else: ?>
-                        <p>No hay productos en el resumen.</p>
-                    <?php endif; ?>
-                </div>
+            <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
+        </div>
+    <?php else: ?>
+        <p>No hay productos en el resumen.</p>
+    <?php endif; ?>
+</div>
+
             </div>
         </div>
     </div>
 
     <!-- 5) Scripts JavaScript -->
     <script>
-
         function guardarFactura() {
             // 5.1) Recopilar información del cliente
             let codigo = document.getElementById("codigo").value;
@@ -405,7 +416,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             let apellido = document.getElementById("apellido").value;
             let telefono = document.getElementById("telefono").value;
             let correo = document.getElementById("correo").value;
-            
+
 
             if (!codigo || !tipoDoc || !nombre || !apellido || !telefono || !correo) {
                 Swal.fire({
@@ -511,7 +522,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 conteo[m.tipo] = (conteo[m.tipo] || 0) + 1;
             });
 
- 
+
 
             // 5.4) Cálculo de total y cambio
             let total = parseFloat("<?php echo $total; ?>");
@@ -564,10 +575,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
-                    }, 
+                    },
                     body: JSON.stringify(body)
                 })
-                .then(response => response.json()) 
+                .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         Swal.fire({
@@ -659,9 +670,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
 
         function AgregarOtraTarjeta() {
-            const contenedor = document.querySelector("#tarjeta");
-            let tarjeta = document.querySelector("#tarjeta .tarjeta-content");
-            let clone = tarjeta.cloneNode(false);
+            const contenedor = document.querySelector("#contenedor-tarjetas");
+            console.log("Contenedor encontrado:", contenedor);
+
+            let tarjeta = document.querySelector("#contenedor-tarjetas .tarjeta-content");
+            let clone = tarjeta.cloneNode(true);
             clone.innerHTML = tarjeta.innerHTML;
             clone.querySelectorAll("input").forEach(i => i.value = "");
             clone.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
@@ -816,6 +829,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             // Función genérica para agregar clon + handler de eliminar
             function creaClon(contenedorSelector, contenidoSelector) {
                 const cont = document.querySelector(contenedorSelector);
+                console.log(cont)
                 const plantilla = cont.querySelector(contenidoSelector);
                 const clone = plantilla.cloneNode(true);
                 // limpiar valores
@@ -835,8 +849,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
 
             // Tus funciones de “➕” ahora llaman a creaClon:
-            window.AgregarOtraTarjeta = () => creaClon("#tarjeta", ".tarjeta-content");
-            window.AgregarOtroPago = () => creaClon("#otro", ".otro-content");
+            window.AgregarOtraTarjeta = () => creaClon("#contenedor-tarjetas", ".tarjeta-content");
+            window.AgregarOtroPago = () => creaClon("#contenedor-otros", ".otro-content");
 
             // Vincula el recálculo a cambios en cualquier input
             document.addEventListener("input", actualizarEstadoInputs);

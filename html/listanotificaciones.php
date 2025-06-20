@@ -124,9 +124,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       font-size: 0.9em;
     }
 
-    .boton-accion:hover {
-      background-color: #5a6268;
-    }
+    
 
     .pagination {
       display: none;
@@ -135,7 +133,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     .pagination-dinamica {
       display: flex;
       justify-content: center;
-      margin-top: 23px;
+      margin-top: 3px;
       gap: 12px;
       font-family: arial;
       font-size: 11px;
@@ -202,9 +200,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <div class="sidebar">
     <div id="menu"></div>
   </div>
-
-
-
+  <div class="container-general">
+    </div>
   <div class="main-content">
 
     <h1>Notificaciones</h1>
@@ -213,10 +210,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <button id="filtros-btn" class="filter-button">Mostrar Filtros</button>
         <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
         <div class="boton-excel">
-          <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel icon-color"></i><label> Exportar a Excel</label></a>
+          <a href="exportar_notificaciones_excel.php" class="boton-docsxls marcarL"> <i class="fas fa-file-excel icon-color"></i><label> Exportar a Excel</label></a>
         </div>
         <div class="boton-pdf">
-          <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf icon-color"></i><label> Exportar a PDF</label></a>
+          <a href="exportar_notificaciones_pdf.php" class="boton-docpdf marcarN"><i class="fa-solid fa-file-pdf icon-color"></i><label> Exportar a PDF</label></a>
         </div>
         <!-- Botón para eliminar seleccionados -->
         <button id="delete-selected" class="btn btn-danger" style="display: none;">
@@ -448,7 +445,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
       let filteredData = [...allData];
       let currentPage = 1;
-      const rowsPerPage = 7;
+      const rowsPerPage = 9;
 
       // -------------------
       // Filtrado y búsqueda
