@@ -35,6 +35,24 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
+// consultar rol de usuario
+$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+$sql = "SELECT rol FROM usuario WHERE identificacion = ?";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("s", $_SESSION['usuario_id']);
+$stmt->execute();
+$resultado = $stmt->get_result();
+$row = $resultado->fetch_assoc();
+$rol = $row['rol'];
+$stmt->close();
+$conexion->close();
+
+if ($rol == 'gerente') {
+    header("Location: ../html/acceso_denegado.php");
+    exit();
+}
+
+
 require '../conexion/conexion.php'; // archivo con la conexión a BD y las librerías
 require '../vendor/autoload.php';   // si usas composer para Mailjet
 use \Mailjet\Resources;

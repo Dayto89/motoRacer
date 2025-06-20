@@ -1,8 +1,6 @@
 <?php
-// Iniciar el buffer de salida para capturar cualquier salida no deseada
 ob_start();
-
-require('../fpdf/fpdf.php'); // Asegúrate de que la ruta a FPDF es correcta
+require('../fpdf/fpdf.php');
 session_start();
 
 if (!isset($_SESSION['usuario_id'])) {
@@ -16,15 +14,23 @@ if ($conexion->connect_error) {
     die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
 }
 
-// Recuperar factura_id de la sesión
 $factura_id = $_SESSION["factura_id"] ?? null;
 if (!$factura_id) {
     die("Error: Factura ID no encontrado en la sesión.");
 }
 
-// --------------------------------------------------
-// 1) Obtener datos de la factura directamente de la tabla `factura`
-// --------------------------------------------------
+// Subclase para personalizar pie de página
+class PDF extends FPDF {
+    function Footer() {
+        $this->SetY(-20);
+        $this->SetFont('Arial', 'I', 9);
+        $this->SetTextColor(100);
+        $empresa = "Moto Racer. | NIT: 74182332-1 | Calle 40 #6 - 50, Yopal | Tel: 3004401797";
+        $this->Cell(0, 10, utf8_decode($empresa), 0, 0, 'C');
+    }
+}
+
+// Obtener datos de la factura
 $sqlf = "
     SELECT 
       f.nombreUsuario,
@@ -50,13 +56,11 @@ if ($resultadoFactura->num_rows === 0) {
 $facturaData = $resultadoFactura->fetch_assoc();
 $productosJson = $facturaData['productos_resumen'];
 $productos = json_decode($productosJson, true);
-
 if (!is_array($productos)) {
     die("Error: el campo productos_resumen no contiene un JSON válido.");
 }
 $stmt->close();
 
-// Asignar variables para usar en el PDF
 $nombreVendedor    = $facturaData['nombreUsuario'];
 $apellidoVendedor  = $facturaData['apellidoUsuario'];
 $nombreCliente     = $facturaData['nombreCliente'];
@@ -72,15 +76,12 @@ foreach ($productos as $p) {
     $totalBruto += $p['cantidad'] * $p['precio'];
 }
 
-// Cálculo de impuestos
 $ivaPorcentaje = 19;
 $base     = $totalBruto / (1 + ($ivaPorcentaje / 100));
 $impuesto = $totalBruto - $base;
-$cambio   = $cambioStored; // si preferimos el cambio guardado
+$cambio   = $cambioStored;
 
-// --------------------------------------------------
-// 3) Obtener métodos de pago asociados (si así lo deseas)
-// --------------------------------------------------
+// Métodos de pago
 $metodos_pago = [];
 $sqlPago = "SELECT metodoPago, monto FROM factura_metodo_pago WHERE Factura_codigo = ?";
 $stmt = $conexion->prepare($sqlPago);
@@ -92,10 +93,8 @@ while ($fila = $resultadoPagos->fetch_assoc()) {
 }
 $stmt->close();
 
-// --------------------------------------------------
-// 4) Crear el PDF
-// --------------------------------------------------
-$pdf = new FPDF('P', 'mm', 'A4');
+// Crear el PDF
+$pdf = new PDF('P', 'mm', 'A4');
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 16);
 
@@ -106,35 +105,31 @@ $pdf->SetFont('Arial', '', 12);
 $pdf->Cell(0, 8, "Fecha: " . date('d/m/Y H:i', strtotime($fechaGeneracion)), 0, 1, 'R');
 $pdf->Ln(5);
 
-// Datos del Cliente (tomados directamente de la factura)
-$pdf->SetFont('Arial', '', 12);
+// Datos del cliente
 $pdf->Cell(0, 8, utf8_decode("Cliente: $nombreCliente $apellidoCliente"), 0, 1);
 $pdf->Cell(0, 8, "Telefono: $telefonoCliente", 0, 1);
 $pdf->Cell(0, 8, "C.C/NIT: $identCliente", 0, 1);
 $pdf->Ln(5);
 
-// Datos del Vendedor (tomados directamente de la factura)
+// Vendedor
 $pdf->Cell(0, 8, utf8_decode("Vendedor: $nombreVendedor $apellidoVendedor"), 0, 1);
 $pdf->Ln(5);
 
+// Tabla productos
 $wCant = 30;
 $wProd = 70;
 $wUnit = 40;
 $wSub  = 40;
 
-// Tabla de Productos
 $pdf->SetFont('Arial','B',10);
 $pdf->Cell($wCant,8,'Cantidad',1,0,'C');
 $pdf->Cell($wProd,8,'Producto',1,0,'C');
 $pdf->Cell($wUnit,8,'Vr. Unitario',1,0,'C');
 $pdf->Cell($wSub, 8,'Subtotal',1,1,'C');
 
-$pdf->SetFont('Arial', '', 10);
 $pdf->SetFont('Arial','',10);
 foreach($productos as $prod){
-    // 1) Limpiamos el nombre para que no incluya el “– $6,000.00”:
     $raw = $prod['nombre'];
-    // Partimos por el guion largo (–) y nos quedamos con la parte izquierda
     $parts = preg_split('/\s*–/', $raw);
     $nameClean = trim($parts[0]);
 
@@ -142,7 +137,6 @@ foreach($productos as $prod){
     $precio = $prod['precio'];
     $subt   = $cant * $precio;
 
-    // Ahora usamos $nameClean en lugar de $prod['nombre']
     $wrapped = wordwrap(utf8_decode($nameClean), 30, "\n", true);
     $lines   = substr_count($wrapped,"\n")+1;
     $hRow    = 6 * $lines;
@@ -158,9 +152,7 @@ foreach($productos as $prod){
     $pdf->SetXY($x, $y+$hRow);
 }
 
-// --------------------------------------------------
-// 5) Totales e impuestos
-// --------------------------------------------------
+// Totales
 $pdf->Ln(5);
 $pdf->SetFont('Arial', '', 12);
 $pdf->Cell(0, 8, "Base imponible: $" . number_format($base, 2), 0, 1, 'R');
@@ -168,8 +160,7 @@ $pdf->Cell(0, 8, "IVA ($ivaPorcentaje%): $" . number_format($impuesto, 2), 0, 1,
 $pdf->Cell(0, 8, "Total a pagar: $" . number_format($totalBruto), 0, 1, 'R');
 $pdf->Cell(0, 8, "Cambio: $" . number_format($cambio), 0, 1, 'R');
 
-// Si deseas listar métodos de pago, descomenta este bloque:
-
+// Métodos de pago
 $pdf->Ln(5);
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 8, "Metodos de Pago:", 0, 1);
@@ -179,11 +170,11 @@ foreach ($metodos_pago as $m) {
     $pdf->Cell(0, 6, '$' . number_format($m['monto'], 2), 0, 1, 'R');
 }
 
-
 $pdf->Ln(10);
 $pdf->SetFont('Arial', 'I', 12);
 $pdf->Cell(0, 8, utf8_decode("¡Gracias por su compra!"), 0, 1, 'C');
 
-// Limpiar el búfer de salida y descargar el PDF
+// Descargar PDF
 ob_end_clean();
 $pdf->Output('D', 'Factura.pdf');
+?>

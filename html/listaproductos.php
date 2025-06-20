@@ -201,6 +201,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <div class="sidebar">
     <div id="menu"></div>
   </div>
+  <div class="container-general">
+    </div>
   <div class="main-content">
     <div class="fondoBlanco">
     <h1>Inventario</h1>
@@ -487,7 +489,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     // Variables de estado para paginación y filtrado
     let filteredData = [...allData];
-    const rowsPerPage = 7;
+    const rowsPerPage = 8;
     let currentPage = 1;
 
     const tableBody = document.querySelector('#productTable tbody');

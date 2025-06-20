@@ -373,10 +373,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 console.log('[DEBUG] precioTipo inicializado a', precioTipo);
             } else if (tipoActual !== precioTipo) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Tipos de precio mixtos',
-                    text: 'No puedes mezclar Precio Taller y Precio Público en la misma venta.'
-                });
+                title: '<span class="titulo-alerta error">Error</span>',
+                html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Confirmacion" class="llave">
+                    </div>
+                    <p>No puedes mezclar Precio Taller y Precio Público en la misma venta.</p>
+                </div>`,
+                background: 'hsl(0deg 0% 100% / 0.76)',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
                 return;
             }
 

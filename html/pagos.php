@@ -223,6 +223,8 @@ if (isset($_GET['codigo'])) {
 // ————————————————————————————————————————————————
 // Si NO es POST, continuo con la parte del HTML (pantalla de pago)
 // ————————————————————————————————————————————————
+
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

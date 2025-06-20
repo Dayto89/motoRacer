@@ -1,23 +1,23 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
-    exit();
+header("Location: ../index.php");
+exit();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-    die("<script>alert('No se pudo conectar a la base de datos');</script>");
+die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 // --- AJAX: validar nombre de ubicación único ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_ubicacion'])) {
-    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
-    $sql = "SELECT COUNT(*) AS cnt FROM ubicacion WHERE nombre = '$nombre'";
-    $res = mysqli_query($conexion, $sql);
-    $row = mysqli_fetch_assoc($res);
-    echo json_encode(['exists' => ($row['cnt'] > 0)]);
+$nombre = mysqli_real_escape_string($conexion, trim($_POST                                                                                                                                  ['nombre']));                                                                                                                                                                                                                                                                                                                                                 
+$sql = "SELECT COUNT(*) AS cnt FROM ubicacion WHERE nombre = '$nombre'";
+$res = mysqli_query($conexion, $sql);
+$row = mysqli_fetch_assoc($res);
+echo json_encode(['exists' => ($row['cnt'] > 0)]);
     exit;
 }
 

@@ -33,37 +33,6 @@ if (isset($_GET['verificar_nit'])) {
 }
 //-----------------------------------------
 
-// Construcción de filtros
-$filtros = [];
-$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
-$criterios = isset($_GET['criterios']) && is_array($_GET['criterios']) ? $_GET['criterios'] : [];
-
-if (!empty($valor) && empty($criterios)) {
-  $criterios = ['nit', 'nombre', 'telefono', 'direccion', 'correo'];
-}
-
-if (!empty($valor) && !empty($criterios)) {
-  foreach ($criterios as $criterio) {
-    $c = mysqli_real_escape_string($conexion, $criterio);
-    switch ($c) {
-      case 'nit':
-        $filtros[] = "p.nit LIKE '%$valor%'";
-        break;
-      case 'nombre':
-        $filtros[] = "p.nombre LIKE '%$valor%'";
-        break;
-      case 'telefono':
-        $filtros[] = "p.telefono LIKE '%$valor%'";
-        break;
-      case 'direccion':
-        $filtros[] = "p.direccion LIKE '%$valor%'";
-        break;
-      case 'correo':
-        $filtros[] = "p.correo LIKE '%$valor%'";
-        break;
-    }
-  }
-}
 
 // justo tras conectar a BD
 $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p";
@@ -927,6 +896,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
       });
 
+      function formatNit(nit) {
+  // toma todos los caracteres menos el último + '-' + el último
+  return nit.slice(0, -1) + '-' + nit.slice(-1);
+}
+
       // Render tabla
       function renderTable() {
         const start = (currentPage - 1) * rowsPerPage;
@@ -936,9 +910,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         pageData.forEach(row => {
           const tr = document.createElement('tr');
           ['nit', 'nombre', 'telefono', 'direccion', 'correo'].forEach(f => {
-            const td = document.createElement('td');
-            td.textContent = row[f];
-            tr.appendChild(td);
+  const td = document.createElement('td');
+  if (f === 'nit') {
+    td.textContent = formatNit(row.nit);
+  } else {
+    td.textContent = row[f];
+  }
+  tr.appendChild(td);
           });
           // Acciones (usa exactamente tu HTML)
           const tdAcc = document.createElement('td');

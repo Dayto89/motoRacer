@@ -214,8 +214,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
         <div class="boton-excel">
           <a href="exportar_notificaciones_excel.php" class="boton-accion marcarL"> <i class="fas fa-file-excel icon-color"></i><label> Exportar a Excel</label></a>
-          </div>
-           <div class="boton-pdf">
+        </div>
+        <div class="boton-pdf">
           <a href="exportar_notificaciones_pdf.php" class="boton-accion marcarN"><i class="fa-solid fa-file-pdf icon-color"></i><label> Exportar a PDF</label></a>
         </div>
         <!-- Botón para eliminar seleccionados -->
@@ -229,7 +229,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <form id="filterForm">
               <!-- Fecha desde/hasta -->
               <div class="form-group">
-                <label for="filterFrom" >Desde:</label>
+                <label for="filterFrom">Desde:</label>
                 <input type="date" id="filterFrom" name="filterFrom" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
               </div>
               <div class="form-group">
@@ -469,11 +469,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           if (state === 'read' && !item.leida) return false;
           if (state === 'unread' && item.leida) return false;
 
-          // Fecha
+          // Filtrado por fechas
+          const itemDate = item.fecha.substring(0, 10); // Extrae solo la parte YYYY-MM-DD
           if (from && !to) {
-            if (item.fecha !== from) return false;
+            // Solo fecha_desde: coincidencia exacta
+            if (itemDate !== from) return false;
           } else if (from && to) {
-            if (item.fecha < from || item.fecha > to) return false;
+            // Ambas fechas: rango
+            if (itemDate < from || itemDate > to) return false;
           }
           return true;
         });
@@ -741,7 +744,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       renderTable();
     });
     //FILTROS
-      document.getElementById('filtros-btn').onclick = function() {
+    document.getElementById('filtros-btn').onclick = function() {
       document.getElementById('filtros-popup').classList.toggle('active');
     };
     // Cierra el popup al hacer clic fuera

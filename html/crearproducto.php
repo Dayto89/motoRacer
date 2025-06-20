@@ -4,7 +4,7 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 // Conexión
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -218,53 +218,48 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <!-- Aquí se cargará el header -->
     <div id="menu"></div>
-
+    <div class="container-general">
+    </div>
     <!-- Sección para Crear Producto -->
     <div id="crearProducto" class="form-section">
         <h1>Crear Producto</h1>
         <!-- Abrir modal para subir el archivo -->
-        <button
-            type="button"
-            class="icon-button"
-            aria-label="Importar archivo"
-            title="Importar archivo"
-            id="btnAbrirModalImport">
+        <button type="submit" class="icon-button" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
             <i class="fas fa-file-excel"></i>
             <label>Importar archivo</label>
         </button>
-     <!-- **Nuevo** modal de importación -->
-<div id="modalImport" class="modal">
-  <div class="modal-content">
-    <span class="close-button" id="btnCerrarModalImport">&times;</span>
 
-    <form
-      method="post"
-      enctype="multipart/form-data"
-      action="/html/importar_excel.php"
-    >
-      <label>Selecciona el archivo Excel:</label>
-      <label for="archivoExcel" class="custom-file-upload">
-        <i class="fas fa-cloud-upload-alt"></i><br>
-        <span>Haz clic para seleccionar un archivo</span>
-      </label>
-      <input
-        id="archivoExcel"
-        type="file"
-        name="archivoExcel"
-        accept=".xlsx,.xls"
-        required
-        data-max-size="2097152"
-        hidden
-      />
-      <div class="modal-buttons">
-        <button type="submit" name="importar">Importar</button>
-        <a href="../componentes/formato_productos.xlsx" download>
-          <i class="fas fa-file-download"></i> Descargar formato
-        </a>
-      </div>
-    </form>
-  </div>
-</div>
+        <!-- Modal para subir el archivo -->
+        <div id="modalConfirm" class="modal hidden">
+            <div class="modal-content">
+                <!-- Botón "X" para cerrar -->
+                <span class="close-button" onclick="closeModal()">&times;</span>
+
+                <!-- Formulario para subir el archivo -->
+                <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
+                    <label>Selecciona el archivo Excel:</label>
+                    <label for="archivoExcel" class="custom-file-upload">
+                        <i class="fas fa-cloud-upload-alt"></i><br>
+                        <span>Haz clic para seleccionar un archivo</span>
+                    </label>
+
+                    <input
+                        id="archivoExcel"
+                        type="file"
+                        name="archivoExcel"
+                        accept=".xlsx, .xls"
+                        required
+                        hidden />
+
+                    <button type="submit" name="importar" onclick="closeModal()">Importar</button>
+                    <!-- Botón de cancelar eliminado -->
+                    <a href="../componentes/formato_productos.xlsx" download class="download-link">
+                        <i class="fas fa-file-download" style="color: #0b59c7;"></i>
+                        Descargar formato de Excel
+                    </a>
+                </form>
+            </div>
+        </div>
     </div>
 
 
@@ -447,7 +442,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="inputNombreUbicacion"
                         name="nombre"
-                        required />
+                        required
+                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
                     <span class="input-error-message">
                         Este nombre ya está registrado.
                     </span>
@@ -532,39 +528,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
     <script>
-        function openModal(modal) {
-            modal.classList.add('show');
-            void modal.offsetWidth; // fuerza reflow para animación
-            modal.classList.add('opening');
-        }
-
-        function closeModal(modal) {
-            modal.classList.remove('opening');
-            modal.classList.add('closing');
-            const contenido = modal.querySelector('.modal-content');
-            contenido.addEventListener('transitionend', function handler() {
-                contenido.removeEventListener('transitionend', handler);
-                modal.classList.remove('show', 'closing');
-            });
-        }
-        document.querySelector('form[action="/html/importar_excel.php"]').addEventListener('submit', e => {
-            const inp = document.getElementById('archivoExcel');
-            const file = inp.files[0];
-            if (!file) return; // el required ya avisa
-            const ext = file.name.split('.').pop().toLowerCase();
-            if (!['xlsx', 'xls'].includes(ext)) {
-                Swal.fire('Error', 'Formato no permitido. Usa .xlsx o .xls', 'error');
-                e.preventDefault();
-                return;
-            }
-            const max = parseInt(inp.dataset.maxSize, 10);
-            if (file.size > max) {
-                Swal.fire('Error', `El archivo no puede pesar más de ${max/1024/1024} MiB`, 'error');
-                e.preventDefault();
-                return;
-            }
-        });
-
         // ——— Modal de subir archivo ———
         function openConfirmModal() {
             const modal = document.getElementById("modalConfirm");
@@ -684,8 +647,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             modal.classList.remove('opening');
             modal.classList.add('closing');
             // Cuando termine la transición, ocultar por completo
-            const contenido = modal.querySelector('.modal-content-nueva, .modal-content');
-            
+            const contenido = modal.querySelector('.modal-content-nueva');
             contenido.addEventListener('transitionend', function handler() {
                 contenido.removeEventListener('transitionend', handler);
                 modal.classList.remove('show', 'closing');
@@ -829,29 +791,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     }
                 });
         });
-
-        // referencias
-        const modalImport = document.getElementById('modalImport');
-        const btnAbrirImport = document.getElementById('btnAbrirModalImport');
-        const btnCerrarImport = document.getElementById('btnCerrarModalImport');
-
-        // abrir
-        btnAbrirImport.addEventListener('click', () => {
-            openModal(modalImport);
-        });
-
-        // cerrar con la “X”
-        btnCerrarImport.addEventListener('click', () => {
-            closeModal(modalImport);
-        });
-
-        // cerrar al clicar fuera de .modal-content
-        modalImport.addEventListener('click', e => {
-            if (e.target === modalImport) {
-                closeModal(modalImport);
-            }
-        });
-
         // Helper genérico
         async function checkExists(accion, nombre) {
             const body = new URLSearchParams({
