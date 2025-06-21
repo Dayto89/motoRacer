@@ -255,17 +255,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
-            padding: 1.5rem;
+            padding: 5.5rem 16.5rem 1.5rem 16.5rem;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        .charts-grid {
+         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            padding: 1.5rem;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -274,28 +274,62 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            padding: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            /* Limita el ancho máximo */
+            margin: 0 auto;
+            aspect-ratio: 4 / 3;
+            /* Proporción más cuadrada */
+        }
+
+        /* Asegurar que el canvas ocupe todo el contenedor */
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         /* Estilo de cada tarjeta de métrica */
         .metric-card {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             padding: 1.5rem;
             text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             position: relative;
             overflow: hidden;
-        }
-
-        .metric-card {
             perspective: 1000px;
             transform-style: preserve-3d;
+            border: 4px solid #ffffff;
+            /* Borde para simular grosor */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.3);
+            /* Sombra externa e interna */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .metric-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0.4),
+                    rgba(255, 255, 255, 0));
+            transform: rotate(30deg);
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .metric-card:hover::before {
+            top: -70%;
+            left: -70%;
         }
 
         .metric-card h4 {
@@ -305,6 +339,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             text-transform: uppercase;
             letter-spacing: 1px;
             font-family: 'Merriweather', serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .metric-value {
@@ -322,22 +357,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
 
 
-        /* Contenedores flotantes (notificaciones / stock) */
-        .notificaciones,
-        .cantidad {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 320px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 1rem;
-            max-height: 70vh;
-            overflow-y: auto;
-            display: none;
-            z-index: 1000;
-        }
 
         /* Ajustes responsivos */
         @media (max-width: 600px) {
@@ -604,118 +623,156 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
             cards.forEach(card => {
                 card.addEventListener('mousemove', (e) => {
-                    console.log('Mouse movido sobre la tarjeta');
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    const rotateX = (y - centerY) / 10;
-                    const rotateY = (centerX - x) / 10;
-                    // Combinamos rotación 3D con el efecto hover de CSS
-                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+                    const rotateX = (y - centerY) / 5; // Aumentamos la sensibilidad (de /10 a /5)
+                    const rotateY = (centerX - x) / 5; // Aumentamos la sensibilidad
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) translateZ(20px)`; // Añadimos translateZ para profundidad
                 });
                 card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                    card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px) translateZ(0px)';
                 });
             });
 
             // Gráfico de barras
-            const ctx = document.getElementById('metricsChart').getContext('2d');
-            const metricsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
-                    datasets: [{
-                        label: 'Métricas',
-                        data: [
-                            <?= $metrics['total_products'] ?>,
-                            <?= $metrics['low_stock'] ?>,
-                            <?= $metrics['total_providers'] ?>,
-                            <?= $metrics['total_clients'] ?>,
-                            <?= $metrics['invoices_month'] ?>,
-                            <?= $metrics['unread_notif'] ?>
-                        ],
-                        backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
-                        borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
-                        borderWidth: 1
-                    }]
+        // Gráfico de barras
+const ctx = document.getElementById('metricsChart').getContext('2d');
+const metricsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
+        datasets: [{
+            label: 'Métricas',
+            data: [
+                <?= $metrics['total_products'] ?>,
+                <?= $metrics['low_stock'] ?>,
+                <?= $metrics['total_providers'] ?>,
+                <?= $metrics['total_clients'] ?>,
+                <?= $metrics['invoices_month'] ?>,
+                <?= $metrics['unread_notif'] ?>
+            ],
+            backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+            borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false, // Permite ajustar la proporción según el contenedor
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Cantidad',
+                    font: { size: 16 }
                 },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
+                ticks: { font: { size: 14 } }
+            },
+            x: {
+                ticks: {
+                    font: { size: 14 },
+                    autoSkip: false, // Muestra todas las etiquetas
+                    maxRotation: 45, // Rota las etiquetas para mejor legibilidad
+                    minRotation: 45
                 }
-            });
+            }
+        },
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'Resumen de Métricas',
+                font: { size: 18 }
+            }
+        }
+    }
+});
 
-            // Gráfico de pastel
-            const ctxPie = document.getElementById('stockPieChart').getContext('2d');
-            const stockPieChart = new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels: ['Stock Bajo', 'Stock Normal'],
-                    datasets: [{
-                        data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
-                        backgroundColor: ['#e15759', '#59a14f'],
-                        borderColor: ['#e15759', '#59a14f'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Proporción de Stock'
-                        }
-                    }
-                }
-            });
+          // Gráfico de pastel
+const ctxPie = document.getElementById('stockPieChart').getContext('2d');
+const stockPieChart = new Chart(ctxPie, {
+    type: 'pie',
+    data: {
+        labels: ['Stock Bajo', 'Stock Normal'],
+        datasets: [{
+            data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
+            backgroundColor: ['#e15759', '#59a14f'],
+            borderColor: ['#e15759', '#59a14f'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: { font: { size: 14 } }
+            },
+            title: {
+                display: true,
+                text: 'Proporción de Stock',
+                font: { size: 18 }
+            }
+        }
+    }
+});
 
             <?php if (isset($facturas_diarias)): ?>
-                // Gráfico de líneas
-                const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
-                const invoicesLineChart = new Chart(ctxLine, {
-                    type: 'line',
-                    data: {
-                        labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
-                        datasets: [{
-                            label: 'Facturas Diarias',
-                            data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
-                            borderColor: '#4e79a7',
-                            backgroundColor: 'rgba(78, 121, 167, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Facturas Diarias del Mes'
-                            }
-                        }
-                    }
-                });
+              // Gráfico de líneas
+const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
+const invoicesLineChart = new Chart(ctxLine, {
+    type: 'line',
+    data: {
+        labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
+        datasets: [{
+            label: 'Facturas Diarias',
+            data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
+            borderColor: '#4e79a7',
+            backgroundColor: 'rgba(78, 121, 167, 0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Facturas',
+                    font: { size: 16 }
+                },
+                ticks: { font: { size: 14 } }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Día del Mes',
+                    font: { size: 16 }
+                },
+                ticks: { font: { size: 14 } }
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: { font: { size: 14 } }
+            },
+            title: {
+                display: true,
+                text: 'Facturas Diarias del Mes',
+                font: { size: 18 }
+            }
+        }
+    }
+});
             <?php endif; ?>
         });
     </script>

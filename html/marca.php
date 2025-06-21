@@ -144,74 +144,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <!--<script src="../js/marcas.js"></script>-->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
-
-        .boton-accion {
-            padding: 5px 10px;
-            margin: 2px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-
-        .boton-accion:hover {
-            background-color: #5a6268;
-        }
-
-        .pagination {
-            display: none;
-        }
-
-        .pagination-dinamica {
-            display: flex;
-            justify-content: center;
-            margin-top: 23px;
-            gap: 12px;
-            font-family: arial;
-            font-size: 11px;
-        }
-
-        .pagination-dinamica button {
-            padding: 8px 12px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            text-decoration: none;
-            color: #333;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-            cursor: pointer;
-        }
-
-        .pagination-dinamica button:hover {
-            background-color: rgb(158, 146, 209);
-        }
-
-        .pagination-dinamica button.active {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-            pointer-events: none;
-            border-color: #007bff;
-            text-shadow: none;
-        }
-
-        .marcarN {
-            background-color: rgb(128, 0, 0);
-        }
-
-        .marcarN:hover {
-            background-color: rgb(255, 0, 0);
-        }
-
-        .marcarL {
-            background-color: rgb(11, 128, 0);
-        }
-
-        .marcarL:hover {
-            background-color: rgb(15, 184, 0);
-        }
     </style>
 </head>
 
@@ -221,6 +153,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
     </script>
     <div id="menu"></div>
+     <div class="container-general">
+    </div>
     <div id="categorias" class="form-section">
         <h1>Marca</h1>
         <div class="container">
@@ -340,7 +274,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             const paginationEl = document.getElementById('jsPagination');
 
             let filtered = [...allCategories];
-            const rowsPerPage = 7;
+            const rowsPerPage = 10;
             let currentPage = 1;
 
             function renderTable() {

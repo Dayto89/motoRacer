@@ -23,14 +23,14 @@ body::before {
 /* Estado inicial: margin-left en px */
 .container {
   /* en lugar de margin:auto, asigna el margin-left explícito */
-margin: 2px auto 0 107px;
-    width: 1758px;
-    transition: margin-left 0.2s ease, background-color 0.3s ease;
+  margin: 2px auto 0 107px;
+  width: 1758px;
+  transition: margin-left 0.2s ease, background-color 0.3s ease;
 }
 
 /* Al hacer hover en .sidebar, movemos el container */
 .sidebar:hover ~ .container {
-  margin-left: 270px;      /* de 100px → 270px animará correctamente */
+  margin-left: 270px; /* de 100px → 270px animará correctamente */
   transition: margin-left 0.3s ease;
 }
 
@@ -51,7 +51,6 @@ margin: 2px auto 0 107px;
 
 /* Mantener la distancia de los lados */
 .main-content {
-
   width: calc(100% - 150px);
   margin: auto;
   margin-top: 72px;
@@ -69,11 +68,11 @@ margin: 2px auto 0 107px;
   text-align: start;
   margin-left: 10px;
   font-size: 41px;
-  margin-top: 12%;
+  margin-top: 6%;
   font-family: metal mania;
   text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px,
     rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
-    color: white ;
+  color: white;
 }
 
 .form-grid {
@@ -102,28 +101,23 @@ margin: 2px auto 0 107px;
   font-family: metal mania;
   text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px,
     rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
-    color: white;
-    margin-top: 10%;
+  color: white;
+  margin-top: 6%;
 }
-
 .user-info label {
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    white-space: nowrap;
-    margin-top: 13%;
-  /* <- ESTO ayuda a igualar el grosor */
+  font-size: 22px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-top: 1%;
 }
 .payment-methods h3 {
-     font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    white-space: nowrap;
-    margin-top: 23%;
-  /* <- ESTO ayuda a igualar el grosor */
+  font-size: 22px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-top: 5%;
 }
-
-
 .payment-box {
   width: 500px;
 }
@@ -163,8 +157,7 @@ input {
 }
 
 #tipo_doc {
-  /* margin-top: 55px; */
-  /* margin-left: 1px; */
+  margin-top: 7%;
   height: 44px;
   width: 100%;
   font-size: 15px;
@@ -180,10 +173,10 @@ input {
 }
 
 .efectivo-row input {
-    flex: 1;
-    min-width: 153px;
-    padding: 10px;
-    border-radius: 23px;
+  flex: 1;
+  min-width: 153px;
+  padding: 10px;
+  border-radius: 23px;
 }
 
 .content {
@@ -197,7 +190,6 @@ input[name="valor_tarjeta"] {
   width: 140px;
 }
 
-
 .summary-section h3 {
   text-align: center;
   font-size: 41px;
@@ -205,13 +197,14 @@ input[name="valor_tarjeta"] {
   text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px,
     rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
   color: white;
-  margin-top: 10%;
+  margin-top: 6%;
 }
 .summary-section h2 {
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    white-space: nowrap;
+  font-size: 22px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-bottom: 2%;
 }
 
 .summary-section ul {
@@ -225,7 +218,7 @@ input[name="valor_tarjeta"] {
 }
 .summary-container ul {
   max-height: 200px; /* Altura máxima antes de que aparezca el scroll */
-  overflow-y: auto;  /* Scroll vertical */
+  overflow-y: auto; /* Scroll vertical */
   padding-right: 10px; /* Espacio para evitar que el scroll tape el texto */
   margin-bottom: 10px;
 }
@@ -244,15 +237,6 @@ input[name="valor_tarjeta"] {
   background-color: rgb(20, 88, 143);
 }
 
-
-p {
-  font-size: 15px;
-  color: black;
-  margin: 5px 0;
-  margin-top: 15px;
-  font-family: arial;
-}
-
 .total {
   margin-left: 90px;
 }
@@ -265,42 +249,42 @@ p {
 }
 
 .btn-pagar:hover {
-    background-color: #1565c0;
-  }
+  background-color: #1565c0;
+}
 
 .btn-editar:hover {
-  background-color:rgb(167, 29, 42);
-
+  background-color: rgb(167, 29, 42);
 
   /* Azul más oscuro */
 }
 button {
-    flex-shrink: 0;
-    background-color: #0068d70;
-    cursor: pointer;
-    width: 79px;
-    height: 41px;
-    color: white;
-    border-radius: 23px;
-    font-size: 14px;
+  flex-shrink: 0;
+  background-color: #0068d7;
+  cursor: pointer;
+  width: 79px;
+  height: 41px;
+  color: white;
+  border-radius: 23px;
+  font-size: 14px;
 }
-.btn-editar{
-   flex-shrink: 0;
-    background-color: #5496c3;
-    cursor: pointer;
-    width: 22vh;
-    height: 41px;
-    color: white;
-    border-radius: 15px;
-    font-size: 14px;
+.btn-editar {
+  flex-shrink: 0;
+  background-color: #05263b;
+  cursor: pointer;
+  width: 45%;
+  height: 41px;
+  color: white;
+  border-radius: 15px;
+  font-size: 15px;
+  font-weight: bold;
 }
 .plus-icon h3 {
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    white-space: nowrap;
-    margin-left: -5%;
-    margin-top: 9%;
+  font-size: 22px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  white-space: nowrap;
+  margin-left: -5%;
+  margin-top: 9%;
 }
 
 .plus-icon {
@@ -311,11 +295,11 @@ button {
 }
 
 .plus-icon img {
-width: 30px;
-    height: 30px;
-    margin-top: 40px;
-    margin-left: 18px;
-    cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin-top: 40px;
+  margin-left: 18px;
+  cursor: pointer;
 }
 
 .tarjeta-content label,
@@ -326,10 +310,10 @@ width: 30px;
 }
 
 .notes label {
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    white-space: nowrap;
+  font-size: 22px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 .notes {
@@ -344,11 +328,11 @@ width: 30px;
   text-shadow: -1px 1px 0 rgb(85 170 239);
 }
 input#observaciones {
-    margin-top: 11px;
-    height: 94px;
-    width: 100%;
-    padding: 10px;
-    border-radius: 23px;
+  margin-top: 11px;
+  height: 94px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 23px;
 }
 
 .contenedor-preciom p {
@@ -413,29 +397,29 @@ input#observaciones {
   font-family: arial;
 }
 
-#contenedor-tarjetas, #contenedor-otros {
+#contenedor-tarjetas,
+#contenedor-otros {
   max-height: 100px;
   overflow-y: auto;
 }
 
-.tarjeta-content{
-  max-height: 100px ;
+.tarjeta-content {
+  max-height: 100px;
   overflow-y: auto;
 }
 
-
 button {
-    flex-shrink: 0;
-    background-color: #0068d7;
-    cursor: pointer;
-    width: 79px;
-    height: 41px;
-    color: white;
-    border-radius: 15px;
-    margin-top: 20px;
-    font-size: 14px;
+  flex-shrink: 0;
+  background-color: #0068d7;
+  cursor: pointer;
+  width: 79px;
+  height: 41px;
+  color: white;
+  border-radius: 15px;
+  margin-top: 20px;
+  font-size: 14px;
 }
-button:hover{
+button:hover {
   background-color: #1565c0;
 }
 
@@ -458,15 +442,14 @@ button:hover{
   background-color: #d30404;
 }
 .barra {
-max-height: 130px;
-    overflow-y: auto;
-    display: flex
-;
-    flex-direction: column;
-    gap: 10px;
-    padding-right: 6px;
-    box-sizing: border-box;
-    margin-left: -8%;
+  max-height: 130px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 6px;
+  box-sizing: border-box;
+  margin-left: -8%;
 }
 
 .tarjeta-content {
@@ -500,220 +483,216 @@ max-height: 130px;
   font-size: 14px;
   box-sizing: border-box;
 }
-    .payment-box {
-      width: 500px;
-      background-color: rgba(255, 255, 255, 0.5);
-      border-radius: 10px;
-      padding: 20px;
-    }
-
-    .plus-icon {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .plus-icon h3 {
-        font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    white-space: nowrap;
-    }
-
-    .plus-icon button {
-      padding: 6px 12px;
-      background-color: #1167cc;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .barra {
-      max-height: 130px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding-right: 6px;
-      box-sizing: border-box;
-    }
-
-    .barra::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .barra::-webkit-scrollbar-thumb {
-      background-color: #2f79b6;
-      border-radius: 4px;
-    }
-
-    .tarjeta-content {
-        display: grid;
-    gap: 8px;
-    align-items: center;
-    width: 95%;
-    padding: 10px;
-    box-sizing: border-box;
-    }
-
-    .tarjeta-content select,
-    .tarjeta-content input {
-        width: 86%;
-    padding: 8px 12px;
-    border: 1px solid #121111;
-    border-radius: 23px;
-    font-size: 14px;
-    box-sizing: border-box;
-    }
-
-    .eliminar-btn {
-      background-color: red;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .tabla-productos {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #ccc;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+.payment-box {
+  width: 500px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  padding: 20px;
 }
-.tabla-productos th{
-   background-color: rgb(32 69 113);
+
+.plus-icon {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.plus-icon button {
+  padding: 6px 12px;
+  background-color: #1167cc;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.barra {
+  max-height: 130px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.barra::-webkit-scrollbar {
+  width: 6px;
+}
+
+.barra::-webkit-scrollbar-thumb {
+  background-color: #2f79b6;
+  border-radius: 4px;
+}
+
+.tarjeta-content {
+  display: grid;
+  gap: 8px;
+  align-items: center;
+  width: 95%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.tarjeta-content select,
+.tarjeta-content input {
+  width: 86%;
+  padding: 8px 12px;
+  border: 1px solid #121111;
+  border-radius: 23px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.eliminar-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ccc;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.tabla-productos th {
+  background-color: rgb(32 69 113);
   font-weight: bold;
   text-align: center;
-
 }
 
 .tabla-productos th,
 .tabla-productos td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: left;
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
 }
-.tabla-productos td{
+.tabla-productos td {
   background-color: rgb(63 61 61);
-  text-align: center;
-
-
+  text-align: center;
 }
 
 .summary-container {
-    background: #ffffff00;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 2%;
+  background: #ffffff00;
+  margin-top: 2%;
 }
-
 .contenedor-precio p {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #000000;
+  font-size: 22px;
+  font-weight: bold;
+  color: #000000;
+  padding: 0;
 }
-
-#saldoPendiente {
-font-weight: bold;
-    color: #0b0f6b;
-    margin-bottom: 10px;
-    margin-left: -4%;
-    font-size: 20px;
+p#saldoPendiente {
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 10px;
+  font-size: 22px;
+  padding: 0;
 }
-
 .btn-editar,
 .btn-pagar {
-    padding: 10px 20px;
-    margin-right: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  padding: 10px 20px;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .btn-editar {
-    background-color: rgb(223, 47, 47);
+  background-color: rgb(223, 47, 47);
 }
-
 
 .btn-pagar {
-    background-color:#0068d7;
+  background-color: #0068d7;
 }
 select[name="tipo_tarjeta"] {
-    width: 133%;
-    padding: 8px 12px;
-    border: 1px solid #121111;
-    border-radius: 23px;
-    font-size: 14px;
-    box-sizing: border-box;
+  width: 133%;
+  padding: 8px 12px;
+  border: 1px solid #121111;
+  border-radius: 23px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 input[name="voucher"],
 input[name="valor_tarjeta"] {
-    width: 86%;
-    padding: 8px 12px;
-    border: 1px solid #121111;
-    border-radius: 23px;
-    font-size: 14px;
-    box-sizing: border-box;
-    margin-left: 41%;
+  width: 86%;
+  padding: 8px 12px;
+  border: 1px solid #121111;
+  border-radius: 23px;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-left: 41%;
 }
-input[name="valor_tarjeta"]{
- margin-left: 29%;
+input[name="valor_tarjeta"] {
+  margin-left: 29%;
 }
 .tabla-scroll {
-    max-height: 282px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    margin-left: -7%;
-    margin-right: -7%;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border: 1px solid #fff7f7;
 }
 
-.tabla-productos {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tabla-productos th,
-.tabla-productos td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
 .content {
   align-items: stretch;
 }
+/* Scrollbar*/
+#contenedor-tarjetas,
+#contenedor-otros,
+.tabla-scroll {
+  scrollbar-width: thin; /* Firefox: angosto */
+  scrollbar-color: #ffffffd0 transparent; /* blanco y sin fondo */
+  padding: 0 !important;
+  border: none !important;
+}
 
+#contenedor-tarjetas::-webkit-scrollbar,
+#contenedor-otros::-webkit-scrollbar,
+.tabla-scroll::-webkit-scrollbar {
+  width: 1px; /* aún más angosto */
+  background: transparent;
+}
+
+#contenedor-tarjetas::-webkit-scrollbar-thumb,
+#contenedor-otros::-webkit-scrollbar-thumb,
+.tabla-scroll::-webkit-scrollbar-thumb {
+  background: #ffffffd0;
+  border-radius: 0; /* sin bordes redondeados */
+  border: none;
+}
+
+#contenedor-tarjetas::-webkit-scrollbar-track,
+#contenedor-otros::-webkit-scrollbar-track,
+.tabla-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border: none;
+}
 
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
-
 }
 
 /* Vertical */
 @media screen and (max-width: 870px) and (orientation: portrait) {
-
 }
-
 
 /* TABLETS */
 /* Horizontal */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
-
 }
 
 /* Vertical */
 @media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
-
 }
 .modo-alto-contraste .container {
   background-color: #faebd700;
   border: none;
-
 }
 .modo-claro .container {
   background-color: rgba(0, 0, 0, 0) !important;

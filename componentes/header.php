@@ -154,7 +154,7 @@ $sectionColors = [
       align-items: center;
     }
 
-    .breadcrumb {
+    .ubica {
       position: absolute;
       top: 16px;
       left: 20%;
@@ -172,7 +172,7 @@ $sectionColors = [
 
 <body>
   <?php if ($activeSection || $activeSubSection): ?>
-    <div class="breadcrumb">
+    <div class="ubica">
       <?= ($activeSection ? "{$activeSection} / " : '') . $activeSubSection ?>
     </div>
   <?php endif; ?>

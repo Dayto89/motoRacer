@@ -92,6 +92,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
     <script defer src="/js/index.js"></script>
+    <style>
+        /* Configuración de impresión para impresora de tickets */
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+        @media print {
+            body * { visibility: hidden; }
+            .factura, .factura * { visibility: visible; }
+            .acciones { display: none; }
+            .factura {
+                position: absolute;
+                top: 0;
+                left: 30%;
+                width: 120mm;      /* Ancho de ticket estándar */
+                zoom: 0.7;        /* Escala para ajustar contenido */
+                /* sin transform, usa zoom para impresión */
+            }
+        }
+        /* Estilos básicos para botones */
+        .btn-accion {
+            margin: 5px;
+            padding: 8px 12px;
+            border: none;
+            background-color: #536DFE;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .btn-accion:hover { opacity: 0.9; }
+    </style>
 </head>
 
 <body>
@@ -99,6 +131,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="sidebar">
         <div id="menu"></div>
     </div>
+            <!-- Botón para imprimir -->
+        <button id="btnImprimir" class="btn-accion">Imprimir Ticket</button>
 
     <form class="form-descarga" action="factura_pdf.php" method="post" target="_blank">
         <!-- Mandamos el código de factura para generar PDF -->
@@ -253,38 +287,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        document.getElementById('btnDescargarImagen').addEventListener('click', () => {
-            // 1) Seleccionamos el elemento completo de la factura
-            const nodoFactura = document.querySelector('.factura');
-            if (!nodoFactura) {
-                alert('No se encontró el elemento .factura');
-                return;
-            }
-
-            // 2) Obtenemos sus dimensiones “reales” (incluso si está fuera de pantalla):
-            const width = nodoFactura.scrollWidth;
-            const height = nodoFactura.scrollHeight;
-
-            // 3) Opciones para html2canvas: explicitamos width/height
-            html2canvas(nodoFactura, {
-                width: width,
-                height: height,
-                scale: 2, // aumenta resolución
-                backgroundColor: '#ffffff', // fondo blanco
-            }).then(canvas => {
-                // 4) Convertimos el canvas a Blob y forzamos la descarga
-                canvas.toBlob(blob => {
-                    const link = document.createElement('a');
-                    link.download = `factura_${Date.now()}.png`;
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                }, 'image/png');
-            }).catch(err => {
-                console.error('Error generando la imagen:', err);
-                alert('Ocurrió un problema al generar la imagen.');
-            });
+        // Agregar funcionalidad al botón Imprimir
+        document.getElementById('btnImprimir').addEventListener('click', () => {
+            window.print();
         });
+
     </script>
 
 </body>

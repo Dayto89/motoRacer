@@ -46,7 +46,7 @@ body {
 
 th,
 td {
-   border: 1px solid #fff7f7;
+  border: 1px solid #fff7f7;
   padding: 10px;
   text-align: left;
 }
@@ -108,14 +108,13 @@ th {
 
 .backup-type {
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
+  border-radius: 5px;
+  font-size: 15px;
   font-weight: 500;
 }
 
 .type-db {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  color: #ffffff;
 }
 
 .type-files {

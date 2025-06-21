@@ -73,33 +73,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     <style>
-        :root {
-            --icon-bg: #FFFFFF;
-        }
 
-        body.modo-alto-contraste {
-            --icon-bg: #000000;
-        }
-
-        body.modo-claro {
-            --icon-bg: #FFFFFF;
-        }
-
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-            /* opcional: elimina el espacio donde estaban los puntos */
-        }
-
-        #categoriaScroll a.brand.active {
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-        }
-
-        #categoriaScroll a.brand:hover {
-            background-color: #e0e0e0;
-        }
     </style>
 </head>
 
@@ -115,12 +89,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     <div class="main">
         <h1 class="titulo">Ventas</h1>
-            <div class="search-bar">
-                <i class="bx bx-search-alt-2 icon"></i>
-                <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
-            </div>
+        <div class="search-bar">
+            <i class="bx bx-search-alt-2 icon"></i>
+            <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
+        </div>
 
-        <div class="barraModulos" style="position: relative; max-width: 1360px; border-radius: 5px; height: 7%; display: flex; align-items: center; border-color:aqua 2px solid;">
+        <div class="barraModulos" style="position: relative;
+    max-width: 100%;
+    border-radius: 5px;
+    height: 7%;
+    display: flex
+;
+    align-items: center;
+    margin-left: 1%;
+    width: 98%;
+">
             <!-- Botón izquierda -->
             <button id="btnLeft" onclick="scrollCategorias(-200)">
                 <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda" id="icono-flecha-izquierda">
@@ -173,12 +156,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <div class="sidebar-right">
-        <h3>Resumen</h3>
-        <div class="resumen-scroll">
-            <ul id="listaResumen" class="listaResumen"></ul>
+        <div class="side-container">
+            <h3>Resumen</h3>
+            <div class="resumen-scroll">
+                <ul id="listaResumen" class="listaResumen"></ul>
+            </div>
+            <div class="total"><span>Total:</span> <span id="total-price">$0.00</span></div>
+            <div class="resumen-botones"><button class="btn-cobrar" id="btnCobrar" onclick="cobrar()">Cobrar</button></div>
         </div>
-        <div class="total"><span>Total:</span> <span id="total-price">$0.00</span></div>
-        <div class="resumen-botones"><button class="btn-cobrar" id="btnCobrar" onclick="cobrar()">Cobrar</button></div>
     </div>
 
     <script>
@@ -318,11 +303,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     confirmButtonText: 'Aceptar',
                     confirmButtonColor: '#007bff',
                     customClass: {
-                      popup: 'swal2-border-radius',
-                      confirmButton: 'btn-aceptar',
-                      container: 'fondo-oscuro'
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
                     }
-                  });
+                });
                 return;
             }
             let productos = [];
@@ -373,23 +358,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 console.log('[DEBUG] precioTipo inicializado a', precioTipo);
             } else if (tipoActual !== precioTipo) {
                 Swal.fire({
-                title: '<span class="titulo-alerta error">Error</span>',
-                html: `
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `
                 <div class="custom-alert">
                     <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Confirmacion" class="llave">
                     </div>
                     <p>No puedes mezclar Precio Taller y Precio Público en la misma venta.</p>
                 </div>`,
-                background: 'hsl(0deg 0% 100% / 0.76)',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
+                    background: 'hsl(0deg 0% 100% / 0.76)',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
                 return;
             }
 

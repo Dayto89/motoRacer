@@ -227,7 +227,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <i class="fas fa-file-excel"></i>
             <label>Importar archivo</label>
         </button>
-
         <!-- Modal para subir el archivo -->
         <div id="modalConfirm" class="modal hidden">
             <div class="modal-content">

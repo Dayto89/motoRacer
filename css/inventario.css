@@ -304,17 +304,14 @@ form#editForm {
 }
 
 #editForm label {
-  color: white;
+  color: #000000;
   font-size: 19px;
   font-family: Arial, Helvetica, sans-serif;
-  text-shadow: 2px 0 #1c51a0;
   white-space: nowrap;
   text-align: left;
-  /* Alinea el texto a la izquierda */
   padding-right: 10px;
-  /* Añade espacio a la derecha */
   margin-bottom: 5px;
-  /* Ajusta el margen inferior */
+  font-weight: bold;
 }
 
 form input[type="text"],
@@ -326,8 +323,6 @@ form input[type="text"],
   /* Ajusta el ancho al tamaño del contenedor */
   color: #000;
   padding: 0 17px;
-  /* Añade espacio a la izquierda del input */
-  border: none;
   font-size: 14px;
   margin-bottom: 5px;
   /* Ajusta el margen inferior */
@@ -363,10 +358,6 @@ form input[type="text"],
 
 .campo label {
   margin-bottom: 5px;
-  color: white;
-  font-size: 19px;
-  font-family: Arial, Helvetica, sans-serif;
-  text-shadow: 2px 0 #1c51a0;
   white-space: nowrap;
 }
 
@@ -619,8 +610,8 @@ form input[type="text"],
   margin-top: 2%;
 }
 #editCodigo1Visible {
-  border: #ffffff solid 1px;
-  background-color: #ffffff42;
+  border: #000000 solid 1px;
+  background-color: #6e788769;
 }
 /* Aplica a todo el sitio */
 ::-webkit-scrollbar {
@@ -686,10 +677,10 @@ table th {
 
 /* Input para búsqueda en tiempo real */
 #searchRealtime {
-    font-size: 16px;
-    padding: 8px 23px;
-    border-radius: 9px;
-    width: 36%;
+  font-size: 16px;
+  padding: 8px 23px;
+  border-radius: 9px;
+  width: 36%;
 }
 
 /* Botón eliminar múltiple */
@@ -855,21 +846,21 @@ table th {
   background: #5a6268;
 }
 #filtros-btn {
-    display: flex;
-    align-items: center;
-    padding: 9px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 10px;
-    font-size: 16px;
-    height: 3%;
-    font-weight: bold;
+  display: flex;
+  align-items: center;
+  padding: 9px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 16px;
+  height: 3%;
+  font-weight: bold;
 }
 
 #filtros-btn:hover {
-  background-color: #0153aa
+  background-color: #0153aa;
 }
 /* MÓVILES */
 /* Horizontal */
@@ -936,11 +927,6 @@ table th {
   .table-wrapper td {
     white-space: nowrap;
     /* Evita que el texto salte líneas */
-  }
-
-  .main-content {
-    margin-left: 15%;
-    padding: 50px 0px 0px 15px;
   }
 
   .sidebar:hover ~ .main-content {

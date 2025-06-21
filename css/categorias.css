@@ -44,20 +44,20 @@ body::before {
 
 /* Botón para agregar categoría */
 .btn-nueva-categoria {
-    background-color: #1167cc;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 9px 21px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-bottom: 16px;
+  background-color: #1167cc;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 9px 21px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 16px;
 }
 
 .btn-nueva-categoria:hover {
-  background-color: #0153aa
+  background-color: #0153aa;
 }
 
 h3 {
@@ -81,13 +81,14 @@ h3 {
 /* Tabla de categorías */
 .category-table {
   table-layout: fixed;
-  width: 100%;
+  width: 110%;
   border-collapse: collapse;
   color: white;
   font-family: Arial;
-  box-shadow: 0 0 15px white;
+  box-shadow: 0 0 15px #222a37;
+  border-radius: 10px;
+  margin-top: 3%;
 }
-
 th:nth-child(2),
 td:nth-child(2) {
   width: 32%;
@@ -105,20 +106,20 @@ td:nth-child(2) {
 }
 th,
 td {
-  border: 1px solid #666;
+  border: 1px solid #fff7f7;
   padding: 10px;
   text-align: left;
 }
 
 th {
-  background-color: #444;
+  background-color: rgb(32 69 113);
   font-weight: bold;
   text-align: center;
 }
 
 #tabla-categorias td {
-  background-color: #222;
-  text-align: start;
+  background-color: rgb(63 61 61);
+  text-align: center;
   padding: 12px 0px 5px 22px;
 }
 #tabla-categorias td .btn-list,
@@ -341,20 +342,21 @@ button[type="submit"]:hover {
 
 /* Estilo para los inputs del formulario */
 input[type="text"] {
-font-size: 16px;
-    padding: 8px 23px;
-    border-radius: 9px;
-    width: 50%;
+  font-size: 16px;
+  padding: 8px 23px;
+  border-radius: 9px;
+  width: 50%;
 }
 input#nombre {
-    width: 92%;
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 23px;
-    box-sizing: border-box;
-    margin-top: 8%;
-    height: 3.8%;
+  width: 92%;
+  padding: 8px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-top: 5%;
+  height: 3.8%;
+  margin-bottom: 5%;
 }
 .bx-tada {
   color: #fdfcfc;
@@ -367,44 +369,45 @@ input#nombre {
   border-collapse: collapse;
   font-family: Arial, sans-serif;
   table-layout: fixed;
+  border-radius: 10px;
 }
 
 .productos-table th,
 .productos-table td {
   padding: 12px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #fff7f7;
 }
 
 .productos-table th {
-  background-color: #98bde9;
-  color: #0b111a;
+  background-color: rgb(32 69 113);
+  color: #ffffff;
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .productos-table tr:nth-child(even) {
-  background-color: #f9f9f9b7;
-  color: black;
+  background-color: rgb(63 61 61);
+  color: rgb(255, 255, 255);
 }
 
 .productos-table tr:nth-child(odd) {
-  background-color: rgb(33 32 32 / 59%);
+  background-color: rgb(63 61 61);
   color: white;
 }
 
 #lista-productos .productos-table tr:nth-child(even) {
-  background-color: #f9f9f9b7 !important;
-  color: black;
+  background-color: rgb(63 61 61);
+  color: rgb(255, 255, 255);
 }
 
 #lista-productos .productos-table tr:nth-child(odd) {
-  background-color: rgb(33 32 32 / 59%) !important;
+  background-color: rgb(63 61 61);
   color: white;
 }
 .productos-table th:nth-child(1),
 .productos-table td:nth-child(1) {
-  width: 30% !important;
+  width: 10% !important;
   max-width: 50% !important;
   min-width: 60px !important;
   padding: 5px !important;
@@ -503,6 +506,66 @@ input.invalid + .input-error-message {
   background-color: #ddd; /* color al pasar el mouse */
 }
 
+.boton-accion {
+  padding: 6px 8px;
+  margin: 2px;
+  background-color: #1167cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.boton-accion:hover {
+  background-color: #0153aa;
+}
+
+.pagination {
+  display: none;
+}
+
+.pagination-dinamica {
+  display: flex;
+  justify-content: center;
+  margin-top: 23px;
+  gap: 12px;
+  font-family: arial;
+  font-size: 11px;
+}
+
+.pagination-dinamica button {
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  text-decoration: none;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.pagination-dinamica button:hover {
+  background-color: rgb(158, 146, 209);
+}
+
+.pagination-dinamica button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  pointer-events: none;
+  border-color: #007bff;
+  text-shadow: none;
+}
+
+.marcarN {
+  background-color: rgb(128, 0, 0);
+}
+
+.marcarN:hover {
+  background-color: rgb(255, 0, 0);
+}
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
@@ -564,7 +627,18 @@ input.invalid + .input-error-message {
     margin-top: 10px;
   }
 }
-
+.container-general {
+  position: fixed;
+  top: 5%;
+  left: 19%;
+  width: 67%;
+  height: 89%;
+  background: rgb(211 210 210 / 84%);
+  z-index: -1000;
+  pointer-events: none;
+  box-shadow: 0 4px 20px #0b111a;
+  border-radius: 10px;
+}
 /* TABLETS */
 /* Horizontal */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
