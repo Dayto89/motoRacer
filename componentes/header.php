@@ -157,16 +157,17 @@ $sectionColors = [
     .ubica {
       position: absolute;
       top: 16px;
-      left: 20%;
+      left: 7%;
       background: rgba(255, 255, 255, 0.8);
       padding: 4px 8px;
       border-radius: 4px;
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 600;
       color: #333;
-      z-index: 1000;
-      /* para que siempre quede encima */
+      z-index: 5;
+        transition: none;
     }
+    
   </style>
 </head>
 

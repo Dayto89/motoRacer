@@ -198,9 +198,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-  <div class="sidebar">
+
     <div id="menu"></div>
-  </div>
+
   <div class="container-general">
     </div>
   <div class="main-content">

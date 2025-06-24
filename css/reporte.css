@@ -354,29 +354,17 @@ select option {
   background-color: #0056b3;
 }
 
-/* Barra lateral (Menú) */
-.sidebar {
-  width: 100px;
-  height: 100vh;
-  background: linear-gradient(180deg, #1167cc, #083972, #000000);
-  transition: width 0.3s ease;
-  overflow: hidden;
-  position: fixed;
-  left: 0;
-  top: 0;
-}
-
-.sidebar:hover {
+#menu:hover {
   width: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main {
+#menu:hover ~ .main {
   margin-left: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main-content {
+#menu:hover ~ .main-content {
   margin-left: 215px;
   transition: margin-left 0.3s ease;
   margin-right: 0px;
@@ -694,7 +682,7 @@ select option {
     margin-left: 0%;
   }
 
-  .sidebar:hover ~ .main-content {
+  #menu:hover ~ .main-content {
     margin-left: 0%;
     transition: none;
     margin-right: 0px;
@@ -737,7 +725,7 @@ select option {
     padding: 50px 0px 0px 15px;
   }
 
-  .sidebar:hover ~ .main-content {
+  #menu:hover ~ .main-content {
     margin-left: 15%;
     transition: none;
     margin-right: 0px;
@@ -914,10 +902,21 @@ select option {
   width: 78%;
   height: 92%;
   background: rgb(211 210 210 / 84%);
+  transition: margin-left 0.3s ease;
   z-index: -1000;
   pointer-events: none;
   box-shadow: 0 4px 20px #0b111a;
   border-radius: 10px;
+}
+
+#menu:hover ~ .container-general { 
+  margin-left: 100px;
+}
+
+#menu:hover ~ .container-general {
+  margin-left: 100px;
+  transition: margin-left 0.3s ease;
+  margin-right: 0px;
 }
 /* TABLETS */
 /* Horizontal */

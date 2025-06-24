@@ -210,8 +210,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .badge-notificaciones {
             position: absolute;
-            top: 10px;
-            right: 8px;
+            top: 27px;
+            right: 25px;
             background: #ff4444;
             color: white;
             border-radius: 50%;
@@ -221,6 +221,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             display: none;
             min-width: 20px;
             text-align: center;
+            z-index: 1001;
         }
 
         .noti {
@@ -231,6 +232,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             border: none;
             cursor: pointer;
             z-index: 1001;
+        }
+
+        .noti img {
+            width: 65px;
+            height: 65px;
+        }
+
+        .stock img {
+            width: 65px;
+            height: 65px;
         }
 
         .notificaciones::-webkit-scrollbar {
@@ -260,7 +271,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             margin: 0 auto;
         }
 
-         .charts-grid {
+        .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
@@ -425,22 +436,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </div>
 
     <!-- BOTONES NOTIFICACIONES y STOCK -->
-    <button class="noti" onclick="mostrarNotificaciones()" title="notificaciones"><animated-icons
-            src="https://animatedicons.co/get-icon?name=notification&style=minimalistic&token=2a8c285f-a7a0-4f4d-b2c3-acccc136c454"
-            trigger="loop-on-hover"
-            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":2.5,"defaultColours":{"group-1":"#1B1B1BFF","group-2":"#000000FF","background":"#FFFFFFFF"}}'
-            height="70"
-            width="70"></animated-icons>
-        <div id="badgeNotificaciones" class="badge-notificaciones">0</div>
+    <button class="noti" onclick="mostrarNotificaciones()" title="notificaciones"><img src="../imagenes/notification.gif" alt="notificaciones"></button>
+    <div id="badgeNotificaciones" class="badge-notificaciones">0</div>
     </button>
 
     <button class="stock" onclick="mostrarStock()" title="stock">
-        <animated-icons
-            src="https://animatedicons.co/get-icon?name=Minecraft&style=minimalistic&token=e1134e0f-af6b-4a81-894b-9708d1f0d153"
-            trigger="hover"
-            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#000000FF","background":"#FFFFFFFF"}}'
-            height="70"
-            width="70"></animated-icons>
+        <img src="../imagenes/stock.gif" alt="stock">
     </button>
     <div id="stock" class="cantidad">
         <h3>Stock</h3>
@@ -638,141 +639,177 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             });
 
             // Gráfico de barras
-        // Gráfico de barras
-const ctx = document.getElementById('metricsChart').getContext('2d');
-const metricsChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
-        datasets: [{
-            label: 'Métricas',
-            data: [
-                <?= $metrics['total_products'] ?>,
-                <?= $metrics['low_stock'] ?>,
-                <?= $metrics['total_providers'] ?>,
-                <?= $metrics['total_clients'] ?>,
-                <?= $metrics['invoices_month'] ?>,
-                <?= $metrics['unread_notif'] ?>
-            ],
-            backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
-            borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false, // Permite ajustar la proporción según el contenedor
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Cantidad',
-                    font: { size: 16 }
+            // Gráfico de barras
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            const metricsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
+                    datasets: [{
+                        label: 'Métricas',
+                        data: [
+                            <?= $metrics['total_products'] ?>,
+                            <?= $metrics['low_stock'] ?>,
+                            <?= $metrics['total_providers'] ?>,
+                            <?= $metrics['total_clients'] ?>,
+                            <?= $metrics['invoices_month'] ?>,
+                            <?= $metrics['unread_notif'] ?>
+                        ],
+                        backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+                        borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+                        borderWidth: 1
+                    }]
                 },
-                ticks: { font: { size: 14 } }
-            },
-            x: {
-                ticks: {
-                    font: { size: 14 },
-                    autoSkip: false, // Muestra todas las etiquetas
-                    maxRotation: 45, // Rota las etiquetas para mejor legibilidad
-                    minRotation: 45
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permite ajustar la proporción según el contenedor
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                },
+                                autoSkip: false, // Muestra todas las etiquetas
+                                maxRotation: 45, // Rota las etiquetas para mejor legibilidad
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Resumen de Métricas',
+                            font: {
+                                size: 18
+                            }
+                        }
+                    }
                 }
-            }
-        },
-        plugins: {
-            legend: { display: false },
-            title: {
-                display: true,
-                text: 'Resumen de Métricas',
-                font: { size: 18 }
-            }
-        }
-    }
-});
+            });
 
-          // Gráfico de pastel
-const ctxPie = document.getElementById('stockPieChart').getContext('2d');
-const stockPieChart = new Chart(ctxPie, {
-    type: 'pie',
-    data: {
-        labels: ['Stock Bajo', 'Stock Normal'],
-        datasets: [{
-            data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
-            backgroundColor: ['#e15759', '#59a14f'],
-            borderColor: ['#e15759', '#59a14f'],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: { font: { size: 14 } }
-            },
-            title: {
-                display: true,
-                text: 'Proporción de Stock',
-                font: { size: 18 }
-            }
-        }
-    }
-});
+            // Gráfico de pastel
+            const ctxPie = document.getElementById('stockPieChart').getContext('2d');
+            const stockPieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: ['Stock Bajo', 'Stock Normal'],
+                    datasets: [{
+                        data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
+                        backgroundColor: ['#e15759', '#59a14f'],
+                        borderColor: ['#e15759', '#59a14f'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Proporción de Stock',
+                            font: {
+                                size: 18
+                            }
+                        }
+                    }
+                }
+            });
 
             <?php if (isset($facturas_diarias)): ?>
-              // Gráfico de líneas
-const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
-const invoicesLineChart = new Chart(ctxLine, {
-    type: 'line',
-    data: {
-        labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
-        datasets: [{
-            label: 'Facturas Diarias',
-            data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
-            borderColor: '#4e79a7',
-            backgroundColor: 'rgba(78, 121, 167, 0.2)',
-            fill: true,
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Facturas',
-                    font: { size: 16 }
-                },
-                ticks: { font: { size: 14 } }
-            },
-            x: {
-                title: {
-                    display: true,
-                    text: 'Día del Mes',
-                    font: { size: 16 }
-                },
-                ticks: { font: { size: 14 } }
-            }
-        },
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: { font: { size: 14 } }
-            },
-            title: {
-                display: true,
-                text: 'Facturas Diarias del Mes',
-                font: { size: 18 }
-            }
-        }
-    }
-});
+                // Gráfico de líneas
+                const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
+                const invoicesLineChart = new Chart(ctxLine, {
+                    type: 'line',
+                    data: {
+                        labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
+                        datasets: [{
+                            label: 'Facturas Diarias',
+                            data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
+                            borderColor: '#4e79a7',
+                            backgroundColor: 'rgba(78, 121, 167, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Facturas',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Día del Mes',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Facturas Diarias del Mes',
+                                font: {
+                                    size: 18
+                                }
+                            }
+                        }
+                    }
+                });
             <?php endif; ?>
         });
     </script>

@@ -98,43 +98,61 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             size: 80mm auto;
             margin: 0;
         }
+
         @media print {
-            body * { visibility: hidden; }
-            .factura, .factura * { visibility: visible; }
-            .acciones { display: none; }
+            body * {
+                visibility: hidden;
+            }
+
+            .factura,
+            .factura * {
+                visibility: visible;
+            }
+
+            .acciones {
+                display: none;
+            }
+
             .factura {
                 position: absolute;
                 top: 0;
                 left: 30%;
-                width: 120mm;      /* Ancho de ticket estándar */
-                zoom: 0.7;        /* Escala para ajustar contenido */
+                width: 120mm;
+                /* Ancho de ticket estándar */
+                zoom: 0.7;
+                /* Escala para ajustar contenido */
                 /* sin transform, usa zoom para impresión */
             }
         }
+
         /* Estilos básicos para botones */
         .btn-accion {
+            position: absolute;
             margin: 5px;
             padding: 8px 12px;
             border: none;
-            background-color: #536DFE;
+            background-color:rgba(83, 109, 254, 0);
             color: #fff;
             cursor: pointer;
             border-radius: 4px;
             font-size: 14px;
+            left: 30%;
+            top: 0%;
         }
-        .btn-accion:hover { opacity: 0.9; }
     </style>
 </head>
 
 <body>
     <?php include 'boton-ayuda.php'; ?>
-    <div class="sidebar">
-        <div id="menu"></div>
-    </div>
-            <!-- Botón para imprimir -->
-        <button id="btnImprimir" class="btn-accion">Imprimir Ticket</button>
 
-    <form class="form-descarga" action="factura_pdf.php" method="post" target="_blank">
+        <div id="menu"></div>
+
+    <!-- Botón para imprimir -->
+    <button id="btnImprimir" class="btn-accion" title="Imprimir">
+        <img src="../imagenes/printer.gif" alt="">
+    </button>
+
+    <form class="form-descarga" action="factura_pdf.php" method="post" target="_blank" title="Descargar Factura">
         <!-- Mandamos el código de factura para generar PDF -->
         <input type="hidden" name="factura_id" value="<?php echo $factura['codigo']; ?>">
         <button type="submit" class="btn-descargar">
@@ -291,7 +309,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         document.getElementById('btnImprimir').addEventListener('click', () => {
             window.print();
         });
-
     </script>
 
 </body>

@@ -83,10 +83,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         // Esto estará disponible para filtrar en cliente:
         const allProducts = <?php echo json_encode($allProducts, JSON_HEX_TAG); ?>;
     </script>
-    <div class="sidebar">
-        <div id="menu"></div>
-    </div>
-
+    <div id="menu"></div>
     <div class="main">
         <h1 class="titulo">Ventas</h1>
         <div class="search-bar">

@@ -54,7 +54,8 @@ ul.breadcrumb a {
 }
 
 ul.breadcrumb a.active {
-  color: var(--breadcrumb-active);
+  background-color: #1565c0;
+  color: rgb(255, 255, 255);
   font-weight: bold;
 }
 
@@ -76,18 +77,6 @@ body::before {
   z-index: -1;
   background: black;
   opacity: 0.6;
-}
-
-/* Barra lateral (Menú) */
-.sidebar {
-  width: 100px;
-  height: 100vh;
-  background: linear-gradient(180deg, #1167cc, #083972, #000000);
-  transition: width 0.3s ease;
-  overflow: hidden;
-  position: fixed;
-  left: 0;
-  top: 0;
 }
 
 .sidebar:hover {

@@ -417,18 +417,28 @@ form input[type="text"],
   top: 0;
 }
 
-.sidebar:hover {
+#menu:hover {
   width: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main {
+#menu:hover ~ .main{
   margin-left: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main-content {
+#menu:hover ~ .main-content {
   margin-left: 240px;
+  transition: margin-left 0.3s ease;
+  margin-right: 0px;
+}
+
+#menu:hover ~ .container-general { 
+  margin-left: 80px;
+}
+
+#menu:hover ~ .container-general {
+  margin-left: 80px;
   transition: margin-left 0.3s ease;
   margin-right: 0px;
 }
@@ -657,6 +667,7 @@ input.error {
   width: 71%;
   height: 92%;
   background: rgb(211 210 210 / 84%);
+  transition: margin-left 0.3s ease;
   z-index: -1000;
   pointer-events: none;
   box-shadow: 0 4px 20px #0b111a;

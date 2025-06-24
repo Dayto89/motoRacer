@@ -427,29 +427,17 @@ form input[type="text"],
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Barra lateral (Menú) */
-.sidebar {
-  width: 100px;
-  height: 100vh;
-  background: linear-gradient(180deg, #1167cc, #083972, #000000);
-  transition: width 0.3s ease;
-  overflow: hidden;
-  position: fixed;
-  left: 0;
-  top: 0;
-}
-
-.sidebar:hover {
+#menu:hover {
   width: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main {
+#menu:hover ~ .main {
   margin-left: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-.sidebar:hover ~ .main-content {
+#menu:hover ~ .main-content {
   margin-left: 150px;
   transition: margin-left 0.3s ease;
   margin-right: 0px;
@@ -628,10 +616,21 @@ form input[type="text"],
   width: 67%;
   height: 89%;
   background: rgb(211 210 210 / 84%);
+  transition: margin-left 0.3s ease;
   z-index: -1000;
   pointer-events: none;
   box-shadow: 0 4px 20px #0b111a;
   border-radius: 10px;
+}
+
+#menu:hover ~ .container-general { 
+  margin-left: 60px;
+}
+
+#menu:hover ~ .container-general {
+  margin-left: 60px;
+  transition: margin-left 0.3s ease;
+  margin-right: 0px;
 }
 /* MÓVILES */
 /* Horizontal */
