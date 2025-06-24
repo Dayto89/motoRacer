@@ -24,6 +24,10 @@ body::before {
   margin: 0px;
 }
 
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+}
+
 .main-content h1 {
   color: white;
   text-align: center;
@@ -644,7 +648,7 @@ select option {
 }
 
 .btn-estado.activo {
-  background-color: green;
+ background-color: #1f5917;
 }
 
 .btn-estado.inactivo {
@@ -897,7 +901,7 @@ select option {
 }
 .container-general {
   position: fixed;
-  top: 4%;
+  top: 5%;
   left: 11%;
   width: 78%;
   height: 92%;

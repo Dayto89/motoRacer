@@ -326,22 +326,23 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
   <?php
   // Justo después de tu conexión y filtros:
-  $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p";
+  $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p"; 
   if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
   $allRes = mysqli_query($conexion, $allQ);
   $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
   ?>
   <script>
     const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-  </script>
+    </script>
  
-    <div id="menu"></div>
+ <div id="menu"></div>
+ <div class="ubica"> Proveedor / Lista proveedores </div>
 
    <div class="container-general"></div>
   <div class="main-content">
     <h1>Proveedores</h1>
     <div class="filter-bar">
-      <button id="btnAbrirModal" class="btn-nuevo-proveedor"><i class="bx bx-plus bx-flip-vertical bx-beat "></i>Nuevo </button>
+      <button id="btnAbrirModal" class="btn-nuevo-proveedor"><i class="bx bx-plus bx-flip-vertical bx-beat "></i>Nuevo</button>
 
       <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el provedor a buscar">
 

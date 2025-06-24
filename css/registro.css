@@ -4,9 +4,9 @@
   box-sizing: border-box;
 }
 .container {
-    width: 48%;
-    margin-top: 4%;
-    margin-left: 26%;
+  width: 48%;
+  margin-top: 4%;
+  margin-left: 26%;
 }
 
 .fondo {
@@ -22,6 +22,10 @@
   height: 45%;
   margin-right: 800px;
   margin-bottom: 50px;
+}
+
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px); /* 20px de empuje extra */
 }
 
 .barra {
@@ -75,16 +79,16 @@ input[type="number"] {
   -webkit-appearance: none;
   -moz-appearance: textfield; /* Para Firefox */
 }
- .error-message {
-    color: red;
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
-    display: none; /* Inicialmente oculto */
-  }
-  
-  .input-error {
-    border: 2px solid red !important;
-  }
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: none; /* Inicialmente oculto */
+}
+
+.input-error {
+  border: 2px solid red !important;
+}
 /* Para navegadores WebKit (Chrome, Safari, Edge) */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -160,11 +164,11 @@ input[type="submit"] {
 }
 
 .campo {
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-    padding: 22px;
-    margin-bottom: 2%;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  padding: 22px;
+  margin-bottom: 2%;
 }
 .campo label {
   margin-bottom: 5px;
@@ -184,25 +188,14 @@ input[type="submit"] {
 }
 
 .button_container .boton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background-color: #007bff;
   font-weight: bold;
   color: white;
   border: none;
-  padding: 3px 4px;
-  font-size: 1.2rem;
+  padding: 9px 23px;
+  font-size: 16px;
   cursor: pointer;
-  border-radius: 24px;
-  transition: background-color 0.3s ease;
-  margin-right: 3%;
-  width: 182px;
-  height: 56px;
-  display: flex;
-  text-decoration: none;
-  line-height: 50px;
-  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 10px;
 }
 
 .button_container .boton:hover {
@@ -210,20 +203,16 @@ input[type="submit"] {
 }
 
 .botonn {
-  display: inline-block; /* Se comporta como un botón */
+  background-color: #007bff;
   font-weight: bold;
-  padding: 3px 4px; /* Espaciado interno */
-  background-color: #007bff; /* Color de fondo (azul) */
-  color: white; /* Color del texto */
-  text-decoration: none; /* Quitar el subrayado */
-  border-radius: 24px; /* Bordes redondeados */
-  font-size: 1.2rem; /* Tamaño del texto */
-  text-align: center; /* Centrar el texto */
-  transition: background-color 0.3s ease; /* Efecto al pasar el cursor */
-  width: 182px;
-  height: 56px;
-  line-height: 50px;
+  color: white;
+  border: none;
+  padding: 9px 23px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
   font-family: Arial, Helvetica, sans-serif;
+  text-decoration: none;
 }
 
 .botonn:hover {
@@ -412,13 +401,13 @@ p {
 
 .btnCancelar {
   background-color: #df2f2f;
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
   font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
   font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 .btnCancelar:hover {
   background-color: #a71d2a;
@@ -426,13 +415,13 @@ p {
 
 .btn-guardar {
   background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
   font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
   font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 .btn-guardar:hover {
   background-color: #0056b3;
@@ -518,63 +507,59 @@ p {
   display: none;
 }
 
-
 /* Hacemos que cada .campo sea un contenedor relativo */
 .campo {
-    position: relative;
+  position: relative;
 }
 
 /*---------------------------------------------------------------------------------*/
 /* Parámetros contraseña (requisitos y confirmación) */
 .requisitos {
-    list-style: none;
-    padding-left: 0;
+  list-style: none;
+  padding-left: 0;
 }
 
 .requisitos li {
-    text-decoration: none;
-    color: rgb(184, 26, 26);
-    -webkit-text-stroke: 0.4px rgb(0, 0, 0);
-    text-align: left;
+  text-decoration: none;
+  color: rgb(184, 26, 26);
+  -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+  text-align: left;
 }
 
 .requisitos li.validado {
-    color: rgb(20, 177, 41) !important; /* Verde oscuro */
-    -webkit-text-stroke-width: 1px;
-    text-decoration: none !important;
-    -webkit-text-stroke: 0.4px rgb(0, 0, 0);
+  color: rgb(20, 177, 41) !important; /* Verde oscuro */
+  -webkit-text-stroke-width: 1px;
+  text-decoration: none !important;
+  -webkit-text-stroke: 0.4px rgb(0, 0, 0);
 }
 
 /* Ajustamos la posición de la “ventana emergente” para que siempre quede justo debajo del input padre */
 .ventana-requisitos {
-    position: absolute;
-    top: 100%;      /* justo debajo del input */
-    left: 0;        /* alineada a la izquierda del input */
-    margin-top: 4px; /* un pequeño espacio extra para separarla del input */
-    width: 200px;
-    background-color: rgba(255, 255, 255, 0.842);
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px;
-    z-index: 999;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    font-size: 14px;
-    font-family: Arial, Helvetica, sans-serif;
-    color: aliceblue;
-    text-align: left;
+  position: absolute;
+  top: 100%; /* justo debajo del input */
+  left: 0; /* alineada a la izquierda del input */
+  margin-top: 4px; /* un pequeño espacio extra para separarla del input */
+  width: 200px;
+  background-color: rgba(255, 255, 255, 0.842);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 999;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: aliceblue;
+  text-align: left;
 }
 
 /* Si tu mensaje está dentro de un <p> con id="mensaje-confirmar": */
 #mensaje-confirmar {
-    font-size: 14px; /* o el tamaño que prefieras */
-  
-  }
-
-
+  font-size: 14px; /* o el tamaño que prefieras */
+}
 
 /* Puedes usar esta clase si deseas cambiar el color del texto de la regla validada */
 .validado {
-    color: green;
+  color: green;
 }
 
 /* venta de "identificacion ya esta registrada */
@@ -597,21 +582,21 @@ input.error {
 
 /* Estilo del tooltip emergente */
 .small-error-tooltip {
-        position: absolute;
-    top: 56%;
-    left: -260px;
-    transform: translateY(-50%);
-    background-color: #ffe6e6;
-    border: 1px solid red;
-    color: red;
-    padding: 0.4rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    display: none;
-    font-family: Arial, Helvetica, sans-serif;
+  position: absolute;
+  top: 56%;
+  left: -260px;
+  transform: translateY(-50%);
+  background-color: #ffe6e6;
+  border: 1px solid red;
+  color: red;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: none;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Flecha pequeña apuntando al input */

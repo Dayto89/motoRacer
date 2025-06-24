@@ -236,7 +236,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script>
         const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
     </script>
-        <div id="menu"></div>
+    <div id="menu"></div>
+    <div class="ubica"> Factura / Lista clientes </div>
     <div class="container-general">
     </div>
     <div class="main-content">
@@ -620,7 +621,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 return b;
             };
 
-            paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+            paginationContainer.append(btn('« Primera', 1), btn('‹ Anterior', Math.max(1, currentPage - 1)));
 
             let start = Math.max(1, currentPage - 2),
                 end = Math.min(totalPages, currentPage + 2);
@@ -632,7 +633,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 textContent: '…'
             }));
 
-            paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+            paginationContainer.append(btn('Siguiente ›', Math.min(totalPages, currentPage + 1)), btn('Última »', totalPages));
         }
 
         // Búsqueda en tiempo real (global)

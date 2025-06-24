@@ -198,8 +198,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-
-    <div id="menu"></div>
+  <div id="menu"></div>
+  <div class="ubica"> Inventario / Lista productos </div>
 
   <div class="container-general">
     </div>

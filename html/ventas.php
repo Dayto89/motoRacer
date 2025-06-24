@@ -82,8 +82,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script>
         // Esto estará disponible para filtrar en cliente:
         const allProducts = <?php echo json_encode($allProducts, JSON_HEX_TAG); ?>;
-    </script>
+        </script>
     <div id="menu"></div>
+    <div class="ubica"> Factura / Ventas </div>
     <div class="main">
         <h1 class="titulo">Ventas</h1>
         <div class="search-bar">
@@ -98,8 +99,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     display: flex
 ;
     align-items: center;
-    margin-left: 1%;
-    width: 98%;
+    margin-left: 5%;
+    width: 91%;
 ">
             <!-- Botón izquierda -->
             <button id="btnLeft" onclick="scrollCategorias(-200)">

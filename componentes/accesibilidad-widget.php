@@ -6,7 +6,7 @@
             <i class="fas fa-universal-access"></i>
         </button>
         <div class="accesibilidad-panel">
-            <button onclick="Accesibilidad.cambiarContraste()" data-funcion="contraste">
+            <button id="accesibilidad" onclick="Accesibilidad.cambiarContraste()" data-funcion="contraste">
                 <i class="fas fa-adjust"></i> <span>Contraste</span>
             </button>
             <div class="control-fuente">

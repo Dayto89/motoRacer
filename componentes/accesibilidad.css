@@ -511,7 +511,7 @@ text-shadow: 1.5px 0 #1c51a0;
   font-weight: bold;
 }
 .modo-claro .bx-tada{
-  color: #000000;
+  color: #ffffff;
 }
 /*
 =====================================================================================================================================================Modo de contraste Gestion de Usuarios
@@ -655,7 +655,7 @@ body.modo-alto-contraste {
 }
 
 .modo-alto-contraste .bx-tada{
-  color: #ffffff;
+  color: #000000;
 }
 .modo-alto-contraste .sidebar-right{
   color: #ffffff !important;
@@ -681,15 +681,9 @@ body.modo-alto-contraste {
   color: #000000 !important;
 }
 
-.modo-alto-contraste .container {
-  background-color: #000000;
-  border: white 2px solid;
-}
 
-.modo-claro .container {
-  background-color: #ffffff;
-  border: black 2px solid;
-}
+
+
 .modo-alto-contraste .fondo{
   background: linear-gradient(0deg, rgba(0, 0, 0, 1), rgba(74, 174, 231, 0.8));
 }
@@ -824,9 +818,6 @@ color: white !important;
 .modo-claro p{
   color: #000000;
 }
-.modo-claro .summary-container{
-  background-color: #000000;
-}
 .modo-claro .summary-section h2{
   color: white !important;
 } 
@@ -874,7 +865,7 @@ color: white !important;
    border: none;
  }
  .modo-alto-contraste .modal-content{
-   background-color: #000000;
+   background-color: #000000 !important;
  }
  .modo-alto-contraste #modal-boton{
    background-color: #000000;
@@ -1042,8 +1033,8 @@ background-color: red ;
 .modo-alto-contraste .metric-card h4{
   color:white;
 }
-.modo-alto-contraste.chart-containe{
-      background: #000000;
+.modo-alto-contraste .chart-containe{
+      background: #000000 !important;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     padding: 1.5rem;
@@ -1071,4 +1062,91 @@ background-color: red ;
 }
 .modo-claro .metric-card h4{
   color:rgb(0, 0, 0);
+}
+.modo-alto-contraste .ubica{
+  background-color: black;
+  color: white;
+}
+.modo-alto-contraste #product-form .campo label{
+  color: white;
+}
+.modo-alto-contraste .modal-content label{
+  color: rgb(255, 255, 255);
+}
+
+.modo-alto-contraste .pagination-dinamica button.active{
+  background-color: black;
+  color: #333;
+}
+
+.modo-alto-contraste .pagination-dinamica button{
+  background-color: #000000;
+  color:white ;
+  border: none;
+}
+.modo-claro .pagination-dinamica button.active{
+  background-color: rgb(255, 255, 255);
+  color: #000000;
+}
+
+.modo-claro .pagination-dinamica button{
+  background-color: #ffffff;
+  color:rgb(0, 0, 0) ;
+  border: none;
+}
+.modo-alto-contraste #filtros-btn{
+  background-color: black;
+}
+.modo-claro #filtros-btn{
+  background-color: white;
+  color: black;
+}
+.modo-alto-contraste .btn-accion{
+  background-color: #00000000;
+  border-color: #00000000;
+}
+.modo-claro .btn-accion{
+  background-color: #00000000;
+  border-color: #00000000;
+}
+
+.modo-alto-contraste .btn-estado.activo{
+  background-color: black;
+}
+
+.modo-alto-contraste .btn-estado.inactivo{
+  background-color: black;
+}
+
+.btn-estado.activo:hover{
+  background-color: green;
+}
+.btn-estado.inactivo:hover{
+  background-color: darkred;
+}
+.modo-claro .btn-estado.activo{
+  background-color: rgb(255, 255, 255);
+}
+
+.modo-claro .btn-estado.inactivo{
+  background-color: rgb(255, 255, 255);
+}
+.modo-claro .btn-estado.inactivo:hover{
+  background-color: darkred;
+}
+.modo-claro .btn-estado.activo:hover{
+  background-color: green;
+}
+.modo-alto-contraste .btn-export{
+  background-color: black;
+}
+.modo-claro .btn-export{
+  background-color: rgb(255, 255, 255);
+  color: black;
+}
+.modo-alto-contraste .boton-docsxls{
+  background-color: black !important;
+}
+.modo-alto-contraste .boton-docsxls:hover{
+  background-color: #1f5917K;
 }

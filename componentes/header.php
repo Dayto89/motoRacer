@@ -21,15 +21,15 @@ $rowRol = $resultRol->fetch_assoc();
 $rol = $rowRol['rol'];
 $stmtRol->close();
 
-  $permisosRutas = [
-    'PRODUCTO' => ['crearproducto', 'categorias', 'ubicacion', 'marca'],
-    'PROVEEDOR' => ['listaproveedor'],
-    'INVENTARIO' => ['listaproductos'],
-    'FACTURA' => ['ventas', 'reportes', 'listaclientes', 'listanotificaciones', 'pagos', 'recibo'],
-    'USUARIO' => ['información'],
-    'CONFIGURACION' => ['gestiondeusuarios', 'copiadeseguridad', 'registro'],
-    'INICIO' => ['']
-  ];
+$permisosRutas = [
+  'PRODUCTO' => ['crearproducto', 'categorias', 'ubicacion', 'marca'],
+  'PROVEEDOR' => ['listaproveedor'],
+  'INVENTARIO' => ['listaproductos'],
+  'FACTURA' => ['ventas', 'reportes', 'listaclientes', 'listanotificaciones', 'pagos', 'recibo'],
+  'USUARIO' => ['información'],
+  'CONFIGURACION' => ['gestiondeusuarios', 'copiadeseguridad', 'registro'],
+  'INICIO' => ['']
+];
 
 // Si el usuario es administrador, mostrar todas las secciones
 if ($rol === 'administrador') {
@@ -84,31 +84,27 @@ foreach ($permisosRutas as $sec => $subs) {
 // ——————————————————————————————
 // 2) Detectar página actual (sin .php)
 if (!empty($_GET['page'])) {
-  $currentPage = preg_replace('/[^a-z0-9]/','', strtolower($_GET['page']));
+  $currentPage = preg_replace('/[^a-z0-9]/', '', strtolower($_GET['page']));
 } else {
-  $currentPage = basename($_SERVER['SCRIPT_NAME'],'.php');
+  $currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
 }
 
 if (isset($breadcrumbMap[$currentPage])) {
   // Coincidencia en permisos
   $activeSection    = $breadcrumbMap[$currentPage]['section'];
   $activeSubSection = $breadcrumbMap[$currentPage]['subsection'];
-
 } elseif ($currentPage === 'inicio') {
   // Home
   $activeSection    = '';
   $activeSubSection = 'Inicio';
-
 } elseif ($currentPage === 'acceso_denegado') {
   // Acceso denegado
   $activeSection    = '';
   $activeSubSection = 'Acceso denegado';
-
 } elseif ($currentPage === 'informacin') {
   // Información del usuario
   $activeSection    = 'USUARIO';
   $activeSubSection = 'Información';
-
 } else {
   // No coincide con nada: no mostramos breadcrumb
   $activeSection    = '';
@@ -154,30 +150,27 @@ $sectionColors = [
       align-items: center;
     }
 
-    .ubica {
-      position: absolute;
-      top: 16px;
-      left: 7%;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      z-index: 5;
-        transition: none;
-    }
-    
+   .ubica {
+    position: fixed;
+    top: 1px;
+    left: 7%;
+    background-color: rgb(15 92 183 / 62%);
+    border: 1px solid #ffffff;
+    text-shadow: 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0, 2px 0px 0 #1c51a0;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px 8px;
+    border-radius: 10px;
+    font-size: 18px;
+    color: white;
+    z-index: 5;
+    margin-left: 1%;
+    transition: margin-left 0.3s ease;
+    height: 4.5%;
+}
   </style>
 </head>
 
 <body>
-  <?php if ($activeSection || $activeSubSection): ?>
-    <div class="ubica">
-      <?= ($activeSection ? "{$activeSection} / " : '') . $activeSubSection ?>
-    </div>
-  <?php endif; ?>
-
   <div id="sidebar" class="sidebar">
 
     <div class="sidebar-header">
@@ -185,55 +178,55 @@ $sectionColors = [
     </div>
 
     <ul class="menu">
-<?php foreach ($permisos as $seccion => $subsecciones):
-  $isActive = ($seccion === $activeSection);
-  $iconStyle = $isActive
-    ? "background-color: {$sectionColors[$seccion]}; border-radius:8px;"
-    : "";
-  $gifFile = $iconGifs[$seccion] ?? 'default.gif';
-  $gifPath = "../imagenes/icons/" . $gifFile;
-?>
-  <li>
-    <a id="icon-<?= $seccion ?>"
-       href="#"
-       onclick="toggleDropdown('dropdown<?= $seccion ?>','icon-<?= $seccion ?>')"
-       style="<?= $iconStyle ?>">
-      <img src="<?= $gifPath ?>"
-           alt="<?= strtolower($seccion) ?> icon"
-           style="<?= $iconStyle ?>"
-           height="54"
-           width="54">
-      <span><?= $seccion ?></span>
-      <i class="bx bx-chevron-down icon2"></i>
-    </a>
-
-    <!-- ← Aquí va el bloque que falta: -->
-    <ul id="dropdown<?= $seccion ?>" class="dropdown">
-      <?php foreach ($subsecciones as $sub): ?>
+      <?php foreach ($permisos as $seccion => $subsecciones):
+        $isActive = ($seccion === $activeSection);
+        $iconStyle = $isActive
+          ? "background-color: {$sectionColors[$seccion]}; border-radius:8px;"
+          : "";
+        $gifFile = $iconGifs[$seccion] ?? 'default.gif';
+        $gifPath = "../imagenes/icons/" . $gifFile;
+      ?>
         <li>
-          <a href="../html/<?= strtolower(str_replace(' ', '', $sub)) ?>.php">
-            <?= $sub ?>
+          <a id="icon-<?= $seccion ?>"
+            href="#"
+            onclick="toggleDropdown('dropdown<?= $seccion ?>','icon-<?= $seccion ?>')"
+            style="<?= $iconStyle ?>">
+            <img src="<?= $gifPath ?>"
+              alt="<?= strtolower($seccion) ?> icon"
+              style="<?= $iconStyle ?>"
+              height="54"
+              width="54">
+            <span><?= $seccion ?></span>
+            <i class="bx bx-chevron-down icon2"></i>
           </a>
+
+          <!-- ← Aquí va el bloque que falta: -->
+          <ul id="dropdown<?= $seccion ?>" class="dropdown">
+            <?php foreach ($subsecciones as $sub): ?>
+              <li>
+                <a href="../html/<?= strtolower(str_replace(' ', '', $sub)) ?>.php">
+                  <?= $sub ?>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
         </li>
       <?php endforeach; ?>
-    </ul>
-  </li>
-<?php endforeach; ?>
 
-    <!-- Botón Salir -->
-    <?php $gifSalir = "../imagenes/icons/" . $iconGifs['SALIR']; ?>
-    <li>
-      <a href="../componentes/logout.php">
-        <img src="<?php echo $gifSalir; ?>"
-             alt="salir icon"
-             style="<?php echo $iconStyle; ?>"
-             height="52"
-             width="52">
-        <span>Salir</span>
-      </a>
-    </li>
-    
-  </ul>
+      <!-- Botón Salir -->
+      <?php $gifSalir = "../imagenes/icons/" . $iconGifs['SALIR']; ?>
+      <li>
+        <a href="../componentes/logout.php">
+          <img src="<?php echo $gifSalir; ?>"
+            alt="salir icon"
+            style="<?php echo $iconStyle; ?>"
+            height="52"
+            width="52">
+          <span>Salir</span>
+        </a>
+      </li>
+
+    </ul>
   </div>
 
 </body>

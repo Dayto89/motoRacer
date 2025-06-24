@@ -215,15 +215,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-
     <!-- Aquí se cargará el header -->
     <div id="menu"></div>
+    <div class="ubica"> Producto / Crear producto</div>
     <div class="container-general"></div>
     <!-- Sección para Crear Producto -->
     <div id="crearProducto" class="form-section">
         <h1>Crear Producto</h1>
         <!-- Abrir modal para subir el archivo -->
-        <button type="submit" class="icon-button" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
+        <button type="submit" class="icon-button" id="btnAbrirImportar" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
             <i class="fas fa-file-excel"></i>
             <label>Importar archivo</label>
         </button>
@@ -231,7 +231,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div id="modalConfirm" class="modal hidden">
             <div class="modal-content">
                 <!-- Botón "X" para cerrar -->
-                <span class="close-button" onclick="closeModal()">&times;</span>
+                <span class="close-button" id="btnCerrarImportar">&times;</span>
 
                 <!-- Formulario para subir el archivo -->
                 <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
@@ -526,6 +526,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
     <script>
+        // obtiene el modal de importar Excel
+        const modalConfirm = document.getElementById('modalConfirm');
+        const modalContent = modalConfirm.querySelector('.modal-content');
+
+        // Cerrar al clicar fuera del contenido, con animación
+        modalConfirm.addEventListener('click', e => {
+            // si el click NO fue dentro de .modal-content
+            if (!modalContent.contains(e.target)) {
+                closeModal(modalConfirm);
+            }
+        });
         // ——— Modal de subir archivo ———
         function openConfirmModal() {
             const modal = document.getElementById("modalConfirm");
@@ -871,7 +882,36 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endif; ?>
         </div>
     </div>
+    <script>
+        const btnAbrirImportar = document.getElementById('btnAbrirImportar');
+        const btnCerrarImportar = document.getElementById('btnCerrarImportar');
 
+        function openModal(modal) {
+            modal.classList.remove('closing');
+            void modal.offsetWidth; // fuerza repaint
+            modal.classList.add('show');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('show');
+            modal.classList.add('closing');
+            modal.addEventListener('transitionend', function handler(e) {
+                if (e.propertyName === 'opacity') {
+                    modal.classList.remove('closing');
+                    modal.removeEventListener('transitionend', handler);
+                }
+            });
+        }
+
+        // Abrir al pulsar el botón
+        btnAbrirImportar.addEventListener('click', () => openModal(modalConfirm));
+        // Cerrar con la X
+        btnCerrarImportar.addEventListener('click', () => closeModal(modalConfirm));
+        // Cerrar al clicar fuera del contenido
+        modalConfirm.addEventListener('click', e => {
+            if (e.target === modalConfirm) closeModal(modalConfirm);
+        });
+    </script>
 </body>
 
 </html>

@@ -161,8 +161,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   ?>
   <script>
     const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-  </script>
+    </script>
   <div id="menu"></div>
+  <div class="ubica"> Productos/Categorias </div>
    <div class="container-general">
     </div>
   <div id="categorias" class="form-section">
@@ -361,8 +362,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         };
 
         // « First, ‹ Prev
-        paginationEl.appendChild(btnFactory('«', 1));
-        paginationEl.appendChild(btnFactory('‹', Math.max(1, currentPage - 1)));
+        paginationEl.appendChild(btnFactory('« Primera', 1));
+        paginationEl.appendChild(btnFactory('‹ Anterior', Math.max(1, currentPage - 1)));
         // pages
         let start = Math.max(1, currentPage - 2),
           end = Math.min(totalPages, currentPage + 2);
@@ -372,8 +373,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
         if (end < totalPages) paginationEl.append('…');
         // › Next, » Last
-        paginationEl.appendChild(btnFactory('›', Math.min(totalPages, currentPage + 1)));
-        paginationEl.appendChild(btnFactory('»', totalPages));
+        paginationEl.appendChild(btnFactory('Siguiente ›', Math.min(totalPages, currentPage + 1)));
+        paginationEl.appendChild(btnFactory('Última»', totalPages));
       }
 
       // búsqueda en tiempo real

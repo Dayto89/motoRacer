@@ -95,8 +95,9 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 </head>
 
 <body>
-   <?php include 'boton-ayuda.php'; ?>
+  <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
+  <div class="ubica"> Configuración / Gestión de usuarios / Registro</div>
  <div class="container-general">
     </div>
   <h1>CREAR USUARIO</h1>
@@ -196,7 +197,37 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
       <a href="../html/gestiondeusuarios.php" class="botonn">Volver</a>
     </div>
   </form>
+ <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
 
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
+        </div>
+    </div>
   <?php
   // Inicializamos variables para mantener valores al mostrar el formulario
   $identificacion = $rol = $nombre = $apellido = $telefono = $direccion = $correo = '';

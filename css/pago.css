@@ -28,6 +28,10 @@ body::before {
   transition: margin-left 0.2s ease, background-color 0.3s ease;
 }
 
+.sidebar:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+}
+
 /* Al hacer hover en .sidebar, movemos el container */
 .sidebar:hover ~ .container {
   margin-left: 270px; /* de 100px → 270px animará correctamente */
@@ -258,26 +262,17 @@ input[name="valor_tarjeta"] {
   /* Azul más oscuro */
 }
 button {
-  flex-shrink: 0;
-  background-color: #0068d7;
-  cursor: pointer;
-  width: 79px;
-  height: 41px;
-  color: white;
-  border-radius: 23px;
-  font-size: 14px;
+background-color: #007bff;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 13px 19px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 9px;
 }
-.btn-editar {
-  flex-shrink: 0;
-  background-color: #05263b;
-  cursor: pointer;
-  width: 45%;
-  height: 41px;
-  color: white;
-  border-radius: 15px;
-  font-size: 15px;
-  font-weight: bold;
-}
+
+
 .plus-icon h3 {
   font-size: 22px;
   font-family: Arial, Helvetica, sans-serif;
@@ -408,17 +403,7 @@ input#observaciones {
   overflow-y: auto;
 }
 
-button {
-  flex-shrink: 0;
-  background-color: #0068d7;
-  cursor: pointer;
-  width: 79px;
-  height: 41px;
-  color: white;
-  border-radius: 15px;
-  margin-top: 20px;
-  font-size: 14px;
-}
+
 button:hover {
   background-color: #1565c0;
 }
@@ -595,12 +580,32 @@ p#saldoPendiente {
   font-size: 22px;
   padding: 0;
 }
-.btn-editar,
+.btn-editar{
+  background-color: rgb(17, 103, 204);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 9px 21px;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+      width: 48%;
+}
 .btn-pagar {
-  padding: 10px 20px;
-  margin-right: 10px;
-  border-radius: 5px;
-  cursor: pointer;
+    background-color: #007bff;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 10px 29px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 9px;
+    margin-left: 27%;
+
 }
 
 .btn-editar {
@@ -640,6 +645,7 @@ input[name="valor_tarjeta"] {
 
 .content {
   align-items: stretch;
+  margin-top: 9%;
 }
 /* Scrollbar*/
 #contenedor-tarjetas,

@@ -193,6 +193,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <?php include 'boton-ayuda.php'; ?>
     
     <div id="menu"></div>
+    <div class="ubica"> Usuario / Información </div>
     <!-- Información del usuario -->
     <div class="fondo-opaco"></div>
     <div class="container">
@@ -234,7 +235,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
             <!-- Botón para abrir el popup -->
             <div class="boton-editar">
-                <button class="btn-abrir" onclick="abrirPopup()"><i class='bx bx-plus bx-tada'></i>Editar</button>
+                <button class="btn-abrir" onclick="abrirPopup()">Editar</button>
             </div>
 
         </div>

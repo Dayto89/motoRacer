@@ -89,23 +89,14 @@ form input {
 }
 
 .button_container .boton, .botonn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #007BFF;
+       background-color: #007bff;
     font-weight: bold;
     color: white;
     border: none;
-    padding: 3px 4px;
-    font-size: 1.2rem;
+    padding: 11px 23px;
+    font-size: 16px;
     cursor: pointer;
-    border-radius: 24px;
-    transition: background-color 0.3s ease;
-    width: 250px;
-    height: 56px;
-    text-decoration: none;
-    line-height: 50px;
-    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 10px;
 }
 .button_container  .botonn {
     display: flex;

@@ -144,8 +144,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <body>
     <?php include 'boton-ayuda.php'; ?>
-
-        <div id="menu"></div>
+    
+    <div id="menu"></div>
+    <div class="ubica"> Factura / Recibo </div>
 
     <!-- Botón para imprimir -->
     <button id="btnImprimir" class="btn-accion" title="Imprimir">

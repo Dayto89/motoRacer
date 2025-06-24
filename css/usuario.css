@@ -23,6 +23,10 @@
     margin-bottom: 50px;
 }
 
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+}
+
 .form-section {
     padding: 0 10%;
 }

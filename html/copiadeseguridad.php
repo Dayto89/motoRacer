@@ -94,6 +94,7 @@ echo "</script>\n";
 <body>
     <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
+    <div class="ubica"> Configuración / Copia de seguridad</div>
      <div class="container-general">
     </div>
     <div class="main-content">

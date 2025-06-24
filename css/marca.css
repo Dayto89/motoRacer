@@ -38,7 +38,7 @@ body::before {
   padding: 44px;
   border-radius: 15px;
   max-width: 1079px;
-  margin-left: 482px;
+  margin: auto;
 }
 
 /* Botón para agregar categoría */
@@ -126,15 +126,15 @@ td:nth-child(2) {
   text-align: center;
 }
 input#nombre {
-    width: 92%;
-    padding: 8px;
-    font-size: 15px;
-    border: 1px solid #ccc;
-    border-radius: 23px;
-    box-sizing: border-box;
-    margin-top: 5%;
-    height: 3.8%;
-    margin-bottom: 5%;
+  width: 92%;
+  padding: 8px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-top: 5%;
+  height: 3.8%;
+  margin-bottom: 5%;
 }
 .productos-table th {
   background-color: #98bde9;
@@ -321,12 +321,17 @@ input#nombre {
 #btnCancelar {
   background-color: #df2f2f;
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
   font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 9px 21px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  border-radius: 10px;
+  transition: background-color 0.3s;
 }
 
 #btnCancelar:hover {
@@ -334,14 +339,19 @@ input#nombre {
 }
 
 button[type="submit"] {
-  background-color: #007bff;
+  background-color: rgb(17, 103, 204);
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
   font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 9px 21px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  border-radius: 10px;
+  transition: background-color 0.3s;
 }
 
 button[type="submit"]:hover {
@@ -376,6 +386,10 @@ input[type="text"] {
 
 thead {
   font-size: 20px;
+}
+
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
 }
 
 .productos-table th,

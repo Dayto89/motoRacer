@@ -182,7 +182,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <body>
   <?php include 'boton-ayuda.php'; ?>
-    <div id="menu"></div>
+  <div id="menu"></div>
+  <div class="ubica">Factura / Reportes</div>
 
     <div class="container-general">
     </div>
@@ -631,7 +632,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           return btn;
         };
 
-        pagination.append(makeBtn('«', 1), makeBtn('‹', Math.max(1, currentPage - 1)));
+        pagination.append(makeBtn('« Primera', 1), makeBtn('‹ Anterior', Math.max(1, currentPage - 1)));
 
         let start = Math.max(1, currentPage - 2),
           end = Math.min(totalPages, currentPage + 2);
@@ -644,8 +645,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           textContent: '…'
         }));
 
-        pagination.append(makeBtn('›', Math.min(totalPages, currentPage + 1)),
-          makeBtn('»', totalPages));
+        pagination.append(makeBtn('Siguiente›', Math.min(totalPages, currentPage + 1)),
+          makeBtn('Última »', totalPages));
       }
 
       // 4) Búsqueda en tiempo real (filtra en todos los campos, incluidos composite)

@@ -56,7 +56,7 @@ th {
 }
 
 td {
-  background-color:rgb(63 61 61);
+  background-color: rgb(63 61 61);
   text-align: center;
 }
 
@@ -261,8 +261,8 @@ input.form-control {
   align-items: center;
   width: 104%;
   height: 33%;
+  margin-top: 9%;
 }
-
 
 /* MODAL DE NUEVO PROVEEDOR --------------------------------------------------------------------------------------------------------*/
 .form-grid {
@@ -273,15 +273,16 @@ input.form-control {
   margin-top: 12px;
   padding: 4px;
 }
-.form-grid label, #editForm label {
-    color: #000000;
-    font-size: 19px;
-    white-space: nowrap;
-    text-align: left;
-    padding-right: 10px;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
+.form-grid label,
+#editForm label {
+  color: #000000;
+  font-size: 19px;
+  white-space: nowrap;
+  text-align: left;
+  padding-right: 10px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
 }
 .modal-buttons {
   display: flex;
@@ -303,26 +304,37 @@ input.form-control {
 #btnCancelarEdit {
   background-color: #df2f2f;
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
   font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 9px 21px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  border-radius: 10px;
+  transition: background-color 0.3s;
 }
 #btnCancelar:hover,
 #btnCancelarEdit:hover {
   background-color: #a71d2a;
 }
+
 button[type="submit"] {
-  background-color: #007bff;
+  background-color: rgb(17, 103, 204);
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
   font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 9px 21px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  border-radius: 10px;
+  transition: background-color 0.3s;
 }
 button[type="submit"]:hover {
   background-color: #1565c0;
@@ -382,14 +394,19 @@ form#editForm {
   align-items: center; /* Alinea los elementos verticalmente */
 }
 #modal-boton {
-  background-color: #007bff;
+  background-color: rgb(17, 103, 204);
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
   font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 9px 21px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  border-radius: 10px;
+  transition: background-color 0.3s;
 }
 #modal-boton:hover {
   background-color: #0056b3;
@@ -422,7 +439,7 @@ form input[type="text"],
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-#menu:hover ~ .main{
+#menu:hover ~ .main {
   margin-left: 270px;
 }
 
@@ -433,7 +450,7 @@ form input[type="text"],
   margin-right: 0px;
 }
 
-#menu:hover ~ .container-general { 
+#menu:hover ~ .container-general {
   margin-left: 80px;
 }
 
@@ -441,6 +458,10 @@ form input[type="text"],
   margin-left: 80px;
   transition: margin-left 0.3s ease;
   margin-right: 0px;
+}
+
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
 }
 
 /* Contenido principal */

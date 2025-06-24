@@ -20,6 +20,10 @@ body {
   padding: 29px;
 }
 
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px); /* 20px de empuje extra */
+}
+
 h1 {
   font-size: 44px;
   color: white;
@@ -40,7 +44,7 @@ h1 {
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #113e73;;
+  border: 3px solid #113e73;
 }
 
 .info-group {
@@ -62,30 +66,31 @@ h1 {
   font-weight: bold;
 }
 .info-group span {
-    flex: 0.5;
-    padding: 10px;
-    background: #f4f4f4;
-    color: #000000;
-    border: 1px solid #0b111a;
-    border-radius: 23px;
-    text-align: left;
-    font-family: Arial, Helvetica, sans-serif;
-    width: 102%;
+  flex: 0.5;
+  padding: 10px;
+  background: #f4f4f4;
+  color: #000000;
+  border: 1px solid #0b111a;
+  border-radius: 23px;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 102%;
 }
 
 .btn-abrir {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  background-color: #1167cc;
+  background-color: rgb(0, 123, 255);
+  font-weight: bold;
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
   font-size: 16px;
-  margin-left: 87%;
-  margin-top: 18%;
-  width: 30%;
+  cursor: pointer;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  padding: 8px 28px;
+  border-radius: 10px;
+  margin-left: 93%;
+  margin-top: 8%;
 }
 
 .btn-abrir:hover {
@@ -281,8 +286,8 @@ body {
 /* Cambia el color del placeholder a negro */
 #inputCorreo::placeholder,
 #inputCodigo::placeholder {
-    color: #000 !important;
-    opacity: 1; /* Para asegurar visibilidad en todos los navegadores */
+  color: #000 !important;
+  opacity: 1; /* Para asegurar visibilidad en todos los navegadores */
 }
 .btn-cancelar:hover {
   background: #c01515;
@@ -291,13 +296,13 @@ body {
 
 .btn-guardar1 {
   background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
   font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
   font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 
 .btn-guardar1:hover {
@@ -318,26 +323,27 @@ body {
 /* ======================= */
 .btn-cancelar1 {
   background-color: #df2f2f;
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
   font-weight: bold;
+  color: white;
+  border: none;
+  padding: 8px 23px;
   font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 .btnCancelar1:hover {
   background-color: #a71d2a;
 }
 
 .btn-guardar {
-  background-color: rgb(50 83 133);
-  color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
+     background-color: #007bff;
+    font-weight: bold;
+    color: white;
+    border: none;
+    padding: 8px 23px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
 }
 .btn-guardar:hover {
   background-color: #007bff;
@@ -347,7 +353,7 @@ body {
 /* 3) Estilos de inputs y labels */
 /* ======================= */
 .popup label {
- margin-bottom: 5px;
+  margin-bottom: 5px;
   color: black;
   font-size: 17px;
   font-family: Arial, Helvetica, sans-serif;
@@ -356,14 +362,14 @@ body {
 }
 
 .input-group input {
-    padding: 10px;
-    font-size: 15px;
-    border: 1px solid #000000;
-    border-radius: 23px;
-    box-sizing: border-box;
-    margin-bottom: 12px;
-    width: 85%;
-    margin-left: 8%;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #000000;
+  border-radius: 23px;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  width: 85%;
+  margin-left: 8%;
 }
 input#correoVerificado.input-group {
   padding: 8px;
@@ -389,15 +395,14 @@ input#correoVerificado.input-group {
 /* 4) Estilo del botón “Cambiar correo” */
 /* ======================= */
 .btn-verificar-correo {
-    background-color: white;
-    color: #000000;
-    font-size: 15px;
-    padding: 10px 15px;
-    border-radius: 24px;
-    cursor: pointer;
-    width: 85%;
-    margin-left: 8%;
-
+  background-color: white;
+  color: #000000;
+  font-size: 15px;
+  padding: 10px 15px;
+  border-radius: 24px;
+  cursor: pointer;
+  width: 85%;
+  margin-left: 8%;
 }
 .btn-verificar-correo:hover {
   background-color: #6499d6;

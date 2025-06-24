@@ -363,6 +363,10 @@ form input[type="text"],
   margin-right: 0px;
 }
 
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+}
+
 /* Contenido principal */
 .main-content {
   padding: 20px;

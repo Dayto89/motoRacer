@@ -133,7 +133,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     .pagination-dinamica {
       display: flex;
       justify-content: center;
-      margin-top: 3px;
+      margin-top: 3%;
       gap: 12px;
       font-family: arial;
       font-size: 11px;
@@ -168,15 +168,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     }
 
     .marcarN:hover {
-      background-color: rgb(255, 0, 0);
+      background-color: rgb(155, 0, 0);
     }
 
     .marcarL {
-      background-color: rgb(11, 128, 0);
+      background-color: #1f5917;
     }
 
     .marcarL:hover {
-      background-color: rgb(15, 184, 0);
+      background-color: rgb(8, 95, 0);
     }
 
     #notificacionesTable tbody tr:hover,
@@ -196,8 +196,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   ?>
   <script>
     const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-  </script>
+    </script>
     <div id="menu"></div>
+    <div class="ubica"> Factura / Lista notificaciones </div>
 
   <div class="container-general">
     </div>
@@ -562,7 +563,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           return b;
         }
 
-        paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+        paginationContainer.append(btn('« Primera', 1), btn('‹ Anterior', Math.max(1, currentPage - 1)));
         let start = Math.max(1, currentPage - 2),
           end = Math.min(totalPages, currentPage + 2);
         if (start > 1) paginationContainer.append(Object.assign(document.createElement('span'), {
@@ -572,7 +573,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         if (end < totalPages) paginationContainer.append(Object.assign(document.createElement('span'), {
           textContent: '…'
         }));
-        paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+        paginationContainer.append(btn('Siguiente›', Math.min(totalPages, currentPage + 1)), btn('Última »', totalPages));
       }
 
       // -------------------

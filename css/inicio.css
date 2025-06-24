@@ -212,6 +212,10 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     border-radius: 20px;
 }
 
+#menu:hover ~ .ubica {
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+}
+
 
 /*stock*/
 

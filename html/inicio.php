@@ -151,6 +151,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
+        .modo-alto-contraste .chart-container {
+            background-color: black;
+        }
+
+        .modo-claro .chart-container {
+            border: 4px solid #000000;
+        }
+
         /* Agregar estilos para las notificaciones */
         .notificaciones {
             position: fixed;
@@ -278,6 +286,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
+
         }
 
         /* Contenedor de cada gráfico */
@@ -367,6 +376,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             vertical-align: super;
         }
 
+        #menu:hover ~ .ubica {
+            margin-left: 20px;
+        }
+
+        #menu:hover ~ .ubica {
+            margin-left: 20px;
+            transition: margin-left 0.3s ease;
+            margin-right: 0px;
+        } 
+
 
 
         /* Ajustes responsivos */
@@ -392,6 +411,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
     <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
+    <div class="ubica">Inicio</div>
     <div class="fondo"></div>
 
     <!-- DASHBOARD METRICAS -->
@@ -613,7 +633,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 .catch(error => console.error('Error:', error));
         }
 
+        function getTextoColorPorModo() {
+            const body = document.body;
+            console.log(body);
+
+
+            // Si está en modo alto contraste, usar blanco
+            if (body.classList.contains('modo-alto-contraste')) {
+                return 'white';
+            } else if (body.classList.contains('.modo-claro')) {
+                return 'black';
+            } else {
+                return 'white';
+            }
+        }
+
+
         document.addEventListener('DOMContentLoaded', () => {
+
+            const accesibildad = document.getElementById('accesibilidad');
+
+            // Si el boton de accesibilidad se presiona entonces llama a la funcion getTextoColorPorModo
+            accesibildad.addEventListener('click', () => {
+                const colorTexto = getTextoColorPorModo();
+                accesibildad.style.color = colorTexto;
+                document.body.style.backgroundColor = colorTexto;
+            });
             // Cargar notificaciones
             cargarNotificaciones();
             setInterval(cargarNotificaciones, 30000);
@@ -637,182 +682,255 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px) translateZ(0px)';
                 });
             });
-
-            // Gráfico de barras
-            // Gráfico de barras
-            const ctx = document.getElementById('metricsChart').getContext('2d');
-            const metricsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
-                    datasets: [{
-                        label: 'Métricas',
-                        data: [
-                            <?= $metrics['total_products'] ?>,
-                            <?= $metrics['low_stock'] ?>,
-                            <?= $metrics['total_providers'] ?>,
-                            <?= $metrics['total_clients'] ?>,
-                            <?= $metrics['invoices_month'] ?>,
-                            <?= $metrics['unread_notif'] ?>
-                        ],
-                        backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
-                        borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // Permite ajustar la proporción según el contenedor
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Cantidad',
-                                font: {
-                                    size: 16
-                                }
-                            },
-                            ticks: {
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                font: {
-                                    size: 14
-                                },
-                                autoSkip: false, // Muestra todas las etiquetas
-                                maxRotation: 45, // Rota las etiquetas para mejor legibilidad
-                                minRotation: 45
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: 'Resumen de Métricas',
-                            font: {
-                                size: 18
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de pastel
-            const ctxPie = document.getElementById('stockPieChart').getContext('2d');
-            const stockPieChart = new Chart(ctxPie, {
-                type: 'pie',
-                data: {
-                    labels: ['Stock Bajo', 'Stock Normal'],
-                    datasets: [{
-                        data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
-                        backgroundColor: ['#e15759', '#59a14f'],
-                        borderColor: ['#e15759', '#59a14f'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Proporción de Stock',
-                            font: {
-                                size: 18
-                            }
-                        }
-                    }
-                }
-            });
-
-            <?php if (isset($facturas_diarias)): ?>
-                // Gráfico de líneas
-                const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
-                const invoicesLineChart = new Chart(ctxLine, {
-                    type: 'line',
-                    data: {
-                        labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
-                        datasets: [{
-                            label: 'Facturas Diarias',
-                            data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
-                            borderColor: '#4e79a7',
-                            backgroundColor: 'rgba(78, 121, 167, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Facturas',
-                                    font: {
-                                        size: 16
-                                    }
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Día del Mes',
-                                    font: {
-                                        size: 16
-                                    }
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    font: {
-                                        size: 14
-                                    }
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Facturas Diarias del Mes',
-                                font: {
-                                    size: 18
-                                }
-                            }
-                        }
-                    }
-                });
-            <?php endif; ?>
         });
     </script>
+
+
+
+        
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <!-- Bloque único de JS para crear y actualizar los gráficos -->
+            <script>
+                // 1️⃣ Variables globales para los charts
+                let metricsChart, stockPieChart, invoicesLineChart;
+
+                // 2️⃣ Detectar color de texto según el modo
+                function getTextoColorPorModo() {
+                    return document.body.classList.contains('modo-alto-contraste') ? '#fff' : '#000';
+                }
+
+                // 3️⃣ Función que crea los tres gráficos
+                function crearCharts() {
+                    const colorTexto = getTextoColorPorModo();
+
+                    // ——— Gráfico de barras ———
+                    const ctxBar = document.getElementById('metricsChart').getContext('2d');
+                    metricsChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
+                            datasets: [{
+                                label: 'Métricas',
+                                data: [
+                                    <?= $metrics['total_products'] ?>,
+                                    <?= $metrics['low_stock'] ?>,
+                                    <?= $metrics['total_providers'] ?>,
+                                    <?= $metrics['total_clients'] ?>,
+                                    <?= $metrics['invoices_month'] ?>,
+                                    <?= $metrics['unread_notif'] ?>
+                                ],
+                                backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+                                borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Cantidad',
+                                        font: {
+                                            size: 16
+                                        },
+                                        color: colorTexto
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 14
+                                        },
+                                        color: colorTexto
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        font: {
+                                            size: 14
+                                        },
+                                        color: colorTexto,
+                                        autoSkip: false,
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Resumen de Métricas',
+                                    font: {
+                                        size: 18
+                                    },
+                                    color: colorTexto
+                                }
+                            }
+                        }
+                    });
+
+                    // ——— Gráfico de pastel ———
+                    const ctxPie = document.getElementById('stockPieChart').getContext('2d');
+                    stockPieChart = new Chart(ctxPie, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Stock Bajo', 'Stock Normal'],
+                            datasets: [{
+                                data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
+                                backgroundColor: ['#e15759', '#59a14f'],
+                                borderColor: ['#e15759', '#59a14f'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        font: {
+                                            size: 14
+                                        },
+                                        color: colorTexto
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Proporción de Stock',
+                                    font: {
+                                        size: 18
+                                    },
+                                    color: colorTexto
+                                }
+                            }
+                        }
+                    });
+
+                    // ——— Gráfico de líneas (si hay datos) ———
+                    <?php if (isset($facturas_diarias) && count($facturas_diarias) > 0) { ?>
+                        const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
+                        invoicesLineChart = new Chart(ctxLine, {
+                            type: 'line',
+                            data: {
+                                labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
+                                datasets: [{
+                                    label: 'Facturas Diarias',
+                                    data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
+                                    borderColor: '#4e79a7',
+                                    backgroundColor: 'rgba(78,121,167,0.2)',
+                                    fill: true,
+                                    tension: 0.4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Facturas',
+                                            font: {
+                                                size: 16
+                                            },
+                                            color: colorTexto
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 14
+                                            },
+                                            color: colorTexto
+                                        }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Día del Mes',
+                                            font: {
+                                                size: 16
+                                            },
+                                            color: colorTexto
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 14
+                                            },
+                                            color: colorTexto
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                        labels: {
+                                            font: {
+                                                size: 14
+                                            },
+                                            color: colorTexto
+                                        }
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Facturas Diarias del Mes',
+                                        font: {
+                                            size: 18
+                                        },
+                                        color: colorTexto
+                                    }
+                                }
+                            }
+                        });
+                    <?php } ?>
+                }
+
+                // 4️⃣ Función que actualiza solo el color y repinta
+                function actualizarColorCharts() {
+                    const c = getTextoColorPorModo();
+
+                    // barras
+                    metricsChart.options.scales.y.title.color = c;
+                    metricsChart.options.scales.y.ticks.color = c;
+                    metricsChart.options.scales.x.ticks.color = c;
+                    metricsChart.options.plugins.title.color = c;
+                    metricsChart.update();
+
+                    // pastel
+                    stockPieChart.options.plugins.legend.labels.color = c;
+                    stockPieChart.options.plugins.title.color = c;
+                    stockPieChart.update();
+
+                    // líneas
+                    if (typeof invoicesLineChart !== 'undefined') {
+                        invoicesLineChart.options.scales.y.title.color = c;
+                        invoicesLineChart.options.scales.y.ticks.color = c;
+                        invoicesLineChart.options.scales.x.title.color = c;
+                        invoicesLineChart.options.scales.x.ticks.color = c;
+                        invoicesLineChart.options.plugins.legend.labels.color = c;
+                        invoicesLineChart.options.plugins.title.color = c;
+                        invoicesLineChart.update();
+                    }
+                }
+
+                // 5️⃣ Al cargar la página, crear charts y observar cambios de clase en <body>
+                document.addEventListener('DOMContentLoaded', () => {
+                    crearCharts();
+                    new MutationObserver(muts => {
+                        if (muts.some(m => m.attributeName === 'class')) {
+                            actualizarColorCharts();
+                        }
+                    }).observe(document.body, {
+                        attributes: true,
+                        attributeFilter: ['class']
+                    });
+                });
+            </script>
 </body>
 
 </html>

@@ -256,10 +256,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         // Al cargar la pantalla de pago, borramos el carrito de ventas del sessionStorage
         sessionStorage.removeItem('carritoProductos');
         sessionStorage.removeItem('carritoTotal');
-    </script>
+        </script>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
+    <div class="ubica"> Factura / Pagos </div>
     <div class="container">
         <div class="main-content">
             <div class="content">
