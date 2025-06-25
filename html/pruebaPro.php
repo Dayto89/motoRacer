@@ -180,7 +180,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <link rel="stylesheet" href="../css/producto.css">
+    <link rel="stylesheet" href="../css/pruebaPro.css">
     <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="/componentes/header.php">
     <link rel="stylesheet" href="/componentes/header.css">
@@ -211,59 +211,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         .close-button:hover {
             color: red;
         }
-
-        .select-search {
-            width: 50%;
-            /* ajusta al porcentaje que necesites */
-            max-width: 300px;
-            /* no más de 300px */
-            min-width: 150px;
-            /* al menos 150px */
-            display: block;
-            padding: 0.4em;
-            margin-bottom: 0.5em;
-            box-sizing: border-box;
-        }
     </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Guarda copias de las <option> originales
-            const originalCat = Array.from(
-                document.querySelectorAll('#categoriaList option')
-            ).map(o => ({
-                text: o.value,
-                value: o.dataset.value
-            }));
-
-            const inp = document.getElementById('categoriaInput');
-            const list = document.getElementById('categoriaList');
-            const sel = document.getElementById('categoria');
-
-            inp.addEventListener('input', () => {
-                const term = inp.value.toLowerCase();
-                // Limpia el datalist
-                list.innerHTML = '';
-
-                // Reconstruye sólo las que coincidan
-                originalCat
-                    .filter(item => item.text.toLowerCase().includes(term))
-                    .forEach(item => {
-                        const o = document.createElement('option');
-                        o.value = item.text;
-                        o.dataset.value = item.value;
-                        list.appendChild(o);
-                    });
-            });
-
-            // Cuando selecciones (blur o al submit), sincroniza el select oculto
-            inp.addEventListener('change', () => {
-                const match = originalCat.find(item => item.text === inp.value);
-                if (match) sel.value = match.value;
-                else sel.value = '';
-            });
-        });
-    </script>
 </head>
 
 <body>
@@ -369,7 +317,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
             </div>
 
-            <!-- Categoría -->
+
             <div class="campo">
                 <div class="label-with-button" style="display:flex;align-items:center;">
                     <label class="required" for="categoria">Categoría:</label>
@@ -380,16 +328,14 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <input type="text" id="categoriaInput" list="categoriaList" placeholder="Buscar o elegir categoría…" class="select-search">
-                <datalist id="categoriaList">
-                    <?php mysqli_data_seek($categorias, 0);
-                    while ($fila = $categorias->fetch_assoc()) { ?>
-                        <option value="<?= htmlspecialchars($fila['nombre']) ?>" data-value="<?= $fila['codigo'] ?>"></option>
+                <select id="categoria" name="categoria" required>
+                    <?php while ($fila = $categorias->fetch_assoc()) { ?>
+                        <option value="<?= $fila['codigo'] ?>">
+                            <?= $fila['nombre'] ?>
+                        </option>
                     <?php } ?>
-                </datalist>
-                <select name="categoria" id="categoria" hidden></select>
+                </select>
             </div>
-            <!-- Marca -->
             <div class="campo">
                 <div class="label-with-button">
                     <label class="required" for="marca">Marca:</label>
@@ -400,16 +346,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <input type="text" id="marcaInput" list="marcaList" placeholder="Buscar o elegir marca…" class="select-search">
-                <datalist id="marcaList">
-                    <?php mysqli_data_seek($marcas, 0);
-                    while ($fila = $marcas->fetch_assoc()) { ?>
-                        <option value="<?= htmlspecialchars($fila['nombre']) ?>" data-value="<?= $fila['codigo'] ?>"></option>
+                <select name="marca" id="marca" required>
+                    <?php while ($fila = $marcas->fetch_assoc()) { ?>
+                        <option value="<?php echo $fila['codigo']; ?>">
+                            <?php echo $fila['nombre']; ?>
+                        </option>
                     <?php } ?>
-                </datalist>
-                <select name="marca" id="marca" hidden></select>
+                </select>
+                <br>
             </div>
-
             <div class="campo">
                 <label class="required" for="unidadMedida">Clase:</label>
                 <select name="unidadMedida" id="unidadMedida" required>
@@ -432,17 +377,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <input type="text" id="ubicacionInput" list="ubicacionList" placeholder="Buscar o elegir ubicación…" class="select-search">
-                <datalist id="ubicacionList">
-                    <?php mysqli_data_seek($ubicaciones, 0);
-                    while ($fila = $ubicaciones->fetch_assoc()) { ?>
-                        <option value="<?= htmlspecialchars($fila['nombre']) ?>" data-value="<?= $fila['codigo'] ?>"></option>
+                <select name="ubicacion" id="ubicacion">
+                    <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
+                        <option value="<?php echo $fila['codigo']; ?>">
+                            <?php echo $fila['nombre']; ?>
+                        </option>
                     <?php } ?>
-                </datalist>
-                <select name="ubicacion" id="ubicacion" hidden></select>
+                </select>
+                <br>
             </div>
-            <!-- Ubicación -->
-
 
             <div class="campo">
                 <label class="required" for="proveedor">Proveedor:</label>
@@ -462,6 +405,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         </form>
 
+
+    </div>
 
     </div>
 
@@ -491,7 +436,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-     <!-- Modal Nueva Ubicación -->
+    <!-- Modal Nueva Ubicación -->
     <div id="modalUbicacion" class="modal_nueva_categoria">
         <div class="modal-content-nueva">
             <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
@@ -515,7 +460,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </form>
         </div>
     </div>
-  <!-- Modal Nueva Marca -->
+
+    <!-- Modal Nueva Marca -->
     <div id="modalMarca" class="modal_nueva_categoria">
         <div class="modal-content-nueva">
             <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
@@ -587,6 +533,39 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
     <script>
+        function openModal(modal) {
+            modal.classList.add('show');
+            void modal.offsetWidth; // fuerza reflow para animación
+            modal.classList.add('opening');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('opening');
+            modal.classList.add('closing');
+            const contenido = modal.querySelector('.modal-content');
+            contenido.addEventListener('transitionend', function handler() {
+                contenido.removeEventListener('transitionend', handler);
+                modal.classList.remove('show', 'closing');
+            });
+        }
+        document.querySelector('form[action="/html/importar_excel.php"]').addEventListener('submit', e => {
+            const inp = document.getElementById('archivoExcel');
+            const file = inp.files[0];
+            if (!file) return; // el required ya avisa
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['xlsx', 'xls'].includes(ext)) {
+                Swal.fire('Error', 'Formato no permitido. Usa .xlsx o .xls', 'error');
+                e.preventDefault();
+                return;
+            }
+            const max = parseInt(inp.dataset.maxSize, 10);
+            if (file.size > max) {
+                Swal.fire('Error', `El archivo no puede pesar más de ${max/1024/1024} MiB`, 'error');
+                e.preventDefault();
+                return;
+            }
+        });
+
         // ——— Modal de subir archivo ———
         function openConfirmModal() {
             const modal = document.getElementById("modalConfirm");
@@ -646,7 +625,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         // ——— Validación código duplicado ———
         document.addEventListener('DOMContentLoaded', () => {
-
             const inputCodigo = document.getElementById('codigo1');
             const submitBtn = document.querySelector('#product-form button[type="submit"]');
             const campo = inputCodigo.closest('.campo');
@@ -707,7 +685,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             modal.classList.remove('opening');
             modal.classList.add('closing');
             // Cuando termine la transición, ocultar por completo
-            const contenido = modal.querySelector('.modal-content-nueva');
+            const contenido = modal.querySelector('.modal-content-nueva, .modal-content');
+
             contenido.addEventListener('transitionend', function handler() {
                 contenido.removeEventListener('transitionend', handler);
                 modal.classList.remove('show', 'closing');
@@ -851,6 +830,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     }
                 });
         });
+
+        // referencias
+        const modalImport = document.getElementById('modalImport');
+        const btnAbrirImport = document.getElementById('btnAbrirModalImport');
+        const btnCerrarImport = document.getElementById('btnCerrarModalImport');
+
+        // abrir
+        btnAbrirImport.addEventListener('click', () => {
+            openModal(modalImport);
+        });
+
+        // cerrar con la “X”
+        btnCerrarImport.addEventListener('click', () => {
+            closeModal(modalImport);
+        });
+
+        // cerrar al clicar fuera de .modal-content
+        modalImport.addEventListener('click', e => {
+            if (e.target === modalImport) {
+                closeModal(modalImport);
+            }
+        });
+
         // Helper genérico
         async function checkExists(accion, nombre) {
             const body = new URLSearchParams({
@@ -933,54 +935,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endif; ?>
         </div>
     </div>
-
-    <script>
-        document.getElementById('product-form').addEventListener('submit', function(e) {
-            // ----- Validar categoría -----
-            const catInput = document.getElementById('categoriaInput');
-            const opcionesCat = Array.from(document.querySelectorAll('#categoriaList option'))
-                .map(opt => opt.value);
-            if (!opcionesCat.includes(catInput.value)) {
-                e.preventDefault();
-                alert('Por favor seleccione una CATEGORÍA válida de la lista.');
-                catInput.focus();
-                return;
-            }
-            // Si pasa, copiamos el valor “data-value” al select escondido
-            const catOpt = document.querySelector(`#categoriaList option[value="${catInput.value}"]`);
-            document.getElementById('categoria').value = catOpt.dataset.value;
-
-            // ----- Validar marca (si tienes datalist para marca igual que categoría) -----
-            const marcaInput = document.getElementById('marcaInput');
-            if (marcaInput) {
-                const opcionesMar = Array.from(document.querySelectorAll('#marcaList option'))
-                    .map(opt => opt.value);
-                if (!opcionesMar.includes(marcaInput.value)) {
-                    e.preventDefault();
-                    alert('Por favor seleccione una MARCA válida de la lista.');
-                    marcaInput.focus();
-                    return;
-                }
-                const marOpt = document.querySelector(`#marcaList option[value="${marcaInput.value}"]`);
-                document.getElementById('marca').value = marOpt.dataset.value;
-            }
-
-            // ----- Y lo mismo para ubicación -----
-            const ubiInput = document.getElementById('ubicacionInput');
-            if (ubiInput) {
-                const opcionesUbi = Array.from(document.querySelectorAll('#ubicacionList option'))
-                    .map(opt => opt.value);
-                if (!opcionesUbi.includes(ubiInput.value)) {
-                    e.preventDefault();
-                    alert('Por favor seleccione una UBICACIÓN válida de la lista.');
-                    ubiInput.focus();
-                    return;
-                }
-                const ubiOpt = document.querySelector(`#ubicacionList option[value="${ubiInput.value}"]`);
-                document.getElementById('ubicacion').value = ubiOpt.dataset.value;
-            }
-        });
-    </script>
 
 </body>
 

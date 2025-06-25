@@ -212,6 +212,10 @@ input#nombre {
 .modal_nueva_marca.show {
   opacity: 1;
   visibility: visible;
+    background-color: rgb(0 0 0 / 83%) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
 }
 
 /* Contenido del modal Nueva Categoría */
@@ -267,6 +271,10 @@ input#nombre {
 #modalProductos.modal.show {
   visibility: visible;
   opacity: 1;
+    background-color: rgb(0 0 0 / 83%) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
 }
 
 /* Contenido del modal Lista de Productos */

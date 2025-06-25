@@ -267,7 +267,11 @@ tbody input[type="checkbox"] {
 }
 /* Cuando el modal está abierto */
 .modal.mostrar {
-  background-color: rgba(0, 0, 0, 0.7); /* Más oscuro */
+   background-color: rgb(0 0 0 / 83%) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
+  z-index: 9999;
 }
 /* Clases para activar las animaciones */
 .modal.mostrar .modal-content {

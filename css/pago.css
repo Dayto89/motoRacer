@@ -90,7 +90,8 @@ body::before {
 }
 
 .payment-section {
-  margin-top: 7%;
+    margin-top: 7%;
+    margin-left: -9px;
 }
 
 .payment-methods {
@@ -511,14 +512,14 @@ button:hover {
 }
 
 .tarjeta-content {
-  display: grid;
-  gap: 8px;
-  align-items: center;
-  width: 95%;
-  padding: 10px;
-  box-sizing: border-box;
+    display: grid
+;
+    gap: 19px;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }
-
 .tarjeta-content select,
 .tarjeta-content input {
   width: 86%;

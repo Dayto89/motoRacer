@@ -104,7 +104,7 @@ h2 {
     position: absolute;
     z-index: 50;
     right: 100px;
-    top: 20px;
+    top: 50px;
     background-color: #ffffff00;
     cursor: pointer;
     border: none;
@@ -212,8 +212,100 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     border-radius: 20px;
 }
 
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(180deg, #1167cc, #083972, #000000);
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover {
+    width: 270px;
+}
+
+.sidebar:hover .logo {
+    transform: scale(1.4);
+    transition: 1s;
+    margin-left: 30px;
+}
+
+.sidebar:hover .sidebar-header i {
+    transform: scale(3);
+    transition: 1s;
+    margin-left: 50px;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    color: white;
+    list-style-type: none;
+    padding: 20px;
+    color: #ffffff;
+    /* Color del texto */
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+        0px 1px 0 #000;
+    /* Cambia el color y tamaño del contorno según necesites */
+}
+
+
+
+#menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px; /* Ancho inicial */
+  height: 100%;
+  background: linear-gradient(180deg, #1167cc, #083972, #000000);
+  transition: width 0.3s ease; /* Transición para la expansión */
+  z-index: 1002;
+}
+
+/* 2. Cuando se hace hover sobre #menu, se expande. */
+#menu:hover {
+  width: 270px; /* Ancho expandido */
+}
+
+
+/* 3. El texto '.ubica' debe tener una posición inicial y una transición. */
+.ubica {
+  position: relative; /* O 'absolute' si lo necesitas */
+  margin-left: 120px; /* Posición inicial, fuera de la barra colapsada */
+  transition: margin-left 0.3s ease; /* ¡La animación suave! */
+
+  /* Aquí van tus otros estilos para el texto (color, tamaño, etc.) */
+  font-size: 2rem; 
+  color: white;
+  font-weight: bold;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+}
+
+
+/* 4. LA REGLA FINAL: Cuando #menu se expande (hover), mueve a su hermano .ubica. */
 #menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+  margin-left: 290px; /* Posición final, fuera de la barra expandida. Ajusta si es necesario. */
+}
+
+/* ----------------------------------------------------------------------------- */
+/* Si el contenido del menú (iconos, texto) también necesita animarse, usa esto: */
+
+/* Esconde el texto del menú por defecto */
+#menu .menu li a span {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Muestra el texto del menú cuando la barra se expande */
+#menu:hover .menu li a span {
+  display: inline-block;
+  opacity: 1;
 }
 
 
@@ -234,19 +326,21 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     overflow-y: auto;
     display: none;
 }
-    .form-stock .form-group {
-        margin-bottom: 20px;
-    }
 
-    .form-stock label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 6px;
-        color: #ffffff;
-        font-family: Arial, Helvetica, sans-serif;
-    }
+.form-stock .form-group {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
 
- .form-stock input[type="text"] {
+.form-stock label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.form-stock input[type="text"] {
     width: 36%;
     padding: 6px 7px;
     font-size: 16px;
@@ -258,10 +352,10 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     margin-top: 5%;
 }
 
-    .form-stock input[type="text"]:focus {
-        border-color: #007bff;
-        outline: none;
-    }
+.form-stock input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
 
 .form-stock button {
     width: 50%;
@@ -274,19 +368,20 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
     cursor: pointer;
     transition: background-color 0.3s;
     margin-left: 44%;
-    margin-top: -27%;
+    margin-top: -16%;
+    font-weight: bold;
 }
 
-    .form-stock button:hover {
-        background-color: #0056b3;
-    }
+.form-stock button:hover {
+    background-color: #0056b3;
+}
 
 h3 {
     font-size: 29px;
     color: #ffffff;
     text-shadow: 5px 0px 0 #1c51a0, 3px 4px 0 #1c51a0;
     letter-spacing: 2;
-    
+
 }
 
 
@@ -425,9 +520,9 @@ h3 {
     }
 
     .stock {
-    margin-top: 50px;
-    margin-right: 10px;
-}
+        margin-top: 50px;
+        margin-right: 10px;
+    }
 }
 
 /* Vertical */

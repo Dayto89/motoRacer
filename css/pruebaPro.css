@@ -109,8 +109,9 @@ body::before {
 }
 
 #menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px); /* 20px de empuje extra */
+  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
 }
+
 
 .fondo {
   height: 100vh;
@@ -396,7 +397,7 @@ input[type="checkbox"] {
   border-width: 2px;
   border-color: #000;
   border: none;
-  cursor: pointer;
+   cursor: pointer;
 }
 
 #proveedor h1 {
@@ -603,11 +604,6 @@ input[type="checkbox"] {
 .modal.show {
   visibility: visible;
   opacity: 1;
-      background-color: rgb(0 0 0 / 83%) !important;
-  /* Fondo oscuro */
-  backdrop-filter: blur(2px);
-  /* Opcional: desenfoque sutil */
-
 }
 
 .modal .modal-content {
@@ -829,6 +825,7 @@ input[type="file"] {
   align-items: center;
 }
 
+
 .icon-button label {
   color: white;
   font-size: 16px;
@@ -851,6 +848,7 @@ input.error {
 }
 
 /* Asegura que cada .campo sea el contexto relativo */
+
 
 input.error {
   border: 2px solid red;
@@ -910,10 +908,6 @@ input.error {
 .modal_nueva_categoria.show {
   display: flex;
   /* deja que siga oculto internamente hasta que JS agregue opening */
-      background-color: rgb(0 0 0 / 83%) !important;
-  /* Fondo oscuro */
-  backdrop-filter: blur(2px);
-  /* Opcional: desenfoque sutil */
 }
 /* Contenedor blanco */
 .modal-content-nueva, .modal-content {
@@ -1119,78 +1113,6 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-/*SCROLL EN SELECTS*/
-.fake-select {
-  position: relative;
-  width: 180%;
-  max-width: 190%;
-  font-size: 14px;
-  border: 1px solid #000;
-  border-radius: 23px;
-  background: #fff;
-  cursor: pointer;
-  font-family: arial;
-}
-.fake-select .fs-selected {
-  padding: 10px;
-}
-.fake-select .fs-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border: 1px solid #000;
-  border-radius: 23px;
-  max-height: 230px;
-  overflow-y: auto;
-  background: #fff;
-  display: none;
-  z-index: 10;
-}
-
-.fake-select.open .fs-options {
-  display: block;
-}
-
-.fake-select .fs-options li {
-  padding: 5px 15px;
-}
-
-.fake-select .fs-options li:hover {
-  background: #eee;
-}
-/* El wrapper recorta el scroll con el mismo border-radius */
-.fake-select .fs-options-wrap {
-  max-height: 200px;               /* ≃10 filas */
-  overflow-y: auto;                /* scroll dentro */
-  border-radius: 0 0 23px 23px;    /* bordes redondeados iguales */
-}
-
-/* Estiliza el scrollbar dentro del wrapper */
-.fake-select .fs-options-wrap::-webkit-scrollbar {
-  width: 6px;
-  background: transparent;
-}
-.fake-select .fs-options-wrap::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
-}
-.fake-select .fs-options-wrap::-webkit-scrollbar-track {
-  background: transparent;
-}
-.fake-select .fs-options-wrap::-webkit-scrollbar-button {
-  display: none;
-}
-
-/* Firefox */
-.fake-select .fs-options-wrap {
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
-}
-
 
 /* MÓVILES */
 /* Horizontal */

@@ -256,7 +256,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         // Al cargar la pantalla de pago, borramos el carrito de ventas del sessionStorage
         sessionStorage.removeItem('carritoProductos');
         sessionStorage.removeItem('carritoTotal');
-        </script>
+    </script>
     <div class="sidebar">
         <div id="menu"></div>
     </div>
@@ -353,55 +353,55 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 </div>
 
                 <div class="summary-section">
-    <h3>Información de pago</h3>
+                    <h3>Información de pago</h3>
 
-    <?php
-    $productos = $_SESSION['productos'] ?? [];
-    $total     = $_SESSION['total'] ?? 0;
-    ?>
+                    <?php
+                    $productos = $_SESSION['productos'] ?? [];
+                    $total     = $_SESSION['total'] ?? 0;
+                    ?>
 
-    <?php if (!empty($productos)): ?>
-        <div class="summary-container">
-            <h2>Productos:</h2>
-           <div class="tabla-scroll">
-    <table class="tabla-productos">
-        <thead>
-            <tr>
-                <th>Cantidad</th>
-                <th>Nombre</th>
-                <th>Precio Unitario</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($productos as $producto): ?>
-                <tr data-id="<?php echo $producto['id']; ?>">
-                    <td><?php echo $producto['cantidad']; ?></td>
-                    <td><?php echo $producto['nombre']; ?></td>
-                    <td>$<?php echo number_format($producto['precio'], 2); ?></td>
-                    <td>$<?php echo number_format($producto['cantidad'] * $producto['precio'], 2); ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
+                    <?php if (!empty($productos)): ?>
+                        <div class="summary-container">
+                            <h2>Productos:</h2>
+                            <div class="tabla-scroll">
+                                <table class="tabla-productos">
+                                    <thead>
+                                        <tr>
+                                            <th>Cantidad</th>
+                                            <th>Nombre</th>
+                                            <th>Precio Unitario</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($productos as $producto): ?>
+                                            <tr data-id="<?php echo $producto['id']; ?>">
+                                                <td><?php echo $producto['cantidad']; ?></td>
+                                                <td><?php echo $producto['nombre']; ?></td>
+                                                <td>$<?php echo number_format($producto['precio'], 2); ?></td>
+                                                <td>$<?php echo number_format($producto['cantidad'] * $producto['precio'], 2); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
 
-            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
-            <h2>Total a pagar:</h2>
-            <div class="contenedor-precio">
-                <p>$<?php echo number_format($total, 2); ?></p>
-            </div>
+                            <p id="saldoPendiente">Saldo pendiente: $0.00</p>
+                            <h2>Total a pagar:</h2>
+                            <div class="contenedor-precio">
+                                <p>$<?php echo number_format($total, 2); ?></p>
+                            </div>
 
-            <button class="btn-editar" onclick="window.location.href='ventas.php'">
-                ✏️ Editar productos
-            </button>
+                            <button class="btn-editar" onclick="window.location.href='ventas.php'">
+                                ✏️ Editar productos
+                            </button>
 
-            <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
-        </div>
-    <?php else: ?>
-        <p>No hay productos en el resumen.</p>
-    <?php endif; ?>
-</div>
+                            <button class="btn-pagar" onclick="guardarFactura()">Pagar</button>
+                        </div>
+                    <?php else: ?>
+                        <p>No hay productos en el resumen.</p>
+                    <?php endif; ?>
+                </div>
 
             </div>
         </div>
@@ -445,13 +445,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
             // 5.2) Reconstruir arreglo de productos desde el resumen
             let productos = [];
-            document.querySelectorAll(".summary-section ul li").forEach(li => {
-                let partes = li.textContent.split(" x ");
-                let cantidad = parseInt(partes[0].trim());
-                let nombreProd = partes[1].split(" – ")[0].trim();
-                let precioString = partes[1].split("$")[1].replace(/,/g, "");
-                let precioUn = parseFloat(precioString);
-                let id = li.getAttribute("data-id");
+            document.querySelectorAll(".tabla-productos tbody tr").forEach(row => {
+                // Obtenemos los datos de las celdas (td) de la fila actual
+                const cantidad = parseInt(row.cells[0].textContent.trim());
+                const nombreProd = row.cells[1].textContent.trim();
+                // Para el precio, lo tomamos de la celda y removemos el signo '$' y las comas
+                const precioString = row.cells[2].textContent.replace(/[$,]/g, "").trim();
+                const precioUn = parseFloat(precioString);
+                // El ID lo obtenemos del atributo 'data-id' de la fila <tr>
+                const id = row.getAttribute("data-id");
 
                 productos.push({
                     id: id,

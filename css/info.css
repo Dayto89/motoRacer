@@ -98,6 +98,13 @@ h1 {
   transform: scale(1.07);
 }
 
+.overlay {
+     background-color: rgb(0 0 0 / 83%) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
+}
+
 .popup h2 {
   font-size: 24px;
   margin-bottom: 20px;
@@ -111,6 +118,7 @@ h1 {
   flex-direction: column;
   gap: 4px;
 }
+
 
 .button_popup {
   display: flex;

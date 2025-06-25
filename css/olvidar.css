@@ -1,190 +1,167 @@
+/* --- CONFIGURACIÓN GLOBAL Y FUENTES --- */
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
+
+body {
+  font-family: "Merriweather", serif;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px; /* Espacio para que no pegue en los bordes en móvil */
+  background: linear-gradient(180deg, #1167cc, #083972, #000000);
+}
+
+/* --- ESTILOS BASE (MOBILE FIRST) --- */
+.container {
+  width: 100%;
+  max-width: 1100px; /* Ancho máximo en escritorios */
+  display: flex;
+  flex-direction: column; /* Por defecto, todo en una columna (móvil) */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Un fondo semitransparente para legibilidad */
+  border-radius: 15px;
+  overflow: hidden; /* Para que los bordes redondeados apliquen a los hijos */
+  box-shadow: 0 10px 30px rgb(255 255 255 / 40%);
+}
+
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.logo_inicio {
+  width: 80%; /* Ocupa el 80% del panel */
+  max-width: 300px; /* Pero no más de 300px */
+  height: auto;
+  filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255));
+}
+
+h1 {
+  font-family: "Metal Mania", system-ui;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
+  font-size: 2.5rem; /* Usar 'rem' para fuentes escalables */
+  margin-bottom: 1.5rem;
+}
+
+form {
+  width: 100%;
+  max-width: 400px; /* El formulario no se hará excesivamente ancho */
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.input-wrapper i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem; /* 24px */
+  color: #333;
+}
+
+.input-wrapper .bx-user-circle,
+.input-wrapper .bx-lock-alt,
+.input-wrapper .bx-envelope { /* Añadí el icono de email aquí */
+  left: 20px;
+}
+
+#togglePassword {
+  right: 20px;
+  cursor: pointer;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"] { /* Añadí el input de email aquí */
+  width: 100%;
+  height: 60px;
+  background-color: #ffffff;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  padding-left: 55px; /* Espacio para el icono */
+  font-size: 1rem;
+  color: #333;
+}
+
+input::placeholder {
+  color: #888;
+}
+
+.boton {
+  background-color: #007bff;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 10px;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%; /* Ocupa todo el ancho en móvil */
+  display: block; /* Para que el width funcione */
+  text-align: center;
+  transition: background-color 0.3s; /* Transición suave */
+}
+
+.boton:hover {
+  background-color: #0056b3;
+}
+
+.container_boton {
+  margin-top: 1rem;
+}
+
+.boton-secundario {
+  background-color: transparent;
+  border: 1px solid #007bff;
+}
+
+.boton-secundario:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* --- MEDIA QUERY PARA TABLETS Y ESCRITORIOS --- */
+/* Cuando la pantalla sea de 768px o más, aplica estos cambios */
+
+@media (min-width: 768px) {
   .container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    place-items: center;
+    flex-direction: row; /* Ponemos los paneles uno al lado del otro */
   }
-  
-  .fondo {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+
+  .login-panel {
+    width: 50%; /* Cada panel ocupa la mitad del espacio */
   }
-  
+
+  /* La famosa barra vertical, creada con un borde */
+  .panel-form {
+    border-left: 2px solid rgba(255, 255, 255, 0.5);
+  }
+
   .logo_inicio {
-    position: absolute;
-    width: 40%;
-    height: 45%;
-    margin-right: 800px;
-    margin-bottom: 50px;
-    z-index: 1;
+    max-width: 400px; /* El logo puede ser un poco más grande en escritorio */
   }
-  
-  .barra {
-    position: absolute;
-    width: 6px;
-    height: 500px;
-    background-color: white;
-    margin-left: 10%;
-    z-index: 2;
-  }
-  
-  h1 {
-    font-family: "Metal Mania", system-ui;
-    position: absolute;
-    color: white;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000,
-      3px 3px 0 #000;
-    font-size: 60px;
-    margin-left: 45%;
-    margin-bottom: 25%;
-    z-index: 2;
-  }
-  
-  form {
-      position: absolute;
-      margin-top: 81px;
-      margin-left: 49%;
-      z-index: 2;
-  }
-  
-  form label {
-    margin-bottom: 21px;
-    color: white;
-    display: block;
-    font-size: 19px;
-    font-family: Arial, Helvetica, sans-serif;
-    text-shadow: 2px 0 #1c51a0;
-    white-space: nowrap;
-    margin-left: 12%;
-  }
-  
-  form input {
-     display: block;
-    background-color: #ffffff;
-    border-radius: 23px;
-    height: 40px;
-    width: 277px;
-    color: #000;
-    padding: 0px 0px 0px 10px;
-    border: none;
-    font-size: 14px;
-    margin-bottom: 28px;
-    margin-left: -8%;
-  
-  }
-  
-  /* Botones */
-  /* Botones */
-  .button_container {
-      text-align: center;
-      display: flex;
-      gap: 19px;
-      margin-top: 13%;
-      margin-left: -7%;
-  }
-  
-  .button_container .boton,
-  .botonn {
-        background-color: #007bff;
-    font-weight: bold;
-    color: white;
-    border: none;
-    padding: 11px 25px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 10px;
-  }
-  
-  .button_container .boton:hover,
-  .botonn:hover {
-    background-color: #0056b3;
-  }
-  select#preguntaSeguridad {
-    background-color: #ffffff;
-    border-radius: 24px;
-    height: 40px;
-    width: 278px;
-    color: #000;
-    padding: 0px 0px 0px 10px;
-    border: none;
-    font-size: 14px;
-    margin-bottom: 36px;
-  }
-  
-  /* MÓVILES - VISTA HORIZONTAL */
-@media screen and (max-width: 870px) and (orientation: landscape) {
-  .container {
-        flex-direction: column;
-        padding: 20px;
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo_inicio {
-        width: 50%;
-        height: auto;
-        margin: 10px 0;
-        margin-right: 40%;
-    }
-
-    h1 {
-        font-size: 35px;
-        margin-bottom: 18%;
-    }
-
-    form {
-        margin-left: 390px;
-    }
-
-    .barra {
-        display: none;
-    }
-
-    form input {
-    height: 27px;
-    width: 200px;
-    font-size: 11px;
-    margin-bottom: 24px;
-  }
-  
-  .button_container .boton, .botonn {
-    padding: -4px 2px;
-    font-size: 1rem;
-    width: 125px;
-    height: 35px; 
-    line-height: 50px;
-  }
-
-  form label {
-    margin-bottom: 15px;
-    font-size: 15px;
-    margin-left: -35%;
 }
-
-.button_container {
-      text-align: center;
-      display: flex;
-      gap: 19px;
-      margin-top: 13%;
-      margin-left: -13%;
-  }
-
-}
- 
-/* Vertical Responsive */
-@media screen and (max-width: 767px) and (orientation: portrait) {
-  
-
-
-}
-  

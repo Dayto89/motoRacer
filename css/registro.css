@@ -353,7 +353,10 @@ p {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgb(0 0 0 / 83%) !important;
+  /* Fondo oscuro */
+  backdrop-filter: blur(2px);
+  /* Opcional: desenfoque sutil */
 }
 
 .modal-container h2 {

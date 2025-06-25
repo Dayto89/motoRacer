@@ -1,445 +1,164 @@
+/* --- CONFIGURACIÓN GLOBAL Y FUENTES --- */
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap");
+
+body {
+  font-family: "Merriweather", serif;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px; /* Espacio para que no pegue en los bordes en móvil */
+  background: linear-gradient(180deg, #1167cc, #083972, #000000);
+}
+
+/* --- ESTILOS BASE (MOBILE FIRST) --- */
 .container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 0;
+  width: 100%;
+  max-width: 1100px; /* Ancho máximo en escritorios */
+  display: flex;
+  flex-direction: column; /* Por defecto, todo en una columna (móvil) */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Un fondo semitransparente para legibilidad */
+  border-radius: 15px;
+  overflow: hidden; /* Para que los bordes redondeados apliquen a los hijos */
+  box-shadow: 0 10px 30px rgb(255 255 255 / 40%);
 }
 
-.fondo {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
 }
 
 .logo_inicio {
-        position: absolute;
-    z-index: 1;
-    width: 40%;
-    height: 45%;
-    margin-right: 43%;
-}
-
-.barra {
-     position: absolute;
-    z-index: 2;
-    width: 0.3%;
-    height: 50%;
-    background-color: white;
-    margin-left: 10%;
+  width: 80%; /* Ocupa el 80% del panel */
+  max-width: 300px; /* Pero no más de 300px */
+  height: auto;
+  filter: drop-shadow(0 0 0.5rem rgb(255, 255, 255));
 }
 
 h1 {
-
-       font-family: "Metal Mania", system-ui;
-    position: absolute;
-    z-index: 2;
-    color: white;
-    text-shadow: -1px -1px 0 #000000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
-    font-size: 375%;
-    margin-left: 44%;
-    margin-bottom: 25%;
+  font-family: "Metal Mania", system-ui;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    3px 3px 0 #000;
+  font-size: 2.5rem; /* Usar 'rem' para fuentes escalables */
+  margin-bottom: 1.5rem;
 }
 
-
-.bx-user-circle:before {
-    content: "\ec65";
-    color: black;
-}
-
-.bx-lock-alt:before {
-    content: "\eb4a";
-    color: black;
+form {
+  width: 100%;
+  max-width: 400px; /* El formulario no se hará excesivamente ancho */
 }
 
 .input-wrapper {
-    position: relative;
-    width: 71.5%;
-    margin-bottom: 6%;
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .input-wrapper i {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 40px;
-    color: white;
-    margin-left: 9%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem; /* 24px */
+  color: #333;
+}
+
+.input-wrapper .bx-user-circle,
+.input-wrapper .bx-lock-alt {
+  left: 20px;
+}
+
+#togglePassword {
+  right: 20px;
+  cursor: pointer;
 }
 
 form input[type="text"],
 form input[type="password"] {
-    background-color: #ffffff;
-    border-radius: 50px;
-    height: 70px;
-    width: 100%;
-    color: rgb(0, 0, 0);
-    padding: 0 0 0 70px;
-    border: none;
-    font-size: 18px;
-    margin-left: 9%;
-}
-
-.guardar {
-    margin-bottom: 30px;
-    color: white;
-    font-size: 22px;
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-    width: 22px;
-    height: 22px;
-    background: rgb(255, 255, 255);
-    border-radius: 50%;
+  width: 100%;
+  height: 60px;
+  background-color: #ffffff;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  padding-left: 55px; /* Espacio para el icono */
+  font-size: 1rem;
+  color: #333;
 }
 
 input::placeholder {
-    color: gray;
-    font-size: 20px;
-}
-
-input[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    height: 70px;
-    width: 200px;
-    font-size: 20px;
-    cursor: pointer;
-    margin-bottom: 30px;
+  color: #888;
 }
 
 .boton {
-    background-color: #007bff;
-    font-weight: bold;
-    color: white;
-    border: none;
-    padding: 20px 30px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 10px;
-    text-decoration: none;
-    font-family: Arial, Helvetica, sans-serif;
-    margin-left: 28%;
-}
-
-.boton:last-child {
-    margin-right: 0;
-    /* Evitar margen en el último botón */
-}
-
-
-input[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-.container_boton {
-    margin-top: 60px;
-    margin-left: -13%;
+  background-color: #007bff;
+  font-weight: bold;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 10px;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%; /* Ocupa todo el ancho en móvil */
+  display: block; /* Para que el width funcione */
+  text-align: center;
 }
 
 .boton:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
-.olvidar {
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 8px;
-    color: white;
+.container_boton {
+  margin-top: 1rem;
 }
 
-.olvidar:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+.boton-secundario {
+  background-color: transparent;
+  border: 1px solid #007bff;
 }
 
-form {
-    position: absolute;
-    margin-top: 8%;
-    margin-left: 49%;
-    z-index: 2;
-    width: 31%;
+.boton-secundario:hover {
+  background-color: #007bff;
+  color: white;
 }
 
+/* --- MEDIA QUERY PARA TABLETS Y ESCRITORIOS --- */
+/* Cuando la pantalla sea de 768px o más, aplica estos cambios */
 
+@media (min-width: 768px) {
+  .container {
+    flex-direction: row; /* Ponemos los paneles uno al lado del otro */
+  }
 
+  .login-panel {
+    width: 50%; /* Cada panel ocupa la mitad del espacio */
+  }
 
+  /* La famosa barra vertical, creada con un borde */
+  .panel-form {
+    border-left: 2px solid rgba(255, 255, 255, 0.5);
+  }
 
-
-/* TABLETS */
-/* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
-    .container {
-        flex-direction: column;
-        padding: 20px;
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo_inicio {
-        width: 50%;
-        height: auto;
-        margin: 10px 0;
-        margin-right: 40%;
-    }
-
-    h1 {
-        font-size: 40px;
-        margin-bottom: 30%;
-    }
-
-    form {
-        margin-left: 450px;
-    }
-
-    .barra {
-        display: none;
-    }
-
-    .boton {
-        padding: 20px 40px;
-        font-size: 18px;
-        margin-left: 0;
-    }
-.container {
-        flex-direction: column;
-        padding: 20px;
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo_inicio {
-        width: 50%;
-        height: auto;
-        margin: 10px 0;
-        margin-right: 40%;
-    }
-
-    h1 {
-        font-size: 40px;
-        margin-bottom: 30%;
-    }
-
-    form {
-        margin-left: 450px;
-    }
-
-    .barra {
-        display: none;
-    }
-    .container_boton {
-        margin: 40px 0 0 0;
-        text-align: center;
-    }
-
-    .input-wrapper {
-        width: 90%;
-        margin: 0 auto 25px auto;
-    }
-
-    form input[type="text"],
-    form input[type="password"] {
-        margin-left: 0;
-    }
-
-    .input-wrapper i {
-        left: 15px;
-        margin-left: 0;
-    }
-}
-
-/* Vertical */
-@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
-    .container {
-        flex-direction: column;
-        padding: 20px;
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo_inicio {
-        width: 50%;
-        height: auto;
-        margin: 10px 0;
-        margin-bottom: 100%;
-    }
-
-    h1 {
-        font-size: 40px;
-        margin-bottom: 40%;
-        margin-left: 0;
-    }
-
-    form {
-        margin-left: 0px;
-        margin-top: 250px;
-    }
-
-    .barra {
-        display: none;
-    }
-
-    .boton {
-        padding: 20px 40px;
-        font-size: 18px;
-        margin-left: 0;
-    }
-
-    .container_boton {
-        margin: 40px 0 0 0;
-        text-align: center;
-    }
-
-    .input-wrapper {
-        width: 90%;
-        margin: 0 auto 25px auto;
-    }
-
-    form input[type="text"],
-    form input[type="password"] {
-        margin-left: 0;
-    }
-
-    .input-wrapper i {
-        left: 15px;
-        margin-left: 0;
-    }
-}
-
-
-/* MÓVILES */
-/* Horizontal */
-@media screen and (max-width: 870px) and (orientation: landscape) {
-    .container {
-        flex-direction: column;
-        padding: 15px;
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo_inicio {
-        width: 38%;
-        height: auto;
-        margin-left: 500px;
-        margin-top: 5%;
-    }
-
-    .barra {
-        display: none;
-    }
-
-    h1 {
-        font-size: 30px;
-        margin-left: 48%;
-        margin-bottom: 30%;
-    }
-
-    form {
-        margin-left: 350px;
-        margin-top: 50px;
-    }
-
-    .boton {
-        padding: 10px 30px;
-        font-size: 16px;
-        margin-left: 0;
-    }
-
-    .container_boton {
-        margin: 30px 0 0 0;
-        text-align: center;
-    }
-
-    .input-wrapper {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    form input[type="text"],
-    form input[type="password"] {
-        height: 35px;
-        padding-left: 60px;
-        font-size: 16px;
-        margin-left: 0;
-        width: 250px;
-    }
-
-    .input-wrapper i {
-        left: 15px;
-        font-size: 30px;
-        margin-left: 0;
-    }
-}
-
-/* Vertical */
-@media screen and (max-width: 870px) and (orientation: portrait) {
-    .container {
-        flex-direction: column;
-        padding: 15px;
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo_inicio {
-        width: 70%;
-        height: auto;
-        margin: 10px 0 500px 0;
-    }
-
-    .barra {
-        display: none;
-    }
-
-    h1 {
-        font-size: 28px;
-        margin: 10px 0;
-        margin-bottom: 40%;
-    }
-
-    form {
-        margin-left: 0px;
-        margin-top: 250px;
-    }
-
-    .boton {
-        padding: 18px 30px;
-        font-size: 16px;
-        margin-left: 0;
-    }
-
-    .container_boton {
-        margin: 30px 0 0 0;
-        text-align: center;
-    }
-
-    .input-wrapper {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    form input[type="text"],
-    form input[type="password"] {
-        height: 60px;
-        padding-left: 60px;
-        font-size: 16px;
-        margin-left: 0;
-    }
-
-    .input-wrapper i {
-        left: 15px;
-        font-size: 30px;
-        margin-left: 0;
-    }
+  .logo_inicio {
+    max-width: 400px; /* El logo puede ser un poco más grande en escritorio */
+  }
 }

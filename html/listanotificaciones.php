@@ -124,7 +124,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       font-size: 0.9em;
     }
 
-    
+
 
     .pagination {
       display: none;
@@ -183,6 +183,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     #NotificacionesTable tbody tr:hover td {
       background-color: rgba(0, 123, 255, 0.15);
     }
+
+    /* --- NUEVO: Animación para el modal de filtros --- */
+
+    /* Estado base del popup de filtros */
+    .filtros-popup {
+      /* Forzamos que sea un bloque para poder animarlo.
+       Esto sobreescribirá cualquier 'display: none' de un CSS externo. */
+      display: block;
+
+      /* Estado inicial: invisible, movido hacia arriba y no interactivo */
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+      visibility: hidden;
+      /* Ocultamiento más robusto */
+
+      /* La transición suave que queremos */
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, visibility 0.3s;
+    }
+
+    /* Estado activo: cuando el popup debe ser visible */
+    .filtros-popup.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      /* Se puede interactuar de nuevo */
+      visibility: visible;
+    }
   </style>
 </head>
 
@@ -196,12 +224,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   ?>
   <script>
     const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-    </script>
-    <div id="menu"></div>
-    <div class="ubica"> Factura / Lista notificaciones </div>
+  </script>
+  <div id="menu"></div>
+  <div class="ubica"> Factura / Lista notificaciones </div>
 
   <div class="container-general">
-    </div>
+  </div>
   <div class="main-content">
 
     <h1>Notificaciones</h1>
@@ -227,16 +255,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <!-- Fecha desde/hasta -->
               <div class="form-group">
                 <label for="filterFrom">Desde:</label>
-                <input type="date" id="filterFrom" name="filterFrom" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
+                <input type="date" id="filterFrom" name="filterFrom" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px; padding: 5px;">
               </div>
               <div class="form-group">
                 <label for="filterTo">Hasta:</label>
-                <input type="date" id="filterTo" name="filterTo" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
+                <input type="date" id="filterTo" name="filterTo" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px; padding: 5px;">
               </div>
               <!-- Estado -->
               <div class="form-group">
                 <label for="filterState">Estado:</label>
-                <select id="filterState" name="filterState" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;">
+                <select id="filterState" name="filterState" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px; padding: 5px; border: 1px solid black;">
                   <option value="all">Todas</option>
                   <option value="read">Leídas</option>
                   <option value="unread">No leídas</option>

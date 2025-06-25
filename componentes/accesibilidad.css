@@ -817,9 +817,6 @@ color: white !important;
 }
 .modo-claro p{
   color: #000000;
-}
-.modo-claro .summary-section h2{
-  color: white !important;
 } 
 .modo-claro .modo-claro .content > div{
   border: 2px solid #000000;
@@ -840,7 +837,7 @@ color: white !important;
     border: 2px solid #000000;
   }
   .modo-alto-contraste p{
-    color: #ffffff;
+    color: #000000;
   }
   .modo-alto-contraste .mi-icono-izquierdo{
     background-color: #000000 !important;
@@ -1067,9 +1064,7 @@ background-color: red ;
   background-color: black;
   color: white;
 }
-.modo-alto-contraste #product-form .campo label{
-  color: white;
-}
+
 .modo-alto-contraste .modal-content label{
   color: rgb(255, 255, 255);
 }
@@ -1147,6 +1142,85 @@ background-color: red ;
 .modo-alto-contraste .boton-docsxls{
   background-color: black !important;
 }
-.modo-alto-contraste .boton-docsxls:hover{
-  background-color: #1f5917K;
+.modo-alto-contraste .boton-docsxls:hover {
+    background-color: rgb(11, 128, 0) !important;
+}
+.modo-alto-contraste .boton-docpdf{
+  background-color: black !important;
+}
+.modo-alto-contraste .boton-docpdf:hover{
+  background-color:rgb(128, 0, 0) !important;
+}
+.modo-claro .boton-docsxls{
+  background-color: rgb(255, 255, 255) !important;
+  border: 2px solid #000000 !important;
+}
+.modo-claro .boton-docsxls:hover {
+    background-color: rgb(11, 128, 0) !important;
+}
+.modo-claro .boton-docpdf{
+  background-color: rgb(255, 255, 255) !important;
+  border: 1.9px solid #000000 !important;
+}
+.modo-claro .boton-docpdf:hover{
+  background-color:rgb(128, 0, 0) !important;
+}
+.modo-alto-contraste #btnAbrirModalCorreo{
+  color: white;
+}
+.modo-alto-contraste #btnAbrirModalCorreo:hover{
+  color: rgb(0, 0, 0);
+}
+.modo-alto-contraste .button_container .boton {
+  background-color: black;
+}
+.modo-alto-contraste .botonn{
+  background-color: black;
+}
+.modo-claro .button_container .boton {
+  background-color: rgb(255, 255, 255);
+  color: black;
+  border: 2px solid #000000 !important;
+}
+.modo-claro .botonn{
+  background-color: rgb(255, 255, 255);
+  color: black;
+  border: 2px solid #000000 !important;
+}
+.modo-alto-contraste .custom-alert{
+  color: black;
+}
+.modo-alto-contraste .btn-aceptar{
+  background-color: black !important;
+}
+.btn-aceptar:hover {
+    background-color: #074180 !important;
+}
+.modo-claro .btn-aceptar{
+  background-color: rgb(255, 255, 255) !important;
+  color: black;
+}
+.btn-aceptar:hover {
+    background-color: #074180 !important;
+}
+.modo-alto-contraste .required{
+  color: black !important;
+}
+.modo-alto-contraste .campos{
+  color: black !important;
+}
+.modo-alto-contraste #product-form button{
+   border: 2px solid #000000 !important;
+}
+.modo-alto-contraste .product-id{
+  color: white;
+}
+.modo-alto-contraste .product-cantidad{
+  color: white;
+}
+.modo-alto-contraste #saldoPendiente{
+  color: white;
+}
+.modo-alto-contraste .contenedor-precio p{
+  color: white;
 }

@@ -177,6 +177,32 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     #facturaTable tbody tr:hover td {
       background-color: rgba(0, 123, 255, 0.15);
     }
+
+    /* --- NUEVO: Animación para el modal de filtros --- */
+
+/* Estado base del popup de filtros */
+.filtros-popup {
+    /* Forzamos que sea un bloque para poder animarlo.
+       Esto sobreescribirá cualquier 'display: none' de un CSS externo. */
+    display: block;
+    
+    /* Estado inicial: invisible, movido hacia arriba y no interactivo */
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none; 
+    visibility: hidden; /* Ocultamiento más robusto */
+    
+    /* La transición suave que queremos */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, visibility 0.3s;
+}
+
+/* Estado activo: cuando el popup debe ser visible */
+.filtros-popup.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto; /* Se puede interactuar de nuevo */
+    visibility: visible;
+}
   </style>
 </head>
 
@@ -210,16 +236,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <form id="filterForm">
               <!-- Fecha desde/hasta -->
               <div class="form-group">
-                <label>Desde: <input type="date" id="fDesde" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px;border:none; padding: 5px;"></label>
+                <label>Desde: <input type="date" id="fDesde" style="font-family: Arial, Helvetica, sans-serif;     height: 26px; border-radius:10px; padding: 5px;"></label>
               </div>
               <!-- Fecha hasta -->
               <div class="form-group">
-                <label>Hasta: <input type="date" id="fHasta" style="font-family: Arial, Helvetica, sans-serif;    height: 26px; border-radius:10px;border:none; padding: 5px;"></label>
+                <label>Hasta: <input type="date" id="fHasta" style="font-family: Arial, Helvetica, sans-serif;    height: 26px; border-radius:10px; padding: 5px;"></label>
               </div>
               <!-- Estado activo/inactivo -->
               <div class="form-group">
                 <label>Estado:
-                  <select id="fActivo" style="  height: 26px; border-radius:10px;border:none; padding: 5px;">
+                  <select id="fActivo" style="  height: 26px; border-radius:10px; border:black 1px solid; padding: 5px;">
                     <option value="all">Todos</option>
                     <option value="1">Activo</option>
                     <option value="0">Inactivo</option>
@@ -228,7 +254,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               </div>
               <div class="form-group">
                 <label for="fPago">Método Pago:</label>
-                <select id="fPago" name="fPago" style="  height: 26px; border-radius:10px;border:none; padding: 5px;">
+                <select id="fPago" name="fPago" style="  height: 26px; border-radius:10px; border:black 1px solid; padding: 5px;">
                   <option value="all">Todos</option>
                   <option value="tarjeta">Tarjeta</option>
                   <option value="efectivo">Efectivo</option>

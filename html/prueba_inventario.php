@@ -1,570 +1,996 @@
 <?php
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
-error_reporting(E_ALL);
-ini_set('error_log', 'C:\xampp\htdocs\php_errors.log'); // Windows
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
   header("Location: ../index.php");
   exit();
 }
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
-include_once $_SERVER['DOCUMENT_ROOT'].'/componentes/accesibilidad-widget.php';
-
-
+// Conexión
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-  die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
+  die("alert('No se pudo conectar a la base de datos');");
 }
 
-// Inicializar el arreglo de filtros
-$filtros = [];
-$valor = isset($_GET['valor']) ? mysqli_real_escape_string($conexion, $_GET['valor']) : '';
-
-if (!empty($valor) && isset($_GET['criterios']) && is_array($_GET['criterios'])) {
-  $criterios = $_GET['criterios'];
-  foreach ($criterios as $criterio) {
-    $criterio = mysqli_real_escape_string($conexion, $criterio);
-    switch ($criterio) {
-      case 'codigo':
-        $filtros[] = "p.codigo1 LIKE '%$valor%'";
-        break;
-      case 'codigo2':
-        $filtros[] = "p.codigo2 LIKE '%$valor%'";
-        break;
-      case 'nombre':
-        $filtros[] = "p.nombre LIKE '%$valor%'";
-        break;
-      case 'precio1':
-        $filtros[] = "p.precio1 LIKE '%$valor%'";
-        break;
-      case 'precio2':
-        $filtros[] = "p.precio2 LIKE '%$valor%'";
-        break;
-      case 'precio3':
-        $filtros[] = "p.precio3 LIKE '%$valor%'";
-        break;
-      case 'categoria':
-        $filtros[] = "c.nombre LIKE '%$valor%'";
-        break;
-      case 'marca':
-        $filtros[] = "m.nombre LIKE '%$valor%'";
-        break;
-      case 'ubicacion':
-        $filtros[] = "ub.nombre LIKE '%$valor%'";
-        break;
-      case 'proveedor':
-        $filtros[] = "pr.nombre LIKE '%$valor%'";
-        break;
-    }
-  }
-}
-
-$consulta = "
-    SELECT 
-        p.codigo1,
-        p.codigo2,
-        p.nombre,
-        p.iva,
-        p.precio1,
-        p.precio2,
-        p.precio3,
-        p.cantidad,
-        p.descripcion,
-        p.Categoria_codigo,
-        p.Marca_codigo,
-        p.UnidadMedida_codigo,
-        p.Ubicacion_codigo,
-        p.proveedor_nit,
-        c.nombre AS categoria,
-        m.nombre AS marca,
-        u.nombre AS unidadmedida,
-        ub.nombre AS ubicacion,
-        pr.nombre AS proveedor
-    FROM 
-        producto p
-    LEFT JOIN 
-        categoria c ON p.Categoria_codigo = c.codigo
-    LEFT JOIN 
-        marca m ON p.Marca_codigo = m.codigo
-    LEFT JOIN 
-        unidadmedida u ON p.UnidadMedida_codigo = u.codigo
-    LEFT JOIN 
-        ubicacion ub ON p.Ubicacion_codigo = ub.codigo
-    LEFT JOIN 
-        proveedor pr ON p.proveedor_nit = pr.nit
-    WHERE 1=1
-";
-
-if (!empty($filtros)) {
-  $consulta .= " AND (" . implode(" OR ", $filtros) . ")";
-}
-
-$resultado = mysqli_query($conexion, $consulta);
-
-if (!$resultado) {
-  die("No se pudo ejecutar la consulta: " . mysqli_error($conexion));
-}
-
-// Actualización de datos del modal
-if (isset($_POST['codigo1'])) {
-  // Se reciben y se escapan las variables
-  $codigo1 = mysqli_real_escape_string($conexion, $_POST['codigo1']);
-  $codigo2 = mysqli_real_escape_string($conexion, $_POST['codigo2']);
-  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-  $precio1 = mysqli_real_escape_string($conexion, $_POST['precio1']);
-  $precio2 = mysqli_real_escape_string($conexion, $_POST['precio2']);
-  $precio3 = mysqli_real_escape_string($conexion, $_POST['precio3']);
-  $cantidad = mysqli_real_escape_string($conexion, $_POST['cantidad']);
-  $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
-  $categoria = mysqli_real_escape_string($conexion, $_POST['categoria-id']);
-  $marca = mysqli_real_escape_string($conexion, $_POST['marca-id']);
-  $unidadmedida = mysqli_real_escape_string($conexion, $_POST['unidadmedida-id']);
-  $ubicacion = mysqli_real_escape_string($conexion, $_POST['ubicacion-id']);
-  $proveedor = mysqli_real_escape_string($conexion, $_POST['proveedor-id']);
-
-  $consulta_update = "UPDATE producto SET 
-      codigo1 = '$codigo1', 
-      codigo2 = '$codigo2', 
-      nombre = '$nombre', 
-      precio1 = '$precio1', 
-      precio2 = '$precio2', 
-      precio3 = '$precio3', 
-      cantidad = '$cantidad', 
-      descripcion = '$descripcion', 
-      Categoria_codigo = '$categoria', 
-      Marca_codigo = '$marca', 
-      UnidadMedida_codigo = '$unidadmedida', 
-      Ubicacion_codigo = '$ubicacion', 
-      Proveedor_nit = '$proveedor' 
-      WHERE codigo1 = '$codigo1'";
-  if (mysqli_query($conexion, $consulta_update)) {
-    echo "<script>alert('Datos actualizados correctamente')</script>";
-  } else {
-    echo "<script>alert('Error al actualizar los datos: " . mysqli_error($conexion) . "')</script>";
-  }
-}
-
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
+// 1) AJAX check código
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST' &&
+  isset($_POST['accion']) &&
+  $_POST['accion'] === 'check_codigo'
+) {
   header('Content-Type: application/json');
-  
-  // Debug: Registrar el código recibido
-  error_log("Código recibido: " . $_POST['codigo']);
-  
-  if (!$conexion) {
-      echo json_encode(['success' => false, 'error' => 'Error de conexión']);
-      exit;
-  }
-  
-  $codigo = $_POST['codigo'];
-  $stmt = $conexion->prepare("DELETE FROM producto WHERE codigo1 = ?");
+  $codigo = $_POST['codigo1'] ?? '';
+  $stmt = $conexion->prepare("SELECT 1 FROM producto WHERE codigo1 = ?");
   $stmt->bind_param("s", $codigo);
-  
-  if (!$stmt->execute()) {
-      error_log("Error SQL: " . $stmt->error); // Registrar el error
-      echo json_encode(['success' => false, 'error' => $stmt->error]);
-      exit;
-  }
-  
-  if ($stmt->affected_rows === 0) {
-      echo json_encode(['success' => false, 'error' => 'Producto no encontrado']);
-      exit;
-  }
-  
-  echo json_encode(['success' => true]);
+  $stmt->execute();
+  $stmt->store_result();
+  $existe = $stmt->num_rows > 0;
+  echo json_encode(['exists' => $existe]);
+  $stmt->close();
+  $conexion->close();
   exit;
 }
+
+// 2a) AJAX handler para agregar categoría y devolver JSON
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST' &&
+  isset($_POST['accion']) &&
+  $_POST['accion'] === 'add_categoria'
+) {
+  header('Content-Type: application/json');
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $query  = "INSERT INTO categoria (nombre) VALUES ('$nombre')";
+  if (mysqli_query($conexion, $query)) {
+    $id = mysqli_insert_id($conexion);
+    echo json_encode([
+      'success' => true,
+      'id'      => $id,
+      'nombre'  => $nombre
+    ]);
+  } else {
+    echo json_encode([
+      'success' => false,
+      'error'   => mysqli_error($conexion)
+    ]);
+  }
+  exit;
+}
+// 2b) AJAX handler para agregar ubicación
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST' &&
+  isset($_POST['accion']) &&
+  $_POST['accion'] === 'add_ubicacion'
+) {
+  header('Content-Type: application/json');
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $query  = "INSERT INTO ubicacion (nombre) VALUES ('$nombre')";
+  if (mysqli_query($conexion, $query)) {
+    $id = mysqli_insert_id($conexion);
+    echo json_encode([
+      'success' => true,
+      'id'      => $id,
+      'nombre'  => $nombre
+    ]);
+  } else {
+    echo json_encode([
+      'success' => false,
+      'error'   => mysqli_error($conexion)
+    ]);
+  }
+  exit;
+}
+
+// 2c) AJAX handler para agregar marca
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST' &&
+  isset($_POST['accion']) &&
+  $_POST['accion'] === 'add_marca'
+) {
+  header('Content-Type: application/json');
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $query  = "INSERT INTO marca (nombre) VALUES ('$nombre')";
+  if (mysqli_query($conexion, $query)) {
+    $id = mysqli_insert_id($conexion);
+    echo json_encode([
+      'success' => true,
+      'id'      => $id,
+      'nombre'  => $nombre
+    ]);
+  } else {
+    echo json_encode([
+      'success' => false,
+      'error'   => mysqli_error($conexion)
+    ]);
+  }
+  exit;
+}
+
+// 2d) AJAX handler para agregar proveedor
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST' &&
+  isset($_POST['accion']) &&
+  $_POST['accion'] === 'add_proveedor'
+) {
+  header('Content-Type: application/json');
+  // Escapa el nombre y demás campos que quieras capturar:
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $nit    = mysqli_real_escape_string($conexion, $_POST['nit']);
+  // Puedes capturar más campos si tu tabla los tiene
+  $query  = "INSERT INTO proveedor (nit, nombre) VALUES ('$nit', '$nombre')";
+  if (mysqli_query($conexion, $query)) {
+    $id = $nit; // aquí tu clave primaria es nit
+    echo json_encode([
+      'success' => true,
+      'id'      => $id,
+      'nombre'  => $nombre
+    ]);
+  } else {
+    echo json_encode([
+      'success' => false,
+      'error'   => mysqli_error($conexion)
+    ]);
+  }
+  exit;
+}
+
+// 1a) Check nombre de categoría
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_categoria') {
+  header('Content-Type: application/json');
+  $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+  $r = mysqli_query($conexion, "SELECT 1 FROM categoria WHERE nombre='$n' LIMIT 1");
+  echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
+  exit;
+}
+
+// 1b) Check nombre de ubicación
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_ubicacion') {
+  header('Content-Type: application/json');
+  $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+  $r = mysqli_query($conexion, "SELECT 1 FROM ubicacion WHERE nombre='$n' LIMIT 1");
+  echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
+  exit;
+}
+
+// 1c) Check nombre de marca
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'check_marca') {
+  header('Content-Type: application/json');
+  $n = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+  $r = mysqli_query($conexion, "SELECT 1 FROM marca WHERE nombre='$n' LIMIT 1");
+  echo json_encode(['exists' => (mysqli_num_rows($r) > 0)]);
+  exit;
+}
+
+// Consultas de selects
+$marcas      = $conexion->query("SELECT codigo, nombre FROM marca");
+$categorias  = $conexion->query("SELECT codigo, nombre FROM categoria");
+$proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
+$ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
+$unidades    = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
+
+include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventario</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Crear Producto</title>
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-  <link rel="stylesheet" href="../css/inventario.css" />
-  <link rel="stylesheet" href="../componentes/header.css">
-  <link rel="stylesheet" href="../componentes/header.php">
+  <link rel="stylesheet" href="../css/producto.css">
+  <link rel="stylesheet" href="../css/alertas.css">
+  <link rel="stylesheet" href="/componentes/header.php">
+  <link rel="stylesheet" href="/componentes/header.css">
   <script src="../js/header.js"></script>
   <script src="/js/index.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+
+    .required::after {
+      content: " *";
+      color: red;
+    }
+
+    /* Estilo del botón de cierre */
+    .close-button {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Opcional: cambio de color al pasar el ratón */
+    .close-button:hover {
+      color: red;
+    }
+
+    .fake-select {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      /* ajusta a tu ancho */
+      font-size: 16px;
+      border: 2px solid #000;
+      border-radius: 23px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .fake-select .fs-selected {
+      padding: 10px;
+    }
+
+    .fake-select .fs-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border: 2px solid #000;
+      border-top: none;
+      border-radius: 0 0 23px 23px;
+      max-height: 200px;
+      /* ≃10 filas */
+      overflow-y: auto;
+      background: #fff;
+      display: none;
+      z-index: 10;
+    }
+
+    .fake-select.open .fs-options {
+      display: block;
+    }
+
+    .fake-select .fs-options li {
+      padding: 8px 10px;
+    }
+
+    .fake-select .fs-options li:hover {
+      background: #eee;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="sidebar">
-    <div id="menu"></div>
-  </div>
-  <div class="main-content">
-    <h1>Inventario</h1>
-    <div class="filter-bar">
-      <details class="filter-dropdown">
-        <summary class="filter-button">Filtrar</summary>
-        <div class="filter-options">
-          <form method="GET" action="../html/listaproductos.php" class="search-form">
-            <div class="criteria-group">
-              <label><input type="checkbox" name="criterios[]" value="codigo"> Código</label>
-              <label><input type="checkbox" name="criterios[]" value="codigo2"> Código 2</label>
-              <label><input type="checkbox" name="criterios[]" value="nombre"> Nombre</label>
-              <label><input type="checkbox" name="criterios[]" value="precio1"> Precio 1</label>
-              <label><input type="checkbox" name="criterios[]" value="precio2"> Precio 2</label>
-              <label><input type="checkbox" name="criterios[]" value="precio3"> Precio 3</label>
-              <label><input type="checkbox" name="criterios[]" value="categoria"> Categoría</label>
-              <label><input type="checkbox" name="criterios[]" value="marca"> Marca</label>
-              <label><input type="checkbox" name="criterios[]" value="ubicacion"> Ubicación</label>
-              <label><input type="checkbox" name="criterios[]" value="proveedor"> Proveedor</label>
-            </div>
+  <!-- Aquí se cargará el header -->
+  <div id="menu"></div>
+  <div class="ubica"> Producto / Crear producto</div>
+  <div class="container-general"></div>
+  <!-- Sección para Crear Producto -->
+  <div id="crearProducto" class="form-section">
+    <h1>Crear Producto</h1>
+    <!-- Abrir modal para subir el archivo -->
+    <button type="submit" class="icon-button" id="btnAbrirImportar" aria-label="Importar archivo" title="Importar archivo" onclick="document.getElementById('modalConfirm').style.display='block'">
+      <i class="fas fa-file-excel"></i>
+      <label>Importar archivo</label>
+    </button>
+    <!-- Modal para subir el archivo -->
+    <div id="modalConfirm" class="modal hidden">
+      <div class="modal-content">
+        <!-- Botón "X" para cerrar -->
+        <span class="close-button" id="btnCerrarImportar">&times;</span>
 
-        </div>
-      </details>
-      <input class="form-control" type="text" name="valor" placeholder="Ingrese el valor a buscar">
-      <button class="search-button" type="submit">Buscar</button>
-      </form>
-      <div class="export-button">
-        <form action="exportar_excel.php" method="post">
-          <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
-            <i class="fas fa-file-excel"></i>
-            <label style="color: white; font-size: 14px;"> Exportar a Excel</label>
-          </button>
+        <!-- Formulario para subir el archivo -->
+        <form method="post" enctype="multipart/form-data" action="/html/importar_excel.php">
+          <label>Selecciona el archivo Excel:</label>
+          <label for="archivoExcel" class="custom-file-upload">
+            <i class="fas fa-cloud-upload-alt"></i><br>
+            <span>Haz clic para seleccionar un archivo</span>
+          </label>
+
+          <input
+            id="archivoExcel"
+            type="file"
+            name="archivoExcel"
+            accept=".xlsx, .xls"
+            required
+            hidden />
+
+          <button type="submit" name="importar" onclick="closeModal()">Importar</button>
+          <!-- Botón de cancelar eliminado -->
+          <a href="../componentes/formato_productos.xlsx" download class="download-link">
+            <i class="fas fa-file-download" style="color: #0b59c7;"></i>
+            Descargar formato de Excel
+          </a>
         </form>
-        <button id="delete-selected" style="display: none; background-color: red; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer;">
-  🗑 Eliminar Seleccionados
-</button>
-
       </div>
     </div>
-
-    <?php if (mysqli_num_rows($resultado) > 0): ?>
-      <table>
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Código 2</th>
-            <th>Nombre</th>
-            <th>Iva</th>
-            <th>Precio 1</th>
-            <th>Precio 2</th>
-            <th>Precio 3</th>
-            <th>Cantidad</th>
-            <th>Descripción</th>
-            <th>Categoría</th>
-            <th>Marca</th>
-            <th>Unidad Medida</th>
-            <th>Ubicación</th>
-            <th>Proveedor</th>
-            <th> Acciones</th>
-            <th><input type="checkbox" id="select-all"></th>
-
-          </tr>
-        </thead>
-        <tbody>
-          <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
-            <tr>
-              <td><?= htmlspecialchars($fila['codigo1']) ?></td>
-              <td><?= htmlspecialchars($fila['codigo2']) ?></td>
-              <td><?= htmlspecialchars($fila['nombre']) ?></td>
-              <td><?= htmlspecialchars($fila['iva']) ?></td>
-              <td><?= htmlspecialchars($fila['precio1']) ?></td>
-              <td><?= htmlspecialchars($fila['precio2']) ?></td>
-              <td><?= htmlspecialchars($fila['precio3']) ?></td>
-              <td><?= htmlspecialchars($fila['cantidad']) ?></td>
-              <td><?= htmlspecialchars($fila['descripcion']) ?></td>
-              <td data-categoria-id="<?= htmlspecialchars($fila['Categoria_codigo']) ?>">
-                <?= htmlspecialchars($fila['categoria']) ?>
-              </td>
-              <td data-marca-id="<?= htmlspecialchars($fila['Marca_codigo']) ?>">
-                <?= htmlspecialchars($fila['marca']) ?>
-              </td>
-              <td data-unidadmedida-id="<?= htmlspecialchars($fila['UnidadMedida_codigo']) ?>">
-                <?= htmlspecialchars($fila['unidadmedida']) ?>
-              </td>
-              <td data-ubicacion-id="<?= htmlspecialchars($fila['Ubicacion_codigo']) ?>">
-                <?= htmlspecialchars($fila['ubicacion']) ?>
-              </td>
-              <td data-proveedor-id="<?= htmlspecialchars($fila['proveedor_nit']) ?>">
-                <?= htmlspecialchars($fila['proveedor']) ?>
-              </td>
-              <td class="acciones">
-                <button class="edit-button" data-id="<?= $fila['codigo1'] ?>">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button class="delete-button" onclick="eliminarProducto('<?= $fila['codigo1'] ?>')"><i class="fa-solid fa-trash"></i></button>
-              </td>
-              <td>
-        <input type="checkbox" class="select-product" value="<?= $fila['codigo1'] ?>">
-      </td> <!-- Checkbox agregado -->
-            </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
-
-      <!-- Modal de edición -->
-      <div id="editModal" class="modal">
-        <div class="modal-content">
-          <span class="close">
-            <i class="fa-solid fa-x"></i>
-          </span>
-
-          <h2>Editar Producto</h2>
-          <form id="editForm" method="post">
-            <!-- Campo oculto para enviar el código 1 -->
-            <input type="hidden" id="editCodigo1" name="codigo1">
-            <div class="campo"><label for="editCodigo1Visible">Código:</label>
-              <input type="text" id="editCodigo1Visible" readonly>
-            </div>
-            <div class="campo"><label for="editCodigo2">Código 2:</label>
-              <input type="text" id="editCodigo2" name="codigo2">
-            </div>
-            <div class="campo"><label for="editNombre">Nombre:</label>
-              <input type="text" id="editNombre" name="nombre">
-            </div>
-            <div class="campo"> <label for="editPrecio1">Precio 1:</label>
-              <input type="text" id="editPrecio1" name="precio1">
-            </div>
-            <div class="campo"><label for="editPrecio2">Precio 2:</label>
-              <input type="text" id="editPrecio2" name="precio2">
-            </div>
-            <div class="campo"> <label for="editPrecio3">Precio 3:</label>
-              <input type="text" id="editPrecio3" name="precio3">
-            </div>
-            <div class="campo"><label for="editCantidad">Cantidad:</label>
-              <input type="text" id="editCantidad" name="cantidad">
-            </div>
-            <div class="campo"> <label for="editDescripcion">Descripción:</label>
-              <input type="text" id="editDescripcion" name="descripcion">
-            </div>
-            <div class="campo"><label for="editCategoria">Categoría:</label>
-              <select name="categoria-id" id="editCategoria" required>
-                <option value="">Seleccione una categoría</option>
-                <?php
-                $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-                if (!$conexion2) {
-                  die("Error de conexión: " . mysqli_connect_error());
-                }
-                $consultaCategorias = "SELECT codigo, nombre FROM categoria";
-                $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
-                while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
-                  echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editMarca">Marca:</label>
-              <select name="marca-id" id="editMarca" required>
-                <option value="">Seleccione una marca</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaMarcas = "SELECT codigo, nombre FROM marca";
-                $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
-                while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
-                  echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editUnidadMedida">Unidad Medida:</label>
-              <select name="unidadmedida-id" id="editUnidadMedida" required>
-                <option value="">Seleccione una medida</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
-                $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
-                while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
-                  echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editUbicacion">Ubicación:</label>
-              <select name="ubicacion-id" id="editUbicacion" required>
-                <option value="">Seleccione una ubicación</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
-                $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
-                while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
-                  echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="campo"><label for="editProveedor">Proveedor:</label>
-              <select name="proveedor-id" id="editProveedor" required>
-                <option value="">Seleccione un proveedor</option>
-                <?php
-                $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-                $consultaProveedores = "SELECT nit, nombre FROM proveedor";
-                $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
-                while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
-                  echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
-                }
-                mysqli_close($conexion2);
-                ?>
-              </select>
-            </div>
-            <div class="modal-boton"> <button type="submit" id="modal-boton">Guardar Cambios</button></div>
-
-          </form>
-        </div>
-      </div>
-    <?php else: ?>
-      <p>No se encontraron resultados con los criterios seleccionados.</p>
-    <?php endif; ?>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionamos todos los botones de edición
-      const editButtons = document.querySelectorAll('.edit-button');
-      // Modal y botón de cierre
-      const modal = document.getElementById('editModal');
-      // Si hay más de un ".close" en la página, asegúrate de seleccionar el de dentro del modal:
-      const closeModal = modal.querySelector('.close');
-      // Listener para cada botón de edición
-      editButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const row = this.closest('tr');
-          // Se asume que las columnas están en el siguiente orden:
-          // 0: Código, 1: Código2, 2: Nombre, 3: Iva, 4: Precio1, 5: Precio2, 6: Precio3,
-          // 7: Cantidad, 8: Descripción, 9: Categoría, 10: Marca, 11: Unidad Medida, 12: Ubicación, 13: Proveedor.
-          const codigo1 = row.cells[0].innerText.trim();
-          document.getElementById('editCodigo1').value = codigo1;
-          document.getElementById('editCodigo1Visible').value = codigo1;
-          document.getElementById('editCodigo2').value = row.cells[1].innerText.trim();
-          document.getElementById('editNombre').value = row.cells[2].innerText.trim();
-          // Asumimos que Precio1 está en la columna 4 (ajusta si es necesario)
-          document.getElementById('editPrecio1').value = row.cells[4].innerText.trim();
-          document.getElementById('editPrecio2').value = row.cells[5].innerText.trim();
-          document.getElementById('editPrecio3').value = row.cells[6].innerText.trim();
-          document.getElementById('editCantidad').value = row.cells[7].innerText.trim();
-          document.getElementById('editDescripcion').value = row.cells[8].innerText.trim();
-          // Para select de Categoría: usamos el data attribute de la celda correspondiente
-          document.getElementById('editCategoria').value = row.cells[9].getAttribute('data-categoria-id');
-          // Para los inputs de Marca, UnidadMedida, Ubicación y Proveedor, se usan los data attributes:
-          document.getElementById('editMarca').value = row.cells[10].getAttribute('data-marca-id');
-          document.getElementById('editUnidadMedida').value = row.cells[11].getAttribute('data-unidadmedida-id');
-          document.getElementById('editUbicacion').value = row.cells[12].getAttribute('data-ubicacion-id');
-          document.getElementById('editProveedor').value = row.cells[13].getAttribute('data-proveedor-id');
 
-          modal.style.display = 'block';
-        });
-      });
+  <!-- Contenedor principal -->
+  <div class="container">
+
+    <form id="product-form" method="POST" action="">
 
 
+      <div class="campo">
+        <label class="required" for="codigo1">Código 1:</label>
+        <input type="text" id="codigo1" name="codigo1" required><br>
+      </div>
+      <div class="campo">
+        <label for="codigo2">Código 2:</label>
+        <input type="text" id="codigo2" name="codigo2" value="0"><br>
+      </div>
+      <div class="campo">
+        <label class="required" for="nombre">Producto:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+      </div>
 
-      // Listener para cerrar el modal
-      closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-      });
-    });
+      <div class="campo">
+        <label class="required" for="precio1">Precio llegada:</label>
+        <input type="text" id="precio1" name="precio1" required
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+      </div>
 
-    // Función para eliminar un producto
-    function eliminarProducto(codigo) {
-    if (!confirm(`¿Eliminar producto ${codigo}?`)) return;
+      <div class="campo">
+        <label class="required" for="precio2">Precio taller:</label>
+        <input type="text" id="precio2" name="precio2"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+      </div>
 
-    fetch('../html/listaproductos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `eliminar=1&codigo=${encodeURIComponent(codigo)}`
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert('Producto eliminado');
-            location.reload();
-        } else {
-            alert(data.error || 'Error desconocido');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('No se pudo eliminar. Ver consola para detalles.');
-    });
-}
-// funcion de los checkboxes
-document.getElementById("select-all").addEventListener("change", function () {
-  let checkboxes = document.querySelectorAll(".select-product");
-  checkboxes.forEach(checkbox => {
-    checkbox.checked = this.checked;
-  });
-});
+      <div class="campo">
+        <label class="required" for="precio3">Precio publico:</label>
+        <input type="text" id="precio3" name="precio3"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+      </div>
 
-document.addEventListener("DOMContentLoaded", function () {
-  let selectAllCheckbox = document.getElementById("select-all");
-  let checkboxes = document.querySelectorAll(".select-product");
-  let deleteButton = document.getElementById("delete-selected");
+      <div class="campo">
+        <label class="required" for="cantidad">Cantidad:</label>
+        <input type="number"
+          id="cantidad"
+          name="cantidad"
+          required
+          min="0"
+          max="99"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
+      </div>
 
-  function toggleDeleteButton() {
-    let anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-    deleteButton.style.display = anyChecked ? "inline-block" : "none";
+
+      <!-- CATEGORÍA -->
+      <div class="campo">
+        <div class="label-with-button" style="display:flex;align-items:center;">
+          <label class="required" for="categoria">Categoría:</label>
+          <button type="button" class="add-button" onclick="openModalCategoria()">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div class="fake-select" data-for="categoria">
+          <div class="fs-selected">— Seleccione —</div>
+          <ul class="fs-options">
+            <?php while ($fila = $categorias->fetch_assoc()) { ?>
+              <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+            <?php } ?>
+          </ul>
+        </div>
+        <input type="hidden" name="categoria" id="categoria">
+      </div>
+
+      <!-- MARCA -->
+      <div class="campo">
+        <div class="label-with-button" style="display:flex;align-items:center;">
+          <label class="required" for="marca">Marca:</label>
+          <button type="button" class="add-button" onclick="openModalMarca()">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div class="fake-select" data-for="marca">
+          <div class="fs-selected">— Seleccione —</div>
+          <ul class="fs-options">
+            <?php while ($fila = $marcas->fetch_assoc()) { ?>
+              <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+            <?php } ?>
+          </ul>
+        </div>
+        <input type="hidden" name="marca" id="marca">
+      </div>
+
+      <!-- UNIDAD DE MEDIDA (CLASE) -->
+      <div class="campo">
+        <label class="required" for="unidadMedida">Clase:</label>
+        <div class="fake-select" data-for="unidadMedida">
+          <div class="fs-selected">— Seleccione —</div>
+          <ul class="fs-options">
+            <?php while ($fila = $unidades->fetch_assoc()) { ?>
+              <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+            <?php } ?>
+          </ul>
+        </div>
+        <input type="hidden" name="unidadMedida" id="unidadMedida">
+      </div>
+
+      <!-- UBICACIÓN -->
+      <div class="campo">
+        <div class="label-with-button" style="display:flex;align-items:center;">
+          <label for="ubicacion">Ubicación:</label>
+          <button type="button" class="add-button" onclick="openModalUbicacion()">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div class="fake-select" data-for="ubicacion">
+          <div class="fs-selected">— Seleccione —</div>
+          <ul class="fs-options">
+            <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
+              <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+            <?php } ?>
+          </ul>
+        </div>
+        <input type="hidden" name="ubicacion" id="ubicacion">
+      </div>
+
+      <!-- PROVEEDOR -->
+      <div class="campo">
+        <label class="required" for="proveedor">Proveedor:</label>
+        <div class="fake-select" data-for="proveedor">
+          <div class="fs-selected">— Seleccione —</div>
+          <ul class="fs-options">
+            <?php while ($fila = $proveedores->fetch_assoc()) { ?>
+              <li data-value="<?= $fila['nit'] ?>"><?= $fila['nombre'] ?></li>
+            <?php } ?>
+          </ul>
+        </div>
+        <input type="hidden" name="proveedor" id="proveedor">
+      </div>
+
+      <div class="button-container">
+        <div class="boton">
+          <button type="submit" name="guardar">Guardar</button>
+        </div>
+      </div>
+
+    </form>
+
+
+  </div>
+
+  </div>
+
+  <!-- Modal Nueva Categoría -->
+  <div id="modalCategoria" class="modal_nueva_categoria">
+    <div class="modal-content-nueva">
+      <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
+      <h2>Nueva categoría</h2>
+      <form id="formAddCategoria" action="" method="POST">
+        <div class="form-group" style="position: relative;">
+          <label for="inputNombreCategoria">Ingrese el nombre de la categoría:</label>
+          <input
+            type="text"
+            id="inputNombreCategoria"
+            name="nombre"
+            required
+            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+          <span class="input-error-message">
+            Este nombre ya está registrado.
+          </span>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" id="btnCancelarCategoria">Cancelar</button>
+          <button type="submit" id="btnGuardarCategoria" disabled>Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Nueva Ubicación -->
+  <div id="modalUbicacion" class="modal_nueva_categoria">
+    <div class="modal-content-nueva">
+      <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
+      <h2>Nueva ubicación</h2>
+      <form id="formAddUbicacion" method="POST" action="">
+        <div class="form-group" style="position: relative;">
+          <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
+          <input
+            type="text"
+            id="inputNombreUbicacion"
+            name="nombre"
+            required
+            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+          <span class="input-error-message">
+            Este nombre ya está registrado.
+          </span>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" id="btnCancelarUbicacion">Cancelar</button>
+          <button type="submit" id="btnGuardarUbicacion" disabled>Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Nueva Marca -->
+  <div id="modalMarca" class="modal">
+    <div class="modal-content-nueva">
+      <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
+      <h2>Nueva marca</h2>
+      <form id="formAddMarca" method="POST" action="">
+        <div class="form-group" style="position: relative;">
+          <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
+          <input
+            type="text"
+            id="inputNombreMarca"
+            name="nombre"
+            required
+            oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+          <span class="input-error-message">
+            Este nombre ya está registrado.
+          </span>
+        </div>
+        <div class="modal-buttons">
+          <button type="button" id="btnCancelarMarca">Cancelar</button>
+          <button type="submit" id="btnGuardarMarca" disabled>Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <?php
+
+  $mensaje = null;  // Variable para almacenar el estado del mensaje
+  define('CANTIDAD_MAX', 99);
+
+
+  if ($_POST) {
+    if (!$conexion) {
+      die("<script>alert('No se pudo conectar a la base de datos');</script>");
+    };
+    $codigo1 = $_POST['codigo1'];
+    $codigo2 = $_POST['codigo2'];
+    $nombre = $_POST['nombre'];
+    $iva = 19;
+    $precio1 = $_POST['precio1'];
+    $precio2 = $_POST['precio2'];
+    $precio3 = $_POST['precio3'];
+    $cantidad = (int) $_POST['cantidad'];
+    if ($cantidad < 0 || $cantidad > CANTIDAD_MAX) {
+      die("<script>alert('La cantidad debe estar entre 0 y " . CANTIDAD_MAX . "'); window.history.back();</script>");
+    }
+
+    $categoria = $_POST['categoria'];
+    $marca = $_POST['marca'];
+    $unidadMedida = $_POST['unidadMedida'];
+    $ubicacion = $_POST['ubicacion'];
+    $proveedor = $_POST['proveedor'];
+
+    $query = "INSERT INTO producto (codigo1, codigo2, nombre, iva, precio1, precio2, precio3, cantidad, Categoria_codigo, Marca_codigo, UnidadMedida_codigo, Ubicacion_codigo, proveedor_nit) VALUES ('$codigo1', '$codigo2', '$nombre', '$iva', '$precio1', '$precio2', '$precio3', '$cantidad', '$categoria', '$marca', '$unidadMedida', '$ubicacion', '$proveedor')";
+
+
+
+    $resultado = mysqli_query($conexion, $query);
+
+    if ($resultado) {
+      $mensaje = 'producto_agregado';
+    } else {
+      $mensaje = 'error_al_agregar';
+    }
   }
 
-  selectAllCheckbox.addEventListener("change", function () {
-    checkboxes.forEach(checkbox => {
-      checkbox.checked = this.checked;
-    });
-    toggleDeleteButton();
-  });
+  ?>
 
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener("change", toggleDeleteButton);
-  });
 
-  deleteButton.addEventListener("click", function () {
-    let selectedCodes = Array.from(checkboxes)
-      .filter(checkbox => checkbox.checked)
-      .map(checkbox => checkbox.value.trim()); // Limpiar espacios en blanco
 
-    if (selectedCodes.length === 0) {
-      alert("Selecciona al menos un producto para eliminar.");
-      return;
-    }
+  <script>
+    // obtiene el modal de importar Excel
+    const modalConfirm = document.getElementById('modalConfirm');
+    const modalContent = modalConfirm.querySelector('.modal-content');
 
-    if (!confirm(`¿Estás seguro de eliminar ${selectedCodes.length} productos?`)) {
-      return;
-    }
-
-    // Depuración: Ver datos antes de enviarlos
-    console.log("Enviando códigos a eliminar:", selectedCodes);
-
-    fetch("eliminar_productos.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ codigos: selectedCodes })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Respuesta del servidor:", data); // Depuración
-      if (data.success) {
-        alert("Productos eliminados correctamente.");
-        location.reload();
-      } else {
-        alert("Error al eliminar los productos: " + data.error);
+    // Cerrar al clicar fuera del contenido, con animación
+    modalConfirm.addEventListener('click', e => {
+      // si el click NO fue dentro de .modal-content
+      if (!modalContent.contains(e.target)) {
+        closeModal(modalConfirm);
       }
-    })
-    .catch(error => {
-      console.error("Error en la solicitud:", error);
-      alert("Error en la comunicación con el servidor.");
     });
-  });
-});
+    // ——— Modal de subir archivo ———
+    function openConfirmModal() {
+      const modal = document.getElementById("modalConfirm");
+      const btnAbrir = document.getElementById("btnAbrirModal");
+      modal.style.display = "flex";
+      btnAbrir.style.display = "none";
+    }
 
+    function closeConfirmModal() {
+      const modal = document.getElementById("modalConfirm");
+      const btnAbrir = document.getElementById("btnAbrirModal");
+      modal.style.display = "none";
+      btnAbrir.style.display = "block";
+    }
 
+    // ——— SweetAlert según mensaje PHP ———
+    const mensaje = "<?php echo $mensaje; ?>";
+    if (mensaje === "producto_agregado") {
+      Swal.fire({
+        title: '<span class="titulo-alerta confirmacion">Producto Agregado</span>',
+        html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/moto.png" alt="Confirmacion" class="moto">
+                    </div>
+                    <p>Producto agregado con éxito al inventario.</p>
+                </div>`,
+        background: 'hsl(0deg 0% 100% / 0.76)',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
+        }
+      });
+    } else if (mensaje === "error_al_agregar") {
+      Swal.fire({
+        title: '<span class="titulo-alerta error">Error</span>',
+        html: `
+                <div class="custom-alert">
+                    <div class="contenedor-imagen">
+                        <img src="../imagenes/llave.png" alt="Error" class="llave">
+                    </div>
+                    <p>Error al agregar el producto.</p>
+                </div>`,
+        background: 'hsl(0deg 0% 100% / 0.76)',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#007bff',
+        customClass: {
+          popup: 'swal2-border-radius',
+          confirmButton: 'btn-aceptar',
+          container: 'fondo-oscuro'
+        }
+      });
+    }
 
+    // ——— Validación código duplicado ———
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputCodigo = document.getElementById('codigo1');
+      const submitBtn = document.querySelector('#product-form button[type="submit"]');
+      const campo = inputCodigo.closest('.campo');
+      let tooltip = campo.querySelector('.small-error-tooltip');
 
+      if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.className = 'small-error-tooltip';
+        tooltip.textContent = 'Este código ya está registrado.';
+        campo.appendChild(tooltip);
+      }
+
+      inputCodigo.addEventListener('blur', () => {
+        const val = inputCodigo.value.trim();
+        if (!val) {
+          inputCodigo.classList.remove('error');
+          tooltip.style.display = 'none';
+          submitBtn.disabled = false;
+          return;
+        }
+        fetch('crearproducto.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'accion=check_codigo&codigo1=' + encodeURIComponent(val)
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.exists) {
+              inputCodigo.classList.add('error');
+              tooltip.style.display = 'block';
+              submitBtn.disabled = true;
+            } else {
+              inputCodigo.classList.remove('error');
+              tooltip.style.display = 'none';
+              submitBtn.disabled = false;
+            }
+          })
+          .catch(() => {
+            inputCodigo.classList.remove('error');
+            tooltip.style.display = 'none';
+            submitBtn.disabled = false;
+          });
+      });
+    });
+
+    // ——— Funciones genéricas para los modales con animación ———
+    function openModal(modal) {
+      // Mostrar overlay y arrancar apertura
+      modal.classList.add('show');
+      void modal.offsetWidth; // fuerza reflow
+      modal.classList.add('opening');
+    }
+
+    function closeModal(modal) {
+      // Arrancar cierre
+      modal.classList.remove('opening');
+      modal.classList.add('closing');
+      // Cuando termine la transición, ocultar por completo
+      const contenido = modal.querySelector('.modal-content-nueva');
+      contenido.addEventListener('transitionend', function handler() {
+        contenido.removeEventListener('transitionend', handler);
+        modal.classList.remove('show', 'closing');
+      });
+    }
+
+    // ——— Asociar cada modal y sus eventos ———
+    const modalCat = document.getElementById('modalCategoria');
+    const modalUbic = document.getElementById('modalUbicacion');
+    const modalMarca = document.getElementById('modalMarca');
+
+    // Cerrar al hacer clic fuera del contenido
+    [modalCat, modalUbic, modalMarca].forEach(modalEl => {
+      modalEl.addEventListener('click', e => {
+        if (e.target === modalEl) closeModal(modalEl);
+      });
+    });
+
+    // ——— Modal Categoría ———
+    document.getElementById('btnCancelarCategoria')
+      .addEventListener('click', () => closeModal(modalCat));
+
+    function openModalCategoria() {
+      openModal(modalCat);
+      document.getElementById('inputNombreCategoria').focus();
+    }
+    formAddCategoria.addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre = document.getElementById('inputNombreCategoria').value.trim();
+      if (!nombre) return;
+      fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            accion: 'add_categoria',
+            nombre
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const opt = document.createElement('option');
+            opt.value = data.id;
+            opt.text = data.nombre;
+            opt.selected = true;
+            document.getElementById('categoria').appendChild(opt);
+            closeModal(modalCat);
+            formAddCategoria.reset();
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.error
+            });
+          }
+        });
+    });
+
+    // ——— Modal Ubicación ———
+    document.getElementById('btnCancelarUbicacion')
+      .addEventListener('click', () => closeModal(modalUbic));
+
+    function openModalUbicacion() {
+      openModal(modalUbic);
+      document.getElementById('inputNombreUbicacion').focus();
+    }
+    formAddUbicacion.addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre = document.getElementById('inputNombreUbicacion').value.trim();
+      if (!nombre) return;
+      fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            accion: 'add_ubicacion',
+            nombre
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const opt = document.createElement('option');
+            opt.value = data.id;
+            opt.text = data.nombre;
+            opt.selected = true;
+            document.getElementById('ubicacion').appendChild(opt);
+            closeModal(modalUbic);
+            formAddUbicacion.reset();
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.error
+            });
+          }
+        });
+    });
+
+    // ——— Modal Marca ———
+    document.getElementById('btnCancelarMarca')
+      .addEventListener('click', () => closeModal(modalMarca));
+
+    function openModalMarca() {
+      openModal(modalMarca);
+      document.getElementById('inputNombreMarca').focus();
+    }
+    formAddMarca.addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre = document.getElementById('inputNombreMarca').value.trim();
+      if (!nombre) return;
+      fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            accion: 'add_marca',
+            nombre
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const opt = document.createElement('option');
+            opt.value = data.id;
+            opt.text = data.nombre;
+            opt.selected = true;
+            document.getElementById('marca').appendChild(opt);
+            closeModal(modalMarca);
+            formAddMarca.reset();
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.error
+            });
+          }
+        });
+    });
+    // Helper genérico
+    async function checkExists(accion, nombre) {
+      const body = new URLSearchParams({
+        accion,
+        nombre: nombre.trim()
+      });
+      const resp = await fetch('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body.toString()
+      });
+      const json = await resp.json();
+      return json.exists;
+    }
+
+    // Crea un listener para un modal dado:
+    function setupModalValidation({
+      inputId,
+      btnGuardarId,
+      accion
+    }) {
+      const inp = document.getElementById(inputId);
+      const btn = document.getElementById(btnGuardarId);
+      const span = inp.nextElementSibling; // asume el span justo después
+      inp.addEventListener('input', async () => {
+        const val = inp.value.trim();
+        const exists = val ? await checkExists(accion, val) : false;
+        inp.classList.toggle('invalid', exists);
+        btn.disabled = exists || !val;
+      });
+    }
+
+    // Inicializa las tres validaciones
+    setupModalValidation({
+      inputId: 'inputNombreCategoria',
+      btnGuardarId: 'btnGuardarCategoria',
+      accion: 'check_categoria'
+    });
+    setupModalValidation({
+      inputId: 'inputNombreUbicacion',
+      btnGuardarId: 'btnGuardarUbicacion',
+      accion: 'check_ubicacion'
+    });
+    setupModalValidation({
+      inputId: 'inputNombreMarca',
+      btnGuardarId: 'btnGuardarMarca',
+      accion: 'check_marca'
+    });
+  </script>
+
+  <div class="userContainer">
+    <div class="userInfo">
+      <!-- Nombre y apellido del usuario y rol -->
+      <!-- Consultar datos del usuario -->
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
+    </div>
+    <div class="profilePic">
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
+  </div>
+  <script>
+    const btnAbrirImportar = document.getElementById('btnAbrirImportar');
+    const btnCerrarImportar = document.getElementById('btnCerrarImportar');
+
+    function openModal(modal) {
+      modal.classList.remove('closing');
+      void modal.offsetWidth; // fuerza repaint
+      modal.classList.add('show');
+    }
+
+    function closeModal(modal) {
+      modal.classList.remove('show');
+      modal.classList.add('closing');
+      modal.addEventListener('transitionend', function handler(e) {
+        if (e.propertyName === 'opacity') {
+          modal.classList.remove('closing');
+          modal.removeEventListener('transitionend', handler);
+        }
+      });
+    }
+
+    // Abrir al pulsar el botón
+    btnAbrirImportar.addEventListener('click', () => openModal(modalConfirm));
+    // Cerrar con la X
+    btnCerrarImportar.addEventListener('click', () => closeModal(modalConfirm));
+    // Cerrar al clicar fuera del contenido
+    modalConfirm.addEventListener('click', e => {
+      if (e.target === modalConfirm) closeModal(modalConfirm);
+    });
+  </script>
+  <script>
+    document.querySelectorAll('.fake-select').forEach(fs => {
+      const sel = fs.querySelector('.fs-selected');
+      const opts = fs.querySelector('.fs-options');
+      const hidden = document.getElementById(fs.dataset.for);
+
+      // abrir / cerrar
+      sel.addEventListener('click', e => {
+        fs.classList.toggle('open');
+      });
+      // escoger opción
+      opts.addEventListener('click', e => {
+        if (e.target.tagName === 'LI') {
+          sel.textContent = e.target.textContent;
+          hidden.value = e.target.dataset.value;
+          fs.classList.remove('open');
+        }
+      });
+      // cerrar al clicar afuera
+      document.addEventListener('click', e => {
+        if (!fs.contains(e.target)) fs.classList.remove('open');
+      });
+    });
   </script>
 </body>
 

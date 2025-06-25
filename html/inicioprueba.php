@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_id'])) {
   exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
@@ -188,7 +188,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-  <link rel="stylesheet" href="../css/inventario.css" />
+
   <link rel="stylesheet" href="../css/alertas.css">
   <link rel="stylesheet" href="../componentes/header.css">
   <script src="../js/header.js"></script>
@@ -223,272 +223,467 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       /* Se puede interactuar de nuevo */
       visibility: visible;
     }
+    /* --- RESET BÁSICO Y ESTILOS GLOBALES --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ================================================================== */
+/* ESTILOS ORIGINALES (BASE PARA ESCRITORIO) CON LIGEROS AJUSTES      */
+/* ================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url("fondoMotoRacer.png"); /* Asegúrate de que esta ruta es correcta */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
+    color: white;
+}
+
+/* Capa de oscurecimiento sobre el fondo */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.6;
+    z-index: -1;
+}
+
+/* Contenedor general de la página */
+.container-general {
+    display: flex; /* Usamos flexbox para el layout principal */
+}
+
+/* Barra lateral (tu #menu) */
+.sidebar {
+    width: 85px; /* Ancho inicial del menú */
+    background-color: #0b111a; /* Un color de fondo para el menú */
+    transition: width 0.3s ease;
+    height: 100vh; /* Ocupa toda la altura */
+    position: sticky; /* Se queda fijo al hacer scroll */
+    top: 0;
+    /* Aquí irían los estilos de tu menú real (#menu) */
+}
+
+.sidebar:hover {
+    width: 270px; /* Ancho al pasar el mouse */
+}
+
+/* Contenido Principal */
+.main-content {
+    flex-grow: 1; /* Ocupa el resto del espacio */
+    padding: 20px 40px;
+    height: 100%;
+    min-height: 100vh;
+    background: rgb(211 210 210 / 84%);
+    border-radius: 10px;
+    margin: 20px;
+    box-shadow: 0 4px 20px #0b111a;
+}
+
+.ubica {
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    color: #333;
+}
+
+h1 {
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+    font-family: "Metal Mania", system-ui;
+    font-size: 70px;
+    text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+}
+
+/* Barra superior con filtros y búsqueda */
+.barra-superior {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea si no caben */
+}
+
+.search-input {
+    font-size: 16px;
+    padding: 9px 15px;
+    border-radius: 9px;
+    border: 1px solid #ccc;
+    width: 300px;
+}
+
+/* --- ESTILOS DE LA TABLA --- */
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto; /* La clave para el responsive de la tabla */
+    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+    border: 1px solid #ddd;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+#productTable {
+    width: 100%;
+    min-width: 1800px; /* Ancho mínimo para que todas las columnas se vean bien */
+    border-collapse: collapse;
+    color: #333; /* Texto oscuro para mejor lectura sobre fondo claro */
+}
+
+#productTable th,
+#productTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+#productTable th {
+    background-color: rgb(32, 69, 113);
+    color: white;
+    font-weight: bold;
+    position: sticky; /* Cabecera pegajosa */
+    top: 0;
+}
+
+#productTable td {
+    background-color: #f9f9f9;
+}
+#productTable tbody tr:nth-child(even) td {
+    background-color: #f1f1f1;
+}
+#productTable tbody tr:hover td {
+    background-color: #e2e2e2;
+}
+
+.acciones button, #delete-selected {
+    background: none; border: none; cursor: pointer; color: #555; font-size: 18px; margin: 0 5px;
+}
+.edit-button:hover { color: #007bff; }
+.delete-button:hover, #delete-selected:hover { color: #dc3545; }
+
+/* --- ESTILOS DEL MODAL DE EDICIÓN --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal.show { display: flex; }
+
+.modal-content {
+    background-color: rgba(230, 230, 230, 0.95);
+    width: 70%;
+    max-width: 850px;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal-content h2 { /* Estilos de tu h2 original */ }
+.modal .close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #555; }
+
+#editForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas por defecto */
+    gap: 20px;
+}
+.campo { display: flex; flex-direction: column; }
+.campo label { margin-bottom: 5px; color: #333; font-weight: bold; }
+.campo input, .campo select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+.modal-boton { grid-column: 1 / -1; text-align: right; } /* Ocupa todo el ancho */
+
+/* --- Estilos de botones, paginación, etc. (Tomados de tu CSS) --- */
+/* (Aquí irían los estilos de .btn-principal, .pagination-dinamica, .filtros-popup, etc. que no cambian mucho) */
+.btn-principal, .btn-exportar, .btn-secundario {
+    padding: 9px 15px; border-radius: 9px; border: none; cursor: pointer; font-weight: bold; color: white;
+}
+.btn-principal { background-color: #007bff; }
+.btn-exportar { background-color: #1f5917; }
+.btn-secundario { background-color: #6c757d; }
+
+.pagination-dinamica { display: flex; justify-content: center; margin-top: 25px; gap: 8px; }
+.pagination-dinamica button { /* Tus estilos de paginación */ }
+
+
+/* ================================================================== */
+/* AJUSTES RESPONSIVE PARA MÓVILES Y TABLETS                          */
+/* ================================================================== */
+
+/* Para pantallas de 992px o menos (Tablets y móviles) */
+@media (max-width: 992px) {
+    body {
+        background-attachment: scroll; /* El fondo se mueve con el scroll en móvil */
+    }
+    
+    .sidebar {
+        display: none; /* Ocultamos el menú lateral para dar espacio */
+    }
+
+    .main-content {
+        margin: 0; /* Eliminamos los márgenes para que ocupe todo */
+        padding: 15px; /* Reducimos el padding */
+        border-radius: 0; /* Sin bordes redondeados en la vista completa */
+        min-height: 100vh;
+    }
+
+    h1 {
+        font-size: 40px; /* Hacemos el título un poco más pequeño */
+        text-shadow: 4px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 2px 3px 0 #1c51a0;
+    }
+
+    /* Barra superior adaptable */
+    .barra-superior {
+        flex-direction: column; /* Apilamos los elementos */
+        align-items: stretch; /* Hacemos que ocupen todo el ancho */
+        gap: 10px;
+    }
+    .barra-superior .search-input,
+    .barra-superior .export-form,
+    .barra-superior button {
+        width: 100%; /* Ancho completo para fácil acceso */
+    }
+
+    /* Filtros popup */
+    .filtros-popup .filtros-container {
+        flex-direction: column;
+    }
+
+    /* Modal de edición adaptable */
+    .modal-content {
+        width: 95%; /* Ocupa casi todo el ancho de la pantalla */
+        padding: 20px;
+    }
+
+    #editForm {
+        grid-template-columns: 1fr; /* UNA sola columna para los campos del formulario */
+    }
+    .modal-boton {
+        text-align: center; /* Centramos el botón de guardar */
+    }
+    #modal-boton {
+        width: 100%; /* El botón ocupa todo el ancho */
+    }
+}
   </style>
 </head>
 
 <body>
-  <div id="menu"></div>
-  <div class="ubica"> Inventario / Lista productos </div>
+    <div id="menu"></div>
+   <div class="container-general">
+        <div class="sidebar">
+            </div>
+        <div class="main-content">
+            <div class="ubica">Inventario / Lista de Productos</div>
+            <h1>Inventario</h1>
 
-  <div class="container-general">
-  </div>
-  <div class="main-content">
-    <div class="fondoBlanco">
-      <h1>Inventario</h1>
+            <div class="barra-superior">
+                <button id="filtros-btn" class="btn-principal"><i class="fas fa-filter"></i> Mostrar Filtros</button>
+                <input type="text" id="searchRealtime" class="search-input" placeholder="Buscar en resultados..." autocomplete="off">
+                <form action="exportar_excel.php" method="post" class="export-form">
+                    <button type="submit" class="btn-exportar" aria-label="Exportar a Excel" title="Exportar a Excel">
+                        <i class="fas fa-file-excel"></i><span> Exportar</span>
+                    </button>
+                </form>
+            </div>
 
-      <!-- ============================== -->
-      <!-- 6) FILTROS / BÚSQUEDA CLIENTE  -->
-      <!-- ============================== -->
-      <div class="barra-superior">
-        <button id="filtros-btn">Mostrar Filtros</button>
-        <!-- Caja de búsqueda en tiempo real (cliente) -->
-        <input type="text" id="searchRealtime" placeholder="Buscar en resultados..." autocomplete="off">
-        <!-- Botón exportar a Excel (agregado de nuevo) -->
-        <div class="export-button" style="margin-left: 15px;">
-          <form action="exportar_excel.php" method="post">
-            <button type="submit" class="icon-button" aria-label="Exportar a Excel" title="Exportar a Excel">
-              <i class="fas fa-file-excel"></i>
-              <label> Exportar a Excel</label>
-            </button>
-          </form>
+            <div id="filtros-popup" class="filtros-popup">
+                <div class="filtros-container">
+                    <div class="filtro">
+                        <button class="filtro-titulo">Categorías <i class="fa fa-chevron-down"></i></button>
+                        <div class="filtro-opciones">
+                            <?php $resCat = mysqli_query($conexion, "SELECT codigo, nombre FROM categoria ORDER BY nombre");
+                            while ($cat = mysqli_fetch_assoc($resCat)): ?>
+                            <label><input type="checkbox" name="filtrosCat[]" value="<?= htmlspecialchars($cat['codigo']) ?>"> <?= htmlspecialchars($cat['nombre']) ?></label>
+                            <?php endwhile; ?>
+                        </div>
+                    </div>
+                    <div class="filtro">
+                        <button class="filtro-titulo">Marcas <i class="fa fa-chevron-down"></i></button>
+                        <div class="filtro-opciones">
+                             <?php $resMar = mysqli_query($conexion, "SELECT codigo, nombre FROM marca ORDER BY nombre");
+                             while ($mar = mysqli_fetch_assoc($resMar)): ?>
+                            <label><input type="checkbox" name="filtrosMarca[]" value="<?= htmlspecialchars($mar['codigo']) ?>"> <?= htmlspecialchars($mar['nombre']) ?></label>
+                            <?php endwhile; ?>
+                        </div>
+                    </div>
+                    <div class="filtro">
+                        <button class="filtro-titulo">Ubicaciones <i class="fa fa-chevron-down"></i></button>
+                        <div class="filtro-opciones">
+                            <?php $resUb = mysqli_query($conexion, "SELECT codigo, nombre FROM ubicacion ORDER BY nombre");
+                            while ($ub = mysqli_fetch_assoc($resUb)): ?>
+                            <label><input type="checkbox" name="filtrosUbic[]" value="<?= htmlspecialchars($ub['codigo']) ?>"> <?= htmlspecialchars($ub['nombre']) ?></label>
+                            <?php endwhile; ?>
+                        </div>
+                    </div>
+                    <div class="filtro">
+                        <button class="filtro-titulo">Proveedores <i class="fa fa-chevron-down"></i></button>
+                        <div class="filtro-opciones">
+                            <?php $resProv = mysqli_query($conexion, "SELECT nit, nombre FROM proveedor ORDER BY nombre");
+                            while ($prov = mysqli_fetch_assoc($resProv)): ?>
+                            <label><input type="checkbox" name="filtrosProv[]" value="<?= htmlspecialchars($prov['nit']) ?>"> <?= htmlspecialchars($prov['nombre']) ?></label>
+                            <?php endwhile; ?>
+                        </div>
+                    </div>
+                    <div class="filtro clear-btn">
+                        <button id="btnClear" class="btn-secundario">Limpiar Filtros</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="productTable">
+                    <thead>
+                        <tr>
+                            <th data-col="0">Código<span class="sort-arrow"></span></th>
+                            <th data-col="1">Código 2<span class="sort-arrow"></span></th>
+                            <th data-col="2">Nombre<span class="sort-arrow"></span></th>
+                            <th data-col="3">Precio 1<span class="sort-arrow"></span></th>
+                            <th data-col="4">Precio 2<span class="sort-arrow"></span></th>
+                            <th data-col="5">Precio 3<span class="sort-arrow"></span></th>
+                            <th data-col="6">Cantidad<span class="sort-arrow"></span></th>
+                            <th data-col="7">Categoría<span class="sort-arrow"></span></th>
+                            <th data-col="8">Marca<span class="sort-arrow"></span></th>
+                            <th data-col="9">Clase<span class="sort-arrow"></span></th>
+                            <th data-col="10">Ubicación<span class="sort-arrow"></span></th>
+                            <th data-col="11">Proveedor<span class="sort-arrow"></span></th>
+                            <th>Acciones</th>
+                            <th>
+                                <button id="delete-selected" class="btn-icon-danger" style="display: none;" title="Eliminar seleccionados">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="paginationContainer" class="pagination-dinamica"></div>
         </div>
-
-      </div>
-      <div id="filtros-popup" class="filtros-popup">
-        <div class="filtros-container">
-
-          <!-- Sub‑dropdown Categorías -->
-          <div class="filtro">
-            <button class="filtro-titulo">Categorías <i class="fa fa-chevron-down"></i></button>
-            <div class="filtro-opciones">
-              <?php
-              $resCat = mysqli_query($conexion, "SELECT codigo, nombre FROM categoria");
-              while ($cat = mysqli_fetch_assoc($resCat)): ?>
-                <label>
-                  <input type="checkbox" name="filtrosCat[]" value="<?= htmlspecialchars($cat['codigo']) ?>">
-                  <?= htmlspecialchars($cat['nombre']) ?>
-                </label>
-              <?php endwhile; ?>
-            </div>
-          </div>
-
-          <!-- Sub‑dropdown Marcas -->
-          <div class="filtro">
-            <button class="filtro-titulo">Marcas <i class="fa fa-chevron-down"></i></button>
-            <div class="filtro-opciones">
-              <?php
-              $resMar = mysqli_query($conexion, "SELECT codigo, nombre FROM marca");
-              while ($mar = mysqli_fetch_assoc($resMar)): ?>
-                <label>
-                  <input type="checkbox" name="filtrosMarca[]" value="<?= htmlspecialchars($mar['codigo']) ?>">
-                  <?= htmlspecialchars($mar['nombre']) ?>
-                </label>
-              <?php endwhile; ?>
-            </div>
-          </div>
-
-          <!-- Sub‑dropdown Ubicaciones -->
-          <div class="filtro">
-            <button class="filtro-titulo">Ubicaciones <i class="fa fa-chevron-down"></i></button>
-            <div class="filtro-opciones">
-              <?php
-              $resUb = mysqli_query($conexion, "SELECT codigo, nombre FROM ubicacion");
-              while ($ub = mysqli_fetch_assoc($resUb)): ?>
-                <label>
-                  <input type="checkbox" name="filtrosUbic[]" value="<?= htmlspecialchars($ub['codigo']) ?>">
-                  <?= htmlspecialchars($ub['nombre']) ?>
-                </label>
-              <?php endwhile; ?>
-            </div>
-          </div>
-
-          <!-- Sub‑dropdown Proveedores -->
-          <div class="filtro">
-            <button class="filtro-titulo">Proveedores <i class="fa fa-chevron-down"></i></button>
-            <div class="filtro-opciones">
-              <?php
-              $resProv = mysqli_query($conexion, "SELECT nit, nombre FROM proveedor");
-              while ($prov = mysqli_fetch_assoc($resProv)): ?>
-                <label>
-                  <input type="checkbox" name="filtrosProv[]" value="<?= htmlspecialchars($prov['nit']) ?>">
-                  <?= htmlspecialchars($prov['nombre']) ?>
-                </label>
-              <?php endwhile; ?>
-            </div>
-          </div>
-
-          <!-- Botón Limpiar -->
-          <div class="filtro clear-btn">
-            <button id="btnClear">Limpiar </button>
-          </div>
-        </div>
-      </div>
-
-
-
-      <div class="table-wrapper">
-        <table id="productTable">
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th data-col="1" data-type="string">Código 2<span class="sort-arrow"></span></th>
-              <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
-              <th data-col="3" data-type="number">Precio 1<span class="sort-arrow"></span></th>
-              <th data-col="4" data-type="number">Precio 2<span class="sort-arrow"></span></th>
-              <th data-col="5" data-type="number">Precio 3<span class="sort-arrow"></span></th>
-              <th data-col="6" data-type="number">Cantidad<span class="sort-arrow"></span></th>
-              <th data-col="7" data-type="string">Categoría<span class="sort-arrow"></span></th>
-              <th data-col="8" data-type="string">Marca<span class="sort-arrow"></span></th>
-              <th data-col="9" data-type="string">Clase<span class="sort-arrow"></span></th>
-              <th data-col="10" data-type="string">Ubicación<span class="sort-arrow"></span></th>
-              <th data-col="11" data-type="string">Proveedor<span class="sort-arrow"></span></th>
-              <th data-col="12" data-type="none">Acciones</th>
-              <th data-col="13" data-type="none" class="acciones-multiples">
-                <!-- Botón para eliminar seleccionados -->
-                <button id="delete-selected" class="btn btn-danger" style="display: none;">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Se llenará dinámicamente con JavaScript -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Paginación Dinámica (cliente) -->
-      <div id="paginationContainer" class="pagination-dinamica"></div>
     </div>
-  </div>
 
-  <!-- Modal de edición (igual que antes) -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <span class="close">
-        <i class="fa-solid fa-x"></i>
-      </span>
-
-      <h2>Editar Producto</h2>
-      <form id="editForm" method="post">
-        <input type="hidden" id="editCodigo1" name="codigo1">
-        <div class="campo">
-          <label for="editCodigo1Visible">Código:</label>
-          <input type="text" id="editCodigo1Visible" disabled>
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="close"><i class="fa-solid fa-x"></i></button>
+            <h2>Editar Producto</h2>
+            <form id="editForm" method="post" action="listaproductos.php">
+                <input type="hidden" id="editCodigo1" name="codigo1">
+                <div class="campo">
+                    <label for="editCodigo1Visible">Código:</label>
+                    <input type="text" id="editCodigo1Visible" disabled>
+                </div>
+                <div class="campo">
+                    <label for="editCodigo2">Código 2:</label>
+                    <input type="text" id="editCodigo2" name="codigo2" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="campo">
+                    <label class="required" for="editNombre">Nombre:</label>
+                    <input type="text" id="editNombre" name="nombre" required>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editPrecio1">Precio 1:</label>
+                    <input type="text" id="editPrecio1" name="precio1" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editPrecio2">Precio 2:</label>
+                    <input type="text" id="editPrecio2" name="precio2" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editPrecio3">Precio 3:</label>
+                    <input type="text" id="editPrecio3" name="precio3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editCantidad">Cantidad:</label>
+                    <input type="text" id="editCantidad" name="cantidad" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editCategoria">Categoría:</label>
+                    <select name="categoria-id" id="editCategoria" required>
+                        <option value="">Seleccione una categoría</option>
+                        <?php
+                        $resultadoCategorias = mysqli_query($conexion, "SELECT codigo, nombre FROM categoria ORDER BY nombre");
+                        while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
+                            echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editMarca">Marca:</label>
+                    <select name="marca-id" id="editMarca" required>
+                        <option value="">Seleccione una marca</option>
+                        <?php
+                        $resultadoMarcas = mysqli_query($conexion, "SELECT codigo, nombre FROM marca ORDER BY nombre");
+                        while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
+                            echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editUnidadMedida">Clase:</label>
+                    <select name="unidadmedida-id" id="editUnidadMedida" required>
+                        <option value="">Seleccione una clase</option>
+                        <?php
+                        $resultadoUnidadesMedidas = mysqli_query($conexion, "SELECT codigo, nombre FROM unidadmedida ORDER BY nombre");
+                        while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
+                            echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editUbicacion">Ubicación:</label>
+                    <select name="ubicacion-id" id="editUbicacion" required>
+                        <option value="">Seleccione una ubicación</option>
+                        <?php
+                        $resultadoUbicaciones = mysqli_query($conexion, "SELECT codigo, nombre FROM ubicacion ORDER BY nombre");
+                        while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
+                           echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label class="required" for="editProveedor">Proveedor:</label>
+                    <select name="proveedor-id" id="editProveedor" required>
+                         <option value="">Seleccione un proveedor</option>
+                        <?php
+                        $resultadoProveedores = mysqli_query($conexion, "SELECT nit, nombre FROM proveedor ORDER BY nombre");
+                        while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
+                            echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="modal-boton">
+                    <button type="submit" id="modal-boton" class="btn-principal">Guardar Cambios</button>
+                </div>
+            </form>
         </div>
-        <div class="campo">
-          <label for="editCodigo2">Código 2:</label>
-          <input type="text" id="editCodigo2" name="codigo2"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="campo">
-          <label class="required" for="editNombre">Nombre:</label>
-          <input type="text" id="editNombre" name="nombre">
-        </div>
-        <div class="campo">
-          <label class="required" for="editPrecio1">Precio 1:</label>
-          <input type="text" id="editPrecio1" name="precio1"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="campo">
-          <label class="required" for="editPrecio2">Precio 2:</label>
-          <input type="text" id="editPrecio2" name="precio2"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="campo">
-          <label class="required" for="editPrecio3">Precio 3:</label>
-          <input type="text" id="editPrecio3" name="precio3"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="campo">
-          <label class="required" for="editCantidad">Cantidad:</label>
-          <input type="text" id="editCantidad" name="cantidad"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="campo">
-          <label class="required" for="editCategoria">Categoría:</label>
-          <select name="categoria-id" id="editCategoria" required>
-            <option value="">Seleccione una categoría</option>
-            <?php
-            $conexion2 = mysqli_connect("localhost", "root", "", "inventariomotoracer");
-            if (!$conexion2) {
-              die("Error de conexión: " . mysqli_connect_error());
-            }
-            $consultaCategorias = "SELECT codigo, nombre FROM categoria";
-            $resultadoCategorias = mysqli_query($conexion2, $consultaCategorias);
-            while ($filaCategoria = mysqli_fetch_assoc($resultadoCategorias)) {
-              echo "<option value='" . htmlspecialchars($filaCategoria['codigo']) . "'>" . htmlspecialchars($filaCategoria['nombre']) . "</option>";
-            }
-            mysqli_close($conexion2);
-            ?>
-          </select>
-        </div>
-        <div class="campo">
-          <label class="required" for="editMarca">Marca:</label>
-          <select name="marca-id" id="editMarca" required>
-            <option value="">Seleccione una marca</option>
-            <?php
-            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            $consultaMarcas = "SELECT codigo, nombre FROM marca";
-            $resultadoMarcas = mysqli_query($conexion2, $consultaMarcas);
-            while ($filaMarca = mysqli_fetch_assoc($resultadoMarcas)) {
-              echo "<option value='" . htmlspecialchars($filaMarca['codigo']) . "'>" . htmlspecialchars($filaMarca['nombre']) . "</option>";
-            }
-            mysqli_close($conexion2);
-            ?>
-          </select>
-        </div>
-        <div class="campo">
-          <label class="required" for="editUnidadMedida">Clase:</label>
-          <select name="unidadmedida-id" id="editUnidadMedida" required>
-            <option value="">Seleccione una medida</option>
-            <?php
-            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            $consultaUnidadesMedidas = "SELECT codigo, nombre FROM unidadmedida";
-            $resultadoUnidadesMedidas = mysqli_query($conexion2, $consultaUnidadesMedidas);
-            while ($filaUnidadMedida = mysqli_fetch_assoc($resultadoUnidadesMedidas)) {
-              echo "<option value='" . htmlspecialchars($filaUnidadMedida['codigo']) . "'>" . htmlspecialchars($filaUnidadMedida['nombre']) . "</option>";
-            }
-            mysqli_close($conexion2);
-            ?>
-          </select>
-        </div>
-        <div class="campo">
-          <label class="required" for="editUbicacion">Ubicación:</label>
-          <select name="ubicacion-id" id="editUbicacion" required>
-            <option value="">Seleccione una ubicación</option>
-            <?php
-            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            $consultaUbicaciones = "SELECT codigo, nombre FROM ubicacion";
-            $resultadoUbicaciones = mysqli_query($conexion2, $consultaUbicaciones);
-            while ($filaUbicacion = mysqli_fetch_assoc($resultadoUbicaciones)) {
-              echo "<option value='" . htmlspecialchars($filaUbicacion['codigo']) . "'>" . htmlspecialchars($filaUbicacion['nombre']) . "</option>";
-            }
-            mysqli_close($conexion2);
-            ?>
-          </select>
-        </div>
-        <div class="campo">
-          <label class="required" for="editProveedor">Proveedor:</label>
-          <select name="proveedor-id" id="editProveedor" required>
-            <option value="">Seleccione un proveedor</option>
-            <?php
-            $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            $consultaProveedores = "SELECT nit, nombre FROM proveedor";
-            $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
-            while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
-              echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";
-            }
-            mysqli_close($conexion2);
-            ?>
-          </select>
-        </div>
-        <div class="modal-boton">
-          <button type="submit" id="modal-boton">Guardar Cambios</button>
-        </div>
-      </form>
     </div>
-  </div>
 
   <!-- —————————————————————————————————————————————————————————— -->
   <!-- 3) SCRIPT DE JAVASCRIPT: paginación / filtrado / ordenamiento / selección -->
