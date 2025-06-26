@@ -191,13 +191,46 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <body>
     <?php include 'boton-ayuda.php'; ?>
-    
+
     <div id="menu"></div>
-    <div class="ubica"> Usuario / Información </div>
+    <nav class="barra-navegacion">
+        <div class="ubica"> Usuario / Información </div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <!-- Nombre y apellido del usuario y rol -->
+                <!-- Consultar datos del usuario -->
+                <?php
+                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                $id_usuario = $_SESSION['usuario_id'];
+                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+                $stmtUsuario = $conexion->prepare($sqlUsuario);
+                $stmtUsuario->bind_param("i", $id_usuario);
+                $stmtUsuario->execute();
+                $resultUsuario = $stmtUsuario->get_result();
+                $rowUsuario = $resultUsuario->fetch_assoc();
+                $nombreUsuario = $rowUsuario['nombre'];
+                $apellidoUsuario = $rowUsuario['apellido'];
+                $rol = $rowUsuario['rol'];
+                $foto = $rowUsuario['foto'];
+                $stmtUsuario->close();
+                ?>
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
+
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
     <!-- Información del usuario -->
     <div class="fondo-opaco"></div>
     <div class="container">
-        
+
 
         <h1>Usuario</h1>
         <div class="profile-pic">
@@ -506,35 +539,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 
         function abrirPopup() {
-    const overlay = document.getElementById('overlay');
-    const popup   = document.getElementById('popup');
+            const overlay = document.getElementById('overlay');
+            const popup = document.getElementById('popup');
 
-    overlay.style.display = 'flex';
-    // Quitar clase 'closing' en caso de que exista
-    popup.classList.remove('closing');
-    // Forzar reflow para reiniciar animación si fuese necesario
-    void popup.offsetWidth;
-    // Añadir clase de apertura
-    popup.classList.add('open');
-}
+            overlay.style.display = 'flex';
+            // Quitar clase 'closing' en caso de que exista
+            popup.classList.remove('closing');
+            // Forzar reflow para reiniciar animación si fuese necesario
+            void popup.offsetWidth;
+            // Añadir clase de apertura
+            popup.classList.add('open');
+        }
 
-function cerrarPopup() {
-    const overlay = document.getElementById('overlay');
-    const popup   = document.getElementById('popup');
+        function cerrarPopup() {
+            const overlay = document.getElementById('overlay');
+            const popup = document.getElementById('popup');
 
-    // Quitar la clase de apertura
-    popup.classList.remove('open');
-    // Añadir la clase de cierre
-    popup.classList.add('closing');
+            // Quitar la clase de apertura
+            popup.classList.remove('open');
+            // Añadir la clase de cierre
+            popup.classList.add('closing');
 
-    // Cuando termine la animación de cierre, ocultamos el overlay
-    popup.addEventListener('animationend', function handler() {
-        overlay.style.display = 'none';
-        // limpiamos clases para la próxima apertura
-        popup.classList.remove('closing');
-        popup.removeEventListener('animationend', handler);
-    });
-}
+            // Cuando termine la animación de cierre, ocultamos el overlay
+            popup.addEventListener('animationend', function handler() {
+                overlay.style.display = 'none';
+                // limpiamos clases para la próxima apertura
+                popup.classList.remove('closing');
+                popup.removeEventListener('animationend', handler);
+            });
+        }
 
         // Función para subir imagen
         function uploadImage() {
@@ -558,37 +591,6 @@ function cerrarPopup() {
             }
         });
     </script>
-  <div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
-
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
-    </div>
 </body>
 
 

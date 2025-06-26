@@ -1,4 +1,35 @@
 <?php
+// —— AJAX check_correo — solo responde JSON y sale
+if (
+  $_SERVER['REQUEST_METHOD'] === 'POST'
+  && isset($_GET['action'])
+  && $_GET['action'] === 'check_correo' // <-- Nueva acción
+) {
+  header('Content-Type: application/json');
+  require '../conexion/conexion.php'; // Asegúrate que la ruta es correcta
+
+  $raw  = file_get_contents('php://input');
+  $data = json_decode($raw, true);
+  $correo = trim($data['correo'] ?? '');
+
+  if ($correo === '') {
+    echo json_encode(['exists' => false, 'error' => 'No se recibió el correo']);
+    exit;
+  }
+
+  $stmt = $conexion->prepare("SELECT COUNT(*) FROM usuario WHERE correo = ?");
+  $stmt->bind_param("s", $correo);
+  $stmt->execute();
+  $stmt->bind_result($count);
+  $stmt->fetch();
+  $stmt->close();
+  $conexion->close();
+
+  echo json_encode(['exists' => $count > 0]);
+  exit; // Importantísimo: cortamos aquí para no enviar el resto del HTML
+}
+
+
 // —— AJAX check_identificacion — solo responde JSON y sale
 if (
   $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -90,7 +121,17 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
     .required::after {
             content: " *";
             color: red;
-        }
+    }
+    /* Estilo para inputs con error (identificación y correo) */
+    .input-error {
+      border: 2px solid #e74c3c !important;
+      box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+    }
+    .mensaje-error {
+        color: #e74c3c;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
   </style>
 </head>
 
@@ -114,7 +155,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             required>
-          <!-- Tooltip de error -->
           <div class="small-error-tooltip">Esta identificación ya está registrada.</div>
         </div>
 
@@ -164,7 +204,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
             id="togglePassword"
             class="bx bx-hide"
             style="position: absolute; right: 12rem; left: 16rem; top: 54.7%; transform: translateY(-50%); cursor: pointer; color: black; font-size: 1.5rem; width: 20px; height: 20px;"></i>
-          <!-- Ventana flotante para criterios de la contraseña -->
           <div id="tooltip-requisitos" class="ventana-requisitos" style="display: none;">
             <ul class="requisitos" style="list-style: none; padding-left: 0;">
               <li id="min-caracteres"> Mínimo 8 caracteres</li>
@@ -183,7 +222,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
             id="togglePassword2"
             class="bx bx-hide"
             style="position: absolute; right: 0rem; left: 16rem; top: 54.7%; transform: translateY(-50%); cursor: pointer; color: black; font-size: 1.5rem; width: 20px; height: 20px;"></i>
-          <!-- Ventana flotante para verificar coincidencia -->
           <div id="tooltip-confirmar" class="ventana-requisitos" style="display: none;">
             <p id="mensaje-confirmar" style="margin: 0; padding: 0.5rem;"></p>
           </div>
@@ -199,8 +237,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
   </form>
  <div class="userContainer">
         <div class="userInfo">
-            <!-- Nombre y apellido del usuario y rol -->
-            <!-- Consultar datos del usuario -->
             <?php
             $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
             $id_usuario = $_SESSION['usuario_id'];
@@ -265,12 +301,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: <div class=\"custom-alert\">
+                            html: `<div class=\"custom-alert\">
                                         <div class='contenedor-imagen'>
                                             <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                         </div>
                                         <p>Las contraseñas no coinciden.</p>
-                                    </div>,
+                                    </div>`,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -298,12 +334,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: <div class=\"custom-alert\">
+                            html: `<div class=\"custom-alert\">
                                         <div class='contenedor-imagen'>
                                             <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                         </div>
                                         <p>El correo ya está registrado. Intenta con otro.</p>
-                                    </div>,
+                                    </div>`,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -333,12 +369,12 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             title: '<span class=\"titulo-alerta error\">Error</span>',
-                            html: <div class=\"custom-alert\">
+                            html: `<div class=\"custom-alert\">
                                         <div class='contenedor-imagen'>
                                             <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
                                         </div>
                                         <p>El número de teléfono ya está registrado. Intenta con otro.</p>
-                                    </div>,
+                                    </div>`,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#dc3545',
@@ -438,35 +474,35 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   ?>
 
-  <!-- Modal de Verificación de Correo -->
   <div id="modalVerificacion" class="modal hidden">
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal-container">
-      <h2>Verificar Correo</h2>
-      <p id="mensajeModal"></p>
+  <div class="modal-overlay" id="modalOverlay"></div>
+  <div class="modal-container">
+    <h2>Verificar Correo</h2>
+    <p id="mensajeModal"></p>
 
-      <div id="correoSection">
-        <div class="input-group">
-          <input type="email" id="inputCorreo">
-        </div>
-        <div id="correoSectionButtons" class="modal-actions">
-          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button>
-          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button>
-        </div>
+    <div id="correoSection">
+      <div class="input-group">
+        <input type="email" id="inputCorreo">
+        <p id="correoError" class="mensaje-error" style="display: none;"></p>
       </div>
+      <div id="correoSectionButtons" class="modal-actions">
+        <button id="btnCerrarModal" class="btnCancelar">Cancelar</button>
+        <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button>
+      </div>
+    </div>
 
-      <div id="codigoSection" class="hidden">
-        <div class="input-group">
-          <label>Ingrese el código recibido:</label>
-          <input type="text" id="inputCodigo">
-        </div>
-        <div class="modal-actions">
-          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button>
-          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button>
-        </div>
+    <div id="codigoSection" class="hidden">
+      <div class="input-group">
+        <label>Ingrese el código recibido:</label>
+        <input type="text" id="inputCodigo">
+      </div>
+      <div class="modal-actions">
+        <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button>
+        <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button>
       </div>
     </div>
   </div>
+</div>
 
   <script>
     const togglePassword = document.querySelector('#togglePassword');
@@ -564,6 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      // --- INICIO DE LÓGICA DEL MODAL ---
       const modal = document.getElementById('modalVerificacion');
       const btnAbrirModal = document.getElementById('btnAbrirModalCorreo');
       const btnCerrarModal = document.getElementById('btnCerrarModal');
@@ -575,6 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const codigoSection = document.getElementById('codigoSection');
       const mensajeModal = document.getElementById('mensajeModal');
       const correoSectionButtons = document.getElementById('correoSectionButtons');
+      const correoError = document.getElementById('correoError');
+      let debounceCorreo;
 
       function abrirModal() {
         modal.classList.remove('hidden');
@@ -605,59 +644,83 @@ document.addEventListener('DOMContentLoaded', function() {
         mensajeModal.style.fontWeight = 'bold';
         inputCorreo.value = '';
         inputCodigo.value = '';
+        inputCorreo.classList.remove('input-error');
+        correoError.style.display = 'none';
         codigoSection.classList.add('hidden');
         correoSectionButtons.classList.remove('hidden');
         inputCorreo.disabled = false;
-        btnEnviarCodigo.disabled = false;
+        btnEnviarCodigo.disabled = true; // Deshabilitado por defecto
       }
 
-      function cerrarModalCompleto() {
-        modal.classList.add('hidden');
-        resetearModal();
-      }
-
-      // Abrir modal al hacer clic en "Verificar correo"
-      btnAbrirModal.addEventListener('click', abrirModal);
+      // Abrir modal
+      if(btnAbrirModal) btnAbrirModal.addEventListener('click', abrirModal);
 
       // Botones de cancelar
-      btnCerrarModal.addEventListener('click', cerrarModal);
-      btnCerrarModal2.addEventListener('click', cerrarModal);
+      if(btnCerrarModal) btnCerrarModal.addEventListener('click', cerrarModal);
+      if(btnCerrarModal2) btnCerrarModal2.addEventListener('click', cerrarModal);
 
       // Cerrar al hacer clic fuera del área de contenido
-      modal.addEventListener('click', function(e) {
+      if(modal) modal.addEventListener('click', function(e) {
         if (e.target.classList.contains('modal-overlay')) {
-          cerrarModalCompleto();
+          cerrarModal();
         }
       });
+      
+      // --- INICIO: LÓGICA DE VALIDACIÓN DE CORREO EN TIEMPO REAL ---
+      if(inputCorreo){
+        inputCorreo.addEventListener('input', () => {
+            clearTimeout(debounceCorreo);
+            inputCorreo.classList.remove('input-error');
+            correoError.style.display = 'none';
+
+            const correo = inputCorreo.value.trim();
+            const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/;
+
+            if (!regexCorreo.test(correo)) {
+                btnEnviarCodigo.disabled = true;
+                return;
+            }
+
+            debounceCorreo = setTimeout(() => {
+                fetch(`${location.pathname}?action=check_correo`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ correo: correo })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exists) {
+                        inputCorreo.classList.add('input-error');
+                        correoError.textContent = 'Este correo ya está registrado.';
+                        correoError.style.display = 'block';
+                        btnEnviarCodigo.disabled = true;
+                    } else {
+                        inputCorreo.classList.remove('input-error');
+                        correoError.style.display = 'none';
+                        btnEnviarCodigo.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error en la verificación de correo:', err);
+                    btnEnviarCodigo.disabled = true;
+                });
+            }, 500);
+        });
+      }
+      // --- FIN: LÓGICA DE VALIDACIÓN DE CORREO EN TIEMPO REAL ---
 
       // Enviar código al correo
-      btnEnviarCodigo.addEventListener('click', () => {
+      if(btnEnviarCodigo) btnEnviarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
-        const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/;
-
-        if (!correo) {
-          mensajeModal.textContent = 'Por favor ingresa un correo.';
-          mensajeModal.style.color = 'red';
-          return;
-        }
-        if (!regexCorreo.test(correo)) {
-          mensajeModal.textContent = 'Por favor, ingresa un correo válido. Sugerencia: usa uno que termine en @gmail.com, @outlook.com, @hotmail.com o @yahoo.com.';
-          mensajeModal.style.color = 'red';
-          return;
-        }
-
+        
         btnEnviarCodigo.disabled = true;
         mensajeModal.textContent = 'Enviando código...';
         mensajeModal.style.color = '';
 
         fetch('../html/enviar_codigo.php', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              correo
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ correo })
           })
           .then(res => res.json())
           .then(data => {
@@ -681,7 +744,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       // Verificar código ingresado
-      btnVerificarCodigo.addEventListener('click', () => {
+      if(btnVerificarCodigo) btnVerificarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
         const codigo = inputCodigo.value.trim();
 
@@ -696,41 +759,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetch('../html/verificar_codigo_correo.php', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              correo,
-              codigo
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ correo, codigo })
           })
           .then(res => res.json())
           .then(data => {
             if (data.success) {
               mensajeModal.textContent = 'Código verificado correctamente.';
               mensajeModal.style.color = 'green';
-              modal.classList.add('hidden');
+              
+              setTimeout(() => {
+                  cerrarModal();
+              }, 1000); // Cierra el modal 1 segundo después
 
               // Habilitar campos de contraseña
               document.getElementById('contrasena').disabled = false;
               document.getElementById('confirmar').disabled = false;
 
               // Reemplazar botón por campo correo readonly
-              const contenedorCorreo = btnAbrirModal.parentElement;
-              contenedorCorreo.innerHTML = '';
-
-              const labelCorreo = document.createElement('label');
-              labelCorreo.setAttribute('for', 'correo');
-              labelCorreo.textContent = 'Correo: ';
-              contenedorCorreo.appendChild(labelCorreo);
-
-              const inputCorreoReadonly = document.createElement('input');
-              inputCorreoReadonly.type = 'email';
-              inputCorreoReadonly.id = 'correo';
-              inputCorreoReadonly.name = 'correo';
-              inputCorreoReadonly.value = correo;
-              inputCorreoReadonly.readOnly = true;
-              contenedorCorreo.appendChild(inputCorreoReadonly);
+              const contenedorCorreo = document.getElementById('contenedorCorreo');
+              contenedorCorreo.innerHTML = `
+                <label class="required" for="correo">Correo: </label>
+                <input type="email" id="correo" name="correo" value="${correo}" readonly required>
+              `;
             } else {
               mensajeModal.textContent = data.message || 'Código incorrecto.';
               mensajeModal.style.color = 'red';
@@ -741,15 +792,19 @@ document.addEventListener('DOMContentLoaded', function() {
             mensajeModal.style.color = 'red';
           });
       });
+      // --- FIN DE LÓGICA DEL MODAL ---
     });
 
-    /*validar que se cumplan los requisitos de la contraseña*/
+    // --- LÓGICA PARA VALIDACIÓN DE REQUISITOS DE CONTRASEÑA ---
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.querySelector('form[name="formulario"]');
       const pwd = document.getElementById('contrasena');
       const pwd2 = document.getElementById('confirmar');
 
-      form.addEventListener('submit', function(e) {
+      if(form) form.addEventListener('submit', function(e) {
+        // Solo valida si los campos de contraseña están habilitados
+        if(pwd.disabled) return;
+
         const valor = pwd.value;
         const valor2 = pwd2.value;
         const reglasCumplidas = {
@@ -760,7 +815,6 @@ document.addEventListener('DOMContentLoaded', function() {
           sym: /[!@#$%^&*(),.?":{}|<>]/.test(valor)
         };
 
-        // ¿Todas las reglas OK?
         const todas = Object.values(reglasCumplidas).every(v => v === true);
 
         if (!todas || valor !== valor2) {
@@ -776,25 +830,25 @@ document.addEventListener('DOMContentLoaded', function() {
           Swal.fire({
             title: '<span class="titulo-alerta error">Error</span>',
             html: `
-      <div class="custom-alert">
-        <div class="contenedor-imagen">
-          <img src="../imagenes/llave.png" alt="Error" class="llave">
-        </div>
-        <p style="font-family: Arial, sans-serif; color: black; font-size: 14px;">
-          La contraseña no cumple con los requisitos. Por favor corrige lo siguiente:
-        </p>
-        <ul style="
-             font-family: Arial, sans-serif;
-             font-size: 14px;
-             color: black;
-             text-align: left;
-             padding-left: 1rem;
-             list-style: none;
-           ">
-          ${mensajes.map(m => `<li style="margin-bottom: .25rem;">${m}</li>`).join('')}
-        </ul>
-      </div>
-    `,
+              <div class="custom-alert">
+                <div class="contenedor-imagen">
+                  <img src="../imagenes/llave.png" alt="Error" class="llave">
+                </div>
+                <p style="font-family: Arial, sans-serif; color: black; font-size: 14px;">
+                  La contraseña no cumple con los requisitos. Por favor corrige lo siguiente:
+                </p>
+                <ul style="
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    color: black;
+                    text-align: left;
+                    padding-left: 1rem;
+                    list-style: none;
+                  ">
+                  ${mensajes.map(m => `<li style="margin-bottom: .25rem;">${m}</li>`).join('')}
+                </ul>
+              </div>
+            `,
             background: '#ffffffdb',
             confirmButtonText: 'Aceptar',
             confirmButtonColor: '#dc3545',
@@ -809,66 +863,55 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    //verificar si identififcacion ya esta regsitrada 
+    // --- LÓGICA PARA VERIFICAR SI IDENTIFICACIÓN YA ESTÁ REGISTRADA ---
     document.addEventListener('DOMContentLoaded', () => {
-      const campoIdent = document.querySelector('.campo #identificacion').closest('.campo');
-      const inputIdent = campoIdent.querySelector('#identificacion');
-      const tooltip = campoIdent.querySelector('.small-error-tooltip');
+      const inputIdent = document.getElementById('identificacion');
+      const tooltip = document.querySelector('.small-error-tooltip');
       const btnReg = document.getElementById('btnRegistrar');
       let debounce;
+      
+      if(inputIdent){
+        // Al arrancar, bloquea el botón
+        btnReg.disabled = true;
 
-      // Al arrancar, bloquea el botón
-      btnReg.disabled = true;
+        inputIdent.addEventListener('input', () => {
+          clearTimeout(debounce);
+          debounce = setTimeout(() => {
+            const val = inputIdent.value.trim();
+            if (!val) {
+              inputIdent.classList.remove('input-error');
+              tooltip.style.display = 'none';
+              btnReg.disabled = true;
+              return;
+            }
 
-      inputIdent.addEventListener('input', () => {
-        clearTimeout(debounce);
-        debounce = setTimeout(() => {
-          const val = inputIdent.value.trim();
-          if (!val) {
-            // sin valor: quita estado de error
-            inputIdent.classList.remove('error');
-            campoIdent.classList.remove('error');
-            tooltip.style.display = 'none';
-            btnReg.disabled = true;
-            return;
-          }
-
-          fetch(`${location.pathname}?action=check_identificacion`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                identificacion: val
+            fetch(`${location.pathname}?action=check_identificacion`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identificacion: val })
               })
-            })
-            .then(res => res.json())
-            .then(data => {
-              if (data.exists) {
-                // duplicado → marca input y .campo + muestra tooltip + deshabilita botón
-                inputIdent.classList.add('error');
-                campoIdent.classList.add('error');
+              .then(res => res.json())
+              .then(data => {
+                if (data.exists) {
+                  inputIdent.classList.add('input-error');
+                  tooltip.style.display = 'block';
+                  btnReg.disabled = true;
+                } else {
+                  inputIdent.classList.remove('input-error');
+                  tooltip.style.display = 'none';
+                  btnReg.disabled = false;
+                }
+              })
+              .catch(err => {
+                console.error('Fetch error:', err);
+                inputIdent.classList.add('input-error');
+                tooltip.textContent = 'Error de conexión.';
                 tooltip.style.display = 'block';
                 btnReg.disabled = true;
-              } else {
-                // único → quita marcas + oculta tooltip + habilita botón
-                inputIdent.classList.remove('error');
-                campoIdent.classList.remove('error');
-                tooltip.style.display = 'none';
-                btnReg.disabled = false;
-              }
-            })
-            .catch(err => {
-              console.error('Fetch error:', err);
-              // en caso de fallo, mantenemos deshabilitado
-              inputIdent.classList.add('error');
-              campoIdent.classList.add('error');
-              tooltip.textContent = 'Error de conexión.';
-              tooltip.style.display = 'block';
-              btnReg.disabled = true;
-            });
-        }, 500);
-      });
+              });
+          }, 500);
+        });
+      }
     });
   </script>
 </body>

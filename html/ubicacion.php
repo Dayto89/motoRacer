@@ -1,23 +1,23 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
-header("Location: ../index.php");
-exit();
+    header("Location: ../index.php");
+    exit();
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
-die("<script>alert('No se pudo conectar a la base de datos');</script>");
+    die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
 // --- AJAX: validar nombre de ubicación único ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_ubicacion'])) {
-$nombre = mysqli_real_escape_string($conexion, trim($_POST                                                                                                                                  ['nombre']));                                                                                                                                                                                                                                                                                                                                                 
-$sql = "SELECT COUNT(*) AS cnt FROM ubicacion WHERE nombre = '$nombre'";
-$res = mysqli_query($conexion, $sql);
-$row = mysqli_fetch_assoc($res);
-echo json_encode(['exists' => ($row['cnt'] > 0)]);
+    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
+    $sql = "SELECT COUNT(*) AS cnt FROM ubicacion WHERE nombre = '$nombre'";
+    $res = mysqli_query($conexion, $sql);
+    $row = mysqli_fetch_assoc($res);
+    echo json_encode(['exists' => ($row['cnt'] > 0)]);
     exit;
 }
 
@@ -150,18 +150,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <?php include 'boton-ayuda.php'; ?>
     <script>
         const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-        </script>
+    </script>
     <div id="menu"></div>
-    <div class="ubica"> Productos / Ubicación</div>
-     <div class="container-general">
+    <nav class="barra-navegacion">
+        <div class="ubica"> Productos / Ubicación</div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <!-- Nombre y apellido del usuario y rol -->
+                <!-- Consultar datos del usuario -->
+                <?php
+                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                $id_usuario = $_SESSION['usuario_id'];
+                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+                $stmtUsuario = $conexion->prepare($sqlUsuario);
+                $stmtUsuario->bind_param("i", $id_usuario);
+                $stmtUsuario->execute();
+                $resultUsuario = $stmtUsuario->get_result();
+                $rowUsuario = $resultUsuario->fetch_assoc();
+                $nombreUsuario = $rowUsuario['nombre'];
+                $apellidoUsuario = $rowUsuario['apellido'];
+                $rol = $rowUsuario['rol'];
+                $foto = $rowUsuario['foto'];
+                $stmtUsuario->close();
+                ?>
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
+
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
+    <div class="container-general">
     </div>
     <div id="categorias" class="form-section">
         <h1>Ubicación</h1>
         <div class="container">
             <div class="actions">
-                <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva ubicación</button>  
-            <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese la ubicación a buscar">
-             </div>
+                <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada'></i>Nueva ubicación</button>
+                <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese la ubicación a buscar">
+            </div>
             <table class="category-table">
                 <thead>
                     <tr>
@@ -199,7 +232,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         type="text"
                         id="nombre"
                         name="nombre"
-                        required/>
+                        required />
                     <span id="nombre-error" class="input-error-message">
                         Esta ubicación ya está registrada.
                     </span>
@@ -225,37 +258,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </div>
-    <div class="userContainer">
-        <div class="userInfo">
-            <!-- Nombre y apellido del usuario y rol -->
-            <!-- Consultar datos del usuario -->
-            <?php
-            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-            $id_usuario = $_SESSION['usuario_id'];
-            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-            $stmtUsuario = $conexion->prepare($sqlUsuario);
-            $stmtUsuario->bind_param("i", $id_usuario);
-            $stmtUsuario->execute();
-            $resultUsuario = $stmtUsuario->get_result();
-            $rowUsuario = $resultUsuario->fetch_assoc();
-            $nombreUsuario = $rowUsuario['nombre'];
-            $apellidoUsuario = $rowUsuario['apellido'];
-            $rol = $rowUsuario['rol'];
-            $foto = $rowUsuario['foto'];
-            $stmtUsuario->close();
-            ?>
-            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-            <p class="rol">Rol: <?php echo $rol; ?></p>
 
-        </div>
-        <div class="profilePic">
-            <?php if (!empty($rowUsuario['foto'])): ?>
-                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-            <?php else: ?>
-                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-            <?php endif; ?>
-        </div>
-    </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // — Datos iniciales inyectados por PHP —
@@ -495,9 +498,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                                 renderTable();
                                             });
                                     } else {
-                                      Swal.fire({
-                    title: '<span class="titulo-alerta error">Error</span>',
-                    html: `
+                                        Swal.fire({
+                                            title: '<span class="titulo-alerta error">Error</span>',
+                                            html: `
                       <div class="custom-alert">
                         <div class="contenedor-imagen">
                           <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -505,20 +508,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <p>No se pudo eliminar la ubicación porque hay productos asociados.</p>
                       </div>
                     `,
-                    background: '#ffffffdb',
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#007bff',
-                    customClass: {
-                      popup: 'swal2-border-radius',
-                      confirmButton: 'btn-aceptar',
-                      container: 'fondo-oscuro'
-                    }
-                  });
-                }
-              })
+                                            background: '#ffffffdb',
+                                            confirmButtonText: 'Aceptar',
+                                            confirmButtonColor: '#007bff',
+                                            customClass: {
+                                                popup: 'swal2-border-radius',
+                                                confirmButton: 'btn-aceptar',
+                                                container: 'fondo-oscuro'
+                                            }
+                                        });
+                                    }
+                                })
                                 .catch(() => Swal.fire({
-                  title: '<span class="titulo-alerta error">Error</span>',
-                  html: `
+                                    title: '<span class="titulo-alerta error">Error</span>',
+                                    html: `
                     <div class="custom-alert">
                       <div class="contenedor-imagen">
                         <img src="../imagenes/llave.png" alt="Error" class="llave">
@@ -526,19 +529,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                       <p>No se pudo eliminar la ubicación porque hay productos asociados..</p>
                     </div>
                   `,
-                  background: '#ffffffdb',
-                  confirmButtonText: 'Aceptar',
-                  confirmButtonColor: '#007bff',
-                  customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-            }
-              }));
-            }
-          });
-        }
-      });
+                                    background: '#ffffffdb',
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#007bff',
+                                    customClass: {
+                                        popup: 'swal2-border-radius',
+                                        confirmButton: 'btn-aceptar',
+                                        container: 'fondo-oscuro'
+                                    }
+                                }));
+                        }
+                    });
+                }
+            });
 
             // inicializar
             renderTable();

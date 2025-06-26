@@ -625,3 +625,17 @@ input.error {
   box-shadow: 0 4px 20px #0b111a;
   border-radius: 10px;
 }
+
+/* Estilo para el input con error */
+.input-error {
+  border: 2px solid #e74c3c; /* Rojo */
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+/* Estilo opcional para el mensaje de error */
+.mensaje-error {
+  color: #e74c3c;
+  font-size: 0.9em;
+  margin-top: 5px;
+  display: block; /* Para que aparezca debajo del input */
+}

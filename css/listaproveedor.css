@@ -96,7 +96,6 @@ input[type="checkbox"] {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
   max-width: 74%;
   margin-left: 12%;
   padding: 10px;
@@ -141,6 +140,7 @@ input[type="checkbox"] {
   align-items: center;
   flex-grow: 1;
 }
+
 input.form-control {
   color: #0b111a;
   font-size: 16px;
@@ -187,7 +187,8 @@ input.form-control {
 }
 
 .icon-button i {
-  margin-right: 10px; /* Ajusta según necesites */
+  margin-right: 10px;
+  /* Ajusta según necesites */
 }
 
 .icon-button:hover {
@@ -196,15 +197,19 @@ input.form-control {
 
 .criteria-group {
   display: flex;
-  flex-direction: column; /* Alinea los elementos en columna */
-  gap: 5px; /* Espacio entre los elementos */
+  flex-direction: column;
+  /* Alinea los elementos en columna */
+  gap: 5px;
+  /* Espacio entre los elementos */
 }
 
 .criteria-group label {
   display: flex;
   align-items: center;
-  gap: 5px; /* Espacio entre el checkbox y el texto */
+  gap: 5px;
+  /* Espacio entre el checkbox y el texto */
 }
+
 /*ANIMACIONES*/
 /* Estilos básicos para el modal */
 .modal {
@@ -213,16 +218,20 @@ input.form-control {
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex; /* Usamos flexbox para centrar el contenido */
+  display: flex;
+  /* Usamos flexbox para centrar el contenido */
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 1000;
   /* Ocultamos el modal por defecto, la animación de entrada se hará con la clase .show */
-  visibility: hidden; /* Esto oculta el modal sin quitarlo del flujo, para que se pueda animar */
+  visibility: hidden;
+  /* Esto oculta el modal sin quitarlo del flujo, para que se pueda animar */
   opacity: 0;
-  transition: visibility 0.3s ease, opacity 0.3s ease; /* Transición para la visibilidad y opacidad del fondo */
+  transition: visibility 0.3s ease, opacity 0.3s ease;
+  /* Transición para la visibilidad y opacidad del fondo */
 }
+
 .modal-content,
 .modal-content-nuevo {
   width: 35%;
@@ -234,15 +243,20 @@ input.form-control {
   box-shadow: 0 0 15px black;
   height: auto;
   /* Animación de arrastre */
-  transform: translateY(-50px); /* Inicialmente un poco arriba */
-  opacity: 0; /* Inicialmente transparente */
-  transition: transform 0.35s ease-out, opacity 0.35s ease-out; /* Transición para el contenido */
+  transform: translateY(-50px);
+  /* Inicialmente un poco arriba */
+  opacity: 0;
+  /* Inicialmente transparente */
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+  /* Transición para el contenido */
 }
+
 /* Mostrado cuando se aplica la clase .show */
 .modal.show {
   visibility: visible;
-  opacity: 1; /* Fondo se vuelve visible */
-    background-color: rgb(0 0 0 / 83%) !important;
+  opacity: 1;
+  /* Fondo se vuelve visible */
+  background-color: rgb(0 0 0 / 83%) !important;
   /* Fondo oscuro */
   backdrop-filter: blur(2px);
   /* Opcional: desenfoque sutil */
@@ -250,9 +264,12 @@ input.form-control {
 
 .modal.show .modal-content,
 .modal.show .modal-content-nuevo {
-  transform: translateY(0); /* Vuelve a su posición original */
-  opacity: 1; /* Contenido se vuelve visible */
+  transform: translateY(0);
+  /* Vuelve a su posición original */
+  opacity: 1;
+  /* Contenido se vuelve visible */
 }
+
 #exportar-boton {
   display: flex;
   padding: 9px 10px;
@@ -277,6 +294,7 @@ input.form-control {
   margin-top: 12px;
   padding: 4px;
 }
+
 .form-grid label,
 #editForm label {
   color: #000000;
@@ -288,6 +306,7 @@ input.form-control {
   font-weight: bold;
   font-family: Arial, Helvetica, sans-serif;
 }
+
 .modal-buttons {
   display: flex;
   gap: 13px;
@@ -295,6 +314,7 @@ input.form-control {
   border-radius: 10px;
   font-weight: bold;
 }
+
 #nuevoModal .modal-buttons {
   display: flex;
   gap: 34px;
@@ -320,6 +340,7 @@ input.form-control {
   border-radius: 10px;
   transition: background-color 0.3s;
 }
+
 #btnCancelar:hover,
 #btnCancelarEdit:hover {
   background-color: #a71d2a;
@@ -340,9 +361,11 @@ button[type="submit"] {
   border-radius: 10px;
   transition: background-color 0.3s;
 }
+
 button[type="submit"]:hover {
   background-color: #1565c0;
 }
+
 .btn-nuevo-proveedor:hover {
   background-color: #0056b3;
 }
@@ -357,6 +380,7 @@ button[type="submit"]:hover {
   cursor: pointer;
   border-radius: 9px;
 }
+
 /*-----------------------------------------------------------------*/
 
 .modal-content h2,
@@ -370,6 +394,7 @@ button[type="submit"]:hover {
   letter-spacing: 5px;
   padding: 16px;
 }
+
 .campo {
   display: flex;
   flex-direction: column;
@@ -393,10 +418,14 @@ button[type="submit"]:hover {
 form#editForm {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 20px; /* Ajusta el espacio entre columnas */
-  row-gap: 10px; /* Ajusta el espacio entre filas */
-  align-items: center; /* Alinea los elementos verticalmente */
+  column-gap: 20px;
+  /* Ajusta el espacio entre columnas */
+  row-gap: 10px;
+  /* Ajusta el espacio entre filas */
+  align-items: center;
+  /* Alinea los elementos verticalmente */
 }
+
 #modal-boton {
   background-color: rgb(17, 103, 204);
   color: white;
@@ -412,9 +441,11 @@ form#editForm {
   border-radius: 10px;
   transition: background-color 0.3s;
 }
+
 #modal-boton:hover {
   background-color: #0056b3;
 }
+
 form input[type="text"],
 #editForm select {
   background-color: #ffffff;
@@ -426,6 +457,7 @@ form input[type="text"],
   font-size: 14px;
   margin-bottom: 13px;
 }
+
 /* Barra lateral (Menú) */
 .sidebar {
   width: 100px;
@@ -443,29 +475,30 @@ form input[type="text"],
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-#menu:hover ~ .main {
+#menu:hover~.main {
   margin-left: 270px;
 }
 
 /* Ajuste de contenido cuando el menú se expande */
-#menu:hover ~ .main-content {
+#menu:hover~.main-content {
   margin-left: 240px;
   transition: margin-left 0.3s ease;
   margin-right: 0px;
 }
 
-#menu:hover ~ .container-general {
+#menu:hover~.container-general {
   margin-left: 80px;
 }
 
-#menu:hover ~ .container-general {
+#menu:hover~.container-general {
   margin-left: 80px;
   transition: margin-left 0.3s ease;
   margin-right: 0px;
 }
 
-#menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+#menu:hover~.ubica {
+  margin-left: calc(9% + 20px);
+  /* 20px de empuje extra */
 }
 
 /* Contenido principal */
@@ -473,13 +506,15 @@ form input[type="text"],
   padding: 20px;
   transition: margin-left 0.3s ease;
   height: 100vh;
-  margin-left: 85px; /* Ajustado al tamaño inicial de la barra */
+  margin-left: 85px;
+  /* Ajustado al tamaño inicial de la barra */
   margin-right: 0px;
 }
 
 .main-content table th,
 .main-content table td {
-  overflow-wrap: break-word; /* Hace que el texto largo se divida en varias líneas */
+  overflow-wrap: break-word;
+  /* Hace que el texto largo se divida en varias líneas */
   word-break: break-word;
 }
 
@@ -531,24 +566,36 @@ form input[type="text"],
 
 .edit-button i,
 .delete-button i {
-  font-size: 20px; /* Tamaño del ícono */
-  color: #ffffff; /* Color del ícono */
-  border: 2px solid transparent; /* Inicialmente sin borde */
-  padding: 5px; /* Espacio interno */
-  border-radius: 50%; /* Hace el borde circular */
-  transition: all 0.3s ease-in-out; /* Animación suave */
+  font-size: 20px;
+  /* Tamaño del ícono */
+  color: #ffffff;
+  /* Color del ícono */
+  border: 2px solid transparent;
+  /* Inicialmente sin borde */
+  padding: 5px;
+  /* Espacio interno */
+  border-radius: 50%;
+  /* Hace el borde circular */
+  transition: all 0.3s ease-in-out;
+  /* Animación suave */
 }
 
 .edit-button i:hover {
-  color: #ffffff; /* Mantiene el color del ícono */
-  background-color: #0c68a5; /* Fondo azul al hacer hover */
-  border: 2px solid #ffffff; /* Borde blanco */
+  color: #ffffff;
+  /* Mantiene el color del ícono */
+  background-color: #0c68a5;
+  /* Fondo azul al hacer hover */
+  border: 2px solid #ffffff;
+  /* Borde blanco */
 }
 
 .delete-button i:hover {
-  color: #ffffff; /* Mantiene el color del ícono */
-  background-color: #d11212; /* Fondo rojo al hacer hover */
-  border: 2px solid #ffffff; /* Borde blanco */
+  color: #ffffff;
+  /* Mantiene el color del ícono */
+  background-color: #d11212;
+  /* Fondo rojo al hacer hover */
+  border: 2px solid #ffffff;
+  /* Borde blanco */
 }
 
 #delete-selected {
@@ -560,19 +607,31 @@ form input[type="text"],
   align-items: center;
   justify-content: center;
 }
+
 #delete-selected i {
-  font-size: 20px; /* Tamaño del ícono */
-  color: #ffffff; /* Color del ícono */
-  border: 2px solid transparent; /* Inicialmente sin borde */
-  padding: 5px; /* Espacio interno */
-  border-radius: 50%; /* Hace el borde circular */
-  transition: all 0.3s ease-in-out; /* Animación suave */
+  font-size: 20px;
+  /* Tamaño del ícono */
+  color: #ffffff;
+  /* Color del ícono */
+  border: 2px solid transparent;
+  /* Inicialmente sin borde */
+  padding: 5px;
+  /* Espacio interno */
+  border-radius: 50%;
+  /* Hace el borde circular */
+  transition: all 0.3s ease-in-out;
+  /* Animación suave */
 }
+
 #delete-selected i:hover {
-  color: #ffffff; /* Mantiene el color del ícono */
-  background-color: #d11212; /* Fondo rojo al hacer hover */
-  border: 2px solid #ffffff; /* Borde blanco */
+  color: #ffffff;
+  /* Mantiene el color del ícono */
+  background-color: #d11212;
+  /* Fondo rojo al hacer hover */
+  border: 2px solid #ffffff;
+  /* Borde blanco */
 }
+
 /*PAGINACION*/
 .required::after {
   content: " *";
@@ -627,6 +686,7 @@ form input[type="text"],
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
 .tabla-centrada {
   box-shadow: 0 0 15px #222a37;
   border-radius: 8px;
@@ -635,6 +695,7 @@ form input[type="text"],
   border-collapse: collapse;
   overflow: hidden;
 }
+
 /*ANIMACIONES MODALES*/
 
 /*diseño que nit no se repita*/
@@ -642,7 +703,8 @@ form input[type="text"],
 /* CONTENEDOR RELATIVO */
 .campo {
   position: relative;
-  margin-bottom: 1rem; /* separa campos */
+  margin-bottom: 1rem;
+  /* separa campos */
 }
 
 /* INPUT EN ROJO */
@@ -653,9 +715,12 @@ input.error {
 
 .small-error-tooltip {
   position: absolute;
-  top: 50%; /* centrar vertical */
-  right: 100%; /* justo a la izquierda del input */
-  margin-right: 8px; /* pequeño espacio desde el input */
+  top: 50%;
+  /* centrar vertical */
+  right: 100%;
+  /* justo a la izquierda del input */
+  margin-right: 8px;
+  /* pequeño espacio desde el input */
   transform: translateY(-50%);
 
   background-color: #ffe6e6;
@@ -676,8 +741,10 @@ input.error {
   content: "";
   position: absolute;
   top: 50%;
-  left: 100%; /* se pega al borde derecho del tooltip */
-  margin-left: -1px; /* para que no quede hueco */
+  left: 100%;
+  /* se pega al borde derecho del tooltip */
+  margin-left: -1px;
+  /* para que no quede hueco */
   transform: translateY(-50%);
   border-width: 6px 6px 6px 0;
   border-style: solid;
@@ -687,7 +754,7 @@ input.error {
 /*-----------------------------------------------------------*/
 .container-general {
   position: fixed;
-  top: 5%;
+  top: 7%;
   left: 17%;
   width: 71%;
   height: 92%;
@@ -698,32 +765,40 @@ input.error {
   box-shadow: 0 4px 20px #0b111a;
   border-radius: 10px;
 }
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {
+
   /* Contenedor general (sin scroll por defecto) */
   .table-wrapper {
-    overflow-x: auto; /* Scroll horizontal siempre que la tabla desborde */
-    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-    overflow: visible;
+    overflow-x: auto;
+    /* Scroll horizontal siempre que la tabla desborde */
+    -webkit-overflow-scrolling: touch;
+    /* Scroll suave en iOS */
+ 
   }
 
   .table-wrapper table {
-    width: 100%; /* Que la tabla mida lo que necesite */
-    min-width: 100%; /* Ajusta este valor al ancho “real” mínimo que quieras ver */
-    table-layout: auto; /* Que las columnas tomen el ancho de su contenido */
+    width: 100%;
+    /* Que la tabla mida lo que necesite */
+    min-width: 100%;
+    /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+    table-layout: auto;
+    /* Que las columnas tomen el ancho de su contenido */
   }
 
   .t-wrapper th,
   .table-wrapper td {
-    white-space: nowrap; /* Evita que el texto salte líneas */
+    white-space: nowrap;
+    /* Evita que el texto salte líneas */
   }
 
   .main-content {
     margin-left: 0%;
   }
 
-  .sidebar:hover ~ .main-content {
+  .sidebar:hover~.main-content {
     margin-left: 0%;
     transition: none;
     margin-right: 0px;
@@ -732,26 +807,37 @@ input.error {
   table {
     margin-left: 0%;
   }
+
+  .container-general {
+    width: 100%;
+    left: 0%;
+  }
 }
 
 /* Vertical */
 @media screen and (max-width: 870px) and (orientation: portrait) {
+
   /* Contenedor general (sin scroll por defecto) */
   .table-wrapper {
-    overflow-x: auto; /* Scroll horizontal siempre que la tabla desborde */
-    -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
-    overflow: visible;
+    overflow-x: auto;
+    /* Scroll horizontal siempre que la tabla desborde */
+    -webkit-overflow-scrolling: touch;
+    /* Scroll suave en iOS */
   }
 
   .table-wrapper table {
-    width: 100%; /* Que la tabla mida lo que necesite */
-    min-width: 100%; /* Ajusta este valor al ancho “real” mínimo que quieras ver */
-    table-layout: auto; /* Que las columnas tomen el ancho de su contenido */
+    width: 100%;
+    /* Que la tabla mida lo que necesite */
+    min-width: 100%;
+    /* Ajusta este valor al ancho “real” mínimo que quieras ver */
+    table-layout: auto;
+    /* Que las columnas tomen el ancho de su contenido */
   }
 
   .table-wrapper th,
   .table-wrapper td {
-    white-space: nowrap; /* Evita que el texto salte líneas */
+    white-space: nowrap;
+    /* Evita que el texto salte líneas */
   }
 
   .main-content {
@@ -759,7 +845,7 @@ input.error {
     padding: 50px 0px 0px 15px;
   }
 
-  .sidebar:hover ~ .main-content {
+  .sidebar:hover~.main-content {
     margin-left: 15%;
     transition: none;
     margin-right: 0px;
@@ -772,20 +858,61 @@ input.error {
   .table-wrapper {
     overflow-x: auto;
   }
+
   .table-wrapper table {
-    min-width: 500px; /* o el ancho necesario para mostrar TODAS las columnas sin romper */
+    min-width: 500px;
+    /* o el ancho necesario para mostrar TODAS las columnas sin romper */
   }
 
   .filter-bar {
     flex-direction: column;
-    align-items: stretch; /* para que ocupen todo el ancho disponible */
-    gap: 8px; /* espacio entre filas */
+    align-items: stretch;
+    /* para que ocupen todo el ancho disponible */
+    gap: 8px;
+    /* espacio entre filas */
     padding: 10px 5%;
+    width: 100%;
+    margin-left: 0%;
+    max-width: 100%;
   }
 
-  .filter-bar > * {
-    width: 100%; /* cada elemento ocupa ancho completo */
-    text-align: center; /* opcional: centrar texto/botones */
+  .container-general {
+    width: 100%;
+  }
+
+  .modal-content,
+  .modal-content-nuevo {
+    width: 100%;
+    height: 100%;
+  }
+
+  form#editForm {
+    grid-template-columns: 1fr;
+  }
+
+  .campo {
+    margin-bottom: 0;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  #searchRealtime {
+    width: 100% !important;
+  }
+
+  #exportar-boton {
+    width: 100%;
+    margin-left: 0%;
+    margin-top: 0%;
+  }
+
+  .filter-bar>* {
+    width: 100%;
+    /* cada elemento ocupa ancho completo */
+    text-align: center;
+    /* opcional: centrar texto/botones */
   }
 
   /* Ajustes específicos si quieres distancias distintas */
@@ -793,6 +920,7 @@ input.error {
     display: flex;
     gap: 5px;
   }
+
   .filter-bar input.form-control {
     flex-grow: 1;
     width: 100%;
@@ -807,16 +935,31 @@ input.error {
     justify-content: center;
     background-color: #155e33;
   }
+
+  #searchRealtime {
+    font-size: 16px;
+    padding: 8px 23px;
+    border-radius: 9px;
+    width: 100%;
+  }
 }
 
 /* TABLETS */
 /* Horizontal */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
+  .container-general {
+    width: 100%;
+    left: 0%;
+  }
 }
 
 /* Vertical */
 @media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+  .container-general {
+    width: 100%;
+  }
 }
+
 /* Modal ANIMACIONES */
 /* Modal nueva categoria */
 .modal_nueva_categoria {
@@ -825,10 +968,12 @@ input.error {
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex; /* Usamos flexbox para centrar el contenido */
+  display: flex;
+  /* Usamos flexbox para centrar el contenido */
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Fondo oscuro */
   z-index: 1000;
 
   /* Animación del fondo */
@@ -874,6 +1019,7 @@ input.error {
   letter-spacing: 5px;
   padding: 28px;
 }
+
 #searchRealtime {
   font-size: 16px;
   padding: 8px 23px;

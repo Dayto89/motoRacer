@@ -616,7 +616,7 @@ form input[type="text"],
 }
 .container-general {
   position: fixed;
-  top: 5%;
+  top: 7%;
   left: 19%;
   width: 67%;
   height: 89%;
@@ -637,6 +637,17 @@ form input[type="text"],
   transition: margin-left 0.3s ease;
   margin-right: 0px;
 }
+
+table#clientesTable {
+  width: 40%; /* Ocupa el 100% del contenedor .main-content */
+  border-collapse: separate; /* Permite usar border-radius */
+  border-spacing: 0;
+  overflow: hidden; /* Necesario para que el border-radius afecte a las celdas */
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  margin-left: 19.5%; /* Quita el margen fijo */
+}
+
 /* MÓVILES */
 /* Horizontal */
 @media screen and (max-width: 870px) and (orientation: landscape) {

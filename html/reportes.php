@@ -180,39 +180,73 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     /* --- NUEVO: Animación para el modal de filtros --- */
 
-/* Estado base del popup de filtros */
-.filtros-popup {
-    /* Forzamos que sea un bloque para poder animarlo.
+    /* Estado base del popup de filtros */
+    .filtros-popup {
+      /* Forzamos que sea un bloque para poder animarlo.
        Esto sobreescribirá cualquier 'display: none' de un CSS externo. */
-    display: block;
-    
-    /* Estado inicial: invisible, movido hacia arriba y no interactivo */
-    opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none; 
-    visibility: hidden; /* Ocultamiento más robusto */
-    
-    /* La transición suave que queremos */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, visibility 0.3s;
-}
+      display: block;
 
-/* Estado activo: cuando el popup debe ser visible */
-.filtros-popup.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto; /* Se puede interactuar de nuevo */
-    visibility: visible;
-}
+      /* Estado inicial: invisible, movido hacia arriba y no interactivo */
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+      visibility: hidden;
+      /* Ocultamiento más robusto */
+
+      /* La transición suave que queremos */
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, visibility 0.3s;
+    }
+
+    /* Estado activo: cuando el popup debe ser visible */
+    .filtros-popup.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      /* Se puede interactuar de nuevo */
+      visibility: visible;
+    }
   </style>
 </head>
 
 <body>
   <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
-  <div class="ubica">Factura / Reportes</div>
+  <nav class="barra-navegacion">
+    <div class="ubica">Factura / Reportes</div>
+    <div class="userContainer">
+      <div class="userInfo">
+        <!-- Nombre y apellido del usuario y rol -->
+        <!-- Consultar datos del usuario -->
+        <?php
+        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $id_usuario = $_SESSION['usuario_id'];
+        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario->bind_param("i", $id_usuario);
+        $stmtUsuario->execute();
+        $resultUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $nombreUsuario = $rowUsuario['nombre'];
+        $apellidoUsuario = $rowUsuario['apellido'];
+        $rol = $rowUsuario['rol'];
+        $foto = $rowUsuario['foto'];
+        $stmtUsuario->close();
+        ?>
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    <div class="container-general">
+      </div>
+      <div class="profilePic">
+        <?php if (!empty($rowUsuario['foto'])): ?>
+          <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+          <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
+      </div>
     </div>
+  </nav>
+  <div class="container-general">
+  </div>
   <div class="main-content">
     <h1>Reportes</h1>
     <div class="filter-bar">
@@ -344,39 +378,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div id="jsPagination" class="pagination-dinamica"></div>
       <?php else: ?>
         <p>No se encontraron resultados con los criterios seleccionados.</p>
-      <?php endif; ?>
-    </div>
-  </div>
-
-
-  <div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
-
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
       <?php endif; ?>
     </div>
   </div>

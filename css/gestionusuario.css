@@ -35,7 +35,7 @@ body::before {
 h1 {
     color: white;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 9%;
     margin-bottom: 20px;
     font-family: "Metal Mania", system-ui;
     font-size: 60px;
@@ -428,7 +428,7 @@ div.subsection{
 
 .container-general {
     position: fixed;
-    top: 5%;
+    top: 7%;
     left: 19%;
     width: 67%;
     height: 89%;

@@ -490,7 +490,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
     <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
+   <nav class="barra-navegacion">
     <div class="ubica">Inicio</div>
+    <div class="userContainer">
+      <div class="userInfo">
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
+      </div>
+      <div class="profilePic">
+        <?php if (!empty($rowUsuario['foto'])): ?>
+          <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+          <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
+      </div>
+    </div>
+  </nav>
     <div class="fondo"></div>
 
     <div class="dashboard-container">
@@ -591,20 +606,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         customClass: { popup: 'swal2-border-radius', confirmButton: 'btn-aceptar', container: 'fondo-oscuro' }
                     })
                 </script>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <div class="userContainer">
-        <div class="userInfo">
-            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-            <p class="rol">Rol: <?php echo $rol; ?></p>
-        </div>
-        <div class="profilePic">
-            <?php if (!empty($rowUsuario['foto'])): ?>
-                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-            <?php else: ?>
-                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
             <?php endif; ?>
         </div>
     </div>

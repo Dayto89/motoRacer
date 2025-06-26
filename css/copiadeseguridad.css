@@ -29,6 +29,7 @@ body {
   text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
     3px 5px 0 #1c51a0;
   margin-left: 28%;
+  margin-top: 6%;
 }
 
 .backup-table {
@@ -241,7 +242,7 @@ ul {
 }
 .container-general {
   position: fixed;
-  top: 5%;
+  top: 8%;
   left: 19%;
   width: 67%;
   height: 89%;

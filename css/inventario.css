@@ -22,7 +22,7 @@ body::before {
 
 .container-general {
   position: fixed;
-  top: 5%;
+  top: 7%;
   left: 9%;
   width: 86%;
   height: 92%;
@@ -713,7 +713,7 @@ table th {
 .pagination-dinamica {
   display: flex;
   justify-content: center;
-  margin-top: 25px;
+  margin-top: 2%;
   gap: 12px;
   font-family: arial;
   font-size: 14px;

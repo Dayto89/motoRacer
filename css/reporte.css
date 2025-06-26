@@ -31,7 +31,7 @@ body::before {
 .main-content h1 {
   color: white;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 3.5%;
   margin-bottom: 20px;
   font-family: "Metal Mania", system-ui;
   font-size: 70px;
@@ -902,7 +902,7 @@ select option {
 }
 .container-general {
   position: fixed;
-  top: 5%;
+  top: 7%;
   left: 11%;
   width: 78%;
   height: 92%;

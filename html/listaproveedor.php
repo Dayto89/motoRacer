@@ -17,6 +17,35 @@ if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nit']) && isset($_POST['editar'])) {
+    // Escapa inputs
+    $nit      = mysqli_real_escape_string($conexion, $_POST['nit']);
+    $nombre   = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+    $direccion= mysqli_real_escape_string($conexion, $_POST['direccion']);
+    $correo   = mysqli_real_escape_string($conexion, $_POST['correo']);
+    $activo   = (int)($_POST['activo']);
+
+    // Ejecuta UPDATE
+    $sql = "
+      UPDATE proveedor SET
+        nombre   = '$nombre',
+        telefono = '$telefono',
+        direccion= '$direccion',
+        correo   = '$correo',
+        activo   = $activo
+      WHERE nit = '$nit'
+    ";
+    if (!mysqli_query($conexion, $sql)) {
+        // manejo de error opcional
+        error_log("Error al actualizar proveedor: ".mysqli_error($conexion));
+    }
+
+    // Redirige para recargar tabla con nuevo estado
+    header("Location: listaproveedor.php");
+    exit;
+}
+
 //verificar que nit no se repita con el input rojo
 
 if (isset($_GET['verificar_nit'])) {
@@ -35,7 +64,7 @@ if (isset($_GET['verificar_nit'])) {
 
 
 // justo tras conectar a BD
-$allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p";
+$allQ = "SELECT nit,nombre,telefono,direccion,correo,activo FROM proveedor p";
 if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
 $allRes = mysqli_query($conexion, $allQ);
 $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
@@ -63,7 +92,8 @@ $consulta = "SELECT
   p.nombre, 
   p.telefono, 
   p.direccion,
-  p.correo
+  p.correo,
+  p.activo
 FROM proveedor p
 WHERE 1=1";
 if (!empty($filtros)) {
@@ -86,6 +116,7 @@ if ($_POST && isset($_POST['guardar'])) {
   $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
   $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
   $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+  $activo = isset($_POST['activo']) ? 1 : 0;
 
 
   $query = "INSERT INTO proveedor (nit, nombre, telefono, direccion, correo) VALUES ('$nit', '$nombre', '$telefono', '$direccion', '$correo')";
@@ -148,75 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 }
 
-// Actualización de datos del modal
-if (isset($_POST['nit'])) {
-  // Se reciben y se escapan las variables
-  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
-  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-  $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
-  $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
-  $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
-
-  $consulta_update = "UPDATE proveedor SET 
-        nit = '$nit', 
-        nombre = '$nombre', 
-        telefono = '$telefono', 
-        direccion = '$direccion', 
-        correo = '$correo'
-        WHERE nit = '$nit'";
-  if (mysqli_query($conexion, $consulta_update)) {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-    echo "<script>
-              document.addEventListener('DOMContentLoaded', function() {
-                  Swal.fire({
-                      title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
-                      html: `
-                          <div class='alerta'>
-                              <div class='contenedor-imagen'>
-                                  <img src='../imagenes/moto.png' alt=\"Éxito\" class='moto'>
-                              </div>
-                              <p>Proveedor agregado correctamente.</p>
-                          </div>
-                      `,
-                      background: '#ffffffdb',
-    confirmButtonText: 'Aceptar',
-    confirmButtonColor: '#007bff',
-    customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        container: 'fondo-oscuro'
-    }
-                  }).then(() => {
-                      window.location.href = 'listaproveedor.php'; // Redirige después de cerrar el alert
-                  });
-              });
-          </script>";
-  } else {
-    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-    echo "<script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    Swal.fire({
-                        title: '<span class=\"titulo-alerta error\">Error</span>',
-                        html: `
-                            <div class=\"custom-alert\">
-                                <div class=\"contenedor-imagen\">
-                                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                                </div>
-                                <p>Error al actulizar los datos/p>
-                            </div>
-                        `,
-                        background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                    });
-                    </script>";
-  }
-}
 
 
 
@@ -281,7 +243,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     .pagination-dinamica {
       display: flex;
       justify-content: center;
-      margin-top: 23px;
+      margin-top: 0%;
       gap: 12px;
       font-family: arial;
       font-size: 11px;
@@ -326,19 +288,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
   <?php
   // Justo después de tu conexión y filtros:
-  $allQ = "SELECT nit,nombre,telefono,direccion,correo FROM proveedor p"; 
+  $allQ = "SELECT nit,nombre,telefono,direccion,correo,activo FROM proveedor p";
   if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
   $allRes = mysqli_query($conexion, $allQ);
   $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
   ?>
   <script>
     const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
-    </script>
- 
- <div id="menu"></div>
- <div class="ubica"> Proveedor / Lista proveedores </div>
+  </script>
 
-   <div class="container-general"></div>
+  <div id="menu"></div>
+  <nav class="barra-navegacion">
+    <div class="ubica"> Proveedor / Lista proveedores </div>
+    <div class="userContainer">
+      <div class="userInfo">
+        <!-- Nombre y apellido del usuario y rol -->
+        <!-- Consultar datos del usuario -->
+        <?php
+        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+        $id_usuario = $_SESSION['usuario_id'];
+        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+        $stmtUsuario = $conexion->prepare($sqlUsuario);
+        $stmtUsuario->bind_param("i", $id_usuario);
+        $stmtUsuario->execute();
+        $resultUsuario = $stmtUsuario->get_result();
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $nombreUsuario = $rowUsuario['nombre'];
+        $apellidoUsuario = $rowUsuario['apellido'];
+        $rol = $rowUsuario['rol'];
+        $foto = $rowUsuario['foto'];
+        $stmtUsuario->close();
+        ?>
+        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+        <p class="rol">Rol: <?php echo $rol; ?></p>
+
+      </div>
+      <div class="profilePic">
+        <?php if (!empty($rowUsuario['foto'])): ?>
+          <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+        <?php else: ?>
+          <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+        <?php endif; ?>
+      </div>
+    </div>
+  </nav>
+  <div class="container-general"></div>
   <div class="main-content">
     <h1>Proveedores</h1>
     <div class="filter-bar">
@@ -374,8 +368,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               <th data-col="2" data-type="string">Teléfono <span class="sort-arrow"></span></th>
               <th data-col="3" data-type="string">Dirección <span class="sort-arrow"></span></th>
               <th data-col="4" data-type="string">Correo <span class="sort-arrow"></span></th>
-              <th data-col="5" data-type="none">Acciones</th>
-              <th data-col="6" data-type="none" class="acciones-multiples">
+              <th data-col="5" data-type="string">Estado <span class="sort-arrow"></span></th>
+              <th data-col="6" data-type="none">Acciones</th>
+              <th data-col="7" data-type="none" class="acciones-multiples">
                 <button id="delete-selected" class="btn btn-danger" style="display: none;"><i class="fa-solid fa-trash"></i></button>
               </th>
             </tr>
@@ -401,8 +396,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endwhile; ?>
           </tbody>
         </table>
-        <div id="jsPagination" class="pagination-dinamica"></div>
     </div>
+    <div id="jsPagination" class="pagination-dinamica"></div>
 
     <!-- Paginación -->
 
@@ -515,6 +510,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
               pattern=".+@.+"
               placeholder="ejemplo@correo.com">
           </div>
+          <div class="campo">
+            <label for="activo">Estado:</label>
+            <select id="activo" name="activo" required>
+              <option value="1" selected>Activo</option>
+              <option value="0">Inactivo</option>
+            </select>
+          </div>
           <div class="modal-buttons">
             <button type="button" id="btnCancelar">Cancelar</button>
             <button type="submit" name="guardar" id="btnGuardar">Guardar</button>
@@ -550,6 +552,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           <input type="text" id="editCorreo" name="correo"
             pattern=".+@.+"
             placeholder="ejemplo@correo.com">
+        </div>
+        <div class="campo">
+          <label for="activo">Estado:</label>
+          <select id="editActivo" name="activo" required>
+            <option value="1" selected>Activo</option>
+            <option value="0">Inactivo</option>
+          </select>
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelarEdit">Cancelar</button>
@@ -609,12 +618,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       editButtons.forEach(btn => {
         btn.addEventListener("click", e => {
           const row = btn.closest("tr");
-          document.getElementById("editNit").value = row.cells[0].innerText.trim();
-          document.getElementById("editNitVisible").value = row.cells[0].innerText.trim();
-          document.getElementById("editNombre").value = row.cells[1].innerText.trim();
-          document.getElementById("editTelefono").value = row.cells[2].innerText.trim();
-          document.getElementById("editDireccion").value = row.cells[3].innerText.trim();
-          document.getElementById("editCorreo").value = row.cells[4].innerText.trim();
+          const cells = row.cells; // <-- Aquí
+          document.getElementById("editNit").value = cells[0].innerText.trim();
+          document.getElementById("editNitVisible").value = cells[0].innerText.trim();
+          document.getElementById("editNombre").value = cells[1].innerText.trim();
+          document.getElementById("editTelefono").value = cells[2].innerText.trim();
+          document.getElementById("editDireccion").value = cells[3].innerText.trim();
+          document.getElementById("editCorreo").value = cells[4].innerText.trim();
+
+          const estadoTexto = cells[5].innerText.trim();
+          document.getElementById("editActivo").value = (estadoTexto === 'Activo' ? '1' : '0');
           // Abrir con clase .show
           editModal.classList.replace("hide", "show");
         });
@@ -774,37 +787,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
     });
   </script>
-  <div class="userContainer">
-    <div class="userInfo">
-      <!-- Nombre y apellido del usuario y rol -->
-      <!-- Consultar datos del usuario -->
-      <?php
-      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-      $id_usuario = $_SESSION['usuario_id'];
-      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-      $stmtUsuario = $conexion->prepare($sqlUsuario);
-      $stmtUsuario->bind_param("i", $id_usuario);
-      $stmtUsuario->execute();
-      $resultUsuario = $stmtUsuario->get_result();
-      $rowUsuario = $resultUsuario->fetch_assoc();
-      $nombreUsuario = $rowUsuario['nombre'];
-      $apellidoUsuario = $rowUsuario['apellido'];
-      $rol = $rowUsuario['rol'];
-      $foto = $rowUsuario['foto'];
-      $stmtUsuario->close();
-      ?>
-      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-      <p class="rol">Rol: <?php echo $rol; ?></p>
 
-    </div>
-    <div class="profilePic">
-      <?php if (!empty($rowUsuario['foto'])): ?>
-        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-      <?php else: ?>
-        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-      <?php endif; ?>
-    </div>
-  </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const rowsPerPage = 10;
@@ -911,37 +894,55 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         tableBody.innerHTML = '';
         pageData.forEach(row => {
           const tr = document.createElement('tr');
-          ['nit', 'nombre', 'telefono', 'direccion', 'correo'].forEach(f => {
+
+          // 1) Columna Nit con formato
+          const tdNit = document.createElement('td');
+          tdNit.textContent = formatNit(row.nit);
+          tr.appendChild(tdNit);
+
+          // 2) Columnas fijas
+          ['nombre', 'telefono', 'direccion', 'correo'].forEach(f => {
             const td = document.createElement('td');
-            if (f === 'nit') {
-              td.textContent = formatNit(row.nit);
-            } else {
-              td.textContent = row[f];
-            }
+            td.textContent = row[f];
             tr.appendChild(td);
           });
-          // Acciones (usa exactamente tu HTML)
-          const tdAcc = document.createElement('td');
-          tdAcc.innerHTML = `<button class="edit-button" data-id="${row.nit}"><i class="fa-solid fa-pen-to-square"></i></button>
-                         <button class="delete-button" onclick="eliminarProducto('${row.nit}')"><i class="fa-solid fa-trash"></i></button>`;
-          tr.appendChild(tdAcc);
-          tableBody.appendChild(tr);
 
-          // Selección múltiple
-          const tdCheckbox = document.createElement('td');
+          // 3) **Columna Estado**
+          const tdEstado = document.createElement('td');
+          console.log(row.activo);
+
+          tdEstado.textContent = row.activo === '1' || row.activo === 1 ?
+            'Activo' :
+            'Inactivo';
+          tdEstado.classList.add('text-center');
+          tr.appendChild(tdEstado);
+
+          // 4) Acciones (editar / eliminar)
+          const tdAcc = document.createElement('td');
+          tdAcc.innerHTML = `
+      <button class="edit-button"><i class="fa-solid fa-pen-to-square"></i></button>
+      <button class="delete-button" onclick="eliminarProducto('${row.nit}')">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    `;
+          tr.appendChild(tdAcc);
+
+          // 5) Checkbox selección múltiple
+          const tdChk = document.createElement('td');
           const checkbox = document.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.className = 'select-product';
           checkbox.value = row.nit;
-          if (selectedProviderNits.has(row.nit)) {
-            checkbox.checked = true;
-          }
-          tdCheckbox.appendChild(checkbox);
-          tr.appendChild(tdCheckbox);
+          tdChk.appendChild(checkbox);
+          tr.appendChild(tdChk);
+
+          tableBody.appendChild(tr);
         });
+
         renderPaginationControls();
         attachCheckboxListeners();
       }
+
 
       function attachCheckboxListeners() {
         // Recolectamos checkboxes y botón de cabecera

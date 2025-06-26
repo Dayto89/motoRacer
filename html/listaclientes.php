@@ -237,135 +237,134 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
     </script>
     <div id="menu"></div>
-    <div class="ubica"> Factura / Lista clientes </div>
+    <nav class="barra-navegacion">
+        <div class="ubica"> Factura / Lista clientes </div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <!-- Nombre y apellido del usuario y rol -->
+                <!-- Consultar datos del usuario -->
+                <?php
+                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                $id_usuario = $_SESSION['usuario_id'];
+                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+                $stmtUsuario = $conexion->prepare($sqlUsuario);
+                $stmtUsuario->bind_param("i", $id_usuario);
+                $stmtUsuario->execute();
+                $resultUsuario = $stmtUsuario->get_result();
+                $rowUsuario = $resultUsuario->fetch_assoc();
+                $nombreUsuario = $rowUsuario['nombre'];
+                $apellidoUsuario = $rowUsuario['apellido'];
+                $rol = $rowUsuario['rol'];
+                $foto = $rowUsuario['foto'];
+                $stmtUsuario->close();
+                ?>
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
+
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
     <div class="container-general">
     </div>
     <div class="main-content">
-        <h1>Clientes</h1>
-        <div class="filter-bar">
-            <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
-            <div class="export-container">
-                <a href="exportar_excel_clientes.php" class="btn-export">
-                    <i class="fas fa-file-excel"></i> Exportar Excel
-                </a>
+        <header class="page-header">
+            <h1>Clientes</h1>
+            <div class="filter-bar">
+                <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese el valor a buscar">
+                <div class="export-container">
+                    <a href="exportar_excel_clientes.php" class="btn-export">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Exportar Excel</span>
+                    </a>
+                </div>
             </div>
-        </div>
+        </header>
 
 
         <?php if (mysqli_num_rows($resultado) > 0): ?>
-            <table id="clientesTable">
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th data-col="1" data-type="string">Identificación<span class="sort-arrow"></span></th>
-                        <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
-                        <th data-col="3" data-type="string">Apellido<span class="sort-arrow"></span></th>
-                        <th data-col="4" data-type="string">Teléfono<span class="sort-arrow"></span></th>
-                        <th data-col="5" data-type="string">Correo<span class="sort-arrow"></span></th>
-                        <th data-col="6" data-type="none">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+            <div class="table-scroll-wrapper">
+
+                <table id="clientesTable">
+                    <thead>
                         <tr>
-                            <td><?= htmlspecialchars($fila['codigo']) ?></td>
-                            <td><?= htmlspecialchars($fila['identificacion']) ?></td>
-                            <td><?= htmlspecialchars($fila['nombre']) ?></td>
-                            <td><?= htmlspecialchars($fila['apellido']) ?></td>
-                            <td><?= htmlspecialchars($fila['telefono']) ?></td>
-                            <td><?= htmlspecialchars($fila['correo']) ?></td>
-                            <td class="acciones">
-                                <button class="edit-button" data-id="<?= $fila['codigo'] ?>">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button class="delete-button" onclick="eliminarCliente('<?= $fila['codigo'] ?>')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
+                            <th>Código</th>
+                            <th data-col="1" data-type="string">Identificación<span class="sort-arrow"></span></th>
+                            <th data-col="2" data-type="string">Nombre<span class="sort-arrow"></span></th>
+                            <th data-col="3" data-type="string">Apellido<span class="sort-arrow"></span></th>
+                            <th data-col="4" data-type="string">Teléfono<span class="sort-arrow"></span></th>
+                            <th data-col="5" data-type="string">Correo<span class="sort-arrow"></span></th>
+                            <th data-col="6" data-type="none">Acciones</th>
                         </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-            <div id="jsPagination" class="pagination-dinamica"></div>
-            <!-- Modal de edición -->
-            <div id="editModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">
-                        <i class="fa-solid fa-x"></i>
-                    </span>
-                    <h2>Editar Cliente</h2>
-                    <form id="editForm" method="post">
-                        <input type="hidden" id="editId" name="id">
-                        <div class="campo">
-                            <label class="required" for="editIdentificacion">Identificación:</label>
-                            <input type="text" id="editIdentificacion" name="identificacion"
-                                oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editNombre">Nombre:</label>
-                            <input type="text" id="editNombre" name="nombre">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editApellido">Apellido:</label>
-                            <input type="text" id="editApellido" name="apellido">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editTelefono">Teléfono:</label>
-                            <input type="text" id="editTelefono" name="telefono" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        </div>
-                        <div class="campo">
-                            <label class="required" for="editCorreo">Correo:</label>
-                            <input type="email" id="editCorreo" name="correo"
-                                pattern=".+@.+"
-                                placeholder="ejemplo@correo.com">
-                        </div>
-                        <div class="modal-boton">
-                            <button type="submit" id="modal-boton">Guardar</button>
-                        </div>
-                    </form>
-                </div>
+                    </thead>
+                    <tbody>
+                        <?php while ($fila = mysqli_fetch_assoc($resultado)): ?>
+                            <tr>
+                                <td data-label="Código"><?= htmlspecialchars($fila['codigo']) ?></td>
+                                <td data-label="Identificación"><?= htmlspecialchars($fila['identificacion']) ?></td>
+                                <td data-label="Nombre"><?= htmlspecialchars($fila['nombre']) ?></td>
+                                <td data-label="Apellido"><?= htmlspecialchars($fila['apellido']) ?></td>
+                                <td data-label="Teléfono"><?= htmlspecialchars($fila['telefono']) ?></td>
+                                <td data-label="Correo"><?= htmlspecialchars($fila['correo']) ?></td>
+                                <td class="acciones"> <button class="edit-button" data-id="<?= $fila['codigo'] ?>">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button class="delete-button" onclick="eliminarCliente('<?= $fila['codigo'] ?>')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+                <div id="jsPagination" class="pagination-dinamica"></div>
+                <!-- Modal de edición -->
             </div>
-
-            <?php if ($total_paginas > 1): ?>
-                <div class="pagination">
-                    <?php
-                    $base_params = $_GET;
-                    ?>
-                    <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => 1])) ?>">« Primera</a>
-
-                    <?php if ($pagina_actual > 1): ?>
-                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $pagina_actual - 1])) ?>">‹ Anterior</a>
-                    <?php endif; ?>
-
-                    <?php
-                    $start = max(1, $pagina_actual - 2);
-                    $end   = min($total_paginas, $pagina_actual + 2);
-
-                    if ($start > 1) {
-                        echo '<span class="ellips" style="color:white">…</span>';
-                    }
-
-                    for ($i = $start; $i <= $end; $i++):
-                    ?>
-                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $i])) ?>"
-                            class="<?= $i == $pagina_actual ? 'active' : '' ?>">
-                            <?= $i ?>
-                        </a>
-                    <?php endfor;
-
-                    if ($end < $total_paginas) {
-                        echo '<span class="ellips" style="color:white">…</span>';
-                    }
-                    ?>
-
-                    <?php if ($pagina_actual < $total_paginas): ?>
-                        <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $pagina_actual + 1])) ?>">Siguiente ›</a>
-                    <?php endif; ?>
-
-                    <a href="?<?= http_build_query(array_merge($base_params, ['pagina' => $total_paginas])) ?>">Última »</a>
-                </div>
-            <?php endif; ?>
     </div>
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">
+                <i class="fa-solid fa-x"></i>
+            </span>
+            <h2>Editar Cliente</h2>
+            <form id="editForm" method="post">
+                <input type="hidden" id="editId" name="id">
+                <div class="campo">
+                    <label class="required" for="editIdentificacion">Identificación:</label>
+                    <input type="text" id="editIdentificacion" name="identificacion"
+                        oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+                </div>
+                <div class="campo">
+                    <label class="required" for="editNombre">Nombre:</label>
+                    <input type="text" id="editNombre" name="nombre">
+                </div>
+                <div class="campo">
+                    <label class="required" for="editApellido">Apellido:</label>
+                    <input type="text" id="editApellido" name="apellido">
+                </div>
+                <div class="campo">
+                    <label class="required" for="editTelefono">Teléfono:</label>
+                    <input type="text" id="editTelefono" name="telefono" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="campo">
+                    <label class="required" for="editCorreo">Correo:</label>
+                    <input type="email" id="editCorreo" name="correo"
+                        pattern=".+@.+"
+                        placeholder="ejemplo@correo.com">
+                </div>
+                <div class="modal-boton">
+                    <button type="submit" id="modal-boton">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 <?php else: ?>
     <p>No se encontraron resultados.</p>
 <?php endif; ?>

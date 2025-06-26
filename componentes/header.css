@@ -15,7 +15,7 @@ body {
 
 .sidebar {
   position: fixed;
-  z-index: 100;
+  z-index: 1001;
   top: 0;
   left: 0;
   width: 108px;
@@ -212,64 +212,102 @@ body {
   margin-left: 108px;
   transition: margin-left 0.3s ease;
 }
-.userContainer {
-  position: fixed;
+/* --- La nueva Barra de Navegación --- */
+.barra-navegacion {
+  position: fixed; /* Fija la barra en la parte superior */
   top: 0;
-  right: 5px;
-  display: flex;
-  align-items: center;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  border-radius: 12px;
-  gap: 10px;
-  z-index: 999;
-  text-align: center;
-  background-color: rgb(15 92 183 / 62%);
-  border: 1px solid #ffffff;
-  margin-right: 2%;
+  left: 5%;
+  width: 95%; /* Ocupa todo el ancho de la pantalla */
+  display: flex; /* USAREMOS FLEXBOX */
+  justify-content: space-between; /* Empuja los elementos hijos a los extremos */
+  align-items: center; /* Centra verticalmente los elementos */
+  background: linear-gradient(
+    90deg,
+    #1167cc,
+    #083972,
+    #000000
+  ); /* Un color de fondo sólido para la barra */
+  padding: 8px 2%; /* Espaciado interno (8px arriba/abajo, 2% a los lados) */
+  box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+  z-index: 1000; /* Asegura que la barra esté por encima de todo */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Una sombra sutil */
 }
-
-.userInfo {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  text-align: center;
-  font-family: "Metal Mania", system-ui;
-  margin: 0;
-}
-
-.userInfo .nombre {
+/* --- Ajustes para el elemento "Inicio" --- */
+.ubica {
+  /* ELIMINAMOS position, top, left, z-index, margin, border y background */
+  /* El posicionamiento ahora lo controla el padre flex '.barra-navegacion' */
+  padding: 0; /* El padding ya está en la barra principal */
+  text-shadow: 1px 1px 0 #0000003d; /* Sombra de texto más sutil */
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
   color: white;
-  padding: 0px;
-  text-shadow: 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0,
-    2px 0px 0 #1c51a0;
+}
+/* Estilo para el enlace dentro de .ubica */
+.ubica a {
+  color: white;
+  text-decoration: none; /* Quita el subrayado */
+  padding: 10px 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+.ubica a:hover {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Efecto visual al pasar el ratón */
+}
+/* --- Ajustes para el contenedor del Usuario --- */
+.userContainer {
+  /* ELIMINAMOS position, top, right, z-index, margin y border */
+  display: flex; /* Ya lo usaba, lo mantenemos */
+  align-items: center; /* Alinea la foto y la info verticalmente */
+  gap: 12px; /* Espacio entre la foto y la información */
+  /* Ya no se necesita flex-direction: row-reverse; si ajustaste el HTML */
+}
+
+/* --- Ajustes para la información del Usuario --- */
+.userInfo {
+  display: flex;
+  /* El CSS original tenía "row", lo cambiamos a "column" para que el rol quede debajo del nombre */
+  flex-direction: column;
+  align-items: flex-start; /* Alinea el texto a la izquierda */
+  text-align: left;
+  font-family: Arial, sans-serif; /* Usamos una fuente más estándar para legibilidad */
+  line-height: 1.2;
+}
+.userInfo p {
+  margin: 0; /* Quitamos los márgenes por defecto de los párrafos */
+  padding: 0;
+  color: white;
+  text-shadow: 1px 1px 0 #0000003d;
+}
+.userInfo .nombre {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .userInfo .rol {
-  font-size: 18px;
-  color: white;
-  text-shadow: 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0,
-    2px 0px 0 #1c51a0;
+  font-size: 15px;
+  opacity: 0.9; /* Hacemos el rol un poco menos prominente */
 }
-
 /* Ajustar foto de perfil a lado de la información del usuario */
 .profilePic {
   position: static;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   background-color: #0b111a89;
-  flex-shrink: 0;
-  margin-left: 10px;
+  flex-shrink: 0; /* Evita que la imagen se encoja */
+  border: 1px solid white;
 }
 .profilePic img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
 }
 
 /* Sección padre resaltada */

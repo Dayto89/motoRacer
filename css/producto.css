@@ -283,7 +283,7 @@ input[type="checkbox"] {
 }
 .container-general {
   position: fixed;
-  top: 5%;
+  top: 9%;
   left: 17%;
   width: 67%;
   height: 87%;
@@ -359,7 +359,7 @@ input[type="checkbox"] {
 
 #crearProducto h1 {
   font-size: 50px;
-  margin-top: 92px;
+  margin-top: 10%;
   color: white;
   text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
     3px 5px 0 #1c51a0;
@@ -1119,6 +1119,8 @@ button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+
 /*SCROLL EN SELECTS*/
 .fake-select {
   position: relative;

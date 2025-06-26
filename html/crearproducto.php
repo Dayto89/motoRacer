@@ -215,57 +215,89 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     </style>
 </head>
 
-  <!-- Aquí se cargará el header -->
-    <div id="menu"></div>
+<!-- Aquí se cargará el header -->
+<div id="menu"></div>
+<nav class="barra-navegacion">
     <div class="ubica"> Producto / Crear producto</div>
-    <div class="container-general"></div>
-    <!-- Sección para Crear Producto -->
-    <div id="crearProducto" class="form-section">
-        <h1>Crear Producto</h1>
-        <!-- Abrir modal para subir el archivo -->
-        <button
-            type="button"
-            class="icon-button"
-            aria-label="Importar archivo"
-            title="Importar archivo"
-            id="btnAbrirModalImport">
-            <i class="fas fa-file-excel"></i>
-            <label>Importar archivo</label>
-        </button>
-        <!-- **Nuevo** modal de importación -->
-        <div id="modalImport" class="modal">
-            <div class="modal-content">
-                <span class="close-button" id="btnCerrarModalImport">&times;</span>
-
-                <form
-                    method="post"
-                    enctype="multipart/form-data"
-                    action="/html/importar_excel.php">
-                    <label>Selecciona el archivo Excel:</label>
-                    <label for="archivoExcel" class="custom-file-upload">
-                        <i class="fas fa-cloud-upload-alt"></i><br>
-                        <span>Haz clic para seleccionar un archivo</span>
-                    </label>
-
-                    <input
-                        id="archivoExcel"
-                        type="file"
-                        name="archivoExcel"
-                        accept=".xlsx,.xls"
-                        required
-                        data-max-size="2097152"
-                        hidden />
-
-                    <div class="modal-buttons">
-        <button type="submit" name="importar">Importar</button>
-        <a href="../componentes/formato_productos.xlsx" download>
-          <i class="fas fa-file-download"></i> Descargar formato
-        </a>
-      </div>
-    </form>
-            </div>
+    <div class="userContainer">
+        <div class="userInfo">
+            <!-- Nombre y apellido del usuario y rol -->
+            <!-- Consultar datos del usuario -->
+            <?php
+            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+            $id_usuario = $_SESSION['usuario_id'];
+            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+            $stmtUsuario = $conexion->prepare($sqlUsuario);
+            $stmtUsuario->bind_param("i", $id_usuario);
+            $stmtUsuario->execute();
+            $resultUsuario = $stmtUsuario->get_result();
+            $rowUsuario = $resultUsuario->fetch_assoc();
+            $nombreUsuario = $rowUsuario['nombre'];
+            $apellidoUsuario = $rowUsuario['apellido'];
+            $rol = $rowUsuario['rol'];
+            $foto = $rowUsuario['foto'];
+            $stmtUsuario->close();
+            ?>
+            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+            <p class="rol">Rol: <?php echo $rol; ?></p>
+        </div>
+        <div class="profilePic">
+            <?php if (!empty($rowUsuario['foto'])): ?>
+                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+            <?php else: ?>
+                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+            <?php endif; ?>
         </div>
     </div>
+</nav>
+<div class="container-general"></div>
+<!-- Sección para Crear Producto -->
+<div id="crearProducto" class="form-section">
+    <h1>Crear Producto</h1>
+    <!-- Abrir modal para subir el archivo -->
+    <button
+        type="button"
+        class="icon-button"
+        aria-label="Importar archivo"
+        title="Importar archivo"
+        id="btnAbrirModalImport">
+        <i class="fas fa-file-excel"></i>
+        <label>Importar archivo</label>
+    </button>
+    <!-- **Nuevo** modal de importación -->
+    <div id="modalImport" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="btnCerrarModalImport">&times;</span>
+
+            <form
+                method="post"
+                enctype="multipart/form-data"
+                action="/html/importar_excel.php">
+                <label>Selecciona el archivo Excel:</label>
+                <label for="archivoExcel" class="custom-file-upload">
+                    <i class="fas fa-cloud-upload-alt"></i><br>
+                    <span>Haz clic para seleccionar un archivo</span>
+                </label>
+
+                <input
+                    id="archivoExcel"
+                    type="file"
+                    name="archivoExcel"
+                    accept=".xlsx,.xls"
+                    required
+                    data-max-size="2097152"
+                    hidden />
+
+                <div class="modal-buttons">
+                    <button type="submit" name="importar">Importar</button>
+                    <a href="../componentes/formato_productos.xlsx" download>
+                        <i class="fas fa-file-download"></i> Descargar formato
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <!-- Contenedor principal -->
@@ -306,28 +338,28 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
 
         <div class="campo">
-            <label class="required" for="cantidad">Cantidad:</label>
-            <input type="number"
-                id="cantidad"
-                name="cantidad"
-                required
-                min="0"
-                max="99"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-        </div>
+    <label class="required" for="cantidad">Cantidad:</label>
+    <input type="number"
+           id="cantidad"
+           name="cantidad"
+           required
+           min="0"
+           max="999"
+           oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);" />
+</div>
 
 
         <!-- CATEGORÍA -->
         <div class="campo">
-                <div class="label-with-button" style="display:flex;align-items:center;">
-                    <label class="required" for="categoria">Categoría:</label>
-                    <button type="button"
-                        class="add-button-cat"
-                        onclick="openModalCategoria()"
-                        aria-label="Agregar categoría">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
+            <div class="label-with-button" style="display:flex;align-items:center;">
+                <label class="required" for="categoria">Categoría:</label>
+                <button type="button"
+                    class="add-button-cat"
+                    onclick="openModalCategoria()"
+                    aria-label="Agregar categoría">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
             <div class="fake-select" data-for="categoria">
                 <div class="fs-selected">— Seleccione —</div>
                 <div class="fs-options-wrap">
@@ -343,15 +375,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         <!-- MARCA -->
         <div class="campo">
-                <div class="label-with-button">
-                    <label class="required" for="marca">Marca:</label>
-                    <button type="button"
-                        class="add-button-mar"
-                        onclick="openModalMarca()"
-                        aria-label="Agregar marca">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
+            <div class="label-with-button">
+                <label class="required" for="marca">Marca:</label>
+                <button type="button"
+                    class="add-button-mar"
+                    onclick="openModalMarca()"
+                    aria-label="Agregar marca">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
             <div class="fake-select" data-for="marca">
                 <div class="fs-selected">— Seleccione —</div>
                 <div class="fs-options-wrap">
@@ -383,17 +415,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         <!-- UBICACIÓN -->
         <div class="campo">
-                <div class="label-with-button">
-                    <label for="ubicacion">Ubicación:</label>
-                    <button
-                        type="button"
-                        class="add-button-ubi"
-                        onclick="openModalUbicacion()"
-                        aria-label="Agregar ubicación"
-                        title="Agregar ubicación">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
+            <div class="label-with-button">
+                <label for="ubicacion">Ubicación:</label>
+                <button
+                    type="button"
+                    class="add-button-ubi"
+                    onclick="openModalUbicacion()"
+                    aria-label="Agregar ubicación"
+                    title="Agregar ubicación">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
             <div class="fake-select" data-for="ubicacion">
                 <div class="fs-selected">— Seleccione —</div>
                 <div class="fs-options-wrap">
@@ -436,82 +468,82 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 </div>
 
- <!-- Modal Nueva Categoría -->
-    <div id="modalCategoria" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
-            <h2>Nueva categoría</h2>
-            <form id="formAddCategoria" action="" method="POST">
-                <div class="form-group" style="position: relative;">
-                    <label for="inputNombreCategoria">Ingrese el nombre de la categoría:</label>
-                    <input
-                        type="text"
-                        id="inputNombreCategoria"
-                        name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
-                    <span class="input-error-message">
-                        Este nombre ya está registrado.
-                    </span>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelarCategoria">Cancelar</button>
-                    <button type="submit" id="btnGuardarCategoria" disabled>Guardar</button>
-                </div>
-            </form>
-        </div>
+<!-- Modal Nueva Categoría -->
+<div id="modalCategoria" class="modal_nueva_categoria">
+    <div class="modal-content-nueva">
+        <span class="close-button" onclick="closeModal(modalCat)">&times;</span>
+        <h2>Nueva categoría</h2>
+        <form id="formAddCategoria" action="" method="POST">
+            <div class="form-group" style="position: relative;">
+                <label for="inputNombreCategoria">Ingrese el nombre de la categoría:</label>
+                <input
+                    type="text"
+                    id="inputNombreCategoria"
+                    name="nombre"
+                    required
+                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+                <span class="input-error-message">
+                    Este nombre ya está registrado.
+                </span>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" id="btnCancelarCategoria">Cancelar</button>
+                <button type="submit" id="btnGuardarCategoria" disabled>Guardar</button>
+            </div>
+        </form>
     </div>
+</div>
 
 <!-- Modal Nueva Ubicación -->
-    <div id="modalUbicacion" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
-            <h2>Nueva ubicación</h2>
-            <form id="formAddUbicacion" method="POST" action="">
-                <div class="form-group" style="position: relative;">
-                    <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
-                    <input
-                        type="text"
-                        id="inputNombreUbicacion"
-                        name="nombre"
-                        required />
-                    <span class="input-error-message">
-                        Este nombre ya está registrado.
-                    </span>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelarUbicacion">Cancelar</button>
-                    <button type="submit" id="btnGuardarUbicacion" disabled>Guardar</button>
-                </div>
-            </form>
-        </div>
+<div id="modalUbicacion" class="modal_nueva_categoria">
+    <div class="modal-content-nueva">
+        <span class="close-button" onclick="closeModal(modalUbic)">&times;</span>
+        <h2>Nueva ubicación</h2>
+        <form id="formAddUbicacion" method="POST" action="">
+            <div class="form-group" style="position: relative;">
+                <label for="inputNombreUbicacion">Ingrese el nombre de la ubicación:</label>
+                <input
+                    type="text"
+                    id="inputNombreUbicacion"
+                    name="nombre"
+                    required />
+                <span class="input-error-message">
+                    Este nombre ya está registrado.
+                </span>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" id="btnCancelarUbicacion">Cancelar</button>
+                <button type="submit" id="btnGuardarUbicacion" disabled>Guardar</button>
+            </div>
+        </form>
     </div>
+</div>
 
 <!-- Modal Nueva Marca -->
-    <div id="modalMarca" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
-            <h2>Nueva marca</h2>
-            <form id="formAddMarca" method="POST" action="">
-                <div class="form-group" style="position: relative;">
-                    <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
-                    <input
-                        type="text"
-                        id="inputNombreMarca"
-                        name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
-                    <span class="input-error-message">
-                        Este nombre ya está registrado.
-                    </span>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelarMarca">Cancelar</button>
-                    <button type="submit" id="btnGuardarMarca" disabled>Guardar</button>
-                </div>
-            </form>
-        </div>
+<div id="modalMarca" class="modal_nueva_categoria">
+    <div class="modal-content-nueva">
+        <span class="close-button" onclick="closeModal(modalMarca)">&times;</span>
+        <h2>Nueva marca</h2>
+        <form id="formAddMarca" method="POST" action="">
+            <div class="form-group" style="position: relative;">
+                <label for="inputNombreMarca">Ingrese el nombre de la marca:</label>
+                <input
+                    type="text"
+                    id="inputNombreMarca"
+                    name="nombre"
+                    required
+                    oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
+                <span class="input-error-message">
+                    Este nombre ya está registrado.
+                </span>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" id="btnCancelarMarca">Cancelar</button>
+                <button type="submit" id="btnGuardarMarca" disabled>Guardar</button>
+            </div>
+        </form>
     </div>
+</div>
 
 
 <?php
@@ -560,53 +592,53 @@ if ($_POST) {
 
 
 <script>
-   function openModal(modal) {
-            modal.classList.add('show');
-            void modal.offsetWidth; // fuerza reflow para animación
-            modal.classList.add('opening');
-        }
+    function openModal(modal) {
+        modal.classList.add('show');
+        void modal.offsetWidth; // fuerza reflow para animación
+        modal.classList.add('opening');
+    }
 
-        function closeModal(modal) {
-            modal.classList.remove('opening');
-            modal.classList.add('closing');
-            const contenido = modal.querySelector('.modal-content');
-            contenido.addEventListener('transitionend', function handler() {
-                contenido.removeEventListener('transitionend', handler);
-                modal.classList.remove('show', 'closing');
-            });
-        }
-        document.querySelector('form[action="/html/importar_excel.php"]').addEventListener('submit', e => {
-            const inp = document.getElementById('archivoExcel');
-            const file = inp.files[0];
-            if (!file) return; // el required ya avisa
-            const ext = file.name.split('.').pop().toLowerCase();
-            if (!['xlsx', 'xls'].includes(ext)) {
-                Swal.fire('Error', 'Formato no permitido. Usa .xlsx o .xls', 'error');
-                e.preventDefault();
-                return;
-            }
-            const max = parseInt(inp.dataset.maxSize, 10);
-            if (file.size > max) {
-                Swal.fire('Error', `El archivo no puede pesar más de ${max/1024/1024} MiB`, 'error');
-                e.preventDefault();
-                return;
-            }
+    function closeModal(modal) {
+        modal.classList.remove('opening');
+        modal.classList.add('closing');
+        const contenido = modal.querySelector('.modal-content');
+        contenido.addEventListener('transitionend', function handler() {
+            contenido.removeEventListener('transitionend', handler);
+            modal.classList.remove('show', 'closing');
         });
-
-        // ——— Modal de subir archivo ———
-        function openConfirmModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrir = document.getElementById("btnAbrirModal");
-            modal.style.display = "flex";
-            btnAbrir.style.display = "none";
+    }
+    document.querySelector('form[action="/html/importar_excel.php"]').addEventListener('submit', e => {
+        const inp = document.getElementById('archivoExcel');
+        const file = inp.files[0];
+        if (!file) return; // el required ya avisa
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!['xlsx', 'xls'].includes(ext)) {
+            Swal.fire('Error', 'Formato no permitido. Usa .xlsx o .xls', 'error');
+            e.preventDefault();
+            return;
         }
-
-        function closeConfirmModal() {
-            const modal = document.getElementById("modalConfirm");
-            const btnAbrir = document.getElementById("btnAbrirModal");
-            modal.style.display = "none";
-            btnAbrir.style.display = "block";
+        const max = parseInt(inp.dataset.maxSize, 10);
+        if (file.size > max) {
+            Swal.fire('Error', `El archivo no puede pesar más de ${max/1024/1024} MiB`, 'error');
+            e.preventDefault();
+            return;
         }
+    });
+
+    // ——— Modal de subir archivo ———
+    function openConfirmModal() {
+        const modal = document.getElementById("modalConfirm");
+        const btnAbrir = document.getElementById("btnAbrirModal");
+        modal.style.display = "flex";
+        btnAbrir.style.display = "none";
+    }
+
+    function closeConfirmModal() {
+        const modal = document.getElementById("modalConfirm");
+        const btnAbrir = document.getElementById("btnAbrirModal");
+        modal.style.display = "none";
+        btnAbrir.style.display = "block";
+    }
 
 
     // ——— SweetAlert según mensaje PHP ———
@@ -733,153 +765,153 @@ if ($_POST) {
     });
 
     // ——— Modal Categoría ———
-        document.getElementById('btnCancelarCategoria')
-            .addEventListener('click', () => closeModal(modalCat));
+    document.getElementById('btnCancelarCategoria')
+        .addEventListener('click', () => closeModal(modalCat));
 
-        function openModalCategoria() {
-            openModal(modalCat);
-            document.getElementById('inputNombreCategoria').focus();
-        }
-        formAddCategoria.addEventListener('submit', e => {
-            e.preventDefault();
-            const nombre = document.getElementById('inputNombreCategoria').value.trim();
-            if (!nombre) return;
-            fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        accion: 'add_categoria',
-                        nombre
-                    })
+    function openModalCategoria() {
+        openModal(modalCat);
+        document.getElementById('inputNombreCategoria').focus();
+    }
+    formAddCategoria.addEventListener('submit', e => {
+        e.preventDefault();
+        const nombre = document.getElementById('inputNombreCategoria').value.trim();
+        if (!nombre) return;
+        fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    accion: 'add_categoria',
+                    nombre
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const opt = document.createElement('option');
-                        opt.value = data.id;
-                        opt.text = data.nombre;
-                        opt.selected = true;
-                        document.getElementById('categoria').appendChild(opt);
-                        closeModal(modalCat);
-                        formAddCategoria.reset();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    }
-                });
-        });
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const opt = document.createElement('option');
+                    opt.value = data.id;
+                    opt.text = data.nombre;
+                    opt.selected = true;
+                    document.getElementById('categoria').appendChild(opt);
+                    closeModal(modalCat);
+                    formAddCategoria.reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error
+                    });
+                }
+            });
+    });
 
 
     // ——— Modal Ubicación ———
-        document.getElementById('btnCancelarUbicacion')
-            .addEventListener('click', () => closeModal(modalUbic));
+    document.getElementById('btnCancelarUbicacion')
+        .addEventListener('click', () => closeModal(modalUbic));
 
-        function openModalUbicacion() {
-            openModal(modalUbic);
-            document.getElementById('inputNombreUbicacion').focus();
-        }
-        formAddUbicacion.addEventListener('submit', e => {
-            e.preventDefault();
-            const nombre = document.getElementById('inputNombreUbicacion').value.trim();
-            if (!nombre) return;
-            fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        accion: 'add_ubicacion',
-                        nombre
-                    })
+    function openModalUbicacion() {
+        openModal(modalUbic);
+        document.getElementById('inputNombreUbicacion').focus();
+    }
+    formAddUbicacion.addEventListener('submit', e => {
+        e.preventDefault();
+        const nombre = document.getElementById('inputNombreUbicacion').value.trim();
+        if (!nombre) return;
+        fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    accion: 'add_ubicacion',
+                    nombre
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const opt = document.createElement('option');
-                        opt.value = data.id;
-                        opt.text = data.nombre;
-                        opt.selected = true;
-                        document.getElementById('ubicacion').appendChild(opt);
-                        closeModal(modalUbic);
-                        formAddUbicacion.reset();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    }
-                });
-        });
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const opt = document.createElement('option');
+                    opt.value = data.id;
+                    opt.text = data.nombre;
+                    opt.selected = true;
+                    document.getElementById('ubicacion').appendChild(opt);
+                    closeModal(modalUbic);
+                    formAddUbicacion.reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error
+                    });
+                }
+            });
+    });
 
     // ——— Modal Marca ———
-        document.getElementById('btnCancelarMarca')
-            .addEventListener('click', () => closeModal(modalMarca));
+    document.getElementById('btnCancelarMarca')
+        .addEventListener('click', () => closeModal(modalMarca));
 
-        function openModalMarca() {
-            openModal(modalMarca);
-            document.getElementById('inputNombreMarca').focus();
-        }
-        formAddMarca.addEventListener('submit', e => {
-            e.preventDefault();
-            const nombre = document.getElementById('inputNombreMarca').value.trim();
-            if (!nombre) return;
-            fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        accion: 'add_marca',
-                        nombre
-                    })
+    function openModalMarca() {
+        openModal(modalMarca);
+        document.getElementById('inputNombreMarca').focus();
+    }
+    formAddMarca.addEventListener('submit', e => {
+        e.preventDefault();
+        const nombre = document.getElementById('inputNombreMarca').value.trim();
+        if (!nombre) return;
+        fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    accion: 'add_marca',
+                    nombre
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const opt = document.createElement('option');
-                        opt.value = data.id;
-                        opt.text = data.nombre;
-                        opt.selected = true;
-                        document.getElementById('marca').appendChild(opt);
-                        closeModal(modalMarca);
-                        formAddMarca.reset();
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    }
-                });
-        });
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const opt = document.createElement('option');
+                    opt.value = data.id;
+                    opt.text = data.nombre;
+                    opt.selected = true;
+                    document.getElementById('marca').appendChild(opt);
+                    closeModal(modalMarca);
+                    formAddMarca.reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.error
+                    });
+                }
+            });
+    });
 
-        // referencias
-        const modalImport = document.getElementById('modalImport');
-        const btnAbrirImport = document.getElementById('btnAbrirModalImport');
-        const btnCerrarImport = document.getElementById('btnCerrarModalImport');
+    // referencias
+    const modalImport = document.getElementById('modalImport');
+    const btnAbrirImport = document.getElementById('btnAbrirModalImport');
+    const btnCerrarImport = document.getElementById('btnCerrarModalImport');
 
-        // abrir
-        btnAbrirImport.addEventListener('click', () => {
-            openModal(modalImport);
-        });
+    // abrir
+    btnAbrirImport.addEventListener('click', () => {
+        openModal(modalImport);
+    });
 
-        // cerrar con la “X”
-        btnCerrarImport.addEventListener('click', () => {
+    // cerrar con la “X”
+    btnCerrarImport.addEventListener('click', () => {
+        closeModal(modalImport);
+    });
+
+    // cerrar al clicar fuera de .modal-content
+    modalImport.addEventListener('click', e => {
+        if (e.target === modalImport) {
             closeModal(modalImport);
-        });
-
-        // cerrar al clicar fuera de .modal-content
-        modalImport.addEventListener('click', e => {
-            if (e.target === modalImport) {
-                closeModal(modalImport);
-            }
-        });
+        }
+    });
 
     // Helper genérico
     async function checkExists(accion, nombre) {
@@ -932,40 +964,8 @@ if ($_POST) {
         accion: 'check_marca'
     });
 </script>
-
-<div class="userContainer">
-    <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
-        <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-        $id_usuario = $_SESSION['usuario_id'];
-        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
-        $nombreUsuario = $rowUsuario['nombre'];
-        $apellidoUsuario = $rowUsuario['apellido'];
-        $rol = $rowUsuario['rol'];
-        $foto = $rowUsuario['foto'];
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
-    </div>
-    <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
-    </div>
-</div>
-
 <script>
-//scroll select
+    //scroll select
     document.querySelectorAll('.fake-select').forEach(fs => {
         const sel = fs.querySelector('.fs-selected');
         const opts = fs.querySelector('.fs-options');

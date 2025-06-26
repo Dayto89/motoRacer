@@ -149,24 +149,6 @@ $sectionColors = [
       display: flex;
       align-items: center;
     }
-
-   .ubica {
-    position: fixed;
-    top: 1px;
-    left: 7%;
-    background-color: rgb(15 92 183 / 62%);
-    border: 1px solid #ffffff;
-    text-shadow: 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0, 1px 1px 0 #1c51a0, 2px 0px 0 #1c51a0;
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 10px 8px;
-    border-radius: 10px;
-    font-size: 18px;
-    color: white;
-    z-index: 5;
-    margin-left: 1%;
-    transition: margin-left 0.3s ease;
-    height: 4.5%;
-}
   </style>
 </head>
 

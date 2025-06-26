@@ -94,8 +94,41 @@ echo "</script>\n";
 <body>
     <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
-    <div class="ubica"> Configuración / Copia de seguridad</div>
-     <div class="container-general">
+    <nav class="barra-navegacion">
+        <div class="ubica"> Configuración / Copia de seguridad</div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <!-- Nombre y apellido del usuario y rol -->
+                <!-- Consultar datos del usuario -->
+                <?php
+                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                $id_usuario = $_SESSION['usuario_id'];
+                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+                $stmtUsuario = $conexion->prepare($sqlUsuario);
+                $stmtUsuario->bind_param("i", $id_usuario);
+                $stmtUsuario->execute();
+                $resultUsuario = $stmtUsuario->get_result();
+                $rowUsuario = $resultUsuario->fetch_assoc();
+                $nombreUsuario = $rowUsuario['nombre'];
+                $apellidoUsuario = $rowUsuario['apellido'];
+                $rol = $rowUsuario['rol'];
+                $foto = $rowUsuario['foto'];
+                $stmtUsuario->close();
+                ?>
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
+
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
+    <div class="container-general">
     </div>
     <div class="main-content">
         <h1>Gestión de Copias de Seguridad</h1>
@@ -627,38 +660,6 @@ echo "</script>\n";
         renderTable();
     });
 </script>
-
-<div class="userContainer">
-    <div class="userInfo">
-        <!-- Nombre y apellido del usuario y rol -->
-        <!-- Consultar datos del usuario -->
-        <?php
-        $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-        $id_usuario = $_SESSION['usuario_id'];
-        $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-        $stmtUsuario = $conexion->prepare($sqlUsuario);
-        $stmtUsuario->bind_param("i", $id_usuario);
-        $stmtUsuario->execute();
-        $resultUsuario = $stmtUsuario->get_result();
-        $rowUsuario = $resultUsuario->fetch_assoc();
-        $nombreUsuario = $rowUsuario['nombre'];
-        $apellidoUsuario = $rowUsuario['apellido'];
-        $rol = $rowUsuario['rol'];
-        $foto = $rowUsuario['foto'];
-        $stmtUsuario->close();
-        ?>
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
-
-    </div>
-    <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-            <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-            <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
-    </div>
-</div>
 </body>
 
 </html>
