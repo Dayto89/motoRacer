@@ -257,39 +257,54 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 
 #menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100px; /* Ancho inicial */
-  height: 100%;
-  background: linear-gradient(180deg, #1167cc, #083972, #000000);
-  transition: width 0.3s ease; /* Transición para la expansión */
-  z-index: 1002;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    /* Ancho inicial */
+    height: 100%;
+    background: linear-gradient(180deg, #1167cc, #083972, #000000);
+    transition: width 0.3s ease;
+    /* Transición para la expansión */
+    z-index: 1002;
 }
 
 /* 2. Cuando se hace hover sobre #menu, se expande. */
 #menu:hover {
-  width: 270px; /* Ancho expandido */
+    width: 270px;
+    /* Ancho expandido */
 }
 
 
-/* 3. El texto '.ubica' debe tener una posición inicial y una transición. */
-.ubica {
-  position: relative; /* O 'absolute' si lo necesitas */
-  margin-left: 120px; /* Posición inicial, fuera de la barra colapsada */
-  transition: margin-left 0.3s ease; /* ¡La animación suave! */
-
-  /* Aquí van tus otros estilos para el texto (color, tamaño, etc.) */
-  font-size: 2rem; 
-  color: white;
-  font-weight: bold;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 3px 3px 0 #000;
+.barra-navegacion {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    /* o el alto que tengas */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    /* evita que nada sobresalga */
+    z-index: 1000;
 }
 
+/* 2) Aplico transición a **todos** los hijos directos */
+.barra-navegacion>* {
+    transition: transform 0.3s ease;
+}
 
-/* 4. LA REGLA FINAL: Cuando #menu se expande (hover), mueve a su hermano .ubica. */
-#menu:hover ~ .ubica {
-  margin-left: 290px; /* Posición final, fuera de la barra expandida. Ajusta si es necesario. */
+/* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
+#menu:hover~.barra-navegacion>*:first-child {
+    transform: translateX(210px);
+    /* ancho menú expandido */
+}
+
+/* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
+#menu:hover~.barra-navegacion>*:last-child {
+    transform: none;
 }
 
 /* ----------------------------------------------------------------------------- */
@@ -297,15 +312,15 @@ div:where(.swal2-container).swal2-center>.swal2-popup {
 
 /* Esconde el texto del menú por defecto */
 #menu .menu li a span {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 /* Muestra el texto del menú cuando la barra se expande */
 #menu:hover .menu li a span {
-  display: inline-block;
-  opacity: 1;
+    display: inline-block;
+    opacity: 1;
 }
 
 
@@ -506,6 +521,34 @@ h3 {
         left: 15px;
         margin-left: 0;
     }
+     .barra-navegacion {
+    position: fixed;
+    top: 0;
+    width: calc(100% - 30px);
+    left: 10px;
+    height: auto;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    text-align: center;
+    background: #083972;
+    z-index: 100;
+  
+  }
+  /* --- 4. NUEVO AJUSTE: Reducir letra de la barra de navegación --- */
+  .barra-navegacion .ubica {
+    font-size: 16px; /* Tamaño más pequeño para la ruta (ej. Configuración / ...) */
+    margin-left: 10%;
+    word-break: break-word; /* Permite que el texto se parta si es muy largo */
+  }
+
+  .barra-navegacion .userInfo .nombre {
+    font-size: 14px; /* Un tamaño legible para el nombre */
+  }
+
+  .barra-navegacion .userInfo .rol {
+    font-size: 12px; /* Un tamaño más pequeño para el rol */
+  }
 }
 
 

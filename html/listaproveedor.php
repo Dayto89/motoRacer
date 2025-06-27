@@ -17,35 +17,6 @@ if (!$conexion) {
   die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nit']) && isset($_POST['editar'])) {
-    // Escapa inputs
-    $nit      = mysqli_real_escape_string($conexion, $_POST['nit']);
-    $nombre   = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
-    $direccion= mysqli_real_escape_string($conexion, $_POST['direccion']);
-    $correo   = mysqli_real_escape_string($conexion, $_POST['correo']);
-    $activo   = (int)($_POST['activo']);
-
-    // Ejecuta UPDATE
-    $sql = "
-      UPDATE proveedor SET
-        nombre   = '$nombre',
-        telefono = '$telefono',
-        direccion= '$direccion',
-        correo   = '$correo',
-        activo   = $activo
-      WHERE nit = '$nit'
-    ";
-    if (!mysqli_query($conexion, $sql)) {
-        // manejo de error opcional
-        error_log("Error al actualizar proveedor: ".mysqli_error($conexion));
-    }
-
-    // Redirige para recargar tabla con nuevo estado
-    header("Location: listaproveedor.php");
-    exit;
-}
-
 //verificar que nit no se repita con el input rojo
 
 if (isset($_GET['verificar_nit'])) {
@@ -179,7 +150,76 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 }
 
+// Actualización de datos del modal
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
+    // Se reciben y se escapan las variables
+    $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
+    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+    $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
+    $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+    $activo = (int)$_POST['activo']; // Se convierte el valor '1' o '0' a un número entero
 
+    $consulta_update = "UPDATE proveedor SET 
+        nombre = '$nombre', 
+        telefono = '$telefono', 
+        direccion = '$direccion', 
+        correo = '$correo',
+        activo = $activo
+        WHERE nit = '$nit'";
+  if (mysqli_query($conexion, $consulta_update)) {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+              document.addEventListener('DOMContentLoaded', function() {
+                  Swal.fire({
+                      title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
+                      html: `
+                          <div class='alerta'>
+                              <div class='contenedor-imagen'>
+                                  <img src='../imagenes/moto.png' alt=\"Éxito\" class='moto'>
+                              </div>
+                              <p>Proveedor agregado correctamente.</p>
+                          </div>
+                      `,
+                      background: '#ffffffdb',
+    confirmButtonText: 'Aceptar',
+    confirmButtonColor: '#007bff',
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        container: 'fondo-oscuro'
+    }
+                  }).then(() => {
+                      window.location.href = 'listaproveedor.php'; // Redirige después de cerrar el alert
+                  });
+              });
+          </script>";
+  } else {
+    echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+    echo "<script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    Swal.fire({
+                        title: '<span class=\"titulo-alerta error\">Error</span>',
+                        html: `
+                            <div class=\"custom-alert\">
+                                <div class=\"contenedor-imagen\">
+                                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                </div>
+                                <p>Error al actulizar los datos/p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#dc3545',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
+                    </script>";
+  }
+}
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'], $_POST['codigo'])) {
@@ -562,7 +602,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
         <div class="modal-buttons">
           <button type="button" id="btnCancelarEdit">Cancelar</button>
-          <button type="submit" id="modal-boton">Guardar </button>
+          <button type="submit" id="modal-boton" name="editar">Guardar </button>
         </div>
       </form>
     </div>
@@ -582,7 +622,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       const editButtons = document.querySelectorAll(".edit-button");
       const editModal = document.getElementById("editModal");
       const cancelEdit = document.getElementById("btnCancelarEdit");
-
 
       if (openNuevo && nuevoModal && cancelNuevo) {
         // Abrir con clase .show
@@ -614,24 +653,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
       }
 
-      // Abrir + rellenar datos
-      editButtons.forEach(btn => {
-        btn.addEventListener("click", e => {
-          const row = btn.closest("tr");
-          const cells = row.cells; // <-- Aquí
-          document.getElementById("editNit").value = cells[0].innerText.trim();
-          document.getElementById("editNitVisible").value = cells[0].innerText.trim();
-          document.getElementById("editNombre").value = cells[1].innerText.trim();
-          document.getElementById("editTelefono").value = cells[2].innerText.trim();
-          document.getElementById("editDireccion").value = cells[3].innerText.trim();
-          document.getElementById("editCorreo").value = cells[4].innerText.trim();
-
-          const estadoTexto = cells[5].innerText.trim();
-          document.getElementById("editActivo").value = (estadoTexto === 'Activo' ? '1' : '0');
-          // Abrir con clase .show
-          editModal.classList.replace("hide", "show");
-        });
-      });
       document.addEventListener('click', function(event) {
         const filterDropdown = document.querySelector('.filter-dropdow  n');
 
@@ -790,7 +811,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const rowsPerPage = 10;
+      const rowsPerPage = 7;
       let currentPage = 1;
       let filteredData = [...allData];
 
@@ -1084,20 +1105,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         bindEditButtons(); // vuelve a enlazar después de regenerar filas
       };
       renderTable();
+      document.getElementById("providerTable").addEventListener("click", e => {
+        // Busca si el clic fue en un botón de editar o su ícono
+        const btn = e.target.closest(".edit-button");
+        if (!btn) return; // Si no fue en un botón de editar, no hagas nada
 
-      document.getElementById("providerTable")
-        .addEventListener("click", e => {
-          const btn = e.target.closest(".edit-button");
-          if (!btn) return;
-          const cells = btn.closest("tr").cells;
-          document.getElementById("editNit").value = cells[0].innerText.trim();
-          document.getElementById("editNitVisible").value = cells[0].innerText.trim();
-          document.getElementById("editNombre").value = cells[1].innerText.trim();
-          document.getElementById("editTelefono").value = cells[2].innerText.trim();
-          document.getElementById("editDireccion").value = cells[3].innerText.trim();
-          document.getElementById("editCorreo").value = cells[4].innerText.trim();
-          document.getElementById("editModal").classList.replace("hide", "show");
-        });
+        // Obtén todas las celdas de la fila donde se hizo clic
+        const cells = btn.closest("tr").cells;
+
+        // Obtén el texto del estado de la celda 5 (la columna "Estado")
+        const estadoTexto = cells[5].innerText.trim();
+        const nitFormateado = cells[0].innerText.trim();
+        // Quita el guion y cualquier otro caracter no numérico para el valor del input oculto
+        const nitCrudo = nitFormateado.replace(/\D/g, '');
+
+        // Rellena el formulario del modal
+        document.getElementById("editNit").value = nitCrudo; // El NIT sin formato para enviar al servidor
+        document.getElementById("editNitVisible").value = nitFormateado; // El NIT con formato para mostrar
+        document.getElementById("editNombre").value = cells[1].innerText.trim();
+        document.getElementById("editTelefono").value = cells[2].innerText.trim();
+        document.getElementById("editDireccion").value = cells[3].innerText.trim();
+        document.getElementById("editCorreo").value = cells[4].innerText.trim();
+
+        // *** LÍNEA CLAVE: Convierte "Activo"/"Inactivo" a "1"/"0" y selecciona la opción correcta ***
+        document.getElementById("editActivo").value = (estadoTexto === 'Activo' ? '1' : '0');
+
+        // Muestra el modal
+        document.getElementById("editModal").classList.replace("hide", "show");
+      });
 
     });
 

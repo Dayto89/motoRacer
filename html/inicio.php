@@ -491,7 +491,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
    <nav class="barra-navegacion">
-    <div class="ubica">Inicio</div>
+    <div class="ubica" style="margin-left: 0;">Inicio</div>
     <div class="userContainer">
       <div class="userInfo">
         <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>

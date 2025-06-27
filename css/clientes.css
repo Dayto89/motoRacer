@@ -20,8 +20,20 @@ body::before {
   opacity: 0.6;
 }
 
-#menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+/* 2) Aplico transición a **todos** los hijos directos */
+.barra-navegacion>* {
+    transition: transform 0.3s ease;
+}
+
+/* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
+#menu:hover~.barra-navegacion>*:first-child {
+    transform: translateX(210px);
+    /* ancho menú expandido */
+}
+
+/* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
+#menu:hover~.barra-navegacion>*:last-child {
+    transform: none;
 }
 
 … .main-content {
@@ -648,20 +660,70 @@ table#clientesTable {
   margin-left: 19.5%; /* Quita el margen fijo */
 }
 
-/* MÓVILES */
-/* Horizontal */
-@media screen and (max-width: 870px) and (orientation: landscape) {
-}
+/* ==========================================================================
+   CSS RESPONSIVE CON TABLA DESPLAZABLE (MÓVILES Y TABLETS)
+   ========================================================================== */
 
-/* Vertical */
-@media screen and (max-width: 767px) and (orientation: portrait) {
-}
+/* Se aplicará a cualquier pantalla con un ancho de 1200px o menos */
+@media screen and (max-width: 1200px) {
 
-/* TABLETS */
-/* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
-}
+    /* 1. AJUSTES GENERALES DE LAYOUT PARA PANTALLAS PEQUEÑAS */
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
 
-/* Vertical */
-@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
+    .container-general{
+      left: 0;
+      width: 100%;
+    }
+
+    .main-content {
+        margin-left: 10%;
+        padding: 15px;
+        height: auto;
+    }
+
+    /* Ocultamos el H1 grande para dar más espacio a la tabla */
+    .main-content h1 {
+        display: none;
+    }
+    
+    #menu:hover ~ .main-content {
+        margin-left: 0;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    /* 2. LA MAGIA PARA LA TABLA DESPLAZABLE */
+
+    /* Al contenedor de la tabla le decimos que permita el scroll horizontal */
+    .table-scroll-wrapper {
+        overflow-x: auto;
+        /* Propiedad para un scroll suave en dispositivos táctiles (iOS) */
+        -webkit-overflow-scrolling: touch; 
+        
+        /* Opcional: un borde para que se vea como un contenedor */
+        border: 1px solid rgb(32 69 113);
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.2);
+    }
+    
+    /* A la tabla le damos un ancho mínimo. Si la pantalla es más pequeña que esto,
+       el scroll del contenedor de arriba se activará. */
+    table#clientesTable {
+       width: 100%;
+       min-width: 950px; /* ¡Esta es la clave! Ajusta este valor si quieres que la tabla sea más ancha o angosta */
+       margin-left: 0;
+    }
+    
+    /* Mejoramos un poco la legibilidad en la tabla */
+    table#clientesTable th, table#clientesTable td {
+        white-space: nowrap; /* Evita que el texto se parta en varias líneas */
+        padding: 12px 15px;
+    }
 }

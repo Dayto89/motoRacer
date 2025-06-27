@@ -79,8 +79,8 @@ $stmt->close();
 $conexion->close();
 
 if ($rol == 'gerente') {
-    header("Location: ../html/acceso_denegado.php");
-    exit();
+  header("Location: ../html/acceso_denegado.php");
+  exit();
 }
 
 
@@ -119,28 +119,51 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
   <script src="../js/header.js"></script>
   <style>
     .required::after {
-            content: " *";
-            color: red;
+      content: " *";
+      color: red;
     }
-    /* Estilo para inputs con error (identificación y correo) */
-    .input-error {
-      border: 2px solid #e74c3c !important;
-      box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
-    }
-    .mensaje-error {
-        color: #e74c3c;
-        font-size: 0.9em;
-        margin-top: 5px;
-    }
+
+    
   </style>
 </head>
 
 <body>
   <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
+  <nav class="barra-navegacion">
   <div class="ubica"> Configuración / Gestión de usuarios / Registro</div>
- <div class="container-general">
+   <div class="userContainer">
+    <div class="userInfo">
+      <?php
+      $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+      $id_usuario = $_SESSION['usuario_id'];
+      $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+      $stmtUsuario = $conexion->prepare($sqlUsuario);
+      $stmtUsuario->bind_param("i", $id_usuario);
+      $stmtUsuario->execute();
+      $resultUsuario = $stmtUsuario->get_result();
+      $rowUsuario = $resultUsuario->fetch_assoc();
+      $nombreUsuario = $rowUsuario['nombre'];
+      $apellidoUsuario = $rowUsuario['apellido'];
+      $rol = $rowUsuario['rol'];
+      $foto = $rowUsuario['foto'];
+      $stmtUsuario->close();
+      ?>
+      <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+      <p class="rol">Rol: <?php echo $rol; ?></p>
+
     </div>
+    <div class="profilePic">
+      <?php if (!empty($rowUsuario['foto'])): ?>
+        <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+      <?php else: ?>
+        <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+      <?php endif; ?>
+    </div>
+  </div>
+  </nav>
+  <div class="container-general">
+  </div>
   <h1>CREAR USUARIO</h1>
 
   <form name="formulario" method="post" action="">
@@ -235,35 +258,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
       <a href="../html/gestiondeusuarios.php" class="botonn">Volver</a>
     </div>
   </form>
- <div class="userContainer">
-        <div class="userInfo">
-            <?php
-            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-            $id_usuario = $_SESSION['usuario_id'];
-            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-            $stmtUsuario = $conexion->prepare($sqlUsuario);
-            $stmtUsuario->bind_param("i", $id_usuario);
-            $stmtUsuario->execute();
-            $resultUsuario = $stmtUsuario->get_result();
-            $rowUsuario = $resultUsuario->fetch_assoc();
-            $nombreUsuario = $rowUsuario['nombre'];
-            $apellidoUsuario = $rowUsuario['apellido'];
-            $rol = $rowUsuario['rol'];
-            $foto = $rowUsuario['foto'];
-            $stmtUsuario->close();
-            ?>
-            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-            <p class="rol">Rol: <?php echo $rol; ?></p>
-
-        </div>
-        <div class="profilePic">
-            <?php if (!empty($rowUsuario['foto'])): ?>
-                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-            <?php else: ?>
-                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-            <?php endif; ?>
-        </div>
-    </div>
   <?php
   // Inicializamos variables para mantener valores al mostrar el formulario
   $identificacion = $rol = $nombre = $apellido = $telefono = $direccion = $correo = '';
@@ -475,36 +469,37 @@ document.addEventListener('DOMContentLoaded', function() {
   ?>
 
   <div id="modalVerificacion" class="modal hidden">
-  <div class="modal-overlay" id="modalOverlay"></div>
-  <div class="modal-container">
-    <h2>Verificar Correo</h2>
-    <p id="mensajeModal"></p>
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-container">
+      <h2>Verificar Correo</h2>
+      <p id="mensajeModal"></p>
 
-    <div id="correoSection">
-      <div class="input-group">
-        <input type="email" id="inputCorreo">
-        <p id="correoError" class="mensaje-error" style="display: none;"></p>
+      <div id="correoSection">
+        <div class="input-group">
+          <div id="emailErrorTooltip" class="error-tooltip">Este correo ya está registrado.</div>
+          <input type="email" id="inputCorreo">
+        </div>
+        <div id="correoSectionButtons" class="modal-actions">
+          <button id="btnCerrarModal" class="btnCancelar">Cancelar</button>
+          <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button>
+        </div>
       </div>
-      <div id="correoSectionButtons" class="modal-actions">
-        <button id="btnCerrarModal" class="btnCancelar">Cancelar</button>
-        <button id="btnEnviarCodigo" class="btn-guardar">Enviar código</button>
-      </div>
-    </div>
 
-    <div id="codigoSection" class="hidden">
-      <div class="input-group">
-        <label>Ingrese el código recibido:</label>
-        <input type="text" id="inputCodigo">
-      </div>
-      <div class="modal-actions">
-        <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button>
-        <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button>
+      <div id="codigoSection" class="hidden">
+        <div class="input-group">
+          <label>Ingrese el código recibido:</label>
+          <input type="text" id="inputCodigo">
+        </div>
+        <div class="modal-actions">
+          <button id="btnCerrarModal2" class="btnCancelar">Cancelar</button>
+          <button id="btnVerificarCodigo" class="btn-guardar">Verificar código</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <script>
+    // --- Lógica para Contraseñas ---
     const togglePassword = document.querySelector('#togglePassword');
     const togglePassword2 = document.querySelector('#togglePassword2');
     const passwordInput = document.querySelector('#contrasena');
@@ -512,7 +507,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const tooltip = document.getElementById("tooltip-requisitos");
     const tooltipConfirmar = document.getElementById("tooltip-confirmar");
     const mensajeConfirmar = document.getElementById("mensaje-confirmar");
-
     const reglas = {
       minCaracteres: document.getElementById("min-caracteres"),
       mayus: document.getElementById("letra-mayus"),
@@ -521,15 +515,16 @@ document.addEventListener('DOMContentLoaded', function() {
       simbolo: document.getElementById("simbolo")
     };
 
+
     // Mostrar/ocultar contraseña
-    togglePassword.addEventListener('click', () => {
+    if (togglePassword) togglePassword.addEventListener('click', () => {
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput.setAttribute('type', type);
       togglePassword.classList.toggle('bx-show');
       togglePassword.classList.toggle('bx-hide');
     });
 
-    togglePassword2.addEventListener('click', () => {
+    if (togglePassword2) togglePassword2.addEventListener('click', () => {
       const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
       passwordInput2.setAttribute('type', type);
       togglePassword2.classList.toggle('bx-show');
@@ -612,19 +607,20 @@ document.addEventListener('DOMContentLoaded', function() {
       const codigoSection = document.getElementById('codigoSection');
       const mensajeModal = document.getElementById('mensajeModal');
       const correoSectionButtons = document.getElementById('correoSectionButtons');
-      const correoError = document.getElementById('correoError');
+      const emailErrorTooltip = document.getElementById('emailErrorTooltip');
       let debounceCorreo;
 
       function abrirModal() {
         modal.classList.remove('hidden');
+        // Animación de entrada
         const modalContainer = modal.querySelector('.modal-container');
-        modalContainer.style.transition = 'none';
         modalContainer.style.transform = 'translateY(-50px)';
         modalContainer.style.opacity = '0';
-        void modal.offsetWidth;
-        modalContainer.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-        modalContainer.style.transform = 'translateY(0)';
-        modalContainer.style.opacity = '1';
+        requestAnimationFrame(() => {
+          modalContainer.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+          modalContainer.style.transform = 'translateY(0)';
+          modalContainer.style.opacity = '1';
+        });
         resetearModal();
       }
 
@@ -634,7 +630,6 @@ document.addEventListener('DOMContentLoaded', function() {
         modalContainer.style.opacity = '0';
         setTimeout(() => {
           modal.classList.add('hidden');
-          resetearModal();
         }, 300);
       }
 
@@ -642,85 +637,88 @@ document.addEventListener('DOMContentLoaded', function() {
         mensajeModal.textContent = 'Por favor ingrese el correo para continuar con el proceso de registro.';
         mensajeModal.style.color = 'black';
         mensajeModal.style.fontWeight = 'bold';
-        inputCorreo.value = '';
-        inputCodigo.value = '';
-        inputCorreo.classList.remove('input-error');
-        correoError.style.display = 'none';
-        codigoSection.classList.add('hidden');
-        correoSectionButtons.classList.remove('hidden');
-        inputCorreo.disabled = false;
-        btnEnviarCodigo.disabled = true; // Deshabilitado por defecto
+        if (inputCorreo) {
+          inputCorreo.value = '';
+          inputCorreo.classList.remove('input-error');
+          inputCorreo.disabled = false;
+        }
+        if (inputCodigo) inputCodigo.value = '';
+        if (emailErrorTooltip) emailErrorTooltip.style.display = 'none';
+        if (codigoSection) codigoSection.classList.add('hidden');
+        if (correoSectionButtons) correoSectionButtons.classList.remove('hidden');
+        if (btnEnviarCodigo) btnEnviarCodigo.disabled = true;
       }
 
-      // Abrir modal
-      if(btnAbrirModal) btnAbrirModal.addEventListener('click', abrirModal);
-
-      // Botones de cancelar
-      if(btnCerrarModal) btnCerrarModal.addEventListener('click', cerrarModal);
-      if(btnCerrarModal2) btnCerrarModal2.addEventListener('click', cerrarModal);
-
-      // Cerrar al hacer clic fuera del área de contenido
-      if(modal) modal.addEventListener('click', function(e) {
+      if (btnAbrirModal) btnAbrirModal.addEventListener('click', abrirModal);
+      if (btnCerrarModal) btnCerrarModal.addEventListener('click', cerrarModal);
+      if (btnCerrarModal2) btnCerrarModal2.addEventListener('click', cerrarModal);
+      if (modal) modal.addEventListener('click', function(e) {
         if (e.target.classList.contains('modal-overlay')) {
           cerrarModal();
         }
       });
-      
+
+
       // --- INICIO: LÓGICA DE VALIDACIÓN DE CORREO EN TIEMPO REAL ---
-      if(inputCorreo){
+      if (inputCorreo) {
         inputCorreo.addEventListener('input', () => {
-            clearTimeout(debounceCorreo);
-            inputCorreo.classList.remove('input-error');
-            correoError.style.display = 'none';
+          clearTimeout(debounceCorreo);
+          inputCorreo.classList.remove('input-error');
+          emailErrorTooltip.style.display = 'none';
 
-            const correo = inputCorreo.value.trim();
-            const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/;
+          const correo = inputCorreo.value.trim();
+          const regexCorreo = /^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com|hotmail\.com|yahoo\.com)$/;
 
-            if (!regexCorreo.test(correo)) {
+          if (!regexCorreo.test(correo)) {
+            btnEnviarCodigo.disabled = true;
+            return;
+          }
+
+          debounceCorreo = setTimeout(() => {
+            fetch(`${location.pathname}?action=check_correo`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  correo: correo
+                })
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.exists) {
+                  inputCorreo.classList.add('input-error');
+                  emailErrorTooltip.style.display = 'block';
+                  btnEnviarCodigo.disabled = true;
+                } else {
+                  btnEnviarCodigo.disabled = false;
+                }
+              })
+              .catch(err => {
+                console.error('Error en la verificación de correo:', err);
                 btnEnviarCodigo.disabled = true;
-                return;
-            }
-
-            debounceCorreo = setTimeout(() => {
-                fetch(`${location.pathname}?action=check_correo`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ correo: correo })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.exists) {
-                        inputCorreo.classList.add('input-error');
-                        correoError.textContent = 'Este correo ya está registrado.';
-                        correoError.style.display = 'block';
-                        btnEnviarCodigo.disabled = true;
-                    } else {
-                        inputCorreo.classList.remove('input-error');
-                        correoError.style.display = 'none';
-                        btnEnviarCodigo.disabled = false;
-                    }
-                })
-                .catch(err => {
-                    console.error('Error en la verificación de correo:', err);
-                    btnEnviarCodigo.disabled = true;
-                });
-            }, 500);
+              });
+          }, 500);
         });
       }
       // --- FIN: LÓGICA DE VALIDACIÓN DE CORREO EN TIEMPO REAL ---
 
       // Enviar código al correo
-      if(btnEnviarCodigo) btnEnviarCodigo.addEventListener('click', () => {
+      if (btnEnviarCodigo) btnEnviarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
-        
+
         btnEnviarCodigo.disabled = true;
         mensajeModal.textContent = 'Enviando código...';
         mensajeModal.style.color = '';
 
         fetch('../html/enviar_codigo.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo })
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              correo
+            })
           })
           .then(res => res.json())
           .then(data => {
@@ -744,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       // Verificar código ingresado
-      if(btnVerificarCodigo) btnVerificarCodigo.addEventListener('click', () => {
+      if (btnVerificarCodigo) btnVerificarCodigo.addEventListener('click', () => {
         const correo = inputCorreo.value.trim();
         const codigo = inputCodigo.value.trim();
 
@@ -759,17 +757,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetch('../html/verificar_codigo_correo.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo, codigo })
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              correo,
+              codigo
+            })
           })
           .then(res => res.json())
           .then(data => {
             if (data.success) {
               mensajeModal.textContent = 'Código verificado correctamente.';
               mensajeModal.style.color = 'green';
-              
+
               setTimeout(() => {
-                  cerrarModal();
+                cerrarModal();
               }, 1000); // Cierra el modal 1 segundo después
 
               // Habilitar campos de contraseña
@@ -801,9 +804,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const pwd = document.getElementById('contrasena');
       const pwd2 = document.getElementById('confirmar');
 
-      if(form) form.addEventListener('submit', function(e) {
+      if (form) form.addEventListener('submit', function(e) {
         // Solo valida si los campos de contraseña están habilitados
-        if(pwd.disabled) return;
+        if (pwd.disabled) return;
 
         const valor = pwd.value;
         const valor2 = pwd2.value;
@@ -869,8 +872,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const tooltip = document.querySelector('.small-error-tooltip');
       const btnReg = document.getElementById('btnRegistrar');
       let debounce;
-      
-      if(inputIdent){
+
+      if (inputIdent) {
         // Al arrancar, bloquea el botón
         btnReg.disabled = true;
 
@@ -887,8 +890,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch(`${location.pathname}?action=check_identificacion`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ identificacion: val })
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  identificacion: val
+                })
               })
               .then(res => res.json())
               .then(data => {

@@ -87,8 +87,20 @@ body::before {
   transition: 1s;
   margin-left: 50px;
 }
-#menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px);
+/* 2) Aplico transición a **todos** los hijos directos */
+.barra-navegacion>* {
+    transition: transform 0.3s ease;
+}
+
+/* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
+#menu:hover~.barra-navegacion>*:first-child {
+    transform: translateX(210px);
+    /* ancho menú expandido */
+}
+
+/* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
+#menu:hover~.barra-navegacion>*:last-child {
+    transform: none;
 }
 .sidebar-header {
   display: flex;
@@ -230,7 +242,7 @@ body::before {
   text-align: center;
 }
 .side-container {
-  background: rgb(211 210 210 / 84%);
+  background: rgb(211 210 210 / 95%);
   padding: 10px;
   border-radius: 10px;
   height: auto;
@@ -402,14 +414,13 @@ a.brand {
 #btnLeft {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-45%);
   z-index: 10;
-  display: none;
   background: none;
   border: none;
   background-color: white;
-  height: 90%;
-  width: 5%;
+  justify-content: flex-start;
+  margin-right: 96%;
 }
 #icono-flecha-izquierda {
   width: 34px;
@@ -564,16 +575,16 @@ a.brand {
   text-align: center;
 }
 .container-general {
-    position: fixed;
-    top: 22%;
-    left: 7%;
-    width: 76%;
-    height: 74%;
-    background: rgb(211 210 210 / 84%);
-    z-index: -1000;
-    pointer-events: none;
-    box-shadow: 0 4px 20px #0b111a;
-    border-radius: 10px;
+  position: fixed;
+  top: 22%;
+  left: 7%;
+  width: 76%;
+  height: 74%;
+  background: rgb(211 210 210 / 84%);
+  z-index: -1000;
+  pointer-events: none;
+  box-shadow: 0 4px 20px #0b111a;
+  border-radius: 10px;
 }
 /* ==========================================================================
            FIN: CSS AÑADIDO

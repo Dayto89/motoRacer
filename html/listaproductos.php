@@ -505,7 +505,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <option value="">Seleccione un proveedor</option>
             <?php
             $conexion2 = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-            $consultaProveedores = "SELECT nit, nombre FROM proveedor";
+            $consultaProveedores = "SELECT nit, nombre FROM proveedor WHERE activo = 1";
             $resultadoProveedores = mysqli_query($conexion2, $consultaProveedores);
             while ($filaProveedor = mysqli_fetch_assoc($resultadoProveedores)) {
               echo "<option value='" . htmlspecialchars($filaProveedor['nit']) . "'>" . htmlspecialchars($filaProveedor['nombre']) . "</option>";

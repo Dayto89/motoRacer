@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 // Consultas de selects
 $marcas      = $conexion->query("SELECT codigo, nombre FROM marca");
 $categorias  = $conexion->query("SELECT codigo, nombre FROM categoria");
-$proveedores = $conexion->query("SELECT nit, nombre FROM proveedor");
+$proveedores = $conexion->query("SELECT nit, nombre FROM proveedor WHERE activo = 1");
 $ubicaciones = $conexion->query("SELECT codigo, nombre FROM ubicacion");
 $unidades    = $conexion->query("SELECT codigo, nombre FROM unidadmedida");
 
@@ -304,163 +304,163 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <div class="container">
 
     <form id="product-form" method="POST" action="">
+        <div class="form-grid">
 
-
-        <div class="campo">
-            <label class="required" for="codigo1">Código 1:</label>
-            <input type="text" id="codigo1" name="codigo1" required><br>
-        </div>
-        <div class="campo">
-            <label for="codigo2">Código 2:</label>
-            <input type="text" id="codigo2" name="codigo2" value="0"><br>
-        </div>
-        <div class="campo">
-            <label class="required" for="nombre">Producto:</label>
-            <input type="text" id="nombre" name="nombre" required><br>
-        </div>
-
-        <div class="campo">
-            <label class="required" for="precio1">Precio llegada:</label>
-            <input type="text" id="precio1" name="precio1" required
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-        </div>
-
-        <div class="campo">
-            <label class="required" for="precio2">Precio taller:</label>
-            <input type="text" id="precio2" name="precio2"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-        </div>
-
-        <div class="campo">
-            <label class="required" for="precio3">Precio publico:</label>
-            <input type="text" id="precio3" name="precio3"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /><br>
-        </div>
-
-        <div class="campo">
-    <label class="required" for="cantidad">Cantidad:</label>
-    <input type="number"
-           id="cantidad"
-           name="cantidad"
-           required
-           min="0"
-           max="999"
-           oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);" />
-</div>
-
-
-        <!-- CATEGORÍA -->
-        <div class="campo">
-            <div class="label-with-button" style="display:flex;align-items:center;">
-                <label class="required" for="categoria">Categoría:</label>
-                <button type="button"
-                    class="add-button-cat"
-                    onclick="openModalCategoria()"
-                    aria-label="Agregar categoría">
-                    <i class="fas fa-plus"></i>
-                </button>
+            <div class="campo">
+                <label class="required" for="codigo1">Código 1:</label>
+                <input type="text" id="codigo1" name="codigo1" required>
             </div>
-            <div class="fake-select" data-for="categoria">
-                <div class="fs-selected">— Seleccione —</div>
-                <div class="fs-options-wrap">
-                    <ul class="fs-options">
-                        <?php while ($fila = $categorias->fetch_assoc()) { ?>
-                            <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
-                        <?php } ?>
-                    </ul>
+            <div class="campo">
+                <label for="codigo2">Código 2:</label>
+                <input type="text" id="codigo2" name="codigo2" value="0">
+            </div>
+            <div class="campo">
+                <label class="required" for="nombre">Producto:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+
+            <div class="campo">
+                <label class="required" for="precio1">Precio llegada:</label>
+                <input type="text" id="precio1" name="precio1" required
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+            </div>
+
+            <div class="campo">
+                <label class="required" for="precio2">Precio taller:</label>
+                <input type="text" id="precio2" name="precio2"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+            </div>
+
+            <div class="campo">
+                <label class="required" for="precio3">Precio publico:</label>
+                <input type="text" id="precio3" name="precio3"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+            </div>
+
+            <div class="campo">
+                <label class="required" for="cantidad">Cantidad:</label>
+                <input type="number"
+                    id="cantidad"
+                    name="cantidad"
+                    required
+                    min="0"
+                    max="999"
+                    oninput="if(this.value.length > 3) this.value = this.value.slice(0, 3);" />
+            </div>
+
+
+            <!-- CATEGORÍA -->
+            <div class="campo">
+                <div class="label-with-button" style="display:flex;align-items:center;">
+                    <label class="required" for="categoria">Categoría:</label>
+                    <button type="button"
+                        class="add-button-cat"
+                        onclick="openModalCategoria()"
+                        aria-label="Agregar categoría">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="fake-select" data-for="categoria">
+                    <div class="fs-selected">— Seleccione —</div>
+                    <div class="fs-options-wrap">
+                        <ul class="fs-options">
+                            <?php while ($fila = $categorias->fetch_assoc()) { ?>
+                                <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <input type="hidden" name="categoria" id="categoria">
+            </div>
+
+            <!-- MARCA -->
+            <div class="campo">
+                <div class="label-with-button" style="display:flex;align-items:center;">
+                    <label class="required" for="marca">Marca:</label>
+                    <button type="button"
+                        class="add-button-mar"
+                        onclick="openModalMarca()"
+                        aria-label="Agregar marca">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="fake-select" data-for="marca">
+                    <div class="fs-selected">— Seleccione —</div>
+                    <div class="fs-options-wrap">
+                        <ul class="fs-options">
+                            <?php while ($fila = $marcas->fetch_assoc()) { ?>
+                                <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <input type="hidden" name="marca" id="marca">
+            </div>
+
+            <!-- UNIDAD DE MEDIDA (CLASE) -->
+            <div class="campo">
+                <label class="required" for="unidadMedida">Clase:</label>
+                <div class="fake-select" data-for="unidadMedida">
+                    <div class="fs-selected">— Seleccione —</div>
+                    <div class="fs-options-wrap">
+                        <ul class="fs-options">
+                            <?php while ($fila = $unidades->fetch_assoc()) { ?>
+                                <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <input type="hidden" name="unidadMedida" id="unidadMedida">
+            </div>
+
+            <!-- UBICACIÓN -->
+            <div class="campo" style="margin-top: -10px;">
+                <div class="label-with-button" style="display:flex;align-items:center;">
+                    <label for="ubicacion">Ubicación:</label>
+                    <button
+                        type="button"
+                        class="add-button-ubi"
+                        onclick="openModalUbicacion()"
+                        aria-label="Agregar ubicación"
+                        title="Agregar ubicación">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="fake-select" data-for="ubicacion">
+                    <div class="fs-selected">— Seleccione —</div>
+                    <div class="fs-options-wrap">
+                        <ul class="fs-options">
+                            <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
+                                <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <input type="hidden" name="ubicacion" id="ubicacion">
+            </div>
+
+            <!-- PROVEEDOR -->
+            <div class="campo">
+                <label class="required" for="proveedor">Proveedor:</label>
+                <div class="fake-select" data-for="proveedor">
+                    <div class="fs-selected">— Seleccione —</div>
+                    <div class="fs-options-wrap">
+                        <ul class="fs-options">
+                            <?php while ($fila = $proveedores->fetch_assoc()) { ?>
+                                <li data-value="<?= $fila['nit'] ?>"><?= $fila['nombre'] ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+                <input type="hidden" name="proveedor" id="proveedor">
+            </div>
+
+            <div class="button-container">
+                <div class="boton">
+                    <button type="submit" name="guardar">Guardar</button>
                 </div>
             </div>
-            <input type="hidden" name="categoria" id="categoria">
         </div>
-
-        <!-- MARCA -->
-        <div class="campo">
-            <div class="label-with-button">
-                <label class="required" for="marca">Marca:</label>
-                <button type="button"
-                    class="add-button-mar"
-                    onclick="openModalMarca()"
-                    aria-label="Agregar marca">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-            <div class="fake-select" data-for="marca">
-                <div class="fs-selected">— Seleccione —</div>
-                <div class="fs-options-wrap">
-                    <ul class="fs-options">
-                        <?php while ($fila = $marcas->fetch_assoc()) { ?>
-                            <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
-            <input type="hidden" name="marca" id="marca">
-        </div>
-
-        <!-- UNIDAD DE MEDIDA (CLASE) -->
-        <div class="campo">
-            <label class="required" for="unidadMedida">Clase:</label>
-            <div class="fake-select" data-for="unidadMedida">
-                <div class="fs-selected">— Seleccione —</div>
-                <div class="fs-options-wrap">
-                    <ul class="fs-options">
-                        <?php while ($fila = $unidades->fetch_assoc()) { ?>
-                            <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
-            <input type="hidden" name="unidadMedida" id="unidadMedida">
-        </div>
-
-        <!-- UBICACIÓN -->
-        <div class="campo">
-            <div class="label-with-button">
-                <label for="ubicacion">Ubicación:</label>
-                <button
-                    type="button"
-                    class="add-button-ubi"
-                    onclick="openModalUbicacion()"
-                    aria-label="Agregar ubicación"
-                    title="Agregar ubicación">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-            <div class="fake-select" data-for="ubicacion">
-                <div class="fs-selected">— Seleccione —</div>
-                <div class="fs-options-wrap">
-                    <ul class="fs-options">
-                        <?php while ($fila = $ubicaciones->fetch_assoc()) { ?>
-                            <li data-value="<?= $fila['codigo'] ?>"><?= $fila['nombre'] ?></li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
-            <input type="hidden" name="ubicacion" id="ubicacion">
-        </div>
-
-        <!-- PROVEEDOR -->
-        <div class="campo">
-            <label class="required" for="proveedor">Proveedor:</label>
-            <div class="fake-select" data-for="proveedor">
-                <div class="fs-selected">— Seleccione —</div>
-                <div class="fs-options-wrap">
-                    <ul class="fs-options">
-                        <?php while ($fila = $proveedores->fetch_assoc()) { ?>
-                            <li data-value="<?= $fila['nit'] ?>"><?= $fila['nombre'] ?></li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
-            <input type="hidden" name="proveedor" id="proveedor">
-        </div>
-
-        <div class="button-container">
-            <div class="boton">
-                <button type="submit" name="guardar">Guardar</button>
-            </div>
-        </div>
-
     </form>
 
 

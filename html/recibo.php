@@ -96,12 +96,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         /* Configuración de impresión para impresora de tickets */
         @page {
             size: 80mm auto;
-            margin: 0;
+            margin: 5mm;
         }
 
         @media print {
             body * {
                 visibility: hidden;
+            }
+
+            .factura {
+                    max-height: none !important;
+    overflow: visible !important;
             }
 
             .factura,
@@ -131,7 +136,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             margin: 5px;
             padding: 8px 12px;
             border: none;
-            background-color:rgba(83, 109, 254, 0);
+            background-color: rgba(83, 109, 254, 0);
             color: #fff;
             cursor: pointer;
             border-radius: 4px;
@@ -144,26 +149,53 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
 <body>
     <?php include 'boton-ayuda.php'; ?>
-    
+
     <div id="menu"></div>
-    <div class="ubica"> Factura / Recibo </div>
+    <nav class="barra-navegacion">
+        <div class="ubica"> Factura / Recibo </div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <!-- Nombre y apellido del usuario y rol -->
+                <!-- Consultar datos del usuario -->
+                <?php
+                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                $id_usuario = $_SESSION['usuario_id'];
+                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+                $stmtUsuario = $conexion->prepare($sqlUsuario);
+                $stmtUsuario->bind_param("i", $id_usuario);
+                $stmtUsuario->execute();
+                $resultUsuario = $stmtUsuario->get_result();
+                $rowUsuario = $resultUsuario->fetch_assoc();
+                $nombreUsuario = $rowUsuario['nombre'];
+                $apellidoUsuario = $rowUsuario['apellido'];
+                $rol = $rowUsuario['rol'];
+                $foto = $rowUsuario['foto'];
+                $stmtUsuario->close();
+                ?>
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
+
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
 
     <!-- Botón para imprimir -->
     <button id="btnImprimir" class="btn-accion" title="Imprimir">
-        <img src="../imagenes/printer.gif" alt="">
+        <i class='bx bx-printer'></i><label for="btnImprimir"> Imprimir</label>
     </button>
 
     <form class="form-descarga" action="factura_pdf.php" method="post" target="_blank" title="Descargar Factura">
         <!-- Mandamos el código de factura para generar PDF -->
         <input type="hidden" name="factura_id" value="<?php echo $factura['codigo']; ?>">
         <button type="submit" class="btn-descargar">
-            <animated-icons
-                src="https://animatedicons.co/get-icon?name=Pdf&style=minimalistic&token=d5afb04f-d10f-4540-bf0a-27e0b4e06ce8"
-                trigger="loop"
-                attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#FF0000FF","background":"#FFFFFF"}}'
-                height="120"
-                width="120">
-            </animated-icons>
+            <i class="fa-solid fa-file-pdf icon-color"></i><label> Exportar a PDF</label>
         </button>
         <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     </form>
@@ -271,37 +303,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         <div class="factura-footer">
             <p>¡Gracias por su compra!</p>
-        </div>
-    </div>
-    <div class="userContainer">
-        <div class="userInfo">
-            <!-- Nombre y apellido del usuario y rol -->
-            <!-- Consultar datos del usuario -->
-            <?php
-            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-            $id_usuario = $_SESSION['usuario_id'];
-            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-            $stmtUsuario = $conexion->prepare($sqlUsuario);
-            $stmtUsuario->bind_param("i", $id_usuario);
-            $stmtUsuario->execute();
-            $resultUsuario = $stmtUsuario->get_result();
-            $rowUsuario = $resultUsuario->fetch_assoc();
-            $nombreUsuario = $rowUsuario['nombre'];
-            $apellidoUsuario = $rowUsuario['apellido'];
-            $rol = $rowUsuario['rol'];
-            $foto = $rowUsuario['foto'];
-            $stmtUsuario->close();
-            ?>
-            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-            <p class="rol">Rol: <?php echo $rol; ?></p>
-
-        </div>
-        <div class="profilePic">
-            <?php if (!empty($rowUsuario['foto'])): ?>
-                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-            <?php else: ?>
-                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-            <?php endif; ?>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

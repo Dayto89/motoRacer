@@ -70,7 +70,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
- 
+
 </head>
 
 <body>
@@ -116,16 +116,26 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </nav>
     <div class="main">
-           <div class="container-general">
-    </div>
+        <div class="container-general">
+        </div>
         <h1 class="titulo">Ventas</h1>
         <div class="search-bar">
             <i class="bx bx-search-alt-2 icon"></i>
             <input class="form-control" type="text" name="busqueda" placeholder="Buscar por nombre o código">
         </div>
-    <div class="container-general">
-    </div>
-        <div class="barraModulos" style="position: relative; max-width: 100%; border-radius: 5px; height: 7%; display: flex; align-items: center; margin-left: 5%; width: 91%; border: 1px solid black; ">
+        <div class="container-general">
+        </div>
+        <div class="barraModulos" style="position: relative;
+    max-width: 100%;
+    border-radius: 10px;
+    height: 7%;
+    display: flex;
+    align-items: center;
+    margin-left: 3%;
+    width: 94.5%;
+    border: 1px solid black;
+    justify-content: space-evenly;
+ ">
             <button id="btnLeft" onclick="scrollCategorias(-200)">
                 <img src="../imagenes/material-symbols--keyboard-backspace-rounded.svg" alt="Botón izquierda" id="icono-flecha-izquierda">
             </button>
@@ -166,7 +176,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
 
         <div class="products" id="productsContainer">
-            </div>
+        </div>
 
     </div>
 
@@ -219,23 +229,37 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             const ctr = cardElement.querySelector('.contador-producto');
             const cantidadEnCarrito = parseInt(ctr.textContent) || 0;
             const stockDisponible = stockActual + cantidadEnCarrito;
-            
+
             Swal.fire({
-                title: `Añadir: ${nombre}`,
-                input: 'number',
-                inputLabel: `Cantidad (disponible: ${stockDisponible})`,
-                inputValue: 1,
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if (!value || value <= 0) {
-                        return 'Por favor, ingrese un número válido mayor a cero.'
-                    }
-                    if (value > stockDisponible) {
-                        return `No puede exceder el stock disponible de ${stockDisponible} unidades.`
-                    }
-                }
+    title: `<span class="titulo-alerta text">Añadir: ${nombre}</span>`,
+    html: `
+        <div class="custom-alert">
+            <label for="cantidad-input">Cantidad (disponible: ${stockDisponible})</label>
+            <input id="cantidad-input" type="number" min="1" max="${stockDisponible}" value="1" class="swal2-input">
+        </div>`,
+    background: 'hsl(0deg 0% 100% / 0.76)',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+    showCancelButton: true,
+    confirmButtonColor: '#007bff',
+    customClass: {
+        popup: 'swal2-border-radius',
+        confirmButton: 'btn-aceptar',
+        cancelButton: 'btn-cancelar',
+        container: 'fondo-oscuro'
+    },
+    preConfirm: () => {
+        const value = parseInt(document.getElementById('cantidad-input').value);
+        if (!value || value <= 0) {
+            Swal.showValidationMessage('Por favor, ingrese un número válido mayor a cero.');
+            return false;
+        }
+        if (value > stockDisponible) {
+            Swal.showValidationMessage(`No puede exceder el stock disponible de ${stockDisponible} unidades.`);
+            return false;
+        }
+        return value;
+    }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const cantidadDeseada = parseInt(result.value);
@@ -277,13 +301,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     <div class="icono-accion btn-add"><img class="plus" src="../imagenes/material-symbols--add-2.svg" alt="Agregar"></div>
                     <div class="icono-accion btn-remove"><img class="minus" src="../imagenes/material-symbols--check-indeterminate-small-rounded.svg" alt="Quitar"></div>
                 </div>`;
-            
+
             // Enganchar listeners
             div.querySelector('.btn-add').addEventListener('click', () => agregarAlResumen(div));
             div.querySelector('.btn-remove').addEventListener('click', () => quitarDelResumen(div));
             // NUEVO: Listener para el contador
             div.querySelector('.contador-producto').addEventListener('click', () => solicitarCantidadManual(div));
-            
+
             return div;
         }
 
@@ -379,7 +403,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             if (stock > 0) {
                 el.classList.remove('disabled');
             }
-            
+
             const ctr = el.querySelector('.contador-producto');
             let count = parseInt(ctr.textContent) || 0;
             count = Math.max(count - 1, 0);
@@ -393,7 +417,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
             guardarEnSessionStorage();
         }
-        
+
         // --- FIN DE FUNCIONES MODIFICADAS ---
 
         // Listener para los nuevos botones en el resumen
@@ -412,19 +436,160 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             } else if (target.classList.contains('delete-item')) {
                 const itemEnResumen = listaResumen.querySelector(`li[data-id='${productId}']`);
                 const cantidadARemover = parseInt(itemEnResumen.dataset.cantidad);
-                for(let i = 0; i < cantidadARemover; i++) {
+                for (let i = 0; i < cantidadARemover; i++) {
                     quitarDelResumen(cardElement);
                 }
             }
         });
 
         // El resto de tu JavaScript original permanece igual
-        function renderProducts(){productsContainer.innerHTML="";const filtered=allProducts.filter(p=>{if(currentCategory&&p.Categoria_codigo!==currentCategory)return!1;if(currentSearch){const q=currentSearch.toLowerCase();return p.nombre.toLowerCase().includes(q)||p.codigo1.toLowerCase().includes(q)}return!0});if(filtered.length===0){productsContainer.innerHTML=`<p>No hay productos para mostrar.</p>`}else{filtered.forEach(p=>productsContainer.appendChild(renderProduct(p)))}actualizarContadoresDesdeSession()}document.querySelector('.search-bar input[name="busqueda"]').addEventListener('input',e=>{currentSearch=e.target.value.trim();renderProducts()});document.querySelectorAll('#categoriaScroll a.brand').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('#categoriaScroll a.brand').forEach(x=>x.classList.remove('active'));a.classList.add('active');if(a.id==="btnTodas"){currentCategory=null}else{currentCategory=a.getAttribute('data-categoria')}renderProducts()})});function scrollCategorias(amount){scrollContainer.scrollLeft+=amount;updateButtonVisibility()}function updateButtonVisibility(){const max=scrollContainer.scrollWidth-scrollContainer.clientWidth;btnLeft.style.display=scrollContainer.scrollLeft>0?'block':'none';btnRight.style.display=scrollContainer.scrollLeft<max?'block':'none'}window.addEventListener('resize',updateButtonVisibility);scrollContainer.addEventListener('scroll',updateButtonVisibility);window.addEventListener('load',updateButtonVisibility);
-        function cobrar(){const items=Array.from(listaResumen.querySelectorAll("li"));if(!items.length){Swal.fire({title:'<span class="titulo-alerta error">Error</span>',html:`<div class="custom-alert"><div class="contenedor-imagen"><img src="../imagenes/llave.png" alt="Error" class="llave"></div><p>No hay productos en la orden.</p></div>`,background:'#ffffffdb',confirmButtonText:'Aceptar',confirmButtonColor:'#007bff',customClass:{popup:'swal2-border-radius',confirmButton:'btn-aceptar',container:'fondo-oscuro'}});return}let productos=[];items.forEach(li=>{productos.push({id:li.dataset.id,nombre:li.dataset.nombre,precio:parseFloat(li.dataset.precio),cantidad:parseInt(li.dataset.cantidad),tipo:li.dataset.tipo})});let form=document.createElement('form');form.method='POST';form.action='ventas.php';form.innerHTML=`<input type="hidden" name="cobrar" value="1">`;productos.forEach((p,i)=>{form.innerHTML+=`<input type="hidden" name="productos[${i}][id]" value="${p.id}">`;form.innerHTML+=`<input type="hidden" name="productos[${i}][nombre]" value="${p.nombre}">`;form.innerHTML+=`<input type="hidden" name="productos[${i}][precio]" value="${p.precio}">`;form.innerHTML+=`<input type="hidden" name="productos[${i}][cantidad]" value="${p.cantidad}">`;form.innerHTML+=`<input type="hidden" name="productos[${i}][tipo]" value="${p.tipo}">`});document.body.appendChild(form);form.submit()}
-        function guardarEnSessionStorage(){const items=Array.from(listaResumen.querySelectorAll("li")).map(li=>({id:li.dataset.id,nombre:li.dataset.nombre,precio:parseFloat(li.dataset.precio),cantidad:parseInt(li.dataset.cantidad),tipo:li.dataset.tipo}));sessionStorage.setItem('carritoProductos',JSON.stringify(items));sessionStorage.setItem('carritoTotal',total)}
-        function actualizarContadoresDesdeSession(){const data=sessionStorage.getItem('carritoProductos');if(!data)return;const items=JSON.parse(data);items.forEach(item=>{const card=document.querySelector(`.products .card[data-id='${item.id}']`);if(card){const ctr=card.querySelector('.contador-producto');ctr.textContent=item.cantidad;ctr.style.display='block';let stockOriginal=parseInt(card.dataset.stockOriginal);card.dataset.cantidad=stockOriginal-item.cantidad;card.querySelector('.product-cantidad').textContent=`Cantidad: ${card.dataset.cantidad}`;if(parseInt(card.dataset.cantidad)<=0){card.classList.add('disabled')}}})}
-        document.addEventListener('DOMContentLoaded',()=>{const data=sessionStorage.getItem('carritoProductos');const tot=sessionStorage.getItem('carritoTotal');if(data&&tot!=null){const items=JSON.parse(data);total=parseFloat(tot)||0;document.getElementById('total-price').innerText=`$${total.toLocaleString()}`;items.forEach(item=>{const li=document.createElement('li');li.dataset.id=item.id;li.dataset.nombre=item.nombre;li.dataset.precio=item.precio;li.dataset.cantidad=item.cantidad;li.dataset.tipo=item.tipo;li.innerHTML=`<div class="summary-item-info">${item.nombre} <br> <small>$${(item.precio*item.cantidad).toLocaleString()}</small></div><div class="summary-item-controls"><button class="summary-btn-remove" data-id="${item.id}">-</button><span class="item-quantity">${item.cantidad}</span><button class="summary-btn-add" data-id="${item.id}">+</button><button class="delete-item" data-id="${item.id}" title="Eliminar item"><box-icon name='trash' color='#c53929' size='xs'></box-icon></button></div>`;listaResumen.appendChild(li)});if(listaResumen.children.length>0){precioTipo=listaResumen.children[0].dataset.tipo}}renderProducts()});renderProducts();
+        function renderProducts() {
+            productsContainer.innerHTML = "";
+            const filtered = allProducts.filter(p => {
+                if (currentCategory && p.Categoria_codigo !== currentCategory) return !1;
+                if (currentSearch) {
+                    const q = currentSearch.toLowerCase();
+                    return p.nombre.toLowerCase().includes(q) || p.codigo1.toLowerCase().includes(q)
+                }
+                return !0
+            });
+            if (filtered.length === 0) {
+                productsContainer.innerHTML = `<p>No hay productos para mostrar.</p>`
+            } else {
+                filtered.forEach(p => productsContainer.appendChild(renderProduct(p)))
+            }
+            actualizarContadoresDesdeSession()
+        }
+        document.querySelector('.search-bar input[name="busqueda"]').addEventListener('input', e => {
+            currentSearch = e.target.value.trim();
+            renderProducts()
+        });
+        document.querySelectorAll('#categoriaScroll a.brand').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelectorAll('#categoriaScroll a.brand').forEach(x => x.classList.remove('active'));
+                a.classList.add('active');
+                if (a.id === "btnTodas") {
+                    currentCategory = null
+                } else {
+                    currentCategory = a.getAttribute('data-categoria')
+                }
+                renderProducts()
+            })
+        });
 
+        function scrollCategorias(amount) {
+            scrollContainer.scrollLeft += amount;
+            updateButtonVisibility()
+        }
+
+        function updateButtonVisibility() {
+            const max = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+            btnLeft.style.display = scrollContainer.scrollLeft > 0 ? 'block' : 'none';
+            btnRight.style.display = scrollContainer.scrollLeft < max ? 'block' : 'none'
+        }
+        window.addEventListener('resize', updateButtonVisibility);
+        scrollContainer.addEventListener('scroll', updateButtonVisibility);
+        window.addEventListener('load', updateButtonVisibility);
+
+        function cobrar() {
+            const items = Array.from(listaResumen.querySelectorAll("li"));
+            if (!items.length) {
+                Swal.fire({
+                    title: '<span class="titulo-alerta error">Error</span>',
+                    html: `<div class="custom-alert"><div class="contenedor-imagen"><img src="../imagenes/llave.png" alt="Error" class="llave"></div><p>No hay productos en la orden.</p></div>`,
+                    background: '#ffffffdb',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#007bff',
+                    customClass: {
+                        popup: 'swal2-border-radius',
+                        confirmButton: 'btn-aceptar',
+                        container: 'fondo-oscuro'
+                    }
+                });
+                return
+            }
+            let productos = [];
+            items.forEach(li => {
+                productos.push({
+                    id: li.dataset.id,
+                    nombre: li.dataset.nombre,
+                    precio: parseFloat(li.dataset.precio),
+                    cantidad: parseInt(li.dataset.cantidad),
+                    tipo: li.dataset.tipo
+                })
+            });
+            let form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'ventas.php';
+            form.innerHTML = `<input type="hidden" name="cobrar" value="1">`;
+            productos.forEach((p, i) => {
+                form.innerHTML += `<input type="hidden" name="productos[${i}][id]" value="${p.id}">`;
+                form.innerHTML += `<input type="hidden" name="productos[${i}][nombre]" value="${p.nombre}">`;
+                form.innerHTML += `<input type="hidden" name="productos[${i}][precio]" value="${p.precio}">`;
+                form.innerHTML += `<input type="hidden" name="productos[${i}][cantidad]" value="${p.cantidad}">`;
+                form.innerHTML += `<input type="hidden" name="productos[${i}][tipo]" value="${p.tipo}">`
+            });
+            document.body.appendChild(form);
+            form.submit()
+        }
+
+        function guardarEnSessionStorage() {
+            const items = Array.from(listaResumen.querySelectorAll("li")).map(li => ({
+                id: li.dataset.id,
+                nombre: li.dataset.nombre,
+                precio: parseFloat(li.dataset.precio),
+                cantidad: parseInt(li.dataset.cantidad),
+                tipo: li.dataset.tipo
+            }));
+            sessionStorage.setItem('carritoProductos', JSON.stringify(items));
+            sessionStorage.setItem('carritoTotal', total)
+        }
+
+        function actualizarContadoresDesdeSession() {
+            const data = sessionStorage.getItem('carritoProductos');
+            if (!data) return;
+            const items = JSON.parse(data);
+            items.forEach(item => {
+                const card = document.querySelector(`.products .card[data-id='${item.id}']`);
+                if (card) {
+                    const ctr = card.querySelector('.contador-producto');
+                    ctr.textContent = item.cantidad;
+                    ctr.style.display = 'block';
+                    let stockOriginal = parseInt(card.dataset.stockOriginal);
+                    card.dataset.cantidad = stockOriginal - item.cantidad;
+                    card.querySelector('.product-cantidad').textContent = `Cantidad: ${card.dataset.cantidad}`;
+                    if (parseInt(card.dataset.cantidad) <= 0) {
+                        card.classList.add('disabled')
+                    }
+                }
+            })
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = sessionStorage.getItem('carritoProductos');
+            const tot = sessionStorage.getItem('carritoTotal');
+            if (data && tot != null) {
+                const items = JSON.parse(data);
+                total = parseFloat(tot) || 0;
+                document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.dataset.id = item.id;
+                    li.dataset.nombre = item.nombre;
+                    li.dataset.precio = item.precio;
+                    li.dataset.cantidad = item.cantidad;
+                    li.dataset.tipo = item.tipo;
+                    li.innerHTML = `<div class="summary-item-info">${item.nombre} <br> <small>$${(item.precio*item.cantidad).toLocaleString()}</small></div><div class="summary-item-controls"><button class="summary-btn-remove" data-id="${item.id}">-</button><span class="item-quantity">${item.cantidad}</span><button class="summary-btn-add" data-id="${item.id}">+</button><button class="delete-item" data-id="${item.id}" title="Eliminar item"><box-icon name='trash' color='#c53929' size='xs'></box-icon></button></div>`;
+                    listaResumen.appendChild(li)
+                });
+                if (listaResumen.children.length > 0) {
+                    precioTipo = listaResumen.children[0].dataset.tipo
+                }
+            }
+            renderProducts()
+        });
+        renderProducts();
     </script>
 </body>
+
 </html>

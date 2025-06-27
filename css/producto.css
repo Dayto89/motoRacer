@@ -108,8 +108,35 @@ body::before {
   background-color: #3f6fb6;
 }
 
-#menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px); /* 20px de empuje extra */
+.barra-navegacion {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    /* o el alto que tengas */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    /* evita que nada sobresalga */
+    z-index: 1000;
+}
+
+/* 2) Aplico transición a **todos** los hijos directos */
+.barra-navegacion>* {
+    transition: transform 0.3s ease;
+}
+
+/* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
+#menu:hover~.barra-navegacion>*:first-child {
+    transform: translateX(210px);
+    /* ancho menú expandido */
+}
+
+/* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
+#menu:hover~.barra-navegacion>*:last-child {
+    transform: none;
 }
 
 .fondo {
@@ -163,6 +190,7 @@ label {
 #product-form {
   margin-top: 27px;
   margin-bottom: 11px;
+  
 }
 
 #product-form .campo label {
@@ -183,6 +211,45 @@ label {
   cursor: pointer;
 }
 
+/* grid principal de 3 columnas */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 2rem;   /* espacio horizontal entre columnas */
+  row-gap: 1.5rem;    /* espacio vertical entre filas */
+  width: 100%;
+  margin: auto;
+}
+
+/* dentro de cada .campo, label arriba y control abajo */
+.form-grid .campo {
+  display: flex;
+  flex-direction: column;
+}
+
+/* unifica estilos de inputs y “fake-select” */
+.form-grid .campo input,
+.form-grid .campo .fake-select {
+  margin-top: 14px;      /* separación del label */
+  width: 180%;
+  box-sizing: border-box;
+}
+
+/* los labels ocupan toda la anchura */
+.form-grid .campo label {
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+  white-space: nowrap;  /* si quieres que no rompa palabra */
+}
+
+/* si quieres mayor altura para las opciones abiertas */
+.fake-select .fs-options-wrap {
+  max-height: 200px;
+}
+
+
+
 .campo2 {
   position: relative;
   width: 360px;
@@ -201,6 +268,7 @@ input[type="number"] {
 .button-container {
   text-align: center;
   margin-top: 20px;
+  margin-left: 150%;
 }
 
 table {
@@ -359,7 +427,7 @@ input[type="checkbox"] {
 
 #crearProducto h1 {
   font-size: 50px;
-  margin-top: 10%;
+  margin-top: 8%;
   color: white;
   text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0,
     3px 5px 0 #1c51a0;

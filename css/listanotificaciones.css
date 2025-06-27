@@ -363,8 +363,20 @@ form input[type="text"],
   margin-right: 0px;
 }
 
-#menu:hover ~ .ubica {
-  margin-left: calc(9% + 20px);  /* 20px de empuje extra */
+/* 2) Aplico transición a **todos** los hijos directos */
+.barra-navegacion>* {
+    transition: transform 0.3s ease;
+}
+
+/* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
+#menu:hover~.barra-navegacion>*:first-child {
+    transform: translateX(210px);
+    /* ancho menú expandido */
+}
+
+/* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
+#menu:hover~.barra-navegacion>*:last-child {
+    transform: none;
 }
 
 /* Contenido principal */
@@ -692,12 +704,17 @@ select option {
   font-weight: bold;
   text-decoration: none;
 }
+.boton-docsxls:hover{
+  background-color: #0e3f08 !important;
+}
 .boton-excel label{
   margin-left: 8px;
+  cursor: pointer;
 }
 
 .boton-pdf label{
   margin-left: 8px;
+  cursor: pointer;
 }
 .boton-docpdf {
   display: flex;
@@ -715,6 +732,9 @@ select option {
   border: none;
   font-weight: bold;
   text-decoration: none;
+}
+.boton-docpdf:hover{
+  background-color: #6d0202 !important;
 }
 
 .boton-excel,
