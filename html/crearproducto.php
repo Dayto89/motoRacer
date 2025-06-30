@@ -290,9 +290,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                 <div class="modal-buttons">
                     <button type="submit" name="importar">Importar</button>
-                    <a href="../componentes/formato_productos.xlsx" download>
-                        <i class="fas fa-file-download"></i> Descargar formato
-                    </a>
+                    <a href="../componentes/formato_productos.xlsx" download><i class="fas fa-file-download"></i><span>Descargar formato</span></a>
                 </div>
             </form>
         </div>
@@ -592,21 +590,38 @@ if ($_POST) {
 
 
 <script>
-    function openModal(modal) {
-        modal.classList.add('show');
-        void modal.offsetWidth; // fuerza reflow para animación
-        modal.classList.add('opening');
+    // — Funciones para el modal de importación únicamente —
+    function openImportModal() {
+        const modal = modalImport;
+        modal.style.display = 'flex';
+        // fade-in con la clase .show
+        requestAnimationFrame(() => modal.classList.add('show'));
     }
 
-    function closeModal(modal) {
-        modal.classList.remove('opening');
+    function closeImportModal() {
+        const modal = modalImport;
+        // arrancar fade-out
         modal.classList.add('closing');
-        const contenido = modal.querySelector('.modal-content');
-        contenido.addEventListener('transitionend', function handler() {
-            contenido.removeEventListener('transitionend', handler);
+        // esperar al end de OPACITY para ocultar
+        modal.addEventListener('transitionend', function handler(e) {
+            if (e.propertyName !== 'opacity') return;
+            modal.removeEventListener('transitionend', handler);
             modal.classList.remove('show', 'closing');
+            modal.style.display = 'none';
         });
     }
+    // 2) Función para abrir la modal
+    function openModal(modal) {
+        // 2a) Limpia cualquier rastro de animación previa
+        modal.classList.remove('closing');
+        // 2b) La hacemos visible (display)
+        modal.style.display = 'flex';
+        // 2c) En el siguiente frame arrancamos la animación CSS
+        requestAnimationFrame(() => {
+            modal.classList.add('opening');
+        });
+    }
+
     document.querySelector('form[action="/html/importar_excel.php"]').addEventListener('submit', e => {
         const inp = document.getElementById('archivoExcel');
         const file = inp.files[0];
@@ -745,7 +760,7 @@ if ($_POST) {
         modal.classList.remove('opening');
         modal.classList.add('closing');
         // Cuando termine la transición, ocultar por completo
-        const contenido = modal.querySelector('.modal-content-nueva');
+        const contenido = modal.querySelector('.modal-content, .modal-content-nueva');
         contenido.addEventListener('transitionend', function handler() {
             contenido.removeEventListener('transitionend', handler);
             modal.classList.remove('show', 'closing');
@@ -896,21 +911,10 @@ if ($_POST) {
     const btnAbrirImport = document.getElementById('btnAbrirModalImport');
     const btnCerrarImport = document.getElementById('btnCerrarModalImport');
 
-    // abrir
-    btnAbrirImport.addEventListener('click', () => {
-        openModal(modalImport);
-    });
-
-    // cerrar con la “X”
-    btnCerrarImport.addEventListener('click', () => {
-        closeModal(modalImport);
-    });
-
-    // cerrar al clicar fuera de .modal-content
+    btnAbrirImport.addEventListener('click', openImportModal);
+    btnCerrarImport.addEventListener('click', closeImportModal);
     modalImport.addEventListener('click', e => {
-        if (e.target === modalImport) {
-            closeModal(modalImport);
-        }
+        if (e.target === modalImport) closeImportModal();
     });
 
     // Helper genérico

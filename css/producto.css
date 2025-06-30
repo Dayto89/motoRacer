@@ -109,34 +109,34 @@ body::before {
 }
 
 .barra-navegacion {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    /* o el alto que tengas */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    overflow: hidden;
-    /* evita que nada sobresalga */
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  /* o el alto que tengas */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  /* evita que nada sobresalga */
+  z-index: 1000;
 }
 
 /* 2) Aplico transición a **todos** los hijos directos */
 .barra-navegacion>* {
-    transition: transform 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 /* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
 #menu:hover~.barra-navegacion>*:first-child {
-    transform: translateX(210px);
-    /* ancho menú expandido */
+  transform: translateX(210px);
+  /* ancho menú expandido */
 }
 
 /* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
 #menu:hover~.barra-navegacion>*:last-child {
-    transform: none;
+  transform: none;
 }
 
 .fondo {
@@ -155,7 +155,7 @@ body::before {
   height: 100vh;
 }
 
-.sidebar:hover ~ .main-content {
+.sidebar:hover~.main-content {
   margin-left: 270px;
 }
 
@@ -190,7 +190,11 @@ label {
 #product-form {
   margin-top: 27px;
   margin-bottom: 11px;
-  
+
+}
+
+.modo-alto-contraste .required {
+  color: #000 !important;
 }
 
 #product-form .campo label {
@@ -200,6 +204,7 @@ label {
   font-weight: bold;
   white-space: nowrap;
 }
+
 #product-form input {
   margin-top: 20px;
   height: 42px;
@@ -207,6 +212,7 @@ label {
   padding: 10px 0px 10px 8px;
   width: 180%;
 }
+
 #product-form button {
   cursor: pointer;
 }
@@ -215,8 +221,10 @@ label {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  column-gap: 2rem;   /* espacio horizontal entre columnas */
-  row-gap: 1.5rem;    /* espacio vertical entre filas */
+  column-gap: 2rem;
+  /* espacio horizontal entre columnas */
+  row-gap: 1.5rem;
+  /* espacio vertical entre filas */
   width: 100%;
   margin: auto;
 }
@@ -230,7 +238,8 @@ label {
 /* unifica estilos de inputs y “fake-select” */
 .form-grid .campo input,
 .form-grid .campo .fake-select {
-  margin-top: 14px;      /* separación del label */
+  margin-top: 14px;
+  /* separación del label */
   width: 180%;
   box-sizing: border-box;
 }
@@ -240,7 +249,8 @@ label {
   display: block;
   font-size: 1rem;
   font-weight: bold;
-  white-space: nowrap;  /* si quieres que no rompa palabra */
+  white-space: nowrap;
+  /* si quieres que no rompa palabra */
 }
 
 /* si quieres mayor altura para las opciones abiertas */
@@ -336,6 +346,7 @@ input[type="checkbox"] {
   border-radius: 10px;
   transition: background-color 0.3s ease;
 }
+
 .container {
   display: flex;
   /* background-color: rgb(174 174 174 / 59%); */
@@ -349,6 +360,7 @@ input[type="checkbox"] {
   margin-top: 27px;
   margin-bottom: 20px;
 }
+
 .container-general {
   position: fixed;
   top: 9%;
@@ -361,6 +373,7 @@ input[type="checkbox"] {
   box-shadow: 0 4px 20px #0b111a;
   border-radius: 10px;
 }
+
 .left-side,
 .right-side {
   flex: 1;
@@ -613,18 +626,33 @@ input[type="checkbox"] {
   color: #aaa;
   font-size: 18px;
 }
+
 /*Modal para subir el archivo*/
 /* Título "Descargar formato" estilo link */
-.modal-content a {
+.modal-buttons a {
   font-size: 16px;
-  color: #0056b3;
+  color: white;
+  background-color: #1f5917;
+  border-radius: 8px;
   text-decoration: none;
   font-weight: 500;
-  display: inline-block;
-  margin-bottom: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, Helvetica, sans-serif;
 }
+
+#crearProducto .modal-buttons i {
+  margin-left: 10px ;
+  margin-bottom: -12%;
+}
+
+#crearProducto .modal-buttons span {
+  margin-right: 10px ;
+}
+
 .modal-content a:hover {
-  text-decoration: underline;
+  background-color: #0f3b13;
 }
 
 /* Etiqueta del input */
@@ -635,12 +663,14 @@ input[type="checkbox"] {
   font-weight: bold;
   text-align: center;
 }
+
 .custom-file-upload span {
   display: block;
   font-size: 14px;
   color: #333333d9;
   font-weight: 200;
 }
+
 /* Input file estilizado */
 .modal-content input[type="file"] {
   width: 100%;
@@ -653,25 +683,29 @@ input[type="checkbox"] {
   cursor: pointer;
   margin-bottom: 20px;
 }
+
 /* Estado base: oculto pero listo para animarse */
 .modal {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-  z-index: 1000;
+  transition: opacity 0.5s ease;
+  z-index: 1001;
 }
 
 /* Cuando se añade .show, entra */
 .modal.show {
   visibility: visible;
   opacity: 1;
-      background-color: rgb(0 0 0 / 83%) !important;
+  background-color: rgb(0 0 0 / 83%) !important;
   /* Fondo oscuro */
   backdrop-filter: blur(2px);
   /* Opcional: desenfoque sutil */
@@ -680,15 +714,18 @@ input[type="checkbox"] {
 
 .modal .modal-content {
   position: absolute;
-  top: 50%; /* Cambia de 30% a 50% */
-  left: 50%; /* Cambia de 40% a 50% */
-  transform: translate(-50%, -50%) translateY(-20px); /* Combina los transforms */
-  background-color: rgba(228,227,227,0.84);
+  top: 50%;
+  /* Cambia de 30% a 50% */
+  left: 50%;
+  /* Cambia de 40% a 50% */
+  transform: translate(-50%, -50%) translateY(-20px);
+  /* Combina los transforms */
+  background-color: rgba(228, 227, 227, 0.84);
   padding: 20px 30px;
   border-radius: 10px;
   width: 450px;
   text-align: left;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
@@ -703,15 +740,16 @@ input[type="checkbox"] {
 /* Animación de salida */
 .modal.closing {
   opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.5s ease, visibility 0.5s ease 0.5s;
+  transition: opacity 0.5s ease;
 }
+
 /* Contenido al cerrar con movimiento suave */
 .modal.closing .modal-content {
   transform: translate(-50%, -50%) translateY(-20px);
   opacity: 0;
   transition: transform 0.5s ease, opacity 0.5s ease;
 }
+
 .modal-content #modalMessage {
   font-family: Arial, Helvetica, sans-serif;
   color: black;
@@ -730,12 +768,46 @@ input[type="checkbox"] {
   padding: 28px;
 }
 
+/* --- 1) Estado base del contenido (pre-animación) --- */
+.modal .modal-content {
+  transform: translate(-50%, -50%) translateY(-20px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* --- 2) Al abrir (.show) hago fade-in y slide-in --- */
+.modal.show .modal-content {
+  transform: translate(-50%, -50%) translateY(0);
+  opacity: 1;
+}
+
+/* --- 3) Al cerrar (.closing) invierto la animación --- */
+.modal.closing .modal-content {
+  transform: translate(-50%, -50%) translateY(-20px);
+  opacity: 0;
+}
+
 /* Contenedor de botones */
 .modal-content form {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
+/* --- Overlay: sólo fade-out sin tocar visibility --- */
+#modalImport.closing {
+  opacity: 0;
+  /* no hay visibility aquí, para que el fade se vea */
+  transition: opacity 0.5s ease;
+}
+
+/* --- Contenido: slide-up + fade-out al cerrar --- */
+#modalImport.closing .modal-content {
+  transform: translate(-50%, -50%) translateY(-20px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
 
 /* Botones */
 .modal-content button {
@@ -765,6 +837,7 @@ input[type="checkbox"] {
 .modal-content button[type="button"]:hover {
   background-color: #3c5e4d;
 }
+
 /* Estilo para el input oculto */
 input[type="file"] {
   display: none;
@@ -821,6 +894,7 @@ input[type="file"] {
   transition: background-color 0.3s ease;
   color: white;
 }
+
 
 .modal-buttons .cancel-button {
   background-color: #d9534f;
@@ -895,6 +969,10 @@ input[type="file"] {
   margin-left: 67%;
   align-content: center;
   align-items: center;
+}
+
+.icon-button:hover {
+  background-color: #0f3b13;
 }
 
 .icon-button label {
@@ -975,16 +1053,19 @@ input.error {
   align-items: center;
   z-index: 1000;
 }
+
 .modal_nueva_categoria.show {
   display: flex;
   /* deja que siga oculto internamente hasta que JS agregue opening */
-      background-color: rgb(0 0 0 / 83%) !important;
+  background-color: rgb(0 0 0 / 83%) !important;
   /* Fondo oscuro */
   backdrop-filter: blur(2px);
   /* Opcional: desenfoque sutil */
 }
+
 /* Contenedor blanco */
-.modal-content-nueva, .modal-content {
+.modal-content-nueva,
+.modal-content {
   background-color: rgba(200, 200, 200, 0.76);
   border-radius: 8px;
   width: 400px;
@@ -992,11 +1073,11 @@ input.error {
   padding: 20px 24px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   text-align: center;
-  
+
   /* punto de partida para animaciones */
   transform: translateY(-50px);
   opacity: 0;
-  
+
   /* declaramos la transición */
   transition: transform 0.35s ease-out, opacity 0.35s ease-out;
 }
@@ -1005,13 +1086,13 @@ input.error {
 
 /* Título con fuente decorativa y color azul */
 .modal-content-nueva h2 {
-font-size: 32px;
-    margin-top: -7px;
-    color: white;
-    text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
-    margin-left: 13px;
-    letter-spacing: 5px;
-    padding: 28px;
+  font-size: 32px;
+  margin-top: -7px;
+  color: white;
+  text-shadow: 4px -2px 0 #1c51a0, -3px -1px 0 #1c51a0, -3px 1px 0 #1c51a0, -2px 3px 0 #1c51a0;
+  margin-left: 13px;
+  letter-spacing: 5px;
+  padding: 28px;
 }
 
 /* Texto descriptivo */
@@ -1031,7 +1112,7 @@ font-size: 32px;
   border-radius: 23px;
   box-sizing: border-box;
   margin-top: 8%;
-    height: 3.8%;
+  height: 3.8%;
 }
 
 /* Botonera centrada con gap */
@@ -1064,6 +1145,7 @@ font-size: 32px;
   font-size: 1rem;
   cursor: pointer;
 }
+
 .modal-content-nueva .close-button {
   position: absolute;
   top: 8px;
@@ -1072,6 +1154,7 @@ font-size: 32px;
   color: #333;
   cursor: pointer;
 }
+
 .modal-content-nueva .close-button:hover {
   color: #d33;
 }
@@ -1080,9 +1163,11 @@ font-size: 32px;
 .modal-content-nueva .modal-buttons button[type="button"]:hover {
   background-color: #b82a2a;
 }
+
 .modal-content-nueva .modal-buttons button[type="submit"]:hover {
   background-color: #256bb5;
 }
+
 /* --- Estados de animación --- */
 .modal_nueva_categoria.opening .modal-content-nueva {
   transform: translateY(0);
@@ -1094,48 +1179,66 @@ font-size: 32px;
   transform: translateY(-50px);
   opacity: 0;
 }
+
 .add-button-cat {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  padding: 0;      /* separa un poco del label */
-  border: 2px solid #306b2f;  /* color verde oscuro */
-  border-radius: 4px;         /* bordes levemente redondeados */
+  padding: 0;
+  /* separa un poco del label */
+  border: 2px solid #306b2f;
+  /* color verde oscuro */
+  border-radius: 4px;
+  /* bordes levemente redondeados */
   background-color: #ffffffab;
-  color: #306b2f;             /* mismo verde para el icono */
-  font-size: 1rem;            /* tamaño del icono */
+  color: #306b2f;
+  /* mismo verde para el icono */
+  font-size: 1rem;
+  /* tamaño del icono */
   cursor: pointer;
   transition: background-color .2s, color .2s;
 }
+
 .add-button-mar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  padding: 0;      /* separa un poco del label */
-  border: 2px solid #306b2f;  /* color verde oscuro */
-  border-radius: 4px;         /* bordes levemente redondeados */
+  padding: 0;
+  /* separa un poco del label */
+  border: 2px solid #306b2f;
+  /* color verde oscuro */
+  border-radius: 4px;
+  /* bordes levemente redondeados */
   background-color: #ffffffab;
-  color: #306b2f;             /* mismo verde para el icono */
-  font-size: 1rem;            /* tamaño del icono */
+  color: #306b2f;
+  /* mismo verde para el icono */
+  font-size: 1rem;
+  /* tamaño del icono */
   cursor: pointer;
   transition: background-color .2s, color .2s;
 }
+
 .add-button-ubi {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  padding: 0;      /* separa un poco del label */
-  border: 2px solid #306b2f;  /* color verde oscuro */
-  border-radius: 4px;         /* bordes levemente redondeados */
+  padding: 0;
+  /* separa un poco del label */
+  border: 2px solid #306b2f;
+  /* color verde oscuro */
+  border-radius: 4px;
+  /* bordes levemente redondeados */
   background-color: #ffffffab;
-  color: #306b2f;             /* mismo verde para el icono */
-  font-size: 1rem;            /* tamaño del icono */
+  color: #306b2f;
+  /* mismo verde para el icono */
+  font-size: 1rem;
+  /* tamaño del icono */
   cursor: pointer;
   transition: background-color .2s, color .2s;
 }
@@ -1146,6 +1249,7 @@ font-size: 32px;
   outline: none;
   box-shadow: 0 0 0 3px rgba(48, 107, 47, 0.4);
 }
+
 /*---------------------------------------------------------------------------------------------------------*/
 input.invalid {
   border: 2px solid #dc3545 !important;
@@ -1179,7 +1283,7 @@ input.invalid {
   border-color: transparent #f8d7da transparent transparent;
 }
 
-input.invalid + .input-error-message {
+input.invalid+.input-error-message {
   display: block;
 }
 
@@ -1201,9 +1305,11 @@ button:disabled {
   cursor: pointer;
   font-family: arial;
 }
+
 .fake-select .fs-selected {
   padding: 10px;
 }
+
 .fake-select .fs-options {
   position: absolute;
   top: 100%;
@@ -1232,11 +1338,15 @@ button:disabled {
 .fake-select .fs-options li:hover {
   background: #eee;
 }
+
 /* El wrapper recorta el scroll con el mismo border-radius */
 .fake-select .fs-options-wrap {
-  max-height: 200px;               /* ≃10 filas */
-  overflow-y: auto;                /* scroll dentro */
-  border-radius: 0 0 23px 23px;    /* bordes redondeados iguales */
+  max-height: 200px;
+  /* ≃10 filas */
+  overflow-y: auto;
+  /* scroll dentro */
+  border-radius: 0 0 23px 23px;
+  /* bordes redondeados iguales */
 }
 
 /* Estiliza el scrollbar dentro del wrapper */
@@ -1244,13 +1354,16 @@ button:disabled {
   width: 6px;
   background: transparent;
 }
+
 .fake-select .fs-options-wrap::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
 }
+
 .fake-select .fs-options-wrap::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .fake-select .fs-options-wrap::-webkit-scrollbar-button {
   display: none;
 }
@@ -1311,9 +1424,7 @@ button:disabled {
 
 /* TABLETS */
 /* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
-}
+@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {}
 
 /* Vertical */
-@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {
-}
+@media screen and (min-width: 871px) and (max-width: 1023px) and (orientation: portrait) {}

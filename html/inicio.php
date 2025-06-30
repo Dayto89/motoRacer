@@ -153,12 +153,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .modo-alto-contraste .chart-container {
             background-color: black;
+            border: white solid 4px;
         }
 
         .modo-claro .chart-container {
             border: 4px solid #000000;
         }
-        
+
         /* --- NUEVO CSS PARA ANIMACIÓN DE MODALES --- */
 
         /* Estilos base para ambos modales (notificaciones y stock) */
@@ -173,21 +174,25 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             border-radius: 8px;
             padding: 15px;
             letter-spacing: 1px;
-            
+
             /* Estado inicial para la animación (oculto) */
             opacity: 0;
-            transform: translateY(-20px); /* Empieza 20px arriba */
-            pointer-events: none; /* No se puede interactuar con el modal invisible */
+            transform: translateY(-20px);
+            /* Empieza 20px arriba */
+            pointer-events: none;
+            /* No se puede interactuar con el modal invisible */
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
 
         /* Clase que activa el modal (lo hace visible con animación) */
         .modal-animado.modal-activo {
             opacity: 1;
-            transform: translateY(0); /* Vuelve a su posición original */
-            pointer-events: auto; /* Se puede interactuar con el modal */
+            transform: translateY(0);
+            /* Vuelve a su posición original */
+            pointer-events: auto;
+            /* Se puede interactuar con el modal */
         }
-        
+
         /* Posicionamiento específico del modal de notificaciones */
         #notificaciones {
             position: fixed;
@@ -199,13 +204,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         #stock {
             position: fixed;
             top: 120px;
-            right: 20px; /* Ajusta este valor si se solapa con el de notificaciones */
+            right: 20px;
+            /* Ajusta este valor si se solapa con el de notificaciones */
         }
-        
+
         /* --- FIN DEL NUEVO CSS --- */
 
 
-        .notificaciones h3, #stock h3 {
+        .notificaciones h3,
+        #stock h3 {
             margin-top: 0;
             color: white;
             font-size: 30px;
@@ -235,7 +242,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         #listaNotificaciones li.leida {
             background: #fff;
-            border-left-color: rgb(0, 0, 0);
+            border-left-color: rgb(127 127 127);
             opacity: 0.7;
         }
 
@@ -243,9 +250,24 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             background: rgb(184, 186, 187);
         }
 
+        .modo-alto-contraste #stock {
+            background-color: #000000;
+            border: white solid 4px;
+        }
+
+        .modo-claro #stock {
+            background-color: #ffffff;
+            border: black solid 4px;
+            color: #000000;
+        }
+
+        .modo-claro .form-stock label {
+            color: #000000 !important;
+        }
+
         .badge-notificaciones {
             position: absolute;
-            top: 57px;
+            top: 65px;
             right: 26px;
             background: #ff4444;
             color: white;
@@ -261,7 +283,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
         .noti {
             position: fixed;
-            top: 50px;
+            top: 60px;
             right: 20px;
             background: none;
             border: none;
@@ -278,50 +300,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             width: 65px;
             height: 65px;
         }
-        
+
         /* --- NUEVO: Posicionamiento del botón de stock --- */
-            .notificaciones {
-        position: fixed;
-        top: 120px;
-        right: 20px;
-        background-color: rgb(174 174 174 / 59%);
-        border: 1px solid #ccc;
-        width: 350px;
-        max-height: 85%;
-        overflow-y: auto;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        padding: 15px;
-        letter-spacing: 1px;
-        
-        /* LA LÍNEA 'display: none;' HA SIDO ELIMINADA DE AQUÍ */
-    }
+        .notificaciones {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background-color: rgb(174 174 174 / 59%);
+            border: 1px solid #ccc;
+            width: 350px;
+            max-height: 85%;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            letter-spacing: 1px;
 
-    /* Estilos base para AMBOS modales */
-    .modal-animado {
-        /* ¡CLAVE! Asegura que el modal exista en el layout para poder ser animado */
-        display: block; 
-        
-        /* Estado inicial (oculto) */
-        opacity: 0;
-        transform: translateY(-20px);
-        pointer-events: none;
-        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    }
+            /* LA LÍNEA 'display: none;' HA SIDO ELIMINADA DE AQUÍ */
+        }
 
-    /* Clase que activa el modal (lo hace visible con animación) */
-    .modal-animado.modal-activo {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-    
-    /* Posicionamiento específico del modal de stock */
+        /* Estilos base para AMBOS modales */
+        .modal-animado {
+            /* ¡CLAVE! Asegura que el modal exista en el layout para poder ser animado */
+            display: block;
+
+            /* Estado inicial (oculto) */
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        /* Clase que activa el modal (lo hace visible con animación) */
+        .modal-animado.modal-activo {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Posicionamiento específico del modal de stock */
         .stock {
             position: fixed;
-            top: 50px;
-            right: 100px; /* Ajusta para que no se solape con el botón de notificaciones */
+            top: 60px;
+            right: 100px;
+            /* Ajusta para que no se solape con el botón de notificaciones */
             background: none;
             border: none;
             cursor: pointer;
@@ -474,7 +497,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 grid-template-columns: 1fr;
             }
 
-            button.noti, button.stock {
+            button.noti,
+            button.stock {
                 width: 50px;
                 height: 50px;
             }
@@ -490,22 +514,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 <body>
     <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
-   <nav class="barra-navegacion">
-    <div class="ubica" style="margin-left: 0;">Inicio</div>
-    <div class="userContainer">
-      <div class="userInfo">
-        <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-        <p class="rol">Rol: <?php echo $rol; ?></p>
-      </div>
-      <div class="profilePic">
-        <?php if (!empty($rowUsuario['foto'])): ?>
-          <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-        <?php else: ?>
-          <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-        <?php endif; ?>
-      </div>
-    </div>
-  </nav>
+    <nav class="barra-navegacion">
+        <div class="ubica" style="margin-left: 0;">Inicio</div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
     <div class="fondo"></div>
 
     <div class="dashboard-container">
@@ -539,7 +563,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         <?php endif; ?>
     </div>
-    
+
     <div id="notificaciones" class="notificaciones modal-animado">
         <h3>Notificaciones</h3>
         <button id="btnMarcar20" onclick="marcarUltimasLeidas()" style="margin-bottom:10px; width:100%;">
@@ -556,17 +580,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <button class="stock" onclick="mostrarStock()" title="stock">
         <img src="../imagenes/stock.gif" alt="stock">
     </button>
-    
-    <div id="stock" class="cantidad modal-animado"> <h3>Stock</h3>
+
+    <div id="stock" class="cantidad modal-animado">
+        <h3>Stock</h3>
         <div class="form-stock">
             <form method="POST">
                 <input type="hidden" name="guardar_config_stock" value="1">
                 <div class="form-group">
                     <label for="min_quantity">Cantidad Mínima:</label>
                     <input type="text" id="min_quantity" name="min_quantity"
-                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                           value="<?= htmlspecialchars($config['min_quantity']) ?>"
-                           min="1" required>
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        value="<?= htmlspecialchars($config['min_quantity']) ?>"
+                        min="1" required>
                 </div>
                 <button type="submit">Guardar</button>
             </form>
@@ -585,7 +610,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         background: '#ffffffdb',
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#007bff',
-                        customClass: { popup: 'swal2-border-radius', confirmButton: 'btn-aceptar', container: 'fondo-oscuro' }
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
                     })
                 </script>
             <?php elseif (isset($_GET['error'])): ?>
@@ -603,7 +632,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         background: '#ffffffdb',
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#007bff',
-                        customClass: { popup: 'swal2-border-radius', confirmButton: 'btn-aceptar', container: 'fondo-oscuro' }
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
                     })
                 </script>
             <?php endif; ?>
@@ -613,7 +646,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="/js/index.js"></script>
     <script>
         function marcarUltimasLeidas() {
-            fetch(`../html/marcar_leidas_varias.php?limit=20`, { method: 'POST' })
+            fetch(`../html/marcar_leidas_varias.php?limit=20`, {
+                    method: 'POST'
+                })
                 .then(response => {
                     if (!response.ok) throw new Error('Error al marcar notificaciones');
                     return response.json();
@@ -627,7 +662,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#007bff',
-                            customClass: { popup: 'swal2-border-radius', confirmButton: 'btn-aceptar', container: 'fondo-oscuro' }
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
                         });
                     } else {
                         Swal.fire({
@@ -636,7 +675,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#007bff',
-                            customClass: { popup: 'swal2-border-radius', confirmButton: 'btn-aceptar', container: 'fondo-oscuro' }
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
                         });
                     }
                 })
@@ -648,11 +691,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         background: '#ffffffdb',
                         confirmButtonText: 'Aceptar',
                         confirmButtonColor: '#007bff',
-                        customClass: { popup: 'swal2-border-radius', confirmButton: 'btn-aceptar', container: 'fondo-oscuro' }
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
                     });
                 });
         }
-        
+
         // --- MODIFICADO PARA ANIMACIÓN ---
         function mostrarStock() {
             const stockModal = document.getElementById('stock');
@@ -662,7 +709,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             if (notificacionesModal.classList.contains('modal-activo')) {
                 notificacionesModal.classList.remove('modal-activo');
             }
-            
+
             // Alterna la visibilidad del modal de stock
             stockModal.classList.toggle('modal-activo');
         }
@@ -676,7 +723,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             if (stockModal.classList.contains('modal-activo')) {
                 stockModal.classList.remove('modal-activo');
             }
-            
+
             // Alterna la visibilidad del modal de notificaciones
             notificacionesModal.classList.toggle('modal-activo');
         }
@@ -726,7 +773,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 })
                 .catch(error => console.error('Error:', error));
         }
-        
+
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- NUEVO: CERRAR MODALES AL HACER CLIC FUERA ---
@@ -737,15 +784,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 const stockButton = document.querySelector('.stock');
 
                 // Si el modal de notificaciones está activo y el clic fue fuera del modal y fuera del botón
-                if (notifModal.classList.contains('modal-activo') && 
-                    !notifModal.contains(event.target) && 
+                if (notifModal.classList.contains('modal-activo') &&
+                    !notifModal.contains(event.target) &&
                     !notifButton.contains(event.target)) {
                     notifModal.classList.remove('modal-activo');
                 }
 
                 // Si el modal de stock está activo y el clic fue fuera del modal y fuera del botón
-                if (stockModal.classList.contains('modal-activo') && 
-                    !stockModal.contains(event.target) && 
+                if (stockModal.classList.contains('modal-activo') &&
+                    !stockModal.contains(event.target) &&
                     !stockButton.contains(event.target)) {
                     stockModal.classList.remove('modal-activo');
                 }
@@ -774,7 +821,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             });
         });
     </script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -804,12 +851,51 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Cantidad', font: { size: 16 }, color: colorTexto }, ticks: { font: { size: 14 }, color: colorTexto } },
-                        x: { ticks: { font: { size: 14 }, color: colorTexto, autoSkip: false, maxRotation: 45, minRotation: 45 } }
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad',
+                                font: {
+                                    size: 16
+                                },
+                                color: colorTexto
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14
+                                },
+                                color: colorTexto
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                },
+                                color: colorTexto,
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
                     },
-                    plugins: { legend: { display: false }, title: { display: true, text: 'Resumen de Métricas', font: { size: 18 }, color: colorTexto } }
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Resumen de Métricas',
+                            font: {
+                                size: 18
+                            },
+                            color: colorTexto
+                        }
+                    }
                 }
             });
             const ctxPie = document.getElementById('stockPieChart').getContext('2d');
@@ -825,8 +911,27 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top', labels: { font: { size: 14 }, color: colorTexto } }, title: { display: true, text: 'Proporción de Stock', font: { size: 18 }, color: colorTexto } }
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                color: colorTexto
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Proporción de Stock',
+                            font: {
+                                size: 18
+                            },
+                            color: colorTexto
+                        }
+                    }
                 }
             });
             <?php if (isset($facturas_diarias) && count($facturas_diarias) > 0) { ?>
@@ -838,20 +943,74 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         datasets: [{
                             label: 'Facturas Diarias',
                             data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
-                            borderColor: '#4e79a7', backgroundColor: 'rgba(78,121,167,0.2)', fill: true, tension: 0.4
+                            borderColor: '#4e79a7',
+                            backgroundColor: 'rgba(78,121,167,0.2)',
+                            fill: true,
+                            tension: 0.4
                         }]
                     },
                     options: {
-                        responsive: true, maintainAspectRatio: false,
+                        responsive: true,
+                        maintainAspectRatio: false,
                         scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Facturas', font: { size: 16 }, color: colorTexto }, ticks: { font: { size: 14 }, color: colorTexto } },
-                            x: { title: { display: true, text: 'Día del Mes', font: { size: 16 }, color: colorTexto }, ticks: { font: { size: 14 }, color: colorTexto } }
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Facturas',
+                                    font: {
+                                        size: 16
+                                    },
+                                    color: colorTexto
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    },
+                                    color: colorTexto
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Día del Mes',
+                                    font: {
+                                        size: 16
+                                    },
+                                    color: colorTexto
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    },
+                                    color: colorTexto
+                                }
+                            }
                         },
-                        plugins: { legend: { position: 'top', labels: { font: { size: 14 }, color: colorTexto } }, title: { display: true, text: 'Facturas Diarias del Mes', font: { size: 18 }, color: colorTexto } }
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    },
+                                    color: colorTexto
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Facturas Diarias del Mes',
+                                font: {
+                                    size: 18
+                                },
+                                color: colorTexto
+                            }
+                        }
                     }
                 });
             <?php } ?>
         }
+
         function actualizarColorCharts() {
             const c = getTextoColorPorModo();
             metricsChart.options.scales.y.title.color = c;
@@ -885,4 +1044,5 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         });
     </script>
 </body>
+
 </html>

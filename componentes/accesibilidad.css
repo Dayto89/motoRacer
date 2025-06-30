@@ -147,7 +147,6 @@
 .modo-alto-contraste .menu,
 .modo-alto-contraste .modal-content {
   color: #FFFFFF !important;
-  border-color: #FFFF00 !important;
 }
 .modo-alto-contraste .sidebar-header {
   background-color: #000000;
@@ -863,6 +862,8 @@ color: white !important;
  }
  .modo-alto-contraste .modal-content{
    background-color: #000000 !important;
+   border: white solid 4px;
+   color: white !important;
  }
  .modo-alto-contraste #modal-boton{
    background-color: #000000;
@@ -1025,7 +1026,7 @@ background-color: red ;
     background-origin: initial;
     background-clip: initial;
     background-color: initial;
-    border: 4px solid #000000;
+    border: 4px solid #ffffff;
 }
 .modo-alto-contraste .metric-card h4{
   color:white;
@@ -1204,10 +1205,10 @@ background-color: red ;
     background-color: #074180 !important;
 }
 .modo-alto-contraste .required{
-  color: black !important;
+  color: rgb(255, 255, 255) !important;
 }
 .modo-alto-contraste .campos{
-  color: black !important;
+  color: rgb(255, 255, 255) !important;
 }
 .modo-alto-contraste #product-form button{
    border: 2px solid #000000 !important;
@@ -1223,4 +1224,8 @@ background-color: red ;
 }
 .modo-alto-contraste .contenedor-precio p{
   color: white;
+}
+
+.modo-alto-contraste #editForm label {
+  color: white !important;
 }

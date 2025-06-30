@@ -179,12 +179,23 @@ body {
 .sidebar-expanded .main { margin-left: 290px; transition: margin-left 0.3s ease; }
 .main { margin-left: 108px; transition: margin-left 0.3s ease; }
 .barra-navegacion { position: fixed; top: 0; left: 5%; width: 95%; display: flex; justify-content: space-between; align-items: center; background: linear-gradient( 90deg, #1167cc, #083972, #000000 ); padding: 8px 2%; box-sizing: border-box; z-index: 1000; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+.modo-alto-contraste .barra-navegacion {
+  background: black !important;
+  color: white;
+}
+
+.modo-claro .barra-navegacion {
+  background: white !important;
+}
 .ubica { padding: 0; text-shadow: 1px 1px 0 #0000003d; font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: white; }
 .ubica a { color: white; text-decoration: none; padding: 10px 8px; border-radius: 8px; transition: background-color 0.3s ease; }
 .ubica a:hover { background-color: rgba( 255, 255, 255, 0.2 ); }
 .userContainer { display: flex; align-items: center; gap: 12px; }
 .userInfo { display: flex; flex-direction: column; align-items: flex-start; text-align: left; font-family: Arial, sans-serif; line-height: 1.2; }
 .userInfo p { margin: 0; padding: 0; color: white; text-shadow: 1px 1px 0 #0000003d; }
+.modo-claro .userInfo p, .modo-claro .ubica {
+  color: black;
+}
 .userInfo .nombre { font-size: 16px; font-weight: bold; }
 .userInfo .rol { font-size: 15px; opacity: 0.9; }
 .profilePic { position: static; width: 35px; height: 35px; border-radius: 50%; overflow: hidden; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); background-color: #0b111a89; flex-shrink: 0; border: 1px solid white; }

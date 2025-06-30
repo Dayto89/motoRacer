@@ -382,6 +382,16 @@ input[type="checkbox"] {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.modo-alto-contraste .column {
+  background-color: black;
+  color: white;
+  border: white solid 4px;
+}
+
+.modo-claro .column {
+  border: black solid 4px;
+}
+
 /* Estilos para las secciones */
 .section-title {
   font-size: 18px;

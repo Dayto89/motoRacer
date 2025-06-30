@@ -31,6 +31,22 @@
     transform: none;
 }
 
+.modo-alto-contraste .container-general {
+  background: black;
+  color: white;
+  border: white solid 4px;
+}
+
+.modo-alto-contraste .button_container button, .modo-alto-contraste .button_container a {
+  background-color: black;
+  color: white;
+  border: white solid 4px;
+}
+
+.modo-alto-contraste .button_container a:hover {
+  background-color: #0056b3;
+}
+
 .logo_inicio {
   position: absolute;
   z-index: 1;

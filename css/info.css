@@ -20,6 +20,16 @@ body {
   padding: 29px;
 }
 
+.modo-alto-contraste .container {
+  background: black;
+  color: white;
+  border: white solid 4px;
+}
+
+.modo-alto-contraste .profile-pic img {
+  border: 3px solid white;
+}
+
 /* 2) Aplico transición a **todos** los hijos directos */
 .barra-navegacion>* {
     transition: transform 0.3s ease;
