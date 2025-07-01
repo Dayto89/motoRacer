@@ -593,7 +593,7 @@ echo "</script>\n";
                 return b;
             };
 
-            paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+            paginationContainer.append(btn('« Primera', 1), btn('‹ Anterior', Math.max(1, currentPage - 1)));
 
             let start = Math.max(1, currentPage - 2),
                 end = Math.min(totalPages, currentPage + 2);
@@ -605,7 +605,7 @@ echo "</script>\n";
                 textContent: '…'
             }));
 
-            paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+            paginationContainer.append(btn('Siguiente ›', Math.min(totalPages, currentPage + 1)), btn(' Última »', totalPages));
         }
 
         // Ordenamiento

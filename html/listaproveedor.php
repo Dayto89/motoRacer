@@ -336,7 +336,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
   <script>
     const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
   </script>
-
+  <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
   <nav class="barra-navegacion">
     <div class="ubica"> Proveedor / Lista proveedores </div>
@@ -811,7 +811,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const rowsPerPage = 7;
+      const rowsPerPage = 6;
       let currentPage = 1;
       let filteredData = [...allData];
 
@@ -1013,7 +1013,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           return b;
         };
 
-        paginationContainer.append(btn('«', 1), btn('‹', Math.max(1, currentPage - 1)));
+        paginationContainer.append(btn('« Primera', 1), btn('‹ Anterior', Math.max(1, currentPage - 1)));
 
         let start = Math.max(1, currentPage - 2),
           end = Math.min(totalPages, currentPage + 2);
@@ -1025,7 +1025,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
           textContent: '…'
         }));
 
-        paginationContainer.append(btn('›', Math.min(totalPages, currentPage + 1)), btn('»', totalPages));
+        paginationContainer.append(btn('Siguiente ›', Math.min(totalPages, currentPage + 1)), btn(' Última»', totalPages));
       }
 
       // Búsqueda en tiempo real (global)

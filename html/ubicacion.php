@@ -1,127 +1,121 @@
 <?php
 session_start();
+
+// --- Función para mostrar alertas de SweetAlert desde la sesión ---
+function display_session_alert() {
+    if (isset($_SESSION['status'])) {
+        $status = $_SESSION['status'];
+        $type = htmlspecialchars($status['type']);
+        $message = $status['message']; // El mensaje puede contener HTML, como <br>
+
+        $icon_img = ($type === 'success') ? 'moto.png' : 'llave.png';
+        $alt_text = ($type === 'success') ? 'Confirmación' : 'Error';
+        $title_class = ($type === 'success') ? 'confirmacion' : 'error';
+        $title_text = ($type === 'success') ? 'Éxito' : 'Error';
+        $img_class = ($type === 'success') ? 'moto' : 'llave';
+
+        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
+        echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: '<span class=\"titulo-alerta $title_class\">$title_text</span>',
+                html: `
+                    <div class=\"custom-alert\">
+                        <div class=\"contenedor-imagen\">
+                            <img src=\"../imagenes/$icon_img\" alt=\"$alt_text\" class=\"$img_class\">
+                        </div>
+                        <p>$message</p>
+                    </div>
+                `,
+                background: '#ffffffdb',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    container: 'fondo-oscuro'
+                }
+            });
+        });
+        </script>";
+
+        // Limpiar la variable de sesión para que no se muestre de nuevo
+        unset($_SESSION['status']);
+    }
+}
+
+
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/html/verificar_permisos.php';
 
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
 if (!$conexion) {
     die("<script>alert('No se pudo conectar a la base de datos');</script>");
 }
+
 // --- AJAX: validar nombre de ubicación único ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_ubicacion'])) {
     $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
     $sql = "SELECT COUNT(*) AS cnt FROM ubicacion WHERE nombre = '$nombre'";
     $res = mysqli_query($conexion, $sql);
     $row = mysqli_fetch_assoc($res);
+    header('Content-Type: application/json');
     echo json_encode(['exists' => ($row['cnt'] > 0)]);
     exit;
 }
 
-// justo tras conectar a BD
-$allQ = "SELECT codigo,nombre FROM ubicacion c";
-if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
-$allRes = mysqli_query($conexion, $allQ);
-$allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
 
-// Agregar Ubicacion
+// Agregar Ubicacion (CORREGIDO CON PRG)
 if ($_POST && isset($_POST['guardar'])) {
-    if (!$conexion) {
-        die("<script>alert('No se pudo conectar a la base de datos');</script>");
-    };
     $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-
     $query = "INSERT INTO ubicacion (nombre) VALUES ('$nombre')";
-
     $resultado = mysqli_query($conexion, $query);
 
     if ($resultado) {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            title: '<span class=\"titulo-alerta confirmacion\">Éxito</span>',
-            html: `
-                <div class=\"custom-alert\">
-                    <div class=\"contenedor-imagen\">
-                        <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                    </div>
-                    <p>Ubicación agregada correctamente.</p>
-                </div>
-            `,
-            background: '#ffffffdb',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#007bff',
-            customClass: {
-                popup: 'swal2-border-radius',
-                confirmButton: 'btn-aceptar',
-                container: 'fondo-oscuro'
-            }
-        });
-    });
-</script>";
+        $_SESSION['status'] = [
+            'type' => 'success',
+            'message' => 'Ubicación agregada correctamente.'
+        ];
     } else {
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-
-        $error = mysqli_error($conexion); // Captura el error fuera del script JS
-
-        echo "<script>
-document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire({
-        title: '<span class=\"titulo-alerta error\">Error</span>',
-        html: `
-            <div class=\"custom-alert\">
-                <div class=\"contenedor-imagen\">
-                    <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                </div>
-                <p>La ubicación no fue agregada.<br><small>$error</small></p>
-            </div>
-        `,
-        background: '#ffffffdb',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#007bff',
-        customClass: {
-            popup: 'swal2-border-radius',
-            confirmButton: 'btn-aceptar',
-            container: 'fondo-oscuro'
-        }
-    });
-});
-</script>";
+        $error = mysqli_error($conexion);
+        $_SESSION['status'] = [
+            'type' => 'error',
+            'message' => "La ubicación no fue agregada.<br><small>$error</small>"
+        ];
     }
+    // Redirigir para evitar reenvío de formulario al recargar
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
+
 // Eliminar ubicacion mediante boton
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
     $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-
     $query = "DELETE FROM ubicacion WHERE codigo = '$codigo'";
     $resultado = mysqli_query($conexion, $query);
-
-    // Responder solo con JSON
+    header('Content-Type: application/json');
     echo json_encode(["success" => $resultado]);
     exit();
 }
 
-
 // Obtener lista de productos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
     $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-
     $query = "SELECT codigo1, nombre FROM producto WHERE Ubicacion_codigo = '$codigo'";
-
     $resultado = mysqli_query($conexion, $query);
-
     $productos = [];
     while ($fila = mysqli_fetch_assoc($resultado)) {
         $productos[] = $fila;
     }
-
+    header('Content-Type: application/json');
     echo json_encode($productos);
     exit();
 }
+
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
 ?>
 <!DOCTYPE html>
@@ -139,27 +133,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <link rel="stylesheet" href="../componentes/header.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <script src="../js/header.js"></script>
-    <script defer src="../js/index.js"></script> <!-- Cargar el JS de manera correcta -->
-    <!--<script src="/js/ubicaciones.js"></script>-->
+    <script defer src="../js/index.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
 </head>
 
 <body>
-    <?php include 'boton-ayuda.php'; ?>
+    <?php 
+    // Llamar a la función que mostrará la alerta si existe en la sesión
+    display_session_alert();
+    include 'boton-ayuda.php'; 
+    ?>
     <script>
-        const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
+        const allData = <?php
+            // Se obtienen los datos de ubicaciones para que el script de la tabla funcione
+            $allQ = "SELECT codigo, nombre FROM ubicacion";
+            $allRes = mysqli_query($conexion, $allQ);
+            $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
+            echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); 
+        ?>;
     </script>
     <div id="menu"></div>
     <nav class="barra-navegacion">
         <div class="ubica"> Productos / Ubicación</div>
         <div class="userContainer">
             <div class="userInfo">
-                <!-- Nombre y apellido del usuario y rol -->
-                <!-- Consultar datos del usuario -->
                 <?php
-                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                // Se reutiliza la conexión existente
                 $id_usuario = $_SESSION['usuario_id'];
                 $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
                 $stmtUsuario = $conexion->prepare($sqlUsuario);
@@ -173,8 +174,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 $foto = $rowUsuario['foto'];
                 $stmtUsuario->close();
                 ?>
-                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-                <p class="rol">Rol: <?php echo $rol; ?></p>
+                <p class="nombre"><?php echo htmlspecialchars($nombreUsuario); ?> <?php echo htmlspecialchars($apellidoUsuario); ?></p>
+                <p class="rol">Rol: <?php echo htmlspecialchars($rol); ?></p>
 
             </div>
             <div class="profilePic">
@@ -221,7 +222,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-    <!-- Modal Nueva Ubicación -->
     <div id="modalNuevo" class="modal_nueva_ubicacion">
         <div class="modal-content-nueva">
             <h2>Nueva ubicación</h2>
@@ -245,8 +245,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-    <!-- Modal de productos - Mismo estilo que el modal principal -->
-    <!-- Modal de productos -->
     <div id="modalProductos" class="modal">
         <div class="modal-content">
             <span class="close">
@@ -254,8 +252,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </span>
             <h2>Productos de esta Ubicacion</h2>
             <div id="lista-productos">
-                <!-- Aquí se insertará la tabla o lista de productos -->
-            </div>
+                </div>
         </div>
     </div>
 
@@ -284,20 +281,20 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 filtered.slice(start, end).forEach(cat => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-        <td>${cat.nombre}</td>
-        <td class="td-options">
-          <button class="btn-list boton-accion marcarL" data-id="${cat.codigo}">Productos</button>
-          <button class="btn-delete boton-accion marcarN" data-id="${cat.codigo}">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </td>`;
+                <td>${cat.nombre}</td>
+                <td class="td-options">
+                    <button class="btn-list boton-accion marcarL" data-id="${cat.codigo}">Productos</button>
+                    <button class="btn-delete boton-accion marcarN" data-id="${cat.codigo}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>`;
                     tableBody.appendChild(tr);
                 });
                 renderPagination();
             }
             // —ANIMACIONES Modal de Nueva Categoría —
-            const modalNuevaUbicacion = document.getElementById('modalNuevo'); // Asegúrate de que el ID sea 'modal'
-            const btnAbrirNuevaUbicacion = document.getElementById('btnAbrirModal'); // Asume este ID para el botón de abrir
+            const modalNuevaUbicacion = document.getElementById('modalNuevo');
+            const btnAbrirNuevaUbicacion = document.getElementById('btnAbrirModal');
             const btnCancelarNuevaUbicacion = modalNuevaUbicacion.querySelector('#btnCancelar');
 
             if (btnAbrirNuevaUbicacion) {
@@ -322,15 +319,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             // — cierre del modal de productos —
             const modalProductos = document.getElementById('modalProductos');
             const closeBtnModalProductos = modalProductos.querySelector('.close');
-            // Función para ocultar
+
             function hideProductosModal() {
                 modalProductos.classList.remove('show');
             }
-            // Cerrar al pulsar la X
             if (closeBtnModalProductos) {
                 closeBtnModalProductos.addEventListener('click', hideProductosModal);
             }
-            // Cerrar al hacer clic fuera del contenido
             if (modalProductos) {
                 modalProductos.addEventListener('click', (e) => {
                     if (e.target === modalProductos) {
@@ -354,10 +349,9 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     return b;
                 };
 
-                // « First, ‹ Prev
                 paginationEl.appendChild(btnFactory('« Primera', 1));
                 paginationEl.appendChild(btnFactory('‹ Anterior', Math.max(1, currentPage - 1)));
-                // pages
+                
                 let start = Math.max(1, currentPage - 2),
                     end = Math.min(totalPages, currentPage + 2);
                 if (start > 1) paginationEl.append('…');
@@ -365,7 +359,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     paginationEl.appendChild(btnFactory(i, i));
                 }
                 if (end < totalPages) paginationEl.append('…');
-                // › Next, » Last
+                
                 paginationEl.appendChild(btnFactory('Siguiente ›', Math.min(totalPages, currentPage + 1)));
                 paginationEl.appendChild(btnFactory('Última »', totalPages));
             }
@@ -399,29 +393,29 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         .then(data => {
                             if (data.length) {
                                 const html = `
-            <table class="productos-table" style="width:100%">
-              <thead><tr><th>Código</th><th>Nombre</th></tr></thead>
-              <tbody>
-                ${data.map(p => `
-                  <tr>
-                    <td>${p.codigo1 || ''}</td>
-                    <td>${p.nombre   || ''}</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>`;
+                    <table class="productos-table" style="width:100%">
+                        <thead><tr><th>Código</th><th>Nombre</th></tr></thead>
+                        <tbody>
+                            ${data.map(p => `
+                                <tr>
+                                    <td>${p.codigo1 || ''}</td>
+                                    <td>${p.nombre  || ''}</td>
+                                </tr>`).join('')}
+                        </tbody>
+                    </table>`;
                                 document.getElementById('lista-productos').innerHTML = html;
                                 document.getElementById('modalProductos').classList.add('show');
                             } else {
                                 Swal.fire({
                                     title: '<span class="titulo-alerta advertencia">Sin productos</span>',
                                     html: `
-                  <div class="custom-alert">
-                    <div class="contenedor-imagen">
-                      <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
-                    </div>
-                    <p>No hay productos en esta ubicación.</p>
-                  </div>
-                `,
+                            <div class="custom-alert">
+                                <div class="contenedor-imagen">
+                                <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
+                                </div>
+                                <p>No hay productos en esta ubicación.</p>
+                            </div>
+                        `,
                                     background: '#ffffffdb',
                                     confirmButtonText: 'Aceptar',
                                     confirmButtonColor: '#007bff',
@@ -441,13 +435,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     Swal.fire({
                         title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
                         html: `
-            <div class="custom-alert">
-              <div class="contenedor-imagen">
-                <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-              </div>
-              <p>Esta acción eliminará la ubicación.<br>¿Desea continuar?</p>
-            </div>
-          `,
+                    <div class="custom-alert">
+                        <div class="contenedor-imagen">
+                        <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
+                        </div>
+                        <p>Esta acción eliminará la ubicación.<br>¿Desea continuar?</p>
+                    </div>
+                    `,
                         showCancelButton: true,
                         confirmButtonText: 'Sí, eliminar',
                         cancelButtonText: 'Cancelar',
@@ -472,42 +466,42 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 .then(resp => {
                                     if (resp.success) {
                                         Swal.fire({
-                                                title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
-                                                html: `
-                      <div class="custom-alert">
-                        <div class="contenedor-imagen">
-                          <img src="../imagenes/moto.png" alt="Éxito" class="moto">
-                        </div>
-                        <p>Ubicación eliminada correctamente.</p>
-                      </div>
-                    `,
-                                                background: '#ffffffdb',
-                                                confirmButtonText: 'Aceptar',
-                                                confirmButtonColor: '#007bff',
-                                                customClass: {
-                                                    popup: 'swal2-border-radius',
-                                                    confirmButton: 'btn-aceptar',
-                                                    container: 'fondo-oscuro'
-                                                }
-                                            })
-                                            .then(() => {
-                                                // refrescar datos en cliente
-                                                const idx = allCategories.findIndex(c => c.codigo === id);
-                                                if (idx > -1) allCategories.splice(idx, 1);
-                                                filtered = filtered.filter(c => c.codigo !== id);
-                                                renderTable();
-                                            });
+                                            title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                                            html: `
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                    <img src="../imagenes/moto.png" alt="Éxito" class="moto">
+                                    </div>
+                                    <p>Ubicación eliminada correctamente.</p>
+                                </div>
+                                `,
+                                            background: '#ffffffdb',
+                                            confirmButtonText: 'Aceptar',
+                                            confirmButtonColor: '#007bff',
+                                            customClass: {
+                                                popup: 'swal2-border-radius',
+                                                confirmButton: 'btn-aceptar',
+                                                container: 'fondo-oscuro'
+                                            }
+                                        })
+                                        .then(() => {
+                                            // refrescar datos en cliente
+                                            const idx = allCategories.findIndex(c => c.codigo == id);
+                                            if (idx > -1) allCategories.splice(idx, 1);
+                                            filtered = filtered.filter(c => c.codigo != id);
+                                            renderTable();
+                                        });
                                     } else {
                                         Swal.fire({
                                             title: '<span class="titulo-alerta error">Error</span>',
                                             html: `
-                      <div class="custom-alert">
-                        <div class="contenedor-imagen">
-                          <img src="../imagenes/llave.png" alt="Error" class="llave">
-                        </div>
-                        <p>No se pudo eliminar la ubicación porque hay productos asociados.</p>
-                      </div>
-                    `,
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                    </div>
+                                    <p>No se pudo eliminar la ubicación porque hay productos asociados.</p>
+                                </div>
+                                `,
                                             background: '#ffffffdb',
                                             confirmButtonText: 'Aceptar',
                                             confirmButtonColor: '#007bff',
@@ -522,13 +516,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 .catch(() => Swal.fire({
                                     title: '<span class="titulo-alerta error">Error</span>',
                                     html: `
-                    <div class="custom-alert">
-                      <div class="contenedor-imagen">
-                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                      </div>
-                      <p>No se pudo eliminar la ubicación porque hay productos asociados..</p>
-                    </div>
-                  `,
+                                <div class="custom-alert">
+                                    <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" alt="Error" class="llave">
+                                    </div>
+                                    <p>No se pudo eliminar la ubicación porque hay productos asociados..</p>
+                                </div>
+                                `,
                                     background: '#ffffffdb',
                                     confirmButtonText: 'Aceptar',
                                     confirmButtonColor: '#007bff',
@@ -547,15 +541,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             renderTable();
         });
 
-
         //ventana para que no se repita ubicacion
-        // Referencias
         const nombreInput = document.getElementById('nombre');
         const btnGuardar = document.getElementById('btnGuardar');
         const btnAbrir = document.getElementById('btnAbrirModal');
         let nombreValido = false;
 
-        // AJAX de validación
         async function validarUbicacion(nombre) {
             try {
                 const form = new URLSearchParams();
@@ -576,23 +567,30 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             }
         }
 
-        // Listener en tiempo real
         nombreInput.addEventListener('input', async () => {
             const val = nombreInput.value.trim();
-            nombreValido = val ? await validarUbicacion(val) : false;
-
-            if (!nombreValido) {
+            // Solo valida si hay algo escrito
+            if (val) {
+                nombreValido = await validarUbicacion(val);
+            } else {
+                nombreValido = false;
+            }
+            
+            const errorSpan = document.getElementById('nombre-error');
+            if (!nombreValido && val) {
                 nombreInput.classList.add('invalid');
+                errorSpan.style.display = 'block';
             } else {
                 nombreInput.classList.remove('invalid');
+                errorSpan.style.display = 'none';
             }
             btnGuardar.disabled = !nombreValido;
         });
 
-        // Al abrir el modal, resetear estado
         btnAbrir.addEventListener('click', () => {
             nombreInput.value = '';
             nombreInput.classList.remove('invalid');
+            document.getElementById('nombre-error').style.display = 'none';
             btnGuardar.disabled = true;
         });
     </script>

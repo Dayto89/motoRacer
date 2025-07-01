@@ -148,9 +148,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-    <?php include 'boton-ayuda.php'; ?>
-
     <div id="menu"></div>
+    <?php include 'boton-ayuda.php'; ?>
     <nav class="barra-navegacion">
         <div class="ubica"> Factura / Recibo </div>
         <div class="userContainer">

@@ -1,5 +1,6 @@
 <?php
 session_start();
+setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'es', 'spanish');
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
@@ -491,6 +492,16 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         #btnMarcar20:hover {
             background-color: rgb(0, 71, 148);
         }
+         .no-data-message {
+            text-align: center;
+            font-size: 2rem;
+            color: #666;
+            padding: 2rem;
+        }
+
+        .modo-alto-contraste .no-data-message {
+            color: #fff;
+        }
 
         @media (max-width: 600px) {
             .dashboard-container {
@@ -557,11 +568,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div class="chart-container">
             <canvas id="stockPieChart"></canvas>
         </div>
-        <?php if (isset($facturas_diarias)): ?>
-            <div class="chart-container">
-                <canvas id="invoicesLineChart"></canvas>
-            </div>
-        <?php endif; ?>
+    <?php if (empty($facturas_diarias)) { ?>
+        <div class="chart-container">
+            <p class="no-data-message">No se han generado facturas en <?= ucfirst(strftime('%B de %Y')) ?> aún.</p>
+        </div>
+    <?php } else { ?>
+        <div class="chart-container">
+            <canvas id="invoicesLineChart"></canvas>
+        </div>
+    <?php } ?>
     </div>
 
     <div id="notificaciones" class="notificaciones modal-animado">

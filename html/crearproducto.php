@@ -214,7 +214,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         }
     </style>
 </head>
-
+<?php include 'boton-ayuda.php'; ?>
 <!-- Aquí se cargará el header -->
 <div id="menu"></div>
 <nav class="barra-navegacion">
@@ -787,40 +787,55 @@ if ($_POST) {
         openModal(modalCat);
         document.getElementById('inputNombreCategoria').focus();
     }
-    formAddCategoria.addEventListener('submit', e => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputNombreCategoria').value.trim();
-        if (!nombre) return;
-        fetch('', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    accion: 'add_categoria',
-                    nombre
-                })
+formAddCategoria.addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = document.getElementById('inputNombreCategoria').value.trim();
+    if (!nombre) return;
+    fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                accion: 'add_categoria',
+                nombre
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const opt = document.createElement('option');
-                    opt.value = data.id;
-                    opt.text = data.nombre;
-                    opt.selected = true;
-                    document.getElementById('categoria').appendChild(opt);
-                    closeModal(modalCat);
-                    formAddCategoria.reset();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.error
-                    });
-                }
-            });
-    });
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // 1. Encuentra los elementos relevantes del 'fake-select' de categoría
+                const fakeSelect = document.querySelector('.fake-select[data-for="categoria"]');
+                const list = fakeSelect.querySelector('.fs-options');
+                const display = fakeSelect.querySelector('.fs-selected');
+                const hiddenInput = document.getElementById('categoria');
 
+                // 2. Crea el nuevo elemento <li> para la lista de opciones
+                const newItem = document.createElement('li');
+                newItem.dataset.value = data.id;
+                newItem.textContent = data.nombre;
+
+                // 3. Agrega el nuevo <li> a la lista
+                list.appendChild(newItem);
+
+                // 4. Actualiza el 'fake-select' para mostrarlo como seleccionado
+                display.textContent = data.nombre;
+                hiddenInput.value = data.id;
+
+                // 5. Cierra el modal y resetea el formulario
+                closeModal(modalCat);
+                formAddCategoria.reset();
+                document.getElementById('btnGuardarCategoria').disabled = true;
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error
+                });
+            }
+        });
+});
 
     // ——— Modal Ubicación ———
     document.getElementById('btnCancelarUbicacion')
@@ -830,39 +845,55 @@ if ($_POST) {
         openModal(modalUbic);
         document.getElementById('inputNombreUbicacion').focus();
     }
-    formAddUbicacion.addEventListener('submit', e => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputNombreUbicacion').value.trim();
-        if (!nombre) return;
-        fetch('', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    accion: 'add_ubicacion',
-                    nombre
-                })
+   formAddUbicacion.addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = document.getElementById('inputNombreUbicacion').value.trim();
+    if (!nombre) return;
+    fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                accion: 'add_ubicacion',
+                nombre
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const opt = document.createElement('option');
-                    opt.value = data.id;
-                    opt.text = data.nombre;
-                    opt.selected = true;
-                    document.getElementById('ubicacion').appendChild(opt);
-                    closeModal(modalUbic);
-                    formAddUbicacion.reset();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.error
-                    });
-                }
-            });
-    });
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // 1. Encuentra los elementos del 'fake-select' de ubicación
+                const fakeSelect = document.querySelector('.fake-select[data-for="ubicacion"]');
+                const list = fakeSelect.querySelector('.fs-options');
+                const display = fakeSelect.querySelector('.fs-selected');
+                const hiddenInput = document.getElementById('ubicacion');
+
+                // 2. Crea el nuevo elemento <li>
+                const newItem = document.createElement('li');
+                newItem.dataset.value = data.id;
+                newItem.textContent = data.nombre;
+
+                // 3. Agrega el nuevo <li> a la lista
+                list.appendChild(newItem);
+
+                // 4. Actualiza para que quede seleccionado
+                display.textContent = data.nombre;
+                hiddenInput.value = data.id;
+
+                // 5. Cierra y resetea
+                closeModal(modalUbic);
+                formAddUbicacion.reset();
+                document.getElementById('btnGuardarUbicacion').disabled = true;
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error
+                });
+            }
+        });
+});
 
     // ——— Modal Marca ———
     document.getElementById('btnCancelarMarca')
@@ -872,39 +903,55 @@ if ($_POST) {
         openModal(modalMarca);
         document.getElementById('inputNombreMarca').focus();
     }
-    formAddMarca.addEventListener('submit', e => {
-        e.preventDefault();
-        const nombre = document.getElementById('inputNombreMarca').value.trim();
-        if (!nombre) return;
-        fetch('', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    accion: 'add_marca',
-                    nombre
-                })
+formAddMarca.addEventListener('submit', e => {
+    e.preventDefault();
+    const nombre = document.getElementById('inputNombreMarca').value.trim();
+    if (!nombre) return;
+    fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                accion: 'add_marca',
+                nombre
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const opt = document.createElement('option');
-                    opt.value = data.id;
-                    opt.text = data.nombre;
-                    opt.selected = true;
-                    document.getElementById('marca').appendChild(opt);
-                    closeModal(modalMarca);
-                    formAddMarca.reset();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.error
-                    });
-                }
-            });
-    });
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // 1. Encuentra los elementos del 'fake-select' de marca
+                const fakeSelect = document.querySelector('.fake-select[data-for="marca"]');
+                const list = fakeSelect.querySelector('.fs-options');
+                const display = fakeSelect.querySelector('.fs-selected');
+                const hiddenInput = document.getElementById('marca');
+
+                // 2. Crea el nuevo elemento <li>
+                const newItem = document.createElement('li');
+                newItem.dataset.value = data.id;
+                newItem.textContent = data.nombre;
+
+                // 3. Agrega el nuevo <li> a la lista
+                list.appendChild(newItem);
+
+                // 4. Actualiza para que quede seleccionado
+                display.textContent = data.nombre;
+                hiddenInput.value = data.id;
+
+                // 5. Cierra y resetea
+                closeModal(modalMarca);
+                formAddMarca.reset();
+                document.getElementById('btnGuardarMarca').disabled = true;
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.error
+                });
+            }
+        });
+});
 
     // referencias
     const modalImport = document.getElementById('modalImport');

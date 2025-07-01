@@ -5,7 +5,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '../html/verificar_permisos.php';
 // Obtener datos del usuario para mostrarlos en la página
 $usuarioId = $_SESSION['usuario_id'];
 $conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
@@ -111,12 +111,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
-                     title: `<span class='titulo-alerta confirmacion'>Datos actualizados</span>`,
+                    title: `<span class='titulo-alerta confirmacion'>Datos actualizados</span>`,
                     html: `
                         <div class='alerta'>
                            <div class=\"contenedor-imagen\">
-                              <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
-                          </div>
+                                <img src=\"../imagenes/moto.png\" alt=\"Confirmación\" class=\"moto\">
+                            </div>
                             <p>Los datos se actualizaron con éxito.</p>
                         </div>
                     `,
@@ -132,33 +132,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     window.location.href = 'información.php'; // Redirige después de cerrar el alert
                 });
             });
-        </script>"; #    3
+        </script>";
     } else {
 
         echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
         echo "<script>
-                          document.addEventListener('DOMContentLoaded', function() {
-                              Swal.fire({
-                       title: '<span class=\"titulo-alerta error\">Error</span>',
-                          html: `
-                              <div class=\"custom-alert\">
-                                  <div class='contenedor-imagen'>
-                                        <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
-                                  </div>
-                                  <p>Error al actualizar los datos.</p>
-                              </div>
-                          `,
-                          background: '#ffffffdb',
-                        confirmButtonText: 'Aceptar',
-                        confirmButtonColor: '#dc3545',
-                        customClass: {
-                            popup: 'swal2-border-radius',
-                            confirmButton: 'btn-aceptar',
-                            container: 'fondo-oscuro'
-                        }
-                      } );
-                                  });
-                                  </script>";
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    Swal.fire({
+                                title: '<span class=\"titulo-alerta error\">Error</span>',
+                                html: `
+                                    <div class=\"custom-alert\">
+                                        <div class='contenedor-imagen'>
+                                            <img src=\"../imagenes/llave.png\" alt=\"Error\" class=\"llave\">
+                                        </div>
+                                        <p>Error al actualizar los datos.</p>
+                                    </div>
+                                `,
+                                background: '#ffffffdb',
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#dc3545',
+                                customClass: {
+                                    popup: 'swal2-border-radius',
+                                    confirmButton: 'btn-aceptar',
+                                    container: 'fondo-oscuro'
+                                }
+                            } );
+                                    });
+                                    </script>";
     }
 }
 
@@ -174,8 +174,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <title>Información de Usuario</title>
     <link rel="icon" type="image/x-icon" href="/imagenes/LOGO.png">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
-    <link rel="stylesheet" href="../css/info.css"> <!-- Archivo CSS externo -->
-    <link rel="stylesheet" href="../css/alertas.css">
+    <link rel="stylesheet" href="../css/info.css"> <link rel="stylesheet" href="../css/alertas.css">
     <link rel="stylesheet" href="../componentes/header.php">
     <link rel="stylesheet" href="../componentes/header.css">
     <script src="../js/header.js"></script>
@@ -186,6 +185,129 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             content: " *";
             color: red;
         }
+
+/* --- INICIO DE ESTILOS RESPONSIVE --- */
+
+/* --- ESTILOS PARA MÓVILES (Hasta 767px de ancho) --- */
+@media screen and (max-width: 767px) {
+    
+    :root {
+        --ancho-menu-lateral: 70px;
+    }
+
+    /* 1. Estructura del body se mantiene */
+    body {
+        display: block;
+        position: relative;
+        padding-left: var(--ancho-menu-lateral);
+        box-sizing: border-box;
+        background-attachment: fixed;
+    }
+
+    /* 2. Barra superior se mantiene */
+    .barra-navegacion {
+        position: fixed;
+        top: 0;
+        left: var(--ancho-menu-lateral);
+        width: calc(100% - var(--ancho-menu-lateral));
+        z-index: 5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+        box-sizing: border-box;
+        min-height: 60px;
+        background-color: #0d47a1;
+    }
+
+    /* 3. Volvemos al contenedor con scroll interno completo */
+    .container {
+        width: 95%; 
+        max-width: 500px; 
+        margin: 80px auto 30px auto; 
+        max-height: calc(100vh - 120px); 
+        padding: 25px; 
+        box-sizing: border-box;
+        background: rgb(211 210 210 / 84%);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px #0b111a;
+        
+        /* El scroll vuelve a estar en todo el contenedor */
+        overflow-y: auto; 
+        
+        /* !! LA SOLUCIÓN MÁGICA: Evita el "rebote" al final del scroll !! */
+        overscroll-behavior-y: contain;
+    }
+    
+    /* El resto de estilos vuelve a la versión anterior */
+    h1 {
+        font-size: 28px;
+        text-align: center;
+        margin-left: 0;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        /* Ya no necesita estilos de flexbox ni scroll */
+    }
+
+    .profile-pic {
+        margin-bottom: 20px;
+    }
+
+    .info-group {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 20px;
+        align-items: center;
+    }
+
+    .info-group span {
+        width: 90%;
+        text-align: center;
+    }
+
+    .btn-abrir {
+        margin: 25px auto 15px auto;
+        display: block;
+        width: 50%;
+        min-width: 150px;
+        padding: 12px;
+    }
+
+    /* --- POPUP DE EDICIÓN RESPONSIVO --- */
+    .popup {
+        width: 90%;
+        max-height: 85vh;
+        padding: 20px 15px;
+        overflow-y: auto;
+    }
+    
+    .popup h2 { font-size: 24px; }
+    .popup .campo, .popup .input-group { width: 100%; margin-left: 0; }
+    .popup input { width: 90%; margin: 0 auto 12px auto; display: block; }
+    .popup label { text-align: center; display: block; margin-bottom: 8px; }
+    .btn-verificar-correo { width: 90%; margin: 10px auto; display: block; }
+    #verificacionWrapper { width: 100%; }
+    .input-group input { width: 100%; margin-left: 0; }
+    .input-group p { margin-left: 0; width: 100%; }
+    .button_container { display: flex; flex-direction: column; gap: 10px; align-items: center; width: 100%; }
+    .btn-guardar1, .btn-cancelar1 { width: 80%; padding: 12px; }
+}
+
+/* --- ESTILOS PARA TABLETS --- */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        width: 80%;
+        max-width: 80%;
+        margin: 20px auto;
+    }
+
+    .popup {
+        width: 70%;
+    }
+}
     </style>
 </head>
 
@@ -197,8 +319,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div class="ubica"> Usuario / Información </div>
         <div class="userContainer">
             <div class="userInfo">
-                <!-- Nombre y apellido del usuario y rol -->
-                <!-- Consultar datos del usuario -->
                 <?php
                 $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
                 $id_usuario = $_SESSION['usuario_id'];
@@ -227,7 +347,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </nav>
-    <!-- Información del usuario -->
     <div class="fondo-opaco"></div>
     <div class="container">
 
@@ -266,7 +385,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                 <span id="cargo"><?php echo $cargo; ?></span>
             </div>
 
-            <!-- Botón para abrir el popup -->
             <div class="boton-editar">
                 <button class="btn-abrir" onclick="abrirPopup()">Editar</button>
             </div>
@@ -274,7 +392,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
 
-    <!-- Popup -->
     <div class="overlay" id="overlay">
         <div class="popup" id="popup">
             <h2>Editar Usuario</h2>
@@ -284,9 +401,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         <img id="popupProfilePic" class="preview"
                             src="data:image/jpeg;base64,<?php echo base64_encode($usuario['foto']); ?>"
                             alt="Previsualización">
-                        <!-- Input oculto -->
                         <input type="file" name="foto" id="imageInput" accept="image/*" />
-                        <!-- Label actúa de botón, superpuesto -->
                         <label for="imageInput" class="upload-overlay"> <span class="upload-text">Seleccionar imagen</span>
                             <i class="bx bx-camera"></i>
                         </label>

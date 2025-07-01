@@ -236,6 +236,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script>
         const allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;
     </script>
+    <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
     <nav class="barra-navegacion">
         <div class="ubica"> Factura / Lista clientes </div>

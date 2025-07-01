@@ -70,7 +70,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <style>
 
+        .card-header p.product-id {
+            white-space: normal;
+            /* Permite que el texto se divida en varias líneas */
+            overflow-wrap: break-word;
+            /* Rompe palabras largas si es necesario */
+            max-width: 100%;
+            /* Limita el ancho al contenedor padre */
+            margin: 0;
+            /* Elimina márgenes adicionales para mejor control */
+            font-size: 14px;
+            /* Ajusta el tamaño de fuente si es necesario */
+        }
+    </style>
 </head>
 
 <body>
@@ -231,35 +245,35 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             const stockDisponible = stockActual + cantidadEnCarrito;
 
             Swal.fire({
-    title: `<span class="titulo-alerta text">Añadir: ${nombre}</span>`,
-    html: `
+                title: `<span class="titulo-alerta text">Añadir: ${nombre}</span>`,
+                html: `
         <div class="custom-alert">
             <label for="cantidad-input">Cantidad (disponible: ${stockDisponible})</label>
             <input id="cantidad-input" type="number" min="1" max="${stockDisponible}" value="1" class="swal2-input">
         </div>`,
-    background: 'hsl(0deg 0% 100% / 0.76)',
-    confirmButtonText: 'Confirmar',
-    cancelButtonText: 'Cancelar',
-    showCancelButton: true,
-    confirmButtonColor: '#007bff',
-    customClass: {
-        popup: 'swal2-border-radius',
-        confirmButton: 'btn-aceptar',
-        cancelButton: 'btn-cancelar',
-        container: 'fondo-oscuro'
-    },
-    preConfirm: () => {
-        const value = parseInt(document.getElementById('cantidad-input').value);
-        if (!value || value <= 0) {
-            Swal.showValidationMessage('Por favor, ingrese un número válido mayor a cero.');
-            return false;
-        }
-        if (value > stockDisponible) {
-            Swal.showValidationMessage(`No puede exceder el stock disponible de ${stockDisponible} unidades.`);
-            return false;
-        }
-        return value;
-    }
+                background: 'hsl(0deg 0% 100% / 0.76)',
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                showCancelButton: true,
+                confirmButtonColor: '#007bff',
+                customClass: {
+                    popup: 'swal2-border-radius',
+                    confirmButton: 'btn-aceptar',
+                    cancelButton: 'btn-cancelar',
+                    container: 'fondo-oscuro'
+                },
+                preConfirm: () => {
+                    const value = parseInt(document.getElementById('cantidad-input').value);
+                    if (!value || value <= 0) {
+                        Swal.showValidationMessage('Por favor, ingrese un número válido mayor a cero.');
+                        return false;
+                    }
+                    if (value > stockDisponible) {
+                        Swal.showValidationMessage(`No puede exceder el stock disponible de ${stockDisponible} unidades.`);
+                        return false;
+                    }
+                    return value;
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const cantidadDeseada = parseInt(result.value);

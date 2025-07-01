@@ -1,484 +1,612 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Metal Mania", system-ui;
-  background-image: url('fondoMotoRacer.png'); 
-  background-size: cover;
-  background-position: center;
-  margin-top: 7%;
-}
-body::before {
-  position: fixed;
-  width: 200%;
-  height: 200%;
-  z-index: -1;
-  background: black;
-  opacity: 0.6;
-}
-
-/* 2) Aplico transición a **todos** los hijos directos */
-.barra-navegacion>* {
-    transition: transform 0.3s ease;
-}
-
-/* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
-#menu:hover~.barra-navegacion>*:first-child {
-    transform: translateX(210px);
-    /* ancho menú expandido */
-}
-
-/* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
-#menu:hover~.barra-navegacion>*:last-child {
-    transform: none;
-}
-
-.container {
-    width: 57%;
-    margin: auto;
-    margin-top: 3%;
-    margin-left: 24%;
-}
-
-/* Título principal */
-h1 {
-    color: white;
-    text-align: center;
-    margin-top: 9%;
-    margin-bottom: 20px;
-    font-family: "Metal Mania", system-ui;
-    font-size: 60px;
-    text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
-    margin-left: 4%;
-}
- /* Tabla de categorías */
- .user-table {
-  box-shadow: 0 0 15px #222a37;
-    width: 100%;
-    border-collapse: collapse;
-    color: white;
-    font-family: Arial;
-    margin-top: 3.5%;
-}
-
-.user-table td {
-  text-align: center;
-  font-family: Arial, sans-serif;
-  width: 225px;
-  padding: 5px;
-    background-color: rgb(63 61 61);
-}
-
-th,
-td {
-    border: 1px solid #fff7f7;
-    padding: 10px;
-    text-align: left;
-}
-
-th {
-     background-color: rgb(32 69 113);
-    font-weight: bold;
-    text-align: center;
-}
-
-#tabla-usuarios td {
-    background-color: rgb(63 61 61);
-    text-align: center;
-    color: white;
-}
-
-
-.row-gray {
-  background-color: rgb(33 32 32 / 59%);
-  color: white;
-}
-
-.row-ocre {
-  background-color: #f9f9f9b7;
-  color: black;
-}
-
-/* Ajuste para mover "Nombre" hacia la derecha */
-.user-table td:nth-child(2), .user-table th:nth-child(2) {
-  padding-left: 10px;
-  
-}
-  
-
-.btn-permisos, .btn-delete {
-  padding: 8px 12px;
-  margin: 5px;
-  border: none;
-  cursor: pointer;
-  color: white;
-}
-.btn-registro {
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px 21px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-right: 69%;
-  width: 33%;
-
-}
-
-.btn-permisos {
-  background-color: #007bff;
-  border-radius: 10px;
-
-}
-
-.btn-delete {
-  background-color: #dc3545;
-  border-radius: 15px;
-}
-
-
-.btn-permisos:hover {
-  background-color: #0056b3;
-}
-
-.btn-delete:hover {
-  background-color: #c82333;
-}
-.btn-registro:hover {
-  background-color: #0056b3;
-}
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.78);
-  justify-content: center;
-  align-items: center;
-  
-}
-
-div.modal-content {
-  
-  margin: 8% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 100%;
-  background-color: rgb(200 200 200 / 76%);
-  padding: 20px;
-  border-radius: 10px;
-  width: 78%;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  animation: slideIn 0.3s ease-out;
-}
-.close {
-  font-family: Arial, Helvetica, sans-serif;
-  float: right;
-  font-size: 30px;
-  cursor: pointer;
-  color: white;
-}
-
-.permissions-table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-}
-
-.permissions-table th, .permissions-table td {
-  padding: 10px;
-  text-align: center;
-  background-color: #f9f9f9b7;
-  color: black;
-  font-family: Arial, Helvetica, sans-serif;
-  text-align: left;
-  font-weight: bold;
-}
-
-.permissions-table th {
-  background-color: #417ab5;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.btn-save {
-  background-color: #007bff;
-  border-radius: 15px;
-  color: white;
-  padding:  13px 36px;
-  border: none;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.btn-save:hover {
-  background-color: #0056b3;
-}
-
-tbody input[type="checkbox"] {
-  transform: translate(175%, 9%) scale(1.5);
-  background-color: #417ab5;
-}
-
-.modal-content h2 {
-  font-size: 52px;
-  color: white;
-  text-align: center;
-  margin-top: 2px;
-  margin-left: 16px;
-  font-weight: bold;
-  text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
-  letter-spacing: 5px;
-}
-/* Agregamos la animación de entrada */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Agregamos la animación de salida */
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-}
-
-
-
-/* Contenido del modal con animación */
-.modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
-  opacity: 0; /* Oculto por defecto */
-  transform: translateY(-20px);
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-/* Cuando el modal está abierto */
-.modal.mostrar {
-   background-color: rgb(0 0 0 / 83%) !important;
-  /* Fondo oscuro */
-  backdrop-filter: blur(2px);
-  /* Opcional: desenfoque sutil */
-  z-index: 9999;
-}
-/* Clases para activar las animaciones */
-.modal.mostrar .modal-content {
-  opacity: 1;
-  transform: translateY(0);
-  animation: fadeIn 0.3s forwards;
-  
- 
-}
-
-.modal.ocultar .modal-content {
-  animation: fadeOut 0.3s forwards;
-}
-
-.close:hover, .close:focus {
-  color: #a30d0d;
-  text-decoration: none;
-  cursor: pointer;
-}
-.close {
-  color: #302f2f;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-/* Estilos para el toggle switch */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 20px;
-  
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #C55655;
-  transition: 0.4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 12px;
-  width: 12px;
-  left: 4px;
-  bottom: 4px;
-  background-color: rgb(255 255 255);
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #1f78bf;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  transform: translateX(30px);
-}
-input[type="checkbox"] {
-  display: none;
-}
-
-/* Estilos para el contenedor de columnas */
-.column-container {
-  display: grid;
-  grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr;
-  gap: 20px; /* Espacio entre columnas */
-  padding: 20px;
-  align-items: start; /* Alinea las columnas a la izquierda */
-
-}
-
-/* Estilos para cada columna */
-.column {
-  background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.modo-alto-contraste .column {
-  background-color: black;
-  color: white;
-  border: white solid 4px;
-}
-
-.modo-claro .column {
-  border: black solid 4px;
-}
-
-/* Estilos para las secciones */
-.section-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  font-family: arial;
-}
-
-/* Estilos para las subsecciones */
-.subsection {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  margin-bottom: 15px;
-  text-align: left;
-}
-
-/* Asegura que el switch tenga ancho fijo y no sea afectado por el texto */
-.subsection .switch {
-  flex-shrink: 0;
-  width: 50px;
-  margin-top: 3px;
-}
-
-/* Permite que el texto se divida en varias líneas */
-.subsection span {
-  flex: 1;
-  word-break: break-word;
-}
-
-
-div.subsection{
-
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
-  margin-bottom: 15px; /* Ajusta el valor según necesites */
-  text-align: left;
-}
-
-#btnGuardar {
-  background-color:  #007bff;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-#btnGuardar:hover {
-  background-color:#0056b3;
-}
-
-.container-general {
-    position: fixed;
-    top: 7%;
-    left: 19%;
-    width: 67%;
-    height: 89%;
-    background: rgb(211 210 210 / 84%);
-    z-index: -1000;
-    pointer-events: none;
-    box-shadow: 0 4px 20px #0b111a;
-    border-radius: 10px;
-}
-/* MÓVILES */
-/* Horizontal */
-@media screen and (max-width: 870px) and (orientation: landscape) {
-
-}
-
-/* Vertical */
-@media screen and (max-width: 767px) and (orientation: portrait) {
-
-}
-
-
-/* TABLETS */
-/* Horizontal */
-@media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {
-
-}
-
-/* Vertical */
-@media screen and (min-width: 870px) and (max-width: 1023px) and (orientation: portrait) {
-
-}
+  * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Metal Mania", system-ui;
+            background-image: url('fondoMotoRacer.png');
+            background-size: cover;
+            background-position: center;
+            margin-top: 7%;
+        }
+
+        body::before {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            z-index: -1;
+            background: black;
+            opacity: 0.6;
+        }
+
+        /* 2) Aplico transición a **todos** los hijos directos */
+        .barra-navegacion>* {
+            transition: transform 0.3s ease;
+        }
+
+        /* 3) Al hacer hover en #menu, desplazo **solo** el primer hijo */
+        #menu:hover~.barra-navegacion>*:first-child {
+            transform: translateX(210px);
+            /* ancho menú expandido */
+        }
+
+        /* 4) Garantizo que el último hijo (tu avatar+rol) NO se mueva */
+        #menu:hover~.barra-navegacion>*:last-child {
+            transform: none;
+        }
+
+        .container {
+            width: 57%;
+            margin: auto;
+            margin-top: 3%;
+            margin-left: 24%;
+        }
+
+        /* Título principal */
+        h1 {
+            color: white;
+            text-align: center;
+            margin-top: 9%;
+            margin-bottom: 20px;
+            font-family: "Metal Mania", system-ui;
+            font-size: 60px;
+            text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+            margin-left: 4%;
+        }
+
+        /* Tabla de categorías */
+        .user-table {
+            box-shadow: 0 0 15px #222a37;
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+            font-family: Arial;
+            margin-top: 3.5%;
+        }
+
+        .user-table td {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            width: 225px;
+            padding: 5px;
+            background-color: rgb(63 61 61);
+        }
+
+        th,
+        td {
+            border: 1px solid #fff7f7;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgb(32 69 113);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #tabla-usuarios td {
+            background-color: rgb(63 61 61);
+            text-align: center;
+            color: white;
+        }
+
+
+        .row-gray {
+            background-color: rgb(33 32 32 / 59%);
+            color: white;
+        }
+
+        .row-ocre {
+            background-color: #f9f9f9b7;
+            color: black;
+        }
+
+        /* Ajuste para mover "Nombre" hacia la derecha */
+        .user-table td:nth-child(2),
+        .user-table th:nth-child(2) {
+            padding-left: 10px;
+
+        }
+
+
+        .btn-permisos,
+        .btn-delete {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-registro {
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px 21px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 69%;
+            width: 33%;
+
+        }
+
+        .btn-permisos {
+            background-color: #007bff;
+            border-radius: 10px;
+
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            border-radius: 15px;
+        }
+
+
+        .btn-permisos:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-registro:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.78);
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        div.modal-content {
+
+            margin: 8% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 100%;
+            background-color: rgb(200 200 200 / 76%);
+            padding: 20px;
+            border-radius: 10px;
+            width: 78%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .close {
+            font-family: Arial, Helvetica, sans-serif;
+            float: right;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .permissions-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .permissions-table th,
+        .permissions-table td {
+            padding: 10px;
+            text-align: center;
+            background-color: #f9f9f9b7;
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .permissions-table th {
+            background-color: #417ab5;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .btn-save {
+            background-color: #007bff;
+            border-radius: 15px;
+            color: white;
+            padding: 13px 36px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-save:hover {
+            background-color: #0056b3;
+        }
+
+        tbody input[type="checkbox"] {
+            transform: translate(175%, 9%) scale(1.5);
+            background-color: #417ab5;
+        }
+
+        .modal-content h2 {
+            font-size: 52px;
+            color: white;
+            text-align: center;
+            margin-top: 2px;
+            margin-left: 16px;
+            font-weight: bold;
+            text-shadow: rgb(28, 81, 160) 7px -1px 0px, rgb(28, 81, 160) 1px -1px 0px, rgb(28, 81, 160) -1px 1px 0px, rgb(28, 81, 160) 3px 5px 0px;
+            letter-spacing: 5px;
+        }
+
+        /* Agregamos la animación de entrada */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Agregamos la animación de salida */
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+
+
+        /* Contenido del modal con animación */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            opacity: 0;
+            /* Oculto por defecto */
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        /* Cuando el modal está abierto */
+        .modal.mostrar {
+            background-color: rgb(0 0 0 / 83%) !important;
+            /* Fondo oscuro */
+            backdrop-filter: blur(2px);
+            /* Opcional: desenfoque sutil */
+            z-index: 9999;
+        }
+
+        /* Clases para activar las animaciones */
+        .modal.mostrar .modal-content {
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn 0.3s forwards;
+
+
+        }
+
+        .modal.ocultar .modal-content {
+            animation: fadeOut 0.3s forwards;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #a30d0d;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .close {
+            color: #302f2f;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* Estilos para el toggle switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 20px;
+
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #C55655;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 4px;
+            bottom: 4px;
+            background-color: rgb(255 255 255);
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #1f78bf;
+        }
+
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(30px);
+        }
+
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Estilos para el contenedor de columnas */
+        .column-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1.5fr;
+            gap: 20px;
+            /* Espacio entre columnas */
+            padding: 20px;
+            align-items: start;
+            /* Alinea las columnas a la izquierda */
+
+        }
+
+        /* Estilos para cada columna */
+        .column {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .modo-alto-contraste .column {
+            background-color: black;
+            color: white;
+            border: white solid 4px;
+        }
+
+        .modo-claro .column {
+            border: black solid 4px;
+        }
+
+        /* Estilos para las secciones */
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: arial;
+        }
+
+        /* Estilos para las subsecciones */
+        .subsection {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        /* Asegura que el switch tenga ancho fijo y no sea afectado por el texto */
+        .subsection .switch {
+            flex-shrink: 0;
+            width: 50px;
+            margin-top: 3px;
+        }
+
+        /* Permite que el texto se divida en varias líneas */
+        .subsection span {
+            flex: 1;
+            word-break: break-word;
+        }
+
+
+        div.subsection {
+
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            margin-bottom: 15px;
+            /* Ajusta el valor según necesites */
+            text-align: left;
+        }
+
+        #btnGuardar {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #btnGuardar:hover {
+            background-color: #0056b3;
+        }
+
+        .container-general {
+            position: fixed;
+            top: 7%;
+            left: 19%;
+            width: 67%;
+            height: 89%;
+            background: rgb(211 210 210 / 84%);
+            z-index: -1000;
+            pointer-events: none;
+            box-shadow: 0 4px 20px #0b111a;
+            border-radius: 10px;
+        }
+
+        /* =================================================================== */
+        /* =================== CÓDIGO RESPONSIVE (MÓVIL) =================== */
+        /* =================================================================== */
+
+        /* MÓVILES - VISTA VERTICAL (Portrait) */
+        @media screen and (max-width: 767px) and (orientation: portrait) {
+
+            /* 1. Ajuste de contenedores y cuerpo */
+            body {
+                margin-top: 0;
+                /* Reseteamos el margen para móviles */
+            }
+
+            /* Hacemos que el contenedor principal ocupe el ancho disponible,
+     dejando espacio para el menú lateral (asumiendo que mide 90px) */
+            .container {
+                width: calc(100% - 55px);
+                margin: 3rem 0 1rem 90px;
+                padding: 0 15px;
+            }
+
+            .container-general {
+                position: fixed;
+                top: 11%;
+                left: 21%;
+                width: 79%;
+                height: 87%;
+                background: rgb(211 210 210 / 84%);
+                z-index: -1000;
+                pointer-events: none;
+                box-shadow: 0 4px 20px #0b111a;
+                border-radius: 10px;
+            }
+
+            /* 2. Adaptación de Título y Botones */
+            h1 {
+                font-size: 2rem;
+                margin: 143px auto 15px auto;
+                text-align: center;
+                width: 100%;
+                margin-left: 10%;
+            }
+
+            .btn-registro {
+                width: 100%;
+                /* El botón ocupa todo el ancho para ser más fácil de presionar */
+                margin: 0 0 20px 0;
+            }
+
+            /* 3. ¡AQUÍ LA MAGIA DEL SCROLL HORIZONTAL! */
+            .container {
+                overflow-x: auto;
+                /* Habilita el scroll horizontal SÓLO para este contenedor */
+                -webkit-overflow-scrolling: touch;
+                /* Mejora la experiencia de scroll en iOS */
+            }
+
+            .user-table {
+                width: 100%;
+                min-width: 700px;
+                /* Forzamos un ancho mínimo para que la tabla no se comprima */
+            }
+
+            /* Evitamos que el texto de las celdas se parta en varias líneas */
+            .user-table th,
+            .user-table td {
+                white-space: nowrap;
+            }
+        }
+
+        /* MÓVILES - VISTA HORIZONTAL (Landscape) */
+        @media screen and (max-width: 870px) and (orientation: landscape) {
+
+            /* 1. Se oculta la barra superior para ganar espacio vertical */
+            .barra-navegacion {
+                display: none !important;
+            }
+
+            /* 2. Contenedor de fondo decorativo */
+            .container-general {
+                position: fixed;
+                top: 16%;
+                left: 4%;
+                width: 92%;
+                height: 96%;
+                background: rgb(211 210 210 / 84%);
+                z-index: -1000;
+                pointer-events: none;
+                box-shadow: 0 4px 20px #0b111a;
+                border-radius: 10px;
+            }
+
+            /* 3. Contenedor principal del contenido */
+            .container {
+                width: calc(100% - 103px);
+                margin: 0rem 0 1rem 55px;
+                padding: 0 15px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* 4. Título adaptado */
+            h1 {
+                font-size: 2rem;
+                /* Margen superior muy reducido para que quepa en la pantalla */
+                margin: 1rem auto 1.5rem auto;
+                text-align: center;
+                width: 100%;
+                margin-top: 8%;
+
+            }
+
+            /* 5. Se mantienen los estilos de la tabla y botón */
+            .btn-registro {
+                width: auto;
+                display: block;
+                margin: 0;
+            }
+
+            .user-table {
+                min-width: 700px;
+            }
+
+            .user-table th,
+            .user-table td {
+                white-space: nowrap;
+            }
+        }

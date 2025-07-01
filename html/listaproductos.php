@@ -227,6 +227,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
+  <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
   <nav class="barra-navegacion">
     <div class="ubica"> Inventario / Lista productos </div>
