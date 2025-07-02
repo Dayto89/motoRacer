@@ -197,7 +197,7 @@ th {
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
-  z-index: 1000;
+  z-index: 1001;
 
   /* Animación del fondo */
   visibility: hidden;
@@ -271,6 +271,7 @@ th {
   /* Fondo oscuro */
   backdrop-filter: blur(2px);
   /* Opcional: desenfoque sutil */
+  z-index: 9999;
 }
 
 /* Contenido del modal Lista de Productos */

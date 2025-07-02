@@ -133,7 +133,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     .pagination-dinamica {
       display: flex;
       justify-content: center;
-      margin-top: 3%;
+      margin-top: 1%;
       gap: 12px;
       font-family: arial;
       font-size: 11px;

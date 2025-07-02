@@ -260,6 +260,7 @@ input.form-control {
   /* Fondo oscuro */
   backdrop-filter: blur(2px);
   /* Opcional: desenfoque sutil */
+  z-index: 9999;
 }
 
 .modal.show .modal-content,

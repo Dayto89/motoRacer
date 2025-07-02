@@ -100,7 +100,7 @@ function enviarCodigo(string $correo, string $codigo): array {
 // Ejemplo de uso
 $result = enviarCodigo('destino@mail.com', '123456');
 if ($result['success']) {
-    echo "Correo enviado correctamente.";
+    
 } else {
     echo "Fallo al enviar correo: " . $result['error'];
 }

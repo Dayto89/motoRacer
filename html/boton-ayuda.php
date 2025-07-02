@@ -21,6 +21,7 @@ $mapaAyuda = [
   'gestiondeusuarios'  => '/ayuda/gestiondeusuarios.pdf',
   'copiadeseguridad'   => '/ayuda/copiadeseguridad.pdf',
   'pagos'              => '/ayuda/pagos.pdf',
+  'recibo'             => '/ayuda/recibo.pdf', 
   'registro'              => '/ayuda/registro.pdf',
 ];
 
@@ -46,7 +47,7 @@ if (!$pdf) return;  // nada que mostrar
   font-size: 26px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   text-decoration: none;
-  z-index: 9999;
+  z-index: 999;
   transition: background-color .3s;
 }
 .boton-ayuda:hover {

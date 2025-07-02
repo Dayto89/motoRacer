@@ -255,7 +255,7 @@ label {
 
 /* si quieres mayor altura para las opciones abiertas */
 .fake-select .fs-options-wrap {
-  max-height: 200px;
+  max-height: 150px;
 }
 
 
@@ -1051,7 +1051,7 @@ input.error {
   background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .modal_nueva_categoria.show {
@@ -1321,7 +1321,7 @@ button:disabled {
   list-style: none;
   border: 1px solid #000;
   border-radius: 23px;
-  max-height: 230px;
+  max-height: 150px;
   overflow-y: auto;
   background: #fff;
   display: none;
@@ -1342,7 +1342,7 @@ button:disabled {
 
 /* El wrapper recorta el scroll con el mismo border-radius */
 .fake-select .fs-options-wrap {
-  max-height: 200px;
+  max-height: 150px;
   /* ≃10 filas */
   overflow-y: auto;
   /* scroll dentro */

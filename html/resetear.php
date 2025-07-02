@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i id="togglePassword2" class='bx bx-hide'></i>
                     </div>
                      <div id="tooltip-confirmar" class="ventana-requisitos">
-                        <p id="mensaje-confirmar"></p>
+                        <p id="mensaje-confirmar" style="font-weight: none;"></p>
                     </div>
                 </div>
 
