@@ -128,7 +128,6 @@ $mensaje = null; // Variable para almacenar el estado del mensaje
 </head>
 
 <body>
-  <?php include 'boton-ayuda.php'; ?>
   <div id="menu"></div>
   <nav class="barra-navegacion">
   <div class="ubica"> Configuración / Gestión de usuarios / Registro</div>
