@@ -152,15 +152,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Actualización de datos del modal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar'])) {
-    // Se reciben y se escapan las variables
-    $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
-    $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
-    $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
-    $activo = (int)$_POST['activo']; // Se convierte el valor '1' o '0' a un número entero
+  // Se reciben y se escapan las variables
+  $nit = mysqli_real_escape_string($conexion, $_POST['nit']);
+  $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
+  $telefono = mysqli_real_escape_string($conexion, $_POST['telefono']);
+  $direccion = mysqli_real_escape_string($conexion, $_POST['direccion']);
+  $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
+  $activo = (int)$_POST['activo']; // Se convierte el valor '1' o '0' a un número entero
 
-    $consulta_update = "UPDATE proveedor SET 
+  $consulta_update = "UPDATE proveedor SET 
         nombre = '$nombre', 
         telefono = '$telefono', 
         direccion = '$direccion', 
@@ -607,6 +607,18 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       </form>
     </div>
   </div>
+  <!-- Footer con derehcos de autor -->
+<footer class="footer">
+  <div class="footer-item datos">© 2025 MotoRacer</div>
+  <div class="footer-item">
+    Desarrollado por:
+    <strong>Mariana Castillo</strong> ·
+    <strong>Daniel López</strong> ·
+    <strong>Deicy Caro</strong> ·
+    <strong>Marlen Salcedo</strong>
+    <span class="version">v1.0</span>
+  </div>
+</footer>
 
   <script>
     let allData = <?php echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); ?>;

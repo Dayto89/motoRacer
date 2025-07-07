@@ -601,6 +601,19 @@ input#correoVerificado.input-group {
   }
 }
 
+.input-error {
+  border: 1px solid #e74c3c !important;
+  background-color: #fceae9;
+}
+.error-message {
+  color: #e74c3c;
+  font-size: 0.9em;
+  margin-top: 4px;
+  display: none;
+}
+.error-message.visible {
+  display: block;
+}
 /* TABLETS */
 /* Horizontal */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {

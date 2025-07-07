@@ -2,7 +2,8 @@
 session_start();
 
 // --- Función para mostrar alertas de SweetAlert desde la sesión ---
-function display_session_alert() {
+function display_session_alert()
+{
     if (isset($_SESSION['status'])) {
         $status = $_SESSION['status'];
         $type = htmlspecialchars($status['type']);
@@ -140,19 +141,19 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 </head>
 
 <body>
-    <?php 
+    <?php
     // Llamar a la función que mostrará la alerta si existe en la sesión
     display_session_alert();
-    include 'boton-ayuda.php'; 
+    include 'boton-ayuda.php';
     ?>
     <script>
         const allData = <?php
-            // Se obtienen los datos de ubicaciones para que el script de la tabla funcione
-            $allQ = "SELECT codigo, nombre FROM ubicacion";
-            $allRes = mysqli_query($conexion, $allQ);
-            $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
-            echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS); 
-        ?>;
+                        // Se obtienen los datos de ubicaciones para que el script de la tabla funcione
+                        $allQ = "SELECT codigo, nombre FROM ubicacion";
+                        $allRes = mysqli_query($conexion, $allQ);
+                        $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
+                        echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS);
+                        ?>;
     </script>
     <div id="menu"></div>
     <nav class="barra-navegacion">
@@ -252,10 +253,21 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </span>
             <h2>Productos de esta Ubicacion</h2>
             <div id="lista-productos">
-                </div>
+            </div>
         </div>
     </div>
-
+    <!-- Footer con derehcos de autor -->
+    <footer class="footer">
+        <div class="footer-item datos">© 2025 MotoRacer</div>
+        <div class="footer-item">
+            Desarrollado por:
+            <strong>Mariana Castillo</strong> ·
+            <strong>Daniel López</strong> ·
+            <strong>Deicy Caro</strong> ·
+            <strong>Marlen Salcedo</strong>
+            <span class="version">v1.0</span>
+        </div>
+    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // — Datos iniciales inyectados por PHP —
@@ -351,7 +363,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
 
                 paginationEl.appendChild(btnFactory('« Primera', 1));
                 paginationEl.appendChild(btnFactory('‹ Anterior', Math.max(1, currentPage - 1)));
-                
+
                 let start = Math.max(1, currentPage - 2),
                     end = Math.min(totalPages, currentPage + 2);
                 if (start > 1) paginationEl.append('…');
@@ -359,7 +371,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     paginationEl.appendChild(btnFactory(i, i));
                 }
                 if (end < totalPages) paginationEl.append('…');
-                
+
                 paginationEl.appendChild(btnFactory('Siguiente ›', Math.min(totalPages, currentPage + 1)));
                 paginationEl.appendChild(btnFactory('Última »', totalPages));
             }
@@ -466,8 +478,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                 .then(resp => {
                                     if (resp.success) {
                                         Swal.fire({
-                                            title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
-                                            html: `
+                                                title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
+                                                html: `
                                 <div class="custom-alert">
                                     <div class="contenedor-imagen">
                                     <img src="../imagenes/moto.png" alt="Éxito" class="moto">
@@ -475,22 +487,22 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                                     <p>Ubicación eliminada correctamente.</p>
                                 </div>
                                 `,
-                                            background: '#ffffffdb',
-                                            confirmButtonText: 'Aceptar',
-                                            confirmButtonColor: '#007bff',
-                                            customClass: {
-                                                popup: 'swal2-border-radius',
-                                                confirmButton: 'btn-aceptar',
-                                                container: 'fondo-oscuro'
-                                            }
-                                        })
-                                        .then(() => {
-                                            // refrescar datos en cliente
-                                            const idx = allCategories.findIndex(c => c.codigo == id);
-                                            if (idx > -1) allCategories.splice(idx, 1);
-                                            filtered = filtered.filter(c => c.codigo != id);
-                                            renderTable();
-                                        });
+                                                background: '#ffffffdb',
+                                                confirmButtonText: 'Aceptar',
+                                                confirmButtonColor: '#007bff',
+                                                customClass: {
+                                                    popup: 'swal2-border-radius',
+                                                    confirmButton: 'btn-aceptar',
+                                                    container: 'fondo-oscuro'
+                                                }
+                                            })
+                                            .then(() => {
+                                                // refrescar datos en cliente
+                                                const idx = allCategories.findIndex(c => c.codigo == id);
+                                                if (idx > -1) allCategories.splice(idx, 1);
+                                                filtered = filtered.filter(c => c.codigo != id);
+                                                renderTable();
+                                            });
                                     } else {
                                         Swal.fire({
                                             title: '<span class="titulo-alerta error">Error</span>',
@@ -575,7 +587,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             } else {
                 nombreValido = false;
             }
-            
+
             const errorSpan = document.getElementById('nombre-error');
             if (!nombreValido && val) {
                 nombreInput.classList.add('invalid');

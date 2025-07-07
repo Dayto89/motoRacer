@@ -1,58 +1,42 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-if (!isset($_SESSION['usuario_id'])) {
-    echo json_encode(['success' => false, 'message' => 'No autorizado']);
+
+// Leer JSON de entrada
+$input = json_decode(file_get_contents('php://input'), true);
+$ids   = array_filter($input['ids'] ?? [], fn($v) => filter_var($v, FILTER_VALIDATE_INT)!==false);
+if (count($ids) === 0) {
+    echo json_encode(['success'=>false,'message'=>'No se recibieron IDs válidos.']);
     exit;
 }
 
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 20;
-$mysqli = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+$mysqli = new mysqli('localhost','root','','inventariomotoracer');
 if ($mysqli->connect_errno) {
-    echo json_encode(['success' => false, 'message' => 'Error de conexión a la BD']);
+    echo json_encode(['success'=>false,'message'=>'Error de conexión.']);
     exit;
 }
 
-// 1) Traigo las últimas $limit notificaciones, con su flag `leida`
-$stmt = $mysqli->prepare("SELECT id, leida FROM notificaciones ORDER BY fecha DESC LIMIT ?");
-$stmt->bind_param("i", $limit);
-$stmt->execute();
-$res = $stmt->get_result();
-
-$ids        = [];
-$unread_cnt = 0;
-while ($row = $res->fetch_assoc()) {
-    $ids[] = $row['id'];
-    if ($row['leida'] == 0) {
-        $unread_cnt++;
-    }
-}
-$stmt->close();
-
-// 2) Si no hay ninguna sin leer, aviso y salgo
-if ($unread_cnt === 0) {
-    echo json_encode([
-        'success'      => false,
-        'already_read' => true,
-        'message'      => "Las últimas {$limit} notificaciones ya estaban marcadas como leídas."
-    ]);
-    exit;
-}
-
-// 3) Actualizo sólo esos IDs
-// Nota: construyo placeholders dinámicos para IN(...)
+// Construye el placeholder y tipos
 $placeholders = implode(',', array_fill(0, count($ids), '?'));
-$types        = str_repeat('i', count($ids));
-$sqlUpd       = "UPDATE notificaciones SET leida = 1 WHERE id IN ({$placeholders})";
-$stmt2        = $mysqli->prepare($sqlUpd);
+$types = str_repeat('i', count($ids));
 
-// bind dinámico
-$stmt2->bind_param($types, ...$ids);
-if ($stmt2->execute()) {
-    echo json_encode(['success' => true]);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Error al actualizar notificaciones.']);
+$sql  = "UPDATE notificaciones 
+         SET leida = 1 
+         WHERE id IN ($placeholders)";
+$stmt = $mysqli->prepare($sql);
+if (!$stmt) {
+    echo json_encode(['success'=>false,'message'=>'Error al preparar consulta: '.$mysqli->error]);
+    exit;
 }
 
-$stmt2->close();
+// Bind dinámico y ejecución
+$stmt->bind_param($types, ...array_values($ids));
+$stmt->execute();
+
+echo json_encode([
+  'success' => true,
+  'updated' => $stmt->affected_rows
+]);
+
+$stmt->close();
 $mysqli->close();

@@ -1,321 +1,537 @@
 <?php
 session_start();
-
-// --- Función para mostrar alertas de SweetAlert desde la sesión ---
-function display_session_alert() {
-    if (isset($_SESSION['status'])) {
-        $status = $_SESSION['status'];
-        $type = htmlspecialchars($status['type']);
-        $message = $status['message']; // El mensaje puede contener HTML, como <br>
-
-        $icon_img = ($type === 'success') ? 'moto.png' : 'llave.png';
-        $alt_text = ($type === 'success') ? 'Confirmación' : 'Error';
-        $title_class = ($type === 'success') ? 'confirmacion' : 'error';
-        $title_text = ($type === 'success') ? 'Éxito' : 'Error';
-        $img_class = ($type === 'success') ? 'moto' : 'llave';
-
-        echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-        echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: '<span class=\"titulo-alerta $title_class\">$title_text</span>',
-                html: `
-                    <div class=\"custom-alert\">
-                        <div class=\"contenedor-imagen\">
-                            <img src=\"../imagenes/$icon_img\" alt=\"$alt_text\" class=\"$img_class\">
-                        </div>
-                        <p>$message</p>
-                    </div>
-                `,
-                background: '#ffffffdb',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#007bff',
-                customClass: {
-                    popup: 'swal2-border-radius',
-                    confirmButton: 'btn-aceptar',
-                    container: 'fondo-oscuro'
-                }
-            });
-        });
-        </script>";
-
-        // Limpiar la variable de sesión para que no se muestre de nuevo
-        unset($_SESSION['status']);
-    }
-}
-
-
+setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'es', 'spanish');
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: ../index.php");
     exit();
 }
 
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/html/verificar_permisos.php';
-
-
-$conexion = mysqli_connect('localhost', 'root', '', 'inventariomotoracer');
-if (!$conexion) {
-    die("<script>alert('No se pudo conectar a la base de datos');</script>");
+// Conexión a la base de datos
+$conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+if ($conexion->connect_errno) {
+    die("No se pudo conectar a la base de datos: " . $conexion->connect_error);
 }
 
-// --- Validación AJAX de nombre de categoría ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['check_nombre'])) {
-    $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
-    $sql = "SELECT COUNT(*) as cnt FROM categoria WHERE nombre = '$nombre'";
-    $res = mysqli_query($conexion, $sql);
-    $row = mysqli_fetch_assoc($res);
-    header('Content-Type: application/json');
-    echo json_encode(['exists' => ($row['cnt'] > 0)]);
-    exit();
+// Obtener configuración existente (última fila de configuracion_stock)
+$config = ['min_quantity' => 0, 'alarm_time' => '', 'notification_method' => ''];
+$stmtConfig = $conexion->prepare("SELECT * FROM configuracion_stock ORDER BY id DESC LIMIT 1");
+if ($stmtConfig->execute()) {
+    $resultConfig = $stmtConfig->get_result();
+    if ($resultConfig->num_rows > 0) {
+        $config = $resultConfig->fetch_assoc();
+    }
 }
+$stmtConfig->close();
 
-// Agregar categoría (CORREGIDO CON PRG)
-if ($_POST && isset($_POST['guardar'])) {
-    $nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
-    $query = "INSERT INTO categoria (nombre) VALUES ('$nombre')";
-    $resultado = mysqli_query($conexion, $query);
+// Procesar formulario al enviar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_config_stock'])) {
+    // Validar y sanitizar inputs
+    $min_quantity = isset($_POST['min_quantity']) ? (int) $_POST['min_quantity'] : 0;
+    $alarm_time = $_POST['alarm_time'] ?? null;
+    $notification_method = $_POST['notification_method'] ?? 'popup';
 
-    if ($resultado) {
-        $_SESSION['status'] = [
-            'type' => 'success',
-            'message' => 'Categoría agregada correctamente.'
-        ];
+    $stmtInsert = $conexion->prepare("INSERT INTO configuracion_stock 
+        (min_quantity, alarm_time, notification_method) VALUES (?, ?, ?)");
+    $stmtInsert->bind_param("iss", $min_quantity, $alarm_time, $notification_method);
+
+    if ($stmtInsert->execute()) {
+        header("Location: inicio.php?success=1");
+        exit();
     } else {
-        $error = mysqli_error($conexion);
-        $_SESSION['status'] = [
-            'type' => 'error',
-            'message' => "La categoría no fue agregada.<br><small>$error</small>"
-        ];
+        header("Location: inicio.php?error=1");
+        exit();
     }
-    // Redirigir para evitar reenvío de formulario al recargar
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
+    $stmtInsert->close();
 }
 
-// Eliminar categoría mediante boton
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar'])) {
-    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-    $query = "DELETE FROM categoria WHERE codigo = '$codigo'";
-    $resultado = mysqli_query($conexion, $query);
-    header('Content-Type: application/json');
-    echo json_encode(["success" => $resultado]);
-    exit();
+// Facturas diarias de este mes
+$stmt = $conexion->prepare(
+    "SELECT DAY(fechaGeneracion) AS dia, COUNT(*) AS cantidad
+     FROM factura
+     WHERE MONTH(fechaGeneracion) = MONTH(NOW())
+       AND YEAR(fechaGeneracion) = YEAR(NOW())
+     GROUP BY DAY(fechaGeneracion)"
+);
+$stmt->execute();
+$result = $stmt->get_result();
+$facturas_diarias = [];
+while ($row = $result->fetch_assoc()) {
+    $facturas_diarias[$row['dia']] = $row['cantidad'];
 }
+$stmt->close();
+
+// --------------------
+// METRICAS PARA DASHBOARD (1 a 7)
+// --------------------
+$metrics = [];
+
+// 1. Total de productos
+$res = $conexion->query("SELECT COUNT(*) AS total_products FROM producto");
+$metrics['total_products'] = $res->fetch_assoc()['total_products'];
+
+// 2. Productos con stock bajo
+$stmt = $conexion->prepare(
+    "SELECT COUNT(*) AS low_stock FROM producto WHERE cantidad < ?"
+);
+$stmt->bind_param("i", $config['min_quantity']);
+$stmt->execute();
+$metrics['low_stock'] = $stmt->get_result()->fetch_assoc()['low_stock'];
+$stmt->close();
+
+// 3. Total de proveedores
+$res = $conexion->query("SELECT COUNT(*) AS total_providers FROM proveedor");
+$metrics['total_providers'] = $res->fetch_assoc()['total_providers'];
+
+// 4. Total de clientes
+$res = $conexion->query("SELECT COUNT(*) AS total_clients FROM cliente");
+$metrics['total_clients'] = $res->fetch_assoc()['total_clients'];
+
+// 5. Facturas este mes
+$stmt = $conexion->prepare(
+    "SELECT COUNT(*) AS invoices_month FROM factura
+     WHERE MONTH(fechaGeneracion) = MONTH(NOW())
+       AND YEAR(fechaGeneracion) = YEAR(NOW())"
+);
+$stmt->execute();
+$metrics['invoices_month'] = $stmt->get_result()->fetch_assoc()['invoices_month'];
+$stmt->close();
 
 
-// Obtener lista de productos
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lista'])) {
-    $codigo = mysqli_real_escape_string($conexion, $_POST['codigo']);
-    $query = "SELECT codigo1, nombre FROM producto WHERE Categoria_codigo = '$codigo'";
-    $resultado = mysqli_query($conexion, $query);
-    $productos = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $productos[] = $fila;
-    }
-    header('Content-Type: application/json');
-    echo json_encode($productos);
-    exit();
-}
+// 7. Notificaciones no leídas
+$res = $conexion->query("SELECT COUNT(*) AS unread_notif FROM notificaciones WHERE leida = 0");
+$metrics['unread_notif'] = $res->fetch_assoc()['unread_notif'];
+
+// --------------------
+// Lógica Usuario
+// --------------------
+$conexionUsuario = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+$id_usuario = $_SESSION['usuario_id'];
+$sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+$stmtUsuario = $conexionUsuario->prepare($sqlUsuario);
+$stmtUsuario->bind_param("i", $id_usuario);
+$stmtUsuario->execute();
+$resultUsuario = $stmtUsuario->get_result();
+$rowUsuario = $resultUsuario->fetch_assoc();
+$nombreUsuario = $rowUsuario['nombre'];
+$apellidoUsuario = $rowUsuario['apellido'];
+$rol = $rowUsuario['rol'];
+$foto = $rowUsuario['foto'];
+$stmtUsuario->close();
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php';
-
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categorías</title>
+    <title>Dashboard - Moto Racer</title>
+    <link rel="icon" type="image/x-icon" href="../imagenes/logo1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/componentes/header.php">
+    <link rel="stylesheet" href="/componentes/header.css">
+    <link rel="stylesheet" href="../css/alertas.css">
+    <script src="../js/header.js"></script>
+    <script src="/js/index.js"></script>
+    <link rel="stylesheet" href="/css/inicio.css">
     <script src="https://animatedicons.co/scripts/embed-animated-icons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/css/categorias.css">
-    <link rel="stylesheet" href="../css/alertas.css">
-    <link rel="stylesheet" href="../componentes/header.css">
-    <link rel="stylesheet" href="../componentes/header.php">
-    <script src="../js/header.js"></script>
-    <script defer src="../js/index.js"></script> <style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
     </style>
-    
-<Style>
-  /*
-/*
-================================================================
-| VERSIÓN CORREGIDA Y FINAL                                    |
-| - Arregla el movimiento de la tabla (1ra y última col. fija) |
-| - Reduce la barra de navegación en móviles.                  |
-| - Añade espacio para que el contenido no se solape.          |
-================================================================
-*/
+    <style>
+        .chart-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
 
-/* --- Se aplica en tablets y móviles (hasta 1024px) --- */
-@media (max-width: 1024px) {
+        .modo-alto-contraste .chart-container {
+            background-color: black;
+            border: white solid 4px;
+        }
 
-    /*
-    ============================================================
-    | 1. LAYOUT GENERAL Y CORRECCIONES DE ESPACIO              |
-    ============================================================
-    */
+        .modo-claro .chart-container {
+            border: 4px solid #000000;
+        }
 
-    /*
-      Hacemos que el panel de fondo deje de ser fijo y se posicione de
-      forma absoluta. Esto hará que se desplace junto con el resto de la página.
-    */
-    .container-general {
-        position: absolute !important;
-        /* Hacemos que cubra el área del contenido principal */
-        top: 65px;
-        left: 5%;
-        width: 90%;
-        height: 100%; /* Su altura se adaptará al contenido de abajo */
-    }
+        /* --- NUEVO CSS PARA ANIMACIÓN DE MODALES --- */
 
-    /* Empujamos la sección de contenido para que no la tape la barra de navegación */
-    .form-section {
-        padding-top: 85px; /* Espacio para la barra de navegación */
-        padding-bottom: 40px; /* Espacio al final para que la paginación no quede pegada */
-        position: relative; /* Necesario para que el fondo se alinee correctamente */
-        z-index: 1;
-    }
+        /* Estilos base para ambos modales (notificaciones y stock) */
+        .modal-animado {
+            background-color: rgb(174 174 174 / 59%);
+            border: 1px solid #ccc;
+            width: 350px;
+            max-height: 85%;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            letter-spacing: 1px;
 
-    /* Centramos el título y nos aseguramos de que se ajuste */
-    .form-section h1 {
-        margin-left: 0;
-        text-align: center;
-        font-size: 2rem; /* Tamaño de fuente adaptable */
-        padding: 0 15px; /* Evita que el texto pegue a los bordes */
-    }
+            /* Estado inicial para la animación (oculto) */
+            opacity: 0;
+            transform: translateY(-20px);
+            /* Empieza 20px arriba */
+            pointer-events: none;
+            /* No se puede interactuar con el modal invisible */
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
 
+        /* Clase que activa el modal (lo hace visible con animación) */
+        .modal-animado.modal-activo {
+            opacity: 1;
+            transform: translateY(0);
+            /* Vuelve a su posición original */
+            pointer-events: auto;
+            /* Se puede interactuar con el modal */
+        }
 
-    /*
-    ======================================================================
-    | 2. SCROLL HORIZONTAL Y EFECTO STICKY PARA TABLAS GRANDES           |
-    ======================================================================
-    */
+        /* Posicionamiento específico del modal de notificaciones */
+        #notificaciones {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+        }
 
-    /*
-      ¡AQUÍ ESTÁ LA CLAVE! El scroll horizontal se aplica al contenedor
-      directo de la tabla. Esto permite que el fondo se expanda con él.
-    */
-    .container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
+        /* Posicionamiento específico del modal de stock */
+        #stock {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            /* Ajusta este valor si se solapa con el de notificaciones */
+        }
 
-    .category-table {
-        border-spacing: 0;
-        white-space: nowrap; /* Impide que el texto se parta en las celdas */
-    }
-
-    /* Lógica para fijar la primera y última columna (como en el video de Usuarios) */
-    .category-table th:first-child,
-    .category-table td:first-child {
-        position: sticky;
-        left: 0;
-        z-index: 1;
-    }
-
-    .category-table th:last-child,
-    .category-table td:last-child {
-        position: sticky;
-        right: 0;
-        z-index: 1;
-    }
-
-    /* Re-aplicamos fondos para que las columnas fijas no sean transparentes */
-    .category-table th:first-child,
-    .category-table th:last-child {
-        background-color: rgb(32, 69, 113);
-    }
-    .category-table td:first-child,
-    .category-table td:last-child {
-        background-color: rgb(63, 61, 61);
-    }
+        /* --- FIN DEL NUEVO CSS --- */
 
 
-    /*
-    ================================================================
-    | 3. EXCEPCIÓN PARA LA TABLA DE CATEGORÍAS (2 COLUMNAS)        |
-    ================================================================
-    */
-    /* Anulamos los efectos para la tabla que no los necesita */
-    #categorias .container {
-        overflow-x: hidden; /* No necesita scroll */
-    }
-    #categorias .category-table th,
-    #categorias .category-table td {
-        position: static !important; /* Desactivamos el 'sticky' */
-    }
+        .notificaciones h3,
+        #stock h3 {
+            margin-top: 0;
+            color: white;
+            font-size: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            text-shadow: 7px -1px 0 #1c51a0, 1px -1px 0 #1c51a0, -1px 1px 0 #1c51a0, 3px 5px 0 #1c51a0;
+            letter-spacing: 3px;
+        }
+
+        #listaNotificaciones {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: black;
+        }
+
+        #listaNotificaciones li {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+            background: #f8f9fa;
+            font-family: Arial, Helvetica, sans-serif;
+            border-left: 8px solid rgb(255, 191, 0);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #listaNotificaciones li.leida {
+            background: #fff;
+            border-left-color: rgb(127 127 127);
+            opacity: 0.7;
+        }
+
+        #listaNotificaciones li:hover {
+            background: rgb(184, 186, 187);
+        }
+
+        .modo-alto-contraste #stock {
+            background-color: #000000;
+            border: white solid 4px;
+        }
+
+        .modo-claro #stock {
+            background-color: #ffffff;
+            border: black solid 4px;
+            color: #000000;
+        }
+
+        .modo-claro .form-stock label {
+            color: #000000 !important;
+        }
+
+        .badge-notificaciones {
+            position: absolute;
+            top: 65px;
+            right: 26px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            display: none;
+            min-width: 20px;
+            text-align: center;
+            z-index: 1001;
+        }
+
+        .noti {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .noti img {
+            width: 65px;
+            height: 65px;
+        }
+
+        .stock img {
+            width: 65px;
+            height: 65px;
+        }
+
+        /* --- NUEVO: Posicionamiento del botón de stock --- */
+        .notificaciones {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background-color: rgb(174 174 174 / 59%);
+            border: 1px solid #ccc;
+            width: 350px;
+            max-height: 85%;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            letter-spacing: 1px;
+
+            /* LA LÍNEA 'display: none;' HA SIDO ELIMINADA DE AQUÍ */
+        }
+
+        /* Estilos base para AMBOS modales */
+        .modal-animado {
+            /* ¡CLAVE! Asegura que el modal exista en el layout para poder ser animado */
+            display: block;
+
+            /* Estado inicial (oculto) */
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        /* Clase que activa el modal (lo hace visible con animación) */
+        .modal-animado.modal-activo {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Posicionamiento específico del modal de stock */
+        .stock {
+            position: fixed;
+            top: 60px;
+            right: 100px;
+            /* Ajusta para que no se solape con el botón de notificaciones */
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
 
 
-    /*
-    ============================================================
-    | 4. AJUSTES FINALES PARA MÓVILES                          |
-    ============================================================
-    */
-    .actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-        margin: 20px auto;
-        padding: 0 15px;
-    }
-    .actions input[type="text"] { width: 100%; }
-}
-</Style>
+        .notificaciones::-webkit-scrollbar {
+            width: 8px;
+            background-color: rgba(174, 174, 174, 0.2);
+            border-radius: 4px;
+        }
+
+        .notificaciones::-webkit-scrollbar-track {
+            background-color: rgba(174, 174, 174, 0.3);
+            border-radius: 4px;
+        }
+
+        .notificaciones::-webkit-scrollbar-thumb {
+            background-color: rgb(6, 45, 91);
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.9);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 5.5rem 16.5rem 1.5rem 16.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .chart-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            aspect-ratio: 4 / 3;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            border: 4px solid #ffffff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+            transform: rotate(30deg);
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .metric-card:hover::before {
+            top: -70%;
+            left: -70%;
+        }
+
+        .metric-card h4 {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Merriweather', serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1c51a0;
+            line-height: 1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value small {
+            font-size: 0.75rem;
+            font-weight: 400;
+            vertical-align: super;
+        }
+
+        #menu:hover~.ubica {
+            margin-left: 20px;
+        }
+
+        #menu:hover~.ubica {
+            margin-left: 20px;
+            transition: margin-left 0.3s ease;
+            margin-right: 0px;
+        }
+
+        #btnMarcar20 {
+            background-color: #007bff;
+            font-weight: bold;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        #btnMarcar20:hover {
+            background-color: rgb(0, 71, 148);
+        }
+
+        .no-data-message {
+            text-align: center;
+            font-size: 2rem;
+            color: #666;
+            padding: 2rem;
+        }
+
+        .modo-alto-contraste .no-data-message {
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            button.noti,
+            button.stock {
+                width: 50px;
+                height: 50px;
+            }
+
+            .userContainer {
+                flex-direction: column;
+                bottom: 80px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <?php 
-    // Llamar a la función que mostrará la alerta si existe en la sesión
-    display_session_alert(); 
-    include 'boton-ayuda.php'; 
-    ?>
-    <?php
-    // NOTA: Este bloque estaba sobrescribiendo la variable $allData. Lo he comentado para que la tabla funcione.
-    // Si necesitas los datos de notificaciones, deberías usar una variable con un nombre diferente.
-    /*
-    $allQ = "SELECT id,mensaje,descripcion,fecha,leida FROM notificaciones n";
-    if (!empty($filtros)) $allQ .= " WHERE " . implode(' OR ', $filtros);
-    $allRes = mysqli_query($conexion, $allQ);
-    $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
-    */
-    ?>
-    <script>
-        // Esta variable es necesaria para el script de más abajo. Asegurémonos de que tenga los datos de las categorías.
-        const allData = <?php
-            $allQ = "SELECT codigo, nombre FROM categoria";
-            $allRes = mysqli_query($conexion, $allQ);
-            $allData = mysqli_fetch_all($allRes, MYSQLI_ASSOC);
-            echo json_encode($allData, JSON_HEX_TAG | JSON_HEX_APOS);
-        ?>;
-    </script>
+    <?php include 'boton-ayuda.php'; ?>
     <div id="menu"></div>
-    
     <nav class="barra-navegacion">
-        <div class="ubica"> Productos/Categorias </div>
+        <div class="ubica" style="margin-left: 0;">Inicio</div>
         <div class="userContainer">
             <div class="userInfo">
-                <?php
-                // Se reutiliza la conexión existente
-                $id_usuario = $_SESSION['usuario_id'];
-                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-                $stmtUsuario = $conexion->prepare($sqlUsuario);
-                $stmtUsuario->bind_param("i", $id_usuario);
-                $stmtUsuario->execute();
-                $resultUsuario = $stmtUsuario->get_result();
-                $rowUsuario = $resultUsuario->fetch_assoc();
-                $nombreUsuario = $rowUsuario['nombre'];
-                $apellidoUsuario = $rowUsuario['apellido'];
-                $rol = $rowUsuario['rol'];
-                $foto = $rowUsuario['foto'];
-                $stmtUsuario->close();
-                ?>
-                <p class="nombre"><?php echo htmlspecialchars($nombreUsuario); ?> <?php echo htmlspecialchars($apellidoUsuario); ?></p>
-                <p class="rol">Rol: <?php echo htmlspecialchars($rol); ?></p>
-
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
             </div>
             <div class="profilePic">
                 <?php if (!empty($rowUsuario['foto'])): ?>
@@ -326,239 +542,167 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             </div>
         </div>
     </nav>
-        <div class="container-general">
-        </div>
-    <div id="categorias" class="form-section">
-        <h1>Categorías</h1>
-        <div class="container">
-            <div class="actions">
-                <button id="btnAbrirModal" class="btn-nueva-categoria"><i class='bx bx-plus bx-tada icon'></i>Nueva categoría</button>
-                <input type="text" id="searchRealtime" name="valor" placeholder="Ingrese la categoría a buscar">
+    <div class="fondo"></div>
+
+    <div class="dashboard-container">
+        <?php
+        $labels = [
+            'total_products'  => 'Total Productos',
+            'low_stock'       => 'Stock Bajo',
+            'total_providers' => 'Proveedores',
+            'total_clients'   => 'Clientes',
+            'invoices_month'  => 'Facturas Mes',
+            'unread_notif'    => 'Notificaciones'
+        ];
+        foreach ($labels as $key => $label): ?>
+            <div class="metric-card">
+                <h4><?= $label ?></h4>
+                <p class="metric-value"><?= number_format($metrics[$key], 0, ',', '.') ?></p>
             </div>
-            <table class="category-table">
-                <thead>
-                    <tr>
-                        <th data-col="0" data-type="string">Nombre<span class="sort-arrow"></span></th>
-                        <th data-col="1" data-type="string">Acciones<span class="sort-arrow"></span></th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-categorias">
-                    <?php
-                    // La renderización inicial se deja, aunque el script de JS la reemplazará
-                    $categorias = $conexion->query("SELECT * FROM categoria ORDER BY codigo ASC");
-                    while ($fila = $categorias->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . htmlspecialchars($fila['nombre']) . "</td>";
-                        echo "<td class='td-options'>";
-                        echo "<button class='btn-list' data-id='" . htmlspecialchars($fila['codigo']) . "'>Lista de productos</button>";
-                        echo "<button class='btn-delete' data-id='" . htmlspecialchars($fila['codigo']) . "'><i class='fa-solid fa-trash'></i></button></td>";
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
-            <div id="jsPagination" class="pagination-dinamica"></div>
-        </div>
+        <?php endforeach; ?>
     </div>
 
-    <div id="modalNuevo" class="modal_nueva_categoria">
-        <div class="modal-content-nueva">
-            <h2>Nueva categoría</h2>
-            <form method="POST" action="">
-                <div class="form-group" style="position: relative;">
-                    <label>Ingrese el nombre de la categoría:</label>
-                    <input
-                        type="text"
-                        id="nombre"
-                        name="nombre"
-                        required
-                        oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" />
-                    <span id="nombre-error" class="input-error-message">
-                        Esta categoría ya está registrada.
-                    </span>
+    <div class="charts-grid">
+        <div class="chart-container">
+            <canvas id="metricsChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="stockPieChart"></canvas>
+        </div>
+        <?php if (empty($facturas_diarias)) { ?>
+            <div class="chart-container">
+                <p class="no-data-message">No se han generado facturas en <?= ucfirst(strftime('%B de %Y')) ?> aún.</p>
+            </div>
+        <?php } else { ?>
+            <div class="chart-container">
+                <canvas id="invoicesLineChart"></canvas>
+            </div>
+        <?php } ?>
+    </div>
+
+    <div id="notificaciones" class="notificaciones modal-animado">
+        <h3>Notificaciones</h3>
+        <button id="btnMarcar20" onclick="marcarUltimasLeidas()" style="margin-bottom:10px; width:100%;">
+            Marcar Todas Leidas
+        </button>
+        <ul id="listaNotificaciones"></ul>
+    </div>
+
+    <button class="noti" onclick="mostrarNotificaciones()" title="notificaciones">
+        <img src="../imagenes/notification.gif" alt="notificaciones">
+    </button>
+    <div id="badgeNotificaciones" class="badge-notificaciones">0</div>
+
+    <button class="stock" onclick="mostrarStock()" title="stock">
+        <img src="../imagenes/stock.gif" alt="stock">
+    </button>
+
+    <div id="stock" class="cantidad modal-animado">
+        <h3>Stock</h3>
+        <div class="form-stock">
+            <form method="POST">
+                <input type="hidden" name="guardar_config_stock" value="1">
+                <div class="form-group">
+                    <label for="min_quantity">Cantidad Mínima:</label>
+                    <input type="text" id="min_quantity" name="min_quantity"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        value="<?= htmlspecialchars($config['min_quantity']) ?>"
+                        min="1" required>
                 </div>
-                <div class="modal-buttons">
-                    <button type="button" id="btnCancelar">Cancelar</button>
-                    <button type="submit" name="guardar" id="btnGuardar" disabled>Guardar</button>
-                </div>
+                <button type="submit">Guardar</button>
             </form>
-        </div>
-    </div>
-    <div id="modalProductos" class="modal">
-        <div class="modal-content">
-            <span class="close">
-                <i class="fa-solid fa-x"></i>
-            </span>
-            <h2>Productos de la categoría</h2>
-            <div id="lista-productos" class="productos-container">
-                </div>
-        </div>
-    </div>
-    
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // — Datos iniciales inyectados por PHP —
-        const allCategories = <?php
-                                $cats = [];
-                                $res = $conexion->query("SELECT codigo, nombre FROM categoria ORDER BY nombre ASC");
-                                while ($r = $res->fetch_assoc()) $cats[] = $r;
-                                echo json_encode($cats, JSON_HEX_TAG | JSON_HEX_APOS);
-                                ?>;
-
-        const tableBody = document.getElementById('tabla-categorias');
-        const searchInput = document.getElementById('searchRealtime');
-        const paginationEl = document.getElementById('jsPagination');
-
-        let filtered = [...allCategories];
-        const rowsPerPage = 10;
-        let currentPage = 1;
-
-        function renderTable() {
-            tableBody.innerHTML = '';
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            filtered.slice(start, end).forEach(cat => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                <td>${cat.nombre}</td>
-                <td class="td-options">
-                    <button class="btn-list boton-accion marcarL" data-id="${cat.codigo}">Productos</button>
-                    <button class="btn-delete boton-accion marcarN" data-id="${cat.codigo}">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </td>`;
-                tableBody.appendChild(tr);
-            });
-            renderPagination();
-        }
-        // —ANIMACIONES Modal de Nueva Categoría —
-        const modalNuevaCategoria = document.getElementById('modalNuevo'); // Asegúrate de que el ID sea 'modal'
-        const btnAbrirNuevaCategoria = document.getElementById('btnAbrirModal'); // Asume este ID para el botón de abrir
-        const btnCancelarNuevaCategoria = modalNuevaCategoria.querySelector('#btnCancelar');
-
-        if (btnAbrirNuevaCategoria) {
-            btnAbrirNuevaCategoria.addEventListener('click', () => {
-                modalNuevaCategoria.classList.add('show');
-            });
-        }
-
-        if (btnCancelarNuevaCategoria) {
-            btnCancelarNuevaCategoria.addEventListener('click', () => {
-                modalNuevaCategoria.classList.remove('show');
-            });
-        }
-
-        if (modalNuevaCategoria) {
-            modalNuevaCategoria.addEventListener('click', (e) => {
-                if (e.target === modalNuevaCategoria) {
-                    modalNuevaCategoria.classList.remove('show');
-                }
-            });
-        }
-        // — cierre del modal de productos —
-        const modalProductos = document.getElementById('modalProductos');
-        const closeBtnModalProductos = modalProductos.querySelector('.close');
-        // Función para ocultar
-        function hideProductosModal() {
-            modalProductos.classList.remove('show');
-        }
-        // Cerrar al pulsar la X
-        if (closeBtnModalProductos) {
-            closeBtnModalProductos.addEventListener('click', hideProductosModal);
-        }
-        // Cerrar al hacer clic fuera del contenido
-        if (modalProductos) {
-            modalProductos.addEventListener('click', (e) => {
-                if (e.target === modalProductos) {
-                    hideProductosModal();
-                }
-            });
-        }
-
-        function renderPagination() {
-            paginationEl.innerHTML = '';
-            const totalPages = Math.ceil(filtered.length / rowsPerPage);
-            if (totalPages <= 1) return;
-            const btnFactory = (txt, pg) => {
-                const b = document.createElement('button');
-                b.textContent = txt;
-                if (pg === currentPage) b.classList.add('active');
-                b.addEventListener('click', () => {
-                    currentPage = pg;
-                    renderTable();
-                });
-                return b;
-            };
-
-            // « First, ‹ Prev
-            paginationEl.appendChild(btnFactory('« Primera', 1));
-            paginationEl.appendChild(btnFactory('‹ Anterior', Math.max(1, currentPage - 1)));
-            // pages
-            let start = Math.max(1, currentPage - 2),
-                end = Math.min(totalPages, currentPage + 2);
-            if (start > 1) paginationEl.append('…');
-            for (let i = start; i <= end; i++) {
-                paginationEl.appendChild(btnFactory(i, i));
-            }
-            if (end < totalPages) paginationEl.append('…');
-            // › Next, » Last
-            paginationEl.appendChild(btnFactory('Siguiente ›', Math.min(totalPages, currentPage + 1)));
-            paginationEl.appendChild(btnFactory('Última»', totalPages));
-        }
-
-        // búsqueda en tiempo real
-        searchInput.addEventListener('input', () => {
-            const q = searchInput.value.trim().toLowerCase();
-            filtered = allCategories.filter(cat =>
-                cat.nombre.toLowerCase().includes(q)
-            );
-            currentPage = 1;
-            renderTable();
-        });
-
-        // manejo de clics en botones List y Delete
-        tableBody.addEventListener('click', e => {
-            const btn = e.target.closest('button');
-            if (!btn) return;
-            const id = btn.dataset.id;
-
-            if (btn.classList.contains('btn-list')) {
-                // Listar productos
-                fetch('../html/categorias.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: `lista=1&codigo=${id}`
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length) {
-                        const html = `
-                    <table class="productos-table" style="width:100%">
-                        <thead><tr><th>Código</th><th>Nombre</th></tr></thead>
-                        <tbody>
-                            ${data.map(p => `
-                                <tr>
-                                    <td>${p.codigo1 || ''}</td>
-                                    <td>${p.nombre  || ''}</td>
-                                </tr>`).join('')}
-                        </tbody>
-                    </table>`;
-                        document.getElementById('lista-productos').innerHTML = html;
-                        document.getElementById('modalProductos').classList.add('show');
-                    } else {
-                        Swal.fire({
-                            title: '<span class="titulo-alerta advertencia">Sin productos</span>',
-                            html: `
-                            <div class="custom-alert">
+            <?php if (isset($_GET['success'])): ?>
+                <script>
+                    Swal.fire({
+                        title: `<span class='titulo-alerta confirmacion'>Éxito</span>`,
+                        html: `
+                            <div class="alerta">
                                 <div class="contenedor-imagen">
-                                    <img src="../imagenes/llave.png" alt="Sin productos" class="llave">
+                                    <img src="../imagenes/moto.png" class="moto">
                                 </div>
-                                <p>No hay productos en esta categoria.</p>
+                                <p>Los cambios fueron guardados correctamente.</p>
                             </div>
                         `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    })
+                </script>
+            <?php elseif (isset($_GET['error'])): ?>
+                <script>
+                    Swal.fire({
+                        title: `<span class='titulo-alerta confirmacion'>Error</span>`,
+                        html: `
+                            <div class="alerta">
+                                <div class="contenedor-imagen">
+                                    <img src="../imagenes/llave.png" class="llave">
+                                </div>
+                                <p>Error al guardar los cambios.</p>
+                            </div>
+                        `,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    })
+                </script>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <script src="/js/index.js"></script>
+    <script>
+        function marcarUltimasLeidas() {
+            const ids = Array.from(document.querySelectorAll('#listaNotificaciones li'))
+                .map(li => parseInt(li.dataset.id));
+
+            if (ids.length === 0) {
+                Swal.fire('Atención', 'No hay notificaciones.', 'info');
+                return;
+            }
+
+            // 2) Envía al servidor
+            fetch(`../html/marcar_leidas_varias.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ids
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Error al marcar notificaciones');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        cargarNotificaciones();
+                        Swal.fire({
+                            title: `<span class='titulo-alerta confirmacion'>Éxito</span>`,
+                            html: `<div class="alerta"><div class="contenedor-imagen"><img src="../imagenes/moto.png" class="moto"></div><p>Se marcaron como leídas las últimas 20 notificaciones.</p></div>`,
+                            background: '#ffffffdb',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#007bff',
+                            customClass: {
+                                popup: 'swal2-border-radius',
+                                confirmButton: 'btn-aceptar',
+                                container: 'fondo-oscuro'
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: `<span class='titulo-alerta confirmacion'>Error</span>`,
+                            html: `<div class="alerta"><div class="contenedor-imagen"><img src="../imagenes/llave.png" class="llave"></div><p>${data.message || 'No se pudieron marcar las notificaciones.'}</p></div>`,
                             background: '#ffffffdb',
                             confirmButtonText: 'Aceptar',
                             confirmButtonColor: '#007bff',
@@ -570,175 +714,366 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                         });
                     }
                 })
-                .catch(error => {
-                    console.error("Error al obtener productos:", error);
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire({
+                        title: `<span class='titulo-alerta confirmacion'>Error</span>`,
+                        html: `<div class="alerta"><div class="contenedor-imagen"><img src="../imagenes/llave.png" class="llave"></div><p>No se pudieron marcar las notificaciones.</p></div>`,
+                        background: '#ffffffdb',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#007bff',
+                        customClass: {
+                            popup: 'swal2-border-radius',
+                            confirmButton: 'btn-aceptar',
+                            container: 'fondo-oscuro'
+                        }
+                    });
                 });
-            } else if (btn.classList.contains('btn-delete')) {
-                // Eliminar categoría
-                Swal.fire({
-                    title: '<span class="titulo-alerta advertencia">¿Está seguro?</span>',
-                    html: `
-                    <div class="custom-alert">
-                        <div class="contenedor-imagen">
-                            <img src="../imagenes/tornillo.png" alt="Advertencia" class="tornillo">
-                        </div>
-                        <p>Esta acción eliminará la categoría.<br>¿Desea continuar?</p>
-                    </div>
-                `,
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    background: '#ffffffdb',
-
-                    customClass: {
-                        popup: 'swal2-border-radius',
-                        confirmButton: 'btn-eliminar',
-                        cancelButton: 'btn-cancelar',
-                        container: 'fondo-oscuro'
-                    }
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        fetch('../html/categorias.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: `eliminar=1&codigo=${id}`
-                        })
-                        .then(r => r.json())
-                        .then(resp => {
-                            if (resp.success) {
-                                Swal.fire({
-                                    title: '<span class="titulo-alerta confirmacion">Eliminado</span>',
-                                    html: `
-                                <div class="custom-alert">
-                                    <div class="contenedor-imagen">
-                                        <img src="../imagenes/moto.png" alt="Éxito" class="moto">
-                                    </div>
-                                    <p>Categoría eliminada correctamente.</p>
-                                </div>
-                            `,
-                                    background: '#ffffffdb',
-                                    confirmButtonText: 'Aceptar',
-                                    confirmButtonColor: '#007bff',
-                                    customClass: {
-                                        popup: 'swal2-border-radius',
-                                        confirmButton: 'btn-aceptar',
-                                        container: 'fondo-oscuro'
-                                    }
-                                })
-                                .then(() => {
-                                    // refrescar datos en cliente
-                                    const idx = allCategories.findIndex(c => c.codigo == id);
-                                    if (idx > -1) allCategories.splice(idx, 1);
-                                    filtered = filtered.filter(c => c.codigo != id);
-                                    renderTable();
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: '<span class="titulo-alerta error">Error</span>',
-                                    html: `
-                                <div class="custom-alert">
-                                    <div class="contenedor-imagen">
-                                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                                    </div>
-                                    <p>No se pudo eliminar la categoría porque hay productos asociados.</p>
-                                </div>
-                            `,
-                                    background: '#ffffffdb',
-                                    confirmButtonText: 'Aceptar',
-                                    confirmButtonColor: '#007bff',
-                                    customClass: {
-                                        popup: 'swal2-border-radius',
-                                        confirmButton: 'btn-aceptar',
-                                        container: 'fondo-oscuro'
-                                    }
-                                });
-                            }
-                        })
-                        .catch(() =>  Swal.fire({
-                            title: '<span class="titulo-alerta error">Error</span>',
-                            html: `
-                                <div class="custom-alert">
-                                    <div class="contenedor-imagen">
-                                        <img src="../imagenes/llave.png" alt="Error" class="llave">
-                                    </div>
-                                    <p>No se pudo eliminar la categoría porque hay productos asociados..</p>
-                                </div>
-                            `,
-                            background: '#ffffffdb',
-                            confirmButtonText: 'Aceptar',
-                            confirmButtonColor: '#007bff',
-                            customClass: {
-                                popup: 'swal2-border-radius',
-                                confirmButton: 'btn-aceptar',
-                                container: 'fondo-oscuro'
-                            }
-                        }));
-                    }
-                });
-            }
-        });
-
-        // inicializar
-        renderTable();
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const nombreInput = document.getElementById('nombre');
-        const nombreError = document.getElementById('nombre-error');
-        const btnGuardar = document.getElementById('btnGuardar');
-        let nombreValido = false;
-
-        async function validarNombre(nombre) {
-            try {
-                const form = new URLSearchParams();
-                form.append('check_nombre', '1');
-                form.append('nombre', nombre.trim());
-                const res = await fetch('', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: form.toString()
-                });
-                const json = await res.json();
-                return !json.exists;
-            } catch (e) {
-                console.error(e);
-                return false;
-            }
         }
 
-        nombreInput.addEventListener('input', async () => {
-            const valor = nombreInput.value.trim();
+        // --- MODIFICADO PARA ANIMACIÓN ---
+        function mostrarStock() {
+            const stockModal = document.getElementById('stock');
+            const notificacionesModal = document.getElementById('notificaciones');
 
-            if (!valor || !/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(valor)) {
-                nombreInput.classList.remove('invalid');
-                nombreError.style.display = 'none';
-                btnGuardar.disabled = true;
-                return;
+            // Cierra el otro modal si está abierto
+            if (notificacionesModal.classList.contains('modal-activo')) {
+                notificacionesModal.classList.remove('modal-activo');
             }
 
-            nombreValido = await validarNombre(valor);
+            // Alterna la visibilidad del modal de stock
+            stockModal.classList.toggle('modal-activo');
+        }
 
-            if (!nombreValido) {
-                nombreInput.classList.add('invalid');
-                nombreError.style.display = 'block';
-            } else {
-                nombreInput.classList.remove('invalid');
-                nombreError.style.display = 'none';
+        // --- MODIFICADO PARA ANIMACIÓN ---
+        function mostrarNotificaciones() {
+            const notificacionesModal = document.getElementById('notificaciones');
+            const stockModal = document.getElementById('stock');
+
+            // Cierra el otro modal si está abierto
+            if (stockModal.classList.contains('modal-activo')) {
+                stockModal.classList.remove('modal-activo');
             }
-            btnGuardar.disabled = !nombreValido;
-        });
 
-        document.getElementById('btnAbrirModal').addEventListener('click', () => {
-            nombreInput.value = '';
-            nombreInput.classList.remove('invalid');
-            nombreError.style.display = 'none';
-            btnGuardar.disabled = true;
-        });
-    });
-</script>
+            // Alterna la visibilidad del modal de notificaciones
+            notificacionesModal.classList.toggle('modal-activo');
+        }
 
+        function cargarNotificaciones() {
+            fetch('../html/obtener_notificaciones.php')
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la respuesta');
+                    return response.json();
+                })
+                .then(data => {
+                    const lista = document.getElementById("listaNotificaciones");
+                    if (lista) {
+                        lista.innerHTML = data.map(notif => `
+    <li data-id="${notif.id}" class="${notif.leida ? 'leida' : 'nueva'}"
+        onclick="marcarLeida(${notif.id}, this)">
+      <small>${new Date(notif.fecha).toLocaleString()}</small><br>
+      ${notif.mensaje}
+    </li>
+  `).join('');
+                        const contador = data.filter(notif => !notif.leida).length;
+                        const badge = document.getElementById('badgeNotificaciones');
+                        badge.textContent = contador;
+                        badge.style.display = contador > 0 ? 'block' : 'none';
+                    } else {
+                        console.error("El elemento con id 'listaNotificaciones' no se encontró en el DOM.");
+                    }
+                })
+                .catch(error => console.error('Error al cargar notificaciones:', error));
+        }
+
+        function marcarLeida(id, elemento) {
+            fetch(`../html/marcar_leida.php?id=${id}`)
+                .then(response => {
+                    if (response.ok) {
+                        if (!elemento.classList.contains('leida')) {
+                            const badge = document.getElementById('badgeNotificaciones');
+                            const currentCount = parseInt(badge.textContent) || 0;
+                            badge.textContent = currentCount - 1;
+                            if (currentCount - 1 <= 0) {
+                                badge.style.display = 'none';
+                            }
+                        }
+                        elemento.classList.remove('nueva');
+                        elemento.classList.add('leida');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- NUEVO: CERRAR MODALES AL HACER CLIC FUERA ---
+            document.addEventListener('click', function(event) {
+                const notifModal = document.getElementById('notificaciones');
+                const stockModal = document.getElementById('stock');
+                const notifButton = document.querySelector('.noti');
+                const stockButton = document.querySelector('.stock');
+
+                // Si el modal de notificaciones está activo y el clic fue fuera del modal y fuera del botón
+                if (notifModal.classList.contains('modal-activo') &&
+                    !notifModal.contains(event.target) &&
+                    !notifButton.contains(event.target)) {
+                    notifModal.classList.remove('modal-activo');
+                }
+
+                // Si el modal de stock está activo y el clic fue fuera del modal y fuera del botón
+                if (stockModal.classList.contains('modal-activo') &&
+                    !stockModal.contains(event.target) &&
+                    !stockButton.contains(event.target)) {
+                    stockModal.classList.remove('modal-activo');
+                }
+            });
+
+            // Cargar notificaciones
+            cargarNotificaciones();
+            setInterval(cargarNotificaciones, 30000);
+
+            // Animación de las tarjetas
+            const cards = document.querySelectorAll('.metric-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 5;
+                    const rotateY = (centerX - x) / 5;
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px) translateZ(20px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px) translateZ(0px)';
+                });
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        let metricsChart, stockPieChart, invoicesLineChart;
+
+        function getTextoColorPorModo() {
+            return document.body.classList.contains('modo-alto-contraste') ? '#fff' : '#000';
+        }
+
+        function crearCharts() {
+            const colorTexto = getTextoColorPorModo();
+            const ctxBar = document.getElementById('metricsChart').getContext('2d');
+            metricsChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Total Productos', 'Stock Bajo', 'Proveedores', 'Clientes', 'Facturas Mes', 'Notificaciones'],
+                    datasets: [{
+                        label: 'Métricas',
+                        data: [
+                            <?= $metrics['total_products'] ?>, <?= $metrics['low_stock'] ?>,
+                            <?= $metrics['total_providers'] ?>, <?= $metrics['total_clients'] ?>,
+                            <?= $metrics['invoices_month'] ?>, <?= $metrics['unread_notif'] ?>
+                        ],
+                        backgroundColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+                        borderColor: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cantidad',
+                                font: {
+                                    size: 16
+                                },
+                                color: colorTexto
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14
+                                },
+                                color: colorTexto
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                },
+                                color: colorTexto,
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Resumen de Métricas',
+                            font: {
+                                size: 18
+                            },
+                            color: colorTexto
+                        }
+                    }
+                }
+            });
+            const ctxPie = document.getElementById('stockPieChart').getContext('2d');
+            stockPieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: ['Stock Bajo', 'Stock Normal'],
+                    datasets: [{
+                        data: [<?= $metrics['low_stock'] ?>, <?= $metrics['total_products'] - $metrics['low_stock'] ?>],
+                        backgroundColor: ['#e15759', '#59a14f'],
+                        borderColor: ['#e15759', '#59a14f'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14
+                                },
+                                color: colorTexto
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Proporción de Stock',
+                            font: {
+                                size: 18
+                            },
+                            color: colorTexto
+                        }
+                    }
+                }
+            });
+            <?php if (isset($facturas_diarias) && count($facturas_diarias) > 0) { ?>
+                const ctxLine = document.getElementById('invoicesLineChart').getContext('2d');
+                invoicesLineChart = new Chart(ctxLine, {
+                    type: 'line',
+                    data: {
+                        labels: [<?php foreach ($facturas_diarias as $dia => $cantidad) echo "'$dia',"; ?>],
+                        datasets: [{
+                            label: 'Facturas Diarias',
+                            data: [<?php foreach ($facturas_diarias as $cantidad) echo "$cantidad,"; ?>],
+                            borderColor: '#4e79a7',
+                            backgroundColor: 'rgba(78,121,167,0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Facturas',
+                                    font: {
+                                        size: 16
+                                    },
+                                    color: colorTexto
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    },
+                                    color: colorTexto
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Día del Mes',
+                                    font: {
+                                        size: 16
+                                    },
+                                    color: colorTexto
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    },
+                                    color: colorTexto
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 14
+                                    },
+                                    color: colorTexto
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Facturas Diarias del Mes',
+                                font: {
+                                    size: 18
+                                },
+                                color: colorTexto
+                            }
+                        }
+                    }
+                });
+            <?php } ?>
+        }
+
+        function actualizarColorCharts() {
+            const c = getTextoColorPorModo();
+            metricsChart.options.scales.y.title.color = c;
+            metricsChart.options.scales.y.ticks.color = c;
+            metricsChart.options.scales.x.ticks.color = c;
+            metricsChart.options.plugins.title.color = c;
+            metricsChart.update();
+            stockPieChart.options.plugins.legend.labels.color = c;
+            stockPieChart.options.plugins.title.color = c;
+            stockPieChart.update();
+            if (typeof invoicesLineChart !== 'undefined') {
+                invoicesLineChart.options.scales.y.title.color = c;
+                invoicesLineChart.options.scales.y.ticks.color = c;
+                invoicesLineChart.options.scales.x.title.color = c;
+                invoicesLineChart.options.scales.x.ticks.color = c;
+                invoicesLineChart.options.plugins.legend.labels.color = c;
+                invoicesLineChart.options.plugins.title.color = c;
+                invoicesLineChart.update();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            crearCharts();
+            new MutationObserver(muts => {
+                if (muts.some(m => m.attributeName === 'class')) {
+                    actualizarColorCharts();
+                }
+            }).observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        });
+    </script>
 </body>
 
 </html>

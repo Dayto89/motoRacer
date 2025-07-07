@@ -492,7 +492,8 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         #btnMarcar20:hover {
             background-color: rgb(0, 71, 148);
         }
-         .no-data-message {
+
+        .no-data-message {
             text-align: center;
             font-size: 2rem;
             color: #666;
@@ -568,15 +569,15 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         <div class="chart-container">
             <canvas id="stockPieChart"></canvas>
         </div>
-    <?php if (empty($facturas_diarias)) { ?>
-        <div class="chart-container">
-            <p class="no-data-message">No se han generado facturas en <?= ucfirst(strftime('%B de %Y')) ?> aún.</p>
-        </div>
-    <?php } else { ?>
-        <div class="chart-container">
-            <canvas id="invoicesLineChart"></canvas>
-        </div>
-    <?php } ?>
+        <?php if (empty($facturas_diarias)) { ?>
+            <div class="chart-container">
+                <p class="no-data-message">No se han generado facturas en <?= ucfirst(strftime('%B de %Y')) ?> aún.</p>
+            </div>
+        <?php } else { ?>
+            <div class="chart-container">
+                <canvas id="invoicesLineChart"></canvas>
+            </div>
+        <?php } ?>
     </div>
 
     <div id="notificaciones" class="notificaciones modal-animado">
@@ -657,12 +658,38 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             <?php endif; ?>
         </div>
     </div>
-
+    <!-- Footer con derehcos de autor -->
+    <footer class="footer">
+        <div class="footer-item datos">© 2025 MotoRacer</div>
+        <div class="footer-item">
+            Desarrollado por:
+            <strong>Mariana Castillo</strong> ·
+            <strong>Daniel López</strong> ·
+            <strong>Deicy Caro</strong> ·
+            <strong>Marlen Salcedo</strong>
+            <span class="version">v1.0</span>
+        </div>
+    </footer>
     <script src="/js/index.js"></script>
     <script>
         function marcarUltimasLeidas() {
-            fetch(`../html/marcar_leidas_varias.php?limit=20`, {
-                    method: 'POST'
+            const ids = Array.from(document.querySelectorAll('#listaNotificaciones li'))
+                .map(li => parseInt(li.dataset.id));
+
+            if (ids.length === 0) {
+                Swal.fire('Atención', 'No hay notificaciones.', 'info');
+                return;
+            }
+
+            // 2) Envía al servidor
+            fetch(`../html/marcar_leidas_varias.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ids
+                    })
                 })
                 .then(response => {
                     if (!response.ok) throw new Error('Error al marcar notificaciones');
@@ -753,12 +780,12 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
                     const lista = document.getElementById("listaNotificaciones");
                     if (lista) {
                         lista.innerHTML = data.map(notif => `
-                        <li class="${notif.leida ? 'leida' : 'nueva'}" 
-                            onclick="marcarLeida(${notif.id}, this)">
-                            <small>${new Date(notif.fecha).toLocaleString()}</small><br>
-                            ${notif.mensaje}
-                        </li>
-                    `).join('');
+    <li data-id="${notif.id}" class="${notif.leida ? 'leida' : 'nueva'}"
+        onclick="marcarLeida(${notif.id}, this)">
+      <small>${new Date(notif.fecha).toLocaleString()}</small><br>
+      ${notif.mensaje}
+    </li>
+  `).join('');
                         const contador = data.filter(notif => !notif.leida).length;
                         const badge = document.getElementById('badgeNotificaciones');
                         badge.textContent = contador;
