@@ -21,6 +21,10 @@ body::before {
   opacity: 0.6;
 }
 
+.footer {
+  margin-top: 0.36%;
+}
+
 /* Título principal */
 #categorias h1 {
   font-size: 50px;

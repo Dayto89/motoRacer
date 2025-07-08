@@ -20,6 +20,10 @@ body::before {
   opacity: 0.6;
 }
 
+.footer {
+  margin-top: -2.22%;
+}
+
 … .main-content {
   padding: 20px;
   height: 100vh;

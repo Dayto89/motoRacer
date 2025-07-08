@@ -20,6 +20,10 @@ body::before {
   opacity: 0.6;
 }
 
+.footer {
+  margin-top: -2.26%;
+}
+
 .main-content h1 {
   color: white;
   text-align: center;

@@ -11,6 +11,10 @@ body {
   background-position: center;
 }
 
+.footer {
+  margin-top: 9px;
+}
+
 /* Estilos mejorados para backups */
 .main-content {
   padding: 2rem;

@@ -207,7 +207,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
         </div>
     </div>
                   <!-- Footer con derehcos de autor -->
-<footer class="footer">
+<footer class="footer" id="footer">
   <div class="footer-item datos">© 2025 MotoRacer</div>
   <div class="footer-item">
     Desarrollado por:

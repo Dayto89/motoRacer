@@ -506,6 +506,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
       form.appendChild(saveButton);
     }
   </script>
+  <footer class="footer">
+  <div class="footer-item datos">© 2025 MotoRacer</div>
+  <div class="footer-item">
+    Desarrollado por:
+    <strong>Mariana Castillo</strong> ·
+    <strong>Daniel López</strong> ·
+    <strong>Deicy Caro</strong> ·
+    <strong>Marlen Salcedo</strong>
+    <span class="version">v1.0</span>
+  </div>
+</footer>
 </body>
 
 </html>

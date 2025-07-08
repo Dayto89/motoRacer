@@ -398,8 +398,9 @@ h3 {
     letter-spacing: 2;
 
 }
-
-
+#footer{
+    margin-top: 4.7%;
+}
 
 /* TABLETS */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {

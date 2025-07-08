@@ -247,6 +247,10 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <script src="/js/index.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Metal+Mania&display=swap');
+
+        #footer {
+            margin-top: 4.4%;
+        }
     </style>
 </head>
 
@@ -260,40 +264,40 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
     <div class="sidebar">
         <div id="menu"></div>
     </div>
-     <nav class="barra-navegacion">
-    <div class="ubica"> Factura / Pagos </div>
-  <div class="userContainer">
-        <div class="userInfo">
-            <!-- Nombre y apellido del usuario y rol -->
-            <!-- Consultar datos del usuario -->
-            <?php
-            $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
-            $id_usuario = $_SESSION['usuario_id'];
-            $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
-            $stmtUsuario = $conexion->prepare($sqlUsuario);
-            $stmtUsuario->bind_param("i", $id_usuario);
-            $stmtUsuario->execute();
-            $resultUsuario = $stmtUsuario->get_result();
-            $rowUsuario = $resultUsuario->fetch_assoc();
-            $nombreUsuario = $rowUsuario['nombre'];
-            $apellidoUsuario = $rowUsuario['apellido'];
-            $rol = $rowUsuario['rol'];
-            $foto = $rowUsuario['foto'];
-            $stmtUsuario->close();
-            ?>
-            <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
-            <p class="rol">Rol: <?php echo $rol; ?></p>
+    <nav class="barra-navegacion">
+        <div class="ubica"> Factura / Pagos </div>
+        <div class="userContainer">
+            <div class="userInfo">
+                <!-- Nombre y apellido del usuario y rol -->
+                <!-- Consultar datos del usuario -->
+                <?php
+                $conexion = new mysqli('localhost', 'root', '', 'inventariomotoracer');
+                $id_usuario = $_SESSION['usuario_id'];
+                $sqlUsuario = "SELECT nombre, apellido, rol, foto FROM usuario WHERE identificacion = ?";
+                $stmtUsuario = $conexion->prepare($sqlUsuario);
+                $stmtUsuario->bind_param("i", $id_usuario);
+                $stmtUsuario->execute();
+                $resultUsuario = $stmtUsuario->get_result();
+                $rowUsuario = $resultUsuario->fetch_assoc();
+                $nombreUsuario = $rowUsuario['nombre'];
+                $apellidoUsuario = $rowUsuario['apellido'];
+                $rol = $rowUsuario['rol'];
+                $foto = $rowUsuario['foto'];
+                $stmtUsuario->close();
+                ?>
+                <p class="nombre"><?php echo $nombreUsuario; ?> <?php echo $apellidoUsuario; ?></p>
+                <p class="rol">Rol: <?php echo $rol; ?></p>
 
+            </div>
+            <div class="profilePic">
+                <?php if (!empty($rowUsuario['foto'])): ?>
+                    <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
+                <?php else: ?>
+                    <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="profilePic">
-            <?php if (!empty($rowUsuario['foto'])): ?>
-                <img id="profilePic" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="Usuario">
-            <?php else: ?>
-                <img id="profilePic" src="../imagenes/icono.jpg" alt="Usuario por defecto">
-            <?php endif; ?>
-        </div>
-    </div>
-     </nav>
+    </nav>
     <div class="container">
         <div class="main-content">
             <div class="content">
@@ -896,7 +900,17 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/componentes/accesibilidad-widget.php'
             actualizarEstadoInputs();
         });
     </script>
-  
+    <footer class="footer" id="footer">
+        <div class="footer-item datos">© 2025 MotoRacer</div>
+        <div class="footer-item">
+            Desarrollado por:
+            <strong>Mariana Castillo</strong> ·
+            <strong>Daniel López</strong> ·
+            <strong>Deicy Caro</strong> ·
+            <strong>Marlen Salcedo</strong>
+            <span class="version">v1.0</span>
+        </div>
+    </footer>
 </body>
 
 </html>

@@ -21,6 +21,10 @@ body::before {
   opacity: 0.6;
 }
 
+.footer {
+  margin-top: 0.99%;
+}
+
 /* 2) Aplico transición a **todos** los hijos directos */
 .barra-navegacion>* {
     transition: transform 0.3s ease;

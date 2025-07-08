@@ -614,6 +614,9 @@ input#correoVerificado.input-group {
 .error-message.visible {
   display: block;
 }
+#footer{
+  position: absolute;
+}
 /* TABLETS */
 /* Horizontal */
 @media (min-width: 871px) and (max-width: 1023px) and (orientation: landscape) {

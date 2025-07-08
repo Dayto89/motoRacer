@@ -20,6 +20,10 @@ body::before {
   opacity: 0.6;
 }
 
+.footer {
+  margin-top: 0.9%;
+}
+
 .main-content {
   margin: 0px;
 }

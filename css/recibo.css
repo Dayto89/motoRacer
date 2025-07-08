@@ -13,6 +13,11 @@
 
         }
 
+        body .footer {
+            width: 405%;
+            margin-left: -150%;
+        }
+
         .factura {
             font-family: Arial, Helvetica, sans-serif;
             margin-top: 100px;
